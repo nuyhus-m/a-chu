@@ -1,0 +1,92 @@
+import org.asciidoctor.gradle.jvm.AsciidoctorTask
+
+plugins {
+	id 'java'
+	id 'org.springframework.boot' apply(false)
+	id 'io.spring.dependency-management'
+	id 'com.diffplug.spotless' apply(false)
+	id 'org.asciidoctor.jvm.convert' apply(false)
+}
+
+apply from: 'lint.gradle'
+
+allprojects {
+	group = "${projectGroup}"
+	version = "${applicationVersion}"
+
+	repositories {
+		mavenCentral()
+	}
+}
+
+subprojects {
+	apply plugin: 'java-library'
+	apply plugin: 'org.springframework.boot'
+	apply plugin: 'io.spring.dependency-management'
+	apply plugin: 'org.asciidoctor.jvm.convert'
+
+	java {
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(javaVersion)
+		}
+	}
+
+	dependencyManagement {
+		imports {
+			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudDependenciesVersion}"
+		}
+	}
+
+	dependencies {
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	}
+
+	bootJar.enabled = false
+	jar.enabled = true
+
+	test {
+		useJUnitPlatform {
+			excludeTags('develop', 'restdocs')
+		}
+	}
+
+	tasks.register('unitTest', Test) {
+		group = 'verification'
+		useJUnitPlatform {
+			excludeTags('develop', 'context', 'restdocs')
+		}
+	}
+
+	tasks.register('contextTest', Test) {
+		group = 'verification'
+		useJUnitPlatform {
+			includeTags('context')
+		}
+	}
+
+	tasks.register('restDocsTest', Test) {
+		group = 'verification'
+		useJUnitPlatform {
+			includeTags('restdocs')
+		}
+	}
+
+	tasks.register('developTest', Test) {
+		group = 'verification'
+		useJUnitPlatform {
+			includeTags('develop')
+		}
+	}
+
+	tasks.named('asciidoctor', AsciidoctorTask) {
+		dependsOn restDocsTest
+		baseDirFollowsSourceFile()
+		attributes 'snippets': file('build/generated-snippets')
+
+		sources {
+			include "index.adoc"
+		}
+	}
+
+}
