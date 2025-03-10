@@ -8,6 +8,8 @@ plugins {
 	id 'org.asciidoctor.jvm.convert' apply(false)
 }
 
+apply from: 'lint.gradle'
+
 allprojects {
 	group = "${projectGroup}"
 	version = "${applicationVersion}"
