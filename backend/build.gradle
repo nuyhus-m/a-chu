@@ -19,6 +19,7 @@ allprojects {
 	}
 }
 
+
 subprojects {
 	apply plugin: 'java-library'
 	apply plugin: 'org.springframework.boot'
@@ -30,6 +31,9 @@ subprojects {
 			languageVersion = JavaLanguageVersion.of(javaVersion)
 		}
 	}
+	configurations {
+		asciidoctorExt
+	}
 
 	dependencyManagement {
 		imports {
@@ -38,6 +42,7 @@ subprojects {
 	}
 
 	dependencies {
+		asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 		testImplementation 'org.springframework.boot:spring-boot-starter-test'
 		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	}
@@ -80,6 +85,7 @@ subprojects {
 	}
 
 	tasks.named('asciidoctor', AsciidoctorTask) {
+		configurations 'asciidoctorExt'
 		dependsOn restDocsTest
 		baseDirFollowsSourceFile()
 		attributes 'snippets': file('build/generated-snippets')
