@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Achu</string>
+
+    <!--바텀바-->
+    <string name="home">홈</string>
+    <string name="shopping">쇼핑</string>
+    <string name="memory">추억</string>
+    <string name="chat">채팅</string>
+    <string name="mypage">마이페이지</string>
 </resources>
