@@ -1,4 +1,4 @@
-package com.example.achu.core.components
+package com.ssafy.achu.core.components
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -11,7 +11,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.achu.core.navigation.bottomNavBarScreens
+import com.ssafy.achu.core.navigation.bottomNavBarScreens
 
 @Composable
 fun BottomNavBar(navController: NavHostController) {

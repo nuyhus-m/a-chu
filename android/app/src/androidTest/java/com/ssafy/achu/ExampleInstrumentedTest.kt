@@ -1,4 +1,4 @@
-package com.example.achu
+package com.ssafy.achu
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

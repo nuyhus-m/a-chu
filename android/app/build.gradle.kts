@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.achu"
+    namespace = "com.ssafy.achu"
     compileSdk = 35
 
     defaultConfig {

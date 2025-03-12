@@ -1,6 +1,5 @@
-package com.example.achu.core.theme
+package com.ssafy.achu.core.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

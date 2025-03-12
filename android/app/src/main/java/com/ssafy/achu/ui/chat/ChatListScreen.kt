@@ -1,4 +1,4 @@
-package com.example.achu.ui.home
+package com.ssafy.achu.ui.chat
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,14 +10,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun ChatListScreen(modifier: Modifier = Modifier) {
 
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "홈 화면",
+            text = "채팅 화면",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )

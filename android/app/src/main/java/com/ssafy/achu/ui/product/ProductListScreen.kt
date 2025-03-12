@@ -1,4 +1,4 @@
-package com.example.achu.ui.mypage
+package com.ssafy.achu.ui.product
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,14 +10,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun MyPageScreen(modifier: Modifier = Modifier) {
+fun ProductListScreen(modifier: Modifier = Modifier) {
 
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "마이페이지 화면",
+            text = "중고거래 화면",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )

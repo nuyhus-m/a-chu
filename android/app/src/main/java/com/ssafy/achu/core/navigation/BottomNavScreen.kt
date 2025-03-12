@@ -1,10 +1,10 @@
-package com.example.achu.core.navigation
+package com.ssafy.achu.core.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.achu.R
+import com.ssafy.achu.R
 
 sealed class BottomNavScreen(val route: String, @StringRes val titleResId: Int, val icon: ImageVector) {
 

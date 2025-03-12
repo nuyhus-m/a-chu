@@ -1,15 +1,15 @@
-package com.example.achu.core.navigation
+package com.ssafy.achu.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.achu.ui.chat.ChatListScreen
-import com.example.achu.ui.home.HomeScreen
-import com.example.achu.ui.memory.MemoryListScreen
-import com.example.achu.ui.mypage.MyPageScreen
-import com.example.achu.ui.product.ProductListScreen
+import com.ssafy.achu.ui.chat.ChatListScreen
+import com.ssafy.achu.ui.home.HomeScreen
+import com.ssafy.achu.ui.memory.MemoryListScreen
+import com.ssafy.achu.ui.mypage.MyPageScreen
+import com.ssafy.achu.ui.product.ProductListScreen
 
 @Composable
 fun NavGraph(

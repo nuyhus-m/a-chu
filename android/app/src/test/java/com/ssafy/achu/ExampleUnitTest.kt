@@ -1,4 +1,4 @@
-package com.example.achu
+package com.ssafy.achu
 
 import org.junit.Test
 
