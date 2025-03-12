@@ -1,4 +1,4 @@
-package com.example.achu.ui.theme
+package com.example.achu.core.theme
 
 import androidx.compose.ui.graphics.Color
 
