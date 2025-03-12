@@ -11,6 +11,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.operation.preprocess.OperationPreprocessor;
+import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -40,8 +42,37 @@ public abstract class RestDocsTest {
     MappingJackson2HttpMessageConverter converter =
         new MappingJackson2HttpMessageConverter(objectMapper());
 
+    // Request Preprocessors
+    OperationPreprocessor requestUriModifier = Preprocessors.modifyUris()
+        .scheme("https")
+        .host("api.dev.achu.dukcode.org")
+        .removePort();
+
+    OperationPreprocessor requestHeaderModifier = Preprocessors.modifyHeaders()
+        .remove("Content-Length")
+        .remove("Content-Type")
+        .remove("Host");
+
+    OperationPreprocessor requestPrettyPrinter = Preprocessors.prettyPrint();
+
+    OperationPreprocessor responseHeaderModifier = Preprocessors.modifyHeaders()
+        .remove("Content-Length")
+        .remove("Content-Type")
+        .remove("X-Content-Type-Options")
+        .remove("X-XSS-Protection")
+        .remove("Cache-Control")
+        .remove("Pragma")
+        .remove("Expires")
+        .remove("X-Frame-Options")
+        .remove("Vary");
+
+    OperationPreprocessor responsePrettyPrinter = Preprocessors.prettyPrint();
+
     return MockMvcBuilders.standaloneSetup(controller)
-        .apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation))
+        .apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
+            .operationPreprocessors()
+            .withRequestDefaults(requestUriModifier, requestHeaderModifier, requestPrettyPrinter)
+            .withResponseDefaults(responseHeaderModifier, responsePrettyPrinter))
         .setMessageConverters(converter)
         .build();
   }
