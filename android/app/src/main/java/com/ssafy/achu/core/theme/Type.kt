@@ -1,9 +1,8 @@
 package com.ssafy.achu.core.theme
 
-import androidx.compose.material3.Typography
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -19,7 +18,7 @@ val pretandard = FontFamily(
 )
 
 
-val myTypography = MyFont(
+internal val Typography = MyTypography(
 
     bold24 = TextStyle(
         fontFamily = pretandard,
@@ -64,7 +63,7 @@ val myTypography = MyFont(
         fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
     ),
-    
+
     semiBold16Pink = TextStyle(
         fontFamily = pretandard,
         fontWeight = FontWeight.SemiBold,
@@ -127,10 +126,10 @@ val myTypography = MyFont(
         fontSize = 12.sp,
     )
 
-    )
+)
 
 @Immutable
-data class MyFont(
+data class MyTypography(
     val bold24: TextStyle,
     val semiBold20: TextStyle,
     val semiBold20White: TextStyle,
@@ -148,6 +147,26 @@ data class MyFont(
     val regular16: TextStyle,
     val regular14: TextStyle,
     val regular12: TextStyle,
-) {
+)
 
+val LocalTypography = staticCompositionLocalOf {
+    MyTypography(
+        bold24 = TextStyle.Default,
+        semiBold20 = TextStyle.Default,
+        semiBold20White = TextStyle.Default,
+        semiBold18 = TextStyle.Default,
+        semiBold18White = TextStyle.Default,
+        semiBold18Pink = TextStyle.Default,
+        semiBold16 = TextStyle.Default,
+        semiBold16Pink = TextStyle.Default,
+        semiBold16White = TextStyle.Default,
+        semiBold12 = TextStyle.Default,
+        semiBold12LightGray = TextStyle.Default,
+        semiBold12FontGray = TextStyle.Default,
+        semiBold12PointBlue = TextStyle.Default,
+        regular18 = TextStyle.Default,
+        regular16 = TextStyle.Default,
+        regular14 = TextStyle.Default,
+        regular12 = TextStyle.Default
+    )
 }

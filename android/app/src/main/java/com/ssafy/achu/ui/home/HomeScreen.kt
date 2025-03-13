@@ -21,39 +21,5 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
-
-        Text(
-            text = "홈 화면",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = "홈 화면",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = "홈 화면",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = "홈 화면",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = "홈 화면",
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = "홈 화면",
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Bold
-        )
     }
 }
