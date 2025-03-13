@@ -2,10 +2,19 @@ package com.ssafy.achu.core.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val LightBlue = Color(0xFFECECFA)
+val PointBlue = Color(0xFF9D9FE5)
+val FontBlue = Color(0xFF686BDC)
+val DisabledBlue  = Color(0x66686BDC)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val LightPink = Color(0xFFFCEEEC)
+val PointPink = Color(0xFFF0ACA8)
+val FontPink = Color(0xFFF86E6E)
+val DisabledPink  = Color(0x66F86E6E)
+
+val White = Color(0xFFFFFFFF)
+val LightGray = Color(0xFFD9D9D9)
+val TextGray = Color(0xFF79787B)
+val TextBlack = Color(0xFF141318)
+
+
