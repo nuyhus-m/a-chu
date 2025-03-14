@@ -2,7 +2,7 @@ package com.ssafy.s12p21d206.achu.api.controller.user;
 
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
-import java.time.LocalDateTime;
+import com.ssafy.s12p21d206.achu.api.response.IsUniqueResponse;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,25 +16,30 @@ public class UserController {
 
   @GetMapping("/users/{userId}")
   public ApiResponse<UserResponse> findUser(@PathVariable Long userId) {
-    LocalDateTime createdAt = LocalDateTime.of(2023, 3, 13, 15, 0);
-    UserResponse response = new UserResponse(userId, "아이디", "닉네임", "프로필이미지", createdAt, createdAt);
+    UserResponse response = new UserResponse(userId, "닉네임", "프로필이미지");
+    return ApiResponse.success(response);
+  }
+
+  @GetMapping("/users/me")
+  public ApiResponse<UserResponse> findMe(Long userId) {
+    UserResponse response = new UserResponse(userId, "닉네임", "프로필이미지");
     return ApiResponse.success(response);
   }
 
   @GetMapping("/users/username/is-unique")
-  public ApiResponse<?> checkUsernameIsUnique(@RequestParam String username) {
-    return ApiResponse.success();
+  public ApiResponse<IsUniqueResponse> checkUsernameIsUnique(@RequestParam String username) {
+    IsUniqueResponse response = new IsUniqueResponse(true);
+    return ApiResponse.success(response);
   }
 
   @GetMapping("/users/nickname/is-unique")
-  public ApiResponse<?> checkNicknameIsUnique(@RequestParam String nickname) {
-    return ApiResponse.success();
+  public ApiResponse<IsUniqueResponse> checkNicknameIsUnique(@RequestParam String nickname) {
+    IsUniqueResponse response = new IsUniqueResponse(true);
+    return ApiResponse.success(response);
   }
 
-  // Q. 뭐 반환해야 하나요? 변경된 닉네임을 반환해야 할까요?
-  @PatchMapping("/users/{userId}/nickname")
-  public ApiResponse<?> modifyNickname(
-      @PathVariable Long userId, @RequestBody ModifyNicknameRequest request) {
+  @PatchMapping("/users/nickname")
+  public ApiResponse<?> modifyNickname(Long userId, @RequestBody ModifyNicknameRequest request) {
     return ApiResponse.success();
   }
 

@@ -29,7 +29,7 @@ public class UserControllerTest extends RestDocsTest {
   public void appendUser() {
     given()
         .contentType(ContentType.JSON)
-        .body(new AppendUserRequest("아이디", "비밀번호", "비밀번호 확인", "닉네임", "전화번호"))
+        .body(new AppendUserRequest("아이디", "비밀번호", "닉네임", "전화번호"))
         .post("/users")
         .then()
         .status(HttpStatus.OK)
@@ -43,10 +43,6 @@ public class UserControllerTest extends RestDocsTest {
                 fieldWithPath("password")
                     .type(JsonFieldType.STRING)
                     .description("생성할 user 비밀번호")
-                    .attributes(RestDocsUtils.constraints("60자 이하")),
-                fieldWithPath("password2")
-                    .type(JsonFieldType.STRING)
-                    .description("생성할 user 비밀번호 확인")
                     .attributes(RestDocsUtils.constraints("60자 이하")),
                 fieldWithPath("nickname")
                     .type(JsonFieldType.STRING)
@@ -78,15 +74,8 @@ public class UserControllerTest extends RestDocsTest {
                     .type(JsonFieldType.STRING)
                     .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
                 fieldWithPath("data.userId").type(JsonFieldType.NUMBER).description("user id"),
-                fieldWithPath("data.username").type(JsonFieldType.STRING).description("user 아이디"),
                 fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("user 닉네임"),
-                fieldWithPath("data.imgUrl").type(JsonFieldType.STRING).description("user 프로필"),
-                fieldWithPath("data.createdAt")
-                    .type(JsonFieldType.STRING)
-                    .description("user 생성 시간"),
-                fieldWithPath("data.updatedAt")
-                    .type(JsonFieldType.STRING)
-                    .description("user 수정 시간"))));
+                fieldWithPath("data.imgUrl").type(JsonFieldType.STRING).description("user 프로필"))));
   }
 
   @Test
@@ -102,9 +91,13 @@ public class UserControllerTest extends RestDocsTest {
             queryParameters(parameterWithName("username")
                 .description("중복검사 할 아이디")
                 .attributes(RestDocsUtils.constraints("20자 이하"))),
-            responseFields(fieldWithPath("result")
-                .type(JsonFieldType.STRING)
-                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
+            responseFields(
+                fieldWithPath("result")
+                    .type(JsonFieldType.STRING)
+                    .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
+                fieldWithPath("data.isUnique")
+                    .type(JsonFieldType.BOOLEAN)
+                    .description("사용자 username이 고유한지 여부 (true: 사용 가능, false: 중복)"))));
   }
 
   @Test
@@ -120,9 +113,13 @@ public class UserControllerTest extends RestDocsTest {
             queryParameters(parameterWithName("nickname")
                 .description("중복검사 할 닉네임")
                 .attributes(RestDocsUtils.constraints("36자 이하"))),
-            responseFields(fieldWithPath("result")
-                .type(JsonFieldType.STRING)
-                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
+            responseFields(
+                fieldWithPath("result")
+                    .type(JsonFieldType.STRING)
+                    .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
+                fieldWithPath("data.isUnique")
+                    .type(JsonFieldType.BOOLEAN)
+                    .description("사용자 Nickname이 고유한지 여부 (true: 사용 가능, false: 중복)"))));
   }
 
   @Test
@@ -130,12 +127,11 @@ public class UserControllerTest extends RestDocsTest {
     given()
         .contentType(ContentType.JSON)
         .body(new ModifyNicknameRequest("새로운 닉네임"))
-        .patch("/users/{userId}/nickname", 1L)
+        .patch("/users/nickname")
         .then()
         .status(HttpStatus.OK)
         .apply(document(
             "modify-nickname",
-            pathParameters(parameterWithName("userId").description("변경하고자 하는 user id")),
             requestFields(fieldWithPath("nickname")
                 .type(JsonFieldType.STRING)
                 .description("새로운 nickname")
