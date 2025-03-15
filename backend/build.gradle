@@ -6,9 +6,11 @@ plugins {
 	id 'io.spring.dependency-management'
 	id 'com.diffplug.spotless' apply(false)
 	id 'org.asciidoctor.jvm.convert' apply(false)
+	id 'org.sonarqube'
 }
 
 apply from: 'lint.gradle'
+apply from: 'sonarqube.gradle'
 
 allprojects {
 	group = "${projectGroup}"
