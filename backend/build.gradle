@@ -54,6 +54,7 @@ subprojects {
 		useJUnitPlatform {
 			excludeTags('develop', 'restdocs')
 		}
+		jvmArgs '-Xshare:off'
 	}
 
 	tasks.register('unitTest', Test) {
