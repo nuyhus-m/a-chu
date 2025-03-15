@@ -35,11 +35,14 @@ class ExampleControllerTest extends RestDocsTest {
         .apply(document(
             "append-example",
             requestFields(
-                fieldWithPath("name").type(JsonFieldType.STRING).description("생성할 example 이름")
+                fieldWithPath("name")
+                    .type(JsonFieldType.STRING)
+                    .description("생성할 example 이름")
                     .attributes(RestDocsUtils.constraints("2자 이상 10자 이하여야 합니다.")),
-                fieldWithPath("age").type(JsonFieldType.NUMBER).description("생성할 example 나이")
-                    .attributes(RestDocsUtils.constraints("0 이상 150 이하여야 합니다.")))
-            ,
+                fieldWithPath("age")
+                    .type(JsonFieldType.NUMBER)
+                    .description("생성할 example 나이")
+                    .attributes(RestDocsUtils.constraints("0 이상 150 이하여야 합니다."))),
             responseFields(
                 fieldWithPath("result")
                     .type(JsonFieldType.STRING)
