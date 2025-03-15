@@ -58,6 +58,8 @@ subprojects {
 
 	tasks.register('unitTest', Test) {
 		group = 'verification'
+    	testClassesDirs = sourceSets.test.output.classesDirs // 명시적 설정
+    	classpath = sourceSets.test.runtimeClasspath         // 명시적 설정'
 		useJUnitPlatform {
 			excludeTags('develop', 'context', 'restdocs')
 		}
@@ -65,6 +67,8 @@ subprojects {
 
 	tasks.register('contextTest', Test) {
 		group = 'verification'
+		testClassesDirs = sourceSets.test.output.classesDirs // 명시적 설정
+		classpath = sourceSets.test.runtimeClasspath         // 명시적 설정'
 		useJUnitPlatform {
 			includeTags('context')
 		}
@@ -72,6 +76,8 @@ subprojects {
 
 	tasks.register('restDocsTest', Test) {
 		group = 'verification'
+		testClassesDirs = sourceSets.test.output.classesDirs // 명시적 설정
+		classpath = sourceSets.test.runtimeClasspath         // 명시적 설정'
 		useJUnitPlatform {
 			includeTags('restdocs')
 		}
@@ -79,6 +85,8 @@ subprojects {
 
 	tasks.register('developTest', Test) {
 		group = 'verification'
+		testClassesDirs = sourceSets.test.output.classesDirs // 명시적 설정
+		classpath = sourceSets.test.runtimeClasspath         // 명시적 설정'
 		useJUnitPlatform {
 			includeTags('develop')
 		}
