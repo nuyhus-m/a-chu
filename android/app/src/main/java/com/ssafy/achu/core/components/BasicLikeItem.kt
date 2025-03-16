@@ -1,6 +1,7 @@
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.isTraceInProgress
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,7 +51,7 @@ fun BasicLikeItem(
     Box(
         modifier = Modifier
             .wrapContentSize()
-            .padding(start = 1.dp, top = 32.dp, bottom = 32.dp, end = 8.dp)
+            .padding(start = 1.dp, top = 1.dp, bottom = 1.dp, end = 8.dp)
             .drawBehind {
                 // 그림자 색상 및 크기 조정
                 drawRoundRect(
@@ -116,7 +118,10 @@ fun BasicLikeItem(
                         modifier = Modifier
                             .width(20.dp)
                             .height(20.dp)
-                            .clickable(onClick = onClickHeart) // 하트 클릭 시 동작
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = onClickHeart) // 하트 클릭 시 동작
                             .padding(end = 4.dp)
                     )
                 }
