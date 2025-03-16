@@ -6,6 +6,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -22,7 +23,7 @@ fun BottomNavBar(navController: NavHostController) {
 
         bottomNavBarScreens.forEach { screen ->
             NavigationBarItem(
-                icon = { Icon(screen.icon, contentDescription = null) },
+                icon = { Icon(painterResource(screen.icon), contentDescription = null) },
                 label = { Text(stringResource(screen.titleResId)) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
