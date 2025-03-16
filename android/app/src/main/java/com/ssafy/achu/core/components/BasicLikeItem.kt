@@ -72,7 +72,10 @@ fun BasicLikeItem(
                 .width(160.dp)
                 .background(White, shape = RoundedCornerShape(16.dp))
                 .padding(10.dp)
-                .clickable(onClick = onClickItem) // 아이템 전체 클릭 시 동작
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onClickItem) // 아이템 전체 클릭 시 동작
         ) {
 
             Column(
