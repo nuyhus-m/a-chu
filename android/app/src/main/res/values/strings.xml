@@ -7,4 +7,7 @@
     <string name="memory">추억</string>
     <string name="chat">채팅</string>
     <string name="mypage">마이페이지</string>
+
+    <!--탑바-->
+    <string name="chat_list">채팅 목록</string>
 </resources>
