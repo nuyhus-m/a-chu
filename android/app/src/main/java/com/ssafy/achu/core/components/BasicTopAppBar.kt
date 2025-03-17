@@ -3,6 +3,8 @@ package com.ssafy.achu.core.components
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,11 +40,41 @@ fun BasicTopAppBar(title: String = "", onBackClick: () -> Unit) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CenterTopAppBar(title: String = "", onBackClick: () -> Unit) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = title,
+                style = AchuTheme.typography.bold24
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = { onBackClick() }) {
+                Icon(Icons.Default.Close, contentDescription = "Back")
+            }
+        },
+        modifier = Modifier.padding(vertical = 24.dp),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.White
+        )
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun BasicTopAppBarPreview() {
     AchuTheme {
         BasicTopAppBar(title = "거래상세", onBackClick = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CenterTopAppBarPreview() {
+    AchuTheme {
+        CenterTopAppBar(title = "추억업로드", onBackClick = {})
     }
 }
 
