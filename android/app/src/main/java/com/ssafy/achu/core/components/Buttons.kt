@@ -35,7 +35,7 @@ import com.ssafy.achu.core.theme.PointPink
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PointBlueButton(buttonText: String, onClick: () -> Unit) {
+fun PointBlueButton(buttonText: String, radius: Dp = 12.dp, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,7 +53,7 @@ fun PointBlueButton(buttonText: String, onClick: () -> Unit) {
                     offsetY = 4.dp
                 )
                 .height(50.dp)
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(radius))
                 .background(PointBlue)
                 .clickable(
                     onClick = onClick
