@@ -157,7 +157,6 @@ fun ListItem(
             .height(116.dp)
             .shadow(elevation = 4.dp, shape = RoundedCornerShape(16.dp)) // 그림자 추가
             .background(color = White, shape = RoundedCornerShape(16.dp))
-            .padding(1.dp)
             .clickable(onClick = onClick)
     ) {
 

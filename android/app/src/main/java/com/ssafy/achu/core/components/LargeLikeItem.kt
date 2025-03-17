@@ -50,20 +50,7 @@ fun LargeLikeItem(
     Box(
         modifier = Modifier
             .wrapContentSize()
-            .padding(start = 1.dp, top = 1.dp, bottom = 1.dp, end = 1.dp)
-            .drawBehind {
-                // 그림자 색상 및 크기 조정
-                drawRoundRect(
-                    color = Color.Gray.copy(alpha = 0.3f), // 그림자 색상
-                    size = size.copy(
-                        width = size.width - 4.dp.toPx(),
-                        height = size.height - 4.dp.toPx()
-                    ), // 그림자 크기 (약간 줄여서 그림자가 더 잘 보이게)
-                    cornerRadius = CornerRadius(16.dp.toPx(), 16.dp.toPx()), // 모서리 반경
-                    topLeft = Offset(2.dp.toPx(), 2.dp.toPx()) // 그림자 위치 (x, y)
-                )
-            }
-            .shadow(elevation = 2.dp, shape = RoundedCornerShape(16.dp)) // 필요한 경우 추가적인 shadow
+            .shadow(elevation = 4.dp, shape = RoundedCornerShape(16.dp)) // 필요한 경우 추가적인 shadow
 
     ) {
 
