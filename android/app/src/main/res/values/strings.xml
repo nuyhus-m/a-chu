@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Achu</string>
 
+    <!--스플래시-->
+    <string name="splash">추억을 기록하는 육아용품 중고거래 앱</string>
+
     <!--바텀바-->
     <string name="home">홈</string>
     <string name="shopping">쇼핑</string>
