@@ -4,6 +4,7 @@ import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
 import com.ssafy.s12p21d206.achu.api.response.IsUniqueResponse;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class UserController {
@@ -22,7 +23,7 @@ public class UserController {
 
   @GetMapping("/users/me")
   public ApiResponse<UserResponse> findMe(Long userId) {
-    UserResponse response = new UserResponse(userId, "닉네임", "프로필이미지");
+    UserResponse response = new UserResponse(1L, "닉네임", "프로필이미지");
     return ApiResponse.success(response);
   }
 
@@ -43,10 +44,15 @@ public class UserController {
     return ApiResponse.success();
   }
 
-  //  @PatchMapping("/users/{userId}/profileImage")
-  //  public ApiResponse<?> uploadProfileImage(
-  //          @PathVariable Long userId,
-  //          @RequestParam("profileImg")
-  //  )
+  // Q. 프로필 이미지는 왜 처음부터 안받아?
+  @PatchMapping("/users/profile-image")
+  public ApiResponse<?> modifyProfileImage(
+      Long userId, @RequestParam("profileImage") MultipartFile profileImage) {
+    return ApiResponse.success();
+  }
 
+  @PatchMapping("/users/change-phone")
+  public ApiResponse<?> modifyPhoneNumber(Long userId, @RequestBody ModifyPhoneRequest request) {
+    return ApiResponse.success();
+  }
 }

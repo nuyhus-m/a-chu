@@ -6,6 +6,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 
 import com.ssafy.s12p21d206.achu.api.controller.user.AppendUserRequest;
 import com.ssafy.s12p21d206.achu.api.controller.user.ModifyNicknameRequest;
+import com.ssafy.s12p21d206.achu.api.controller.user.ModifyPhoneRequest;
 import com.ssafy.s12p21d206.achu.api.controller.user.UserController;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsUtils;
@@ -13,6 +14,7 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 public class UserControllerTest extends RestDocsTest {
@@ -29,7 +31,7 @@ public class UserControllerTest extends RestDocsTest {
   public void appendUser() {
     given()
         .contentType(ContentType.JSON)
-        .body(new AppendUserRequest("아이디", "비밀번호", "닉네임", "전화번호"))
+        .body(new AppendUserRequest("아이디", "비밀번호", "닉네임", "전화번호", "전화번호 인증코드"))
         .post("/users")
         .then()
         .status(HttpStatus.OK)
@@ -51,7 +53,10 @@ public class UserControllerTest extends RestDocsTest {
                 fieldWithPath("phoneNumber")
                     .type(JsonFieldType.STRING)
                     .description("생성할 user 전화번호")
-                    .attributes(RestDocsUtils.constraints("15자 이하"))),
+                    .attributes(RestDocsUtils.constraints("15자 이하")),
+                fieldWithPath("phoneVerificationCode")
+                    .type(JsonFieldType.STRING)
+                    .description("전화번호 인증 코드")),
             responseFields(
                 fieldWithPath("result")
                     .type(JsonFieldType.STRING)
@@ -75,7 +80,29 @@ public class UserControllerTest extends RestDocsTest {
                     .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
                 fieldWithPath("data.userId").type(JsonFieldType.NUMBER).description("user id"),
                 fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("user 닉네임"),
-                fieldWithPath("data.imgUrl").type(JsonFieldType.STRING).description("user 프로필"))));
+                fieldWithPath("data.imageUrl")
+                    .type(JsonFieldType.STRING)
+                    .description("user 프로필"))));
+  }
+
+  @Test
+  public void findMe() {
+    given()
+        .contentType(ContentType.JSON)
+        .get("/users/me")
+        .then()
+        .status(HttpStatus.OK)
+        .apply(document(
+            "find-me",
+            responseFields(
+                fieldWithPath("result")
+                    .type(JsonFieldType.STRING)
+                    .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
+                fieldWithPath("data.userId").type(JsonFieldType.NUMBER).description("user id"),
+                fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("user 닉네임"),
+                fieldWithPath("data.imageUrl")
+                    .type(JsonFieldType.STRING)
+                    .description("user 프로필"))));
   }
 
   @Test
@@ -119,7 +146,7 @@ public class UserControllerTest extends RestDocsTest {
                     .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
                 fieldWithPath("data.isUnique")
                     .type(JsonFieldType.BOOLEAN)
-                    .description("사용자 Nickname이 고유한지 여부 (true: 사용 가능, false: 중복)"))));
+                    .description("사용자 nickname이 고유한지 여부 (true: 사용 가능, false: 중복)"))));
   }
 
   @Test
@@ -136,6 +163,45 @@ public class UserControllerTest extends RestDocsTest {
                 .type(JsonFieldType.STRING)
                 .description("새로운 nickname")
                 .attributes(RestDocsUtils.constraints("36자 이하"))),
+            responseFields(fieldWithPath("result")
+                .type(JsonFieldType.STRING)
+                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
+  }
+
+  @Test
+  public void modifyProfileImage() {
+    given()
+        .contentType(MediaType.MULTIPART_FORM_DATA)
+        .multiPart("profileImage", "test.jpg", new byte[0], "image/jpeg")
+        .patch("users/profile-image")
+        .then()
+        .status(HttpStatus.OK)
+        .apply(document(
+            "modify-profile-image",
+            requestParts(partWithName("profileImage").description("변경할 프로필 이미지")),
+            responseFields(fieldWithPath("result")
+                .type(JsonFieldType.STRING)
+                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
+  }
+
+  @Test
+  public void modifyPhoneNumber() {
+    given()
+        .contentType(ContentType.JSON)
+        .body(new ModifyPhoneRequest("새 전화번호", "전화번호 인증코드"))
+        .patch("/users/change-phone")
+        .then()
+        .status(HttpStatus.OK)
+        .apply(document(
+            "modify-phone-number",
+            requestFields(
+                fieldWithPath("phoneNumber")
+                    .type(JsonFieldType.STRING)
+                    .description("변경할 전화번호")
+                    .attributes(RestDocsUtils.constraints("15자 이하")),
+                fieldWithPath("phoneVerificationCode")
+                    .type(JsonFieldType.STRING)
+                    .description("전화번호 인증 코드")),
             responseFields(fieldWithPath("result")
                 .type(JsonFieldType.STRING)
                 .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
