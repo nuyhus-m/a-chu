@@ -2,7 +2,7 @@
 
 === 자녀 등록
 
-operation::append-baby[snippets='http-request,request-fields,http-response,response-fields']
+operation::append-baby[snippets='http-request,request-parts,request-part-request-fields,http-response,response-fields']
 
 === 자녀 조회
 
@@ -14,11 +14,11 @@ operation::find-babies[snippets='http-request,query-parameters,http-response,res
 
 === 자녀 프로필 사진 변경
 
-operation::modify-profile-image[snippets='http-request,path-parameters,http-response,response-fields']
+operation::modify-profile-image[snippets='http-request,path-parameters,request-parts,http-response,response-fields']
 
 === 자녀 정보 변경
 
-operation::modify-baby[snippets='http-request,path-parameters,http-response,response-fields']
+operation::modify-baby[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
 
 === 자녀 삭제
 
