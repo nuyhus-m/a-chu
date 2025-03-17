@@ -28,6 +28,10 @@
             android:name=".MainActivity"
             android:exported="true" />
 
+        <activity
+            android:name=".AuthActivity"
+            android:exported="true" />
+
     </application>
 
 </manifest>
