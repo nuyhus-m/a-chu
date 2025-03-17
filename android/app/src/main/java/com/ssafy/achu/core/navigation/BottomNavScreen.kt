@@ -46,7 +46,7 @@ sealed class BottomNavScreen(
         const val MEMORY_LIST = "memorylist"
         const val CHAT_LIST = "chatlist"
         const val MY_PAGE = "mypage"
-        const val MY_TRADE_LIST = "mytradelist"
+        const val MY_TRADE_LIST = "tradelist"
     }
 }
 

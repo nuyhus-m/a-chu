@@ -39,8 +39,27 @@ fun NavGraph(
                 onNavigateToTradeList = { navController.navigate(route = "tradeList") },)
         }
 
+        composable(route = BottomNavScreen.MY_TRADE_LIST) {
+            TradeListScreen()
+        }
+
+    }
+}
+
+
+@Composable
+fun MyPageNavGraph(navController: NavHostController) {
+    NavHost(
+        navController = navController,
+        startDestination = "myPageMain" // 마이페이지의 기본 화면
+    ) {
+        composable(route = "myPageMain") {
+            MyPageScreen(
+                onNavigateToTradeList = { navController.navigate("tradeList") }
+            )
+        }
         composable(route = "tradeList") {
-            TradeListScreen() // TradeListScreen을 표시
+            TradeListScreen()
         }
     }
 }

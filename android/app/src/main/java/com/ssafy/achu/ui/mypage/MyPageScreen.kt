@@ -129,6 +129,7 @@ fun MyPageScreen(onNavigateToTradeList: () -> Unit ,modifier: Modifier = Modifie
                     title = "거래내역 확인",
                     content = "판매, 구매 기록을 확인해 보세요",
                     onClick = {
+                        onNavigateToTradeList()
                     }
                 )
 
@@ -256,14 +257,14 @@ fun MyPageItem(img: Int, title: String, content: String? = null, onClick: () -> 
 }
 
 
-@Preview
-@Composable
-fun MyPageScreenPreview() {
-    AchuTheme {  // 테마를 감싸기
-        MyPageScreen()
-    }
-}
-
+//@Preview
+//@Composable
+//fun MyPageScreenPreview() {
+//    AchuTheme {  // 테마를 감싸기
+//        MyPageScreen()
+//    }
+//}
+//
 
 //@Preview
 //@Composable
