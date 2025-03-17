@@ -5,17 +5,22 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 
+import com.ssafy.s12p21d206.achu.domain.support.Sex;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 class BabyControllerTest extends RestDocsTest {
@@ -31,26 +36,26 @@ class BabyControllerTest extends RestDocsTest {
   @Test
   public void appendBaby() {
     given()
-        .contentType(ContentType.JSON)
-        .body(
-            new AppendBabyRequest("강두식", "여자", "http://test-image.png", LocalDate.of(2025, 3, 20)))
+        .contentType(ContentType.MULTIPART)
+        .multiPart("profileImage", "test.jpg", new byte[0], "image/jpeg")
+        .multiPart(
+            "request",
+            new AppendBabyRequest("강두식", Sex.FEMALE, LocalDate.of(2025, 3, 20)),
+            "application/json")
         .post("/babies")
         .then()
         .status(HttpStatus.OK)
         .apply(document(
             "append-baby",
-            requestFields(
+            requestParts(
+                partWithName("profileImage").description("프로필 이미지 파일"),
+                partWithName("request").description("자녀 등록 요청 데이터")),
+            requestPartFields(
+                "request",
                 fieldWithPath("nickname")
                     .type(JsonFieldType.STRING)
-                    .description("등록할 자녀의 이름 혹은 별명")
-                    .attributes(constraints("2글자 이상 10글자 이하여야 합니다.")),
-                fieldWithPath("gender")
-                    .type(JsonFieldType.STRING)
-                    .description("등록할 자녀의 성별")
-                    .attributes(constraints("성별은 남자, 여자, 미정 중 하나여야 합니다.")),
-                fieldWithPath("imgUrl")
-                    .type(JsonFieldType.STRING)
-                    .description("등록할 자녀의 프로필 이미지 주소"),
+                    .description("등록할 자녀의 이름 혹은 별명"),
+                fieldWithPath("gender").type(JsonFieldType.STRING).description("등록할 자녀의 성별"),
                 fieldWithPath("birth").type(JsonFieldType.ARRAY).description("등록할 자녀의 생년월일")),
             responseFields(
                 fieldWithPath("result")
@@ -73,7 +78,7 @@ class BabyControllerTest extends RestDocsTest {
                 fieldWithPath("result")
                     .type(JsonFieldType.STRING)
                     .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
-                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("자식 id"),
+                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("자녀 id"),
                 fieldWithPath("data.nickname")
                     .type(JsonFieldType.STRING)
                     .description("자녀 이름 혹은 별명"),
@@ -117,53 +122,40 @@ class BabyControllerTest extends RestDocsTest {
   @Test
   public void modifyProfileImage() {
     given()
-        .contentType(ContentType.JSON)
-        .body(new ModifyProfileImageRequest("https://modify-test.jpg"))
+        .contentType(MediaType.MULTIPART_FORM_DATA)
+        .multiPart("profileImage", "modify-test.jpg", new byte[0], "image/jpeg")
         .patch("/babies/{babyId}/profile-image", 1L)
         .then()
         .status(HttpStatus.OK)
         .apply(document(
             "modify-profile-image",
             pathParameters(parameterWithName("babyId").description("프로필 이미지를 변경할 자녀의 id")),
-            responseFields(
-                fieldWithPath("result")
-                    .type(JsonFieldType.STRING)
-                    .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
-                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("자식 id"),
-                fieldWithPath("data.nickname")
-                    .type(JsonFieldType.STRING)
-                    .description("자녀 이름 혹은 별명"),
-                fieldWithPath("data.gender").type(JsonFieldType.STRING).description("자녀 성별"),
-                fieldWithPath("data.imgUrl")
-                    .type(JsonFieldType.STRING)
-                    .description("자녀 프로필 이미지 주소"),
-                fieldWithPath("data.birth").type(JsonFieldType.STRING).description("자녀 생년월일"))));
+            requestParts(partWithName("profileImage").description("프로필 이미지 파일")),
+            responseFields(fieldWithPath("result")
+                .type(JsonFieldType.STRING)
+                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
   }
 
   @Test
   public void modifyBaby() {
     given()
         .contentType(ContentType.JSON)
-        .body(new ModifyBabyRequest("채용수", "남자", LocalDate.of(1997, 3, 20)))
-        .patch("/babies/{babyId}", 1L)
+        .body(new ModifyBabyRequest("채용수", Sex.MALE, LocalDate.of(1997, 3, 20)))
+        .put("/babies/{babyId}", 1L)
         .then()
         .status(HttpStatus.OK)
         .apply(document(
             "modify-baby",
             pathParameters(parameterWithName("babyId").description("정보를 수정할 자녀의 id")),
-            responseFields(
-                fieldWithPath("result")
+            requestFields(
+                fieldWithPath("nickname")
                     .type(JsonFieldType.STRING)
-                    .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
-                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("자식 id"),
-                fieldWithPath("data.nickname")
-                    .type(JsonFieldType.STRING)
-                    .description("자녀 이름 혹은 별명"),
-                fieldWithPath("data.gender").type(JsonFieldType.STRING).description("자녀 성별"),
-                fieldWithPath("data.imgUrl")
-                    .type(JsonFieldType.STRING)
-                    .description("자녀 프로필 이미지 주소"),
-                fieldWithPath("data.birth").type(JsonFieldType.STRING).description("자녀 생년월일"))));
+                    .description("수정할 자녀의 이름 혹은 별명"),
+                fieldWithPath("gender").type(JsonFieldType.STRING).description("수정할 자녀의 성별"),
+                fieldWithPath("birth").type(JsonFieldType.ARRAY).description("수정할 자녀의 생년월일")),
+            responseFields(fieldWithPath("result")
+                .type(JsonFieldType.STRING)
+                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
   }
 
   @Test

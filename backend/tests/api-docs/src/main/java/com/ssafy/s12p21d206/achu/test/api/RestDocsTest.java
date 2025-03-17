@@ -77,7 +77,7 @@ public abstract class RestDocsTest {
         .build();
   }
 
-  public ObjectMapper objectMapper() {
+  private ObjectMapper objectMapper() {
     return new ObjectMapper()
         .findAndRegisterModules()
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
