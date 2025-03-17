@@ -1,5 +1,6 @@
 package com.ssafy.achu.core.navigation
 
+import MyPageScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -8,7 +9,6 @@ import androidx.navigation.compose.composable
 import com.ssafy.achu.ui.chat.ChatListScreen
 import com.ssafy.achu.ui.home.HomeScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
-import com.ssafy.achu.ui.mypage.MyPageScreen
 import com.ssafy.achu.ui.product.ProductListScreen
 
 @Composable

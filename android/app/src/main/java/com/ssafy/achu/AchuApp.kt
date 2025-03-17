@@ -59,7 +59,6 @@ fun AchuApp() {
                 BottomNavBar(navController)
             }
         },
-        containerColor = Color.White
     ) { innerPadding ->
         NavGraph(navController, Modifier.padding(innerPadding))
     }
