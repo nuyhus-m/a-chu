@@ -99,6 +99,13 @@ internal val Typography = MyTypography(
         color = PointBlue
     ),
 
+    semiBold14PointBlue = TextStyle(
+        fontFamily = pretandard,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 14.sp,
+        color = PointBlue
+    ),
+
     semiBold12FontGray = TextStyle(
         fontFamily = pretandard,
         fontWeight = FontWeight.SemiBold,
@@ -149,6 +156,7 @@ data class MyTypography(
     val semiBold12LightGray: TextStyle,
     val semiBold12FontGray: TextStyle,
     val semiBold12PointBlue: TextStyle,
+    val semiBold14PointBlue: TextStyle,
     val regular18: TextStyle,
     val regular16: TextStyle,
     val regular14: TextStyle,
@@ -171,6 +179,7 @@ val LocalTypography = staticCompositionLocalOf {
         semiBold12LightGray = TextStyle.Default,
         semiBold12FontGray = TextStyle.Default,
         semiBold12PointBlue = TextStyle.Default,
+        semiBold14PointBlue = TextStyle.Default,
         regular18 = TextStyle.Default,
         regular16 = TextStyle.Default,
         regular14 = TextStyle.Default,
