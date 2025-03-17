@@ -16,9 +16,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.White
@@ -30,10 +30,6 @@ private const val SplashWaitTime: Long = 2000
 class SplashActivity : ComponentActivity() {
 
     private val isUserLoggedIn: Boolean = true
-//        get() {
-//            val sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-//            return sharedPreferences.getBoolean("is_logged_in", false)
-//        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,12 +58,12 @@ class SplashActivity : ComponentActivity() {
     }
 
     private fun navigateToSignInActivity() {
-//        Intent(this, SignInActivity::class.java).apply {
-//            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//        }.also { intent ->
-//            startActivity(intent)
-//            finish()
-//        }
+        Intent(this, AuthActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }.also { intent ->
+            startActivity(intent)
+            finish()
+        }
     }
 }
 
@@ -82,20 +78,15 @@ fun SplashScreen(onTimeout: () -> Unit) {
         currentOnTimeout()
     }
 
-    Splash()
-}
-
-@Preview
-@Composable
-fun Splash() {
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.img_splash),
             contentDescription = null,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
         )
         Text(
-            text = "추억을 기록하는 육아용품 중고거래 앱",
+            text = stringResource(R.string.splash),
             style = AchuTheme.typography.regular16.copy(color = White),
             modifier = Modifier
                 .align(Alignment.Center)
