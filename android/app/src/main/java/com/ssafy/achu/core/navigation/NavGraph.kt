@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import com.ssafy.achu.ui.chat.ChatListScreen
 import com.ssafy.achu.ui.home.HomeScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
+import com.ssafy.achu.ui.mypage.TradeListScreen
 import com.ssafy.achu.ui.product.ProductListScreen
 
 @Composable
@@ -34,7 +35,12 @@ fun NavGraph(
             ChatListScreen()
         }
         composable(route = BottomNavScreen.MyPage.route) {
-            MyPageScreen()
+            MyPageScreen(
+                onNavigateToTradeList = { navController.navigate(route = "tradeList") },)
+        }
+
+        composable(route = "tradeList") {
+            TradeListScreen() // TradeListScreen을 표시
         }
     }
 }
