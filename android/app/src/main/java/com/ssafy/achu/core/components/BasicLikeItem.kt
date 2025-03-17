@@ -117,7 +117,7 @@ fun BasicLikeItem(
 
                     // 하트 클릭 처리
                     Image(
-                        painter = painterResource(id = if (isLiked) R.drawable.favorite else R.drawable.favorite_line),
+                        painter = painterResource(id = if (isLiked) R.drawable.ic_favorite else R.drawable.favorite_line),
                         contentDescription = null,
                         colorFilter = ColorFilter.tint(if (isLiked) FontPink else FontGray),
                         modifier = Modifier

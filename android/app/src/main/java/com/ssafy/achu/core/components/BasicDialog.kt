@@ -150,7 +150,7 @@ fun BasicDialog(
 fun pre() {
     AchuTheme {
         BasicDialog(
-            img = painterResource(id = R.drawable.crying_face),
+            img = painterResource(id = R.drawable.img_crying_face),
             "A - Chu",
             "와 함께한",
             text = "모든 추억이 삭제됩니다.\n정말 탈퇴하시겠습니까??",
