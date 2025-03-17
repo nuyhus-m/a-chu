@@ -5,7 +5,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,10 +32,6 @@ import androidx.compose.ui.unit.dp
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
-
-
-
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -75,9 +69,6 @@ fun PointBlueButton(buttonText: String, onClick: () -> Unit) {
     }
 }
 
-
-
-
 //글씨 크기에 맞춰 지는 파란 버튼
 @Composable
 fun PointBlueFlexibleBtn(buttonText: String, onClick: () -> Unit) {
@@ -102,7 +93,6 @@ fun PointBlueFlexibleBtn(buttonText: String, onClick: () -> Unit) {
         }
     }
 }
-
 
 //파란색 라인 버튼 -> 클릭시 색상반전
 @Composable
@@ -204,7 +194,6 @@ fun PointPinkFlexibleBtn(buttonText: String, onClick: () -> Unit) {
     }
 }
 
-
 //핑크색 라인 버튼 -> 클릭시 색상 반전
 @Composable
 fun PointPinkLineBtn(buttonText: String, onClick: () -> Unit) {
@@ -242,7 +231,6 @@ fun PointPinkLineBtn(buttonText: String, onClick: () -> Unit) {
         }
     }
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -287,11 +275,10 @@ fun Modifier.drawColoredShadow(
     }
 }
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
-fun basicButton(){
+fun basicButton() {
 
     AchuTheme {  // ✅ AchuTheme을 감싸줌
 //        PointBlueButton("수정") { }
@@ -302,7 +289,7 @@ fun basicButton(){
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
-fun basicButton2(){
+fun basicButton2() {
 
     AchuTheme {  // ✅ AchuTheme을 감싸줌
         PointBlueButton("수정") { }
@@ -312,7 +299,7 @@ fun basicButton2(){
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
-fun basicButton3(){
+fun basicButton3() {
 
     AchuTheme {  // ✅ AchuTheme을 감싸줌
         PointBlueFlexibleBtn("수정") { }
@@ -322,7 +309,7 @@ fun basicButton3(){
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
-fun basicButton4(){
+fun basicButton4() {
 
     AchuTheme {  // ✅ AchuTheme을 감싸줌
         PointPinkFlexibleBtn("수정") { }
@@ -330,22 +317,20 @@ fun basicButton4(){
     }
 }
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
-fun basicButton5(){
+fun basicButton5() {
 
     AchuTheme {  // ✅ AchuTheme을 감싸줌
         PointBlueLineBtn("수정") { }
     }
 }
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
-fun basicButton6(){
+fun basicButton6() {
 
     AchuTheme {  // ✅ AchuTheme을 감싸줌
         PointPinkLineBtn("수정") { }

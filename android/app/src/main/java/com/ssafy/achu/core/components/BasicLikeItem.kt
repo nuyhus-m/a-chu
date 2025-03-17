@@ -10,12 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.isTraceInProgress
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,7 +54,10 @@ fun BasicLikeItem(
                 // 그림자 색상 및 크기 조정
                 drawRoundRect(
                     color = Color.Gray.copy(alpha = 0.3f), // 그림자 색상
-                    size = size.copy(width = size.width - 4.dp.toPx(), height = size.height - 4.dp.toPx()), // 그림자 크기 (약간 줄여서 그림자가 더 잘 보이게)
+                    size = size.copy(
+                        width = size.width - 4.dp.toPx(),
+                        height = size.height - 4.dp.toPx()
+                    ), // 그림자 크기 (약간 줄여서 그림자가 더 잘 보이게)
                     cornerRadius = CornerRadius(16.dp.toPx(), 16.dp.toPx()), // 모서리 반경
                     topLeft = Offset(2.dp.toPx(), 2.dp.toPx()) // 그림자 위치 (x, y)
                 )
@@ -75,7 +76,8 @@ fun BasicLikeItem(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = onClickItem) // 아이템 전체 클릭 시 동작
+                    onClick = onClickItem
+                ) // 아이템 전체 클릭 시 동작
         ) {
 
             Column(
@@ -124,7 +126,8 @@ fun BasicLikeItem(
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
-                                onClick = onClickHeart) // 하트 클릭 시 동작
+                                onClick = onClickHeart
+                            ) // 하트 클릭 시 동작
                             .padding(end = 4.dp)
                     )
                 }
@@ -137,7 +140,7 @@ fun BasicLikeItem(
 @Composable
 fun preItem() {
     AchuTheme {
-        Row (){
+        Row() {
             BasicLikeItem(
                 isLiked = true,
                 onClickItem = {
