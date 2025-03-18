@@ -119,7 +119,7 @@ pipeline {
 
         stage('Check Lint') {
             steps {
-                sh "cd ${BACKEND_DIR} && ./gradlew clean spotlessCheck"
+                sh "cd ${params.BACKEND_DIR} && ./gradlew clean spotlessCheck"
             }
             post {
                 always {
@@ -132,7 +132,7 @@ pipeline {
         
         stage('Build') {
             steps {
-                sh "cd ${BACKEND_DIR} && ./gradlew build -x test -x spotlessCheck"
+                sh "cd ${params.BACKEND_DIR} && ./gradlew build -x test -x spotlessCheck"
             }
             post {
                 always {
@@ -145,7 +145,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh "cd ${BACKEND_DIR} && ./gradlew test"
+                sh "cd ${params.BACKEND_DIR} && ./gradlew test"
             }
             post {
                 always {
@@ -159,7 +159,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('dukcode-sonarqube') {
-                    sh "cd ${BACKEND_DIR} && ./gradlew sonar"
+                    sh "cd ${params.BACKEND_DIR} && ./gradlew sonar"
                     
                     // SonarQube 프로젝트 URL 저장
                     script {
@@ -211,7 +211,7 @@ pipeline {
             when { expression { develop() } }
             steps {
                 sh """
-                cd ${BACKEND_DIR} && ./gradlew asciidoctor
+                cd ${params.BACKEND_DIR} && ./gradlew asciidoctor
                 ls ./core/core-api/build/docs/asciidoc
                 """
                 stash includes: 'backend/core/core-api/build/docs/asciidoc/index.html', name: 'api-docs-stash'
