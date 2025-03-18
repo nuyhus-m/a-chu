@@ -52,6 +52,7 @@ fun BasicLikeItem(
     Box(
         modifier = Modifier
             .wrapContentSize()
+            .padding(start = 2.dp)
             .shadow(elevation = 4.dp, shape = RoundedCornerShape(16.dp)) // 필요한 경우 추가적인 shadow
     ) {
 
