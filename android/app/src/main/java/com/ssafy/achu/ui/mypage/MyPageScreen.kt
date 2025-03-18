@@ -248,7 +248,10 @@ fun MyPageItem(img: Int, title: String, content: String? = null, onClick: () -> 
                 modifier = Modifier
                     .height(20.dp)
                     .width(20.dp)
-                    .weight(1f), // 나머지 공간을 채우고
+                    .weight(1f)
+                    .clickable {
+
+                    },
                 colorFilter = ColorFilter.tint(Color(0xFFBEBEBE)) // 색을 빨간색으로 변경
             )
 

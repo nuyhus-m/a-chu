@@ -52,11 +52,6 @@ fun AchuApp() {
                     onBackClick = onBackClick
                 )
 
-                MY_TRADE_LIST -> BasicTopAppBar(
-                    title = stringResource(R.string.trade_list),
-                    onBackClick = onBackClick
-                )
-
                 else -> {}
             }
         },

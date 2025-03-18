@@ -52,7 +52,6 @@ fun BasicDialog(
                 verticalArrangement = Arrangement.Center // 수직 중앙 정렬
             ) {
 
-                Spacer(modifier = Modifier.height(16.dp))
                 img?.let {
 
                     Image(
@@ -64,7 +63,7 @@ fun BasicDialog(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 if (pinkText != null && textLine1 != null) {
                     Row(
@@ -138,7 +137,7 @@ fun BasicDialog(
 
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
             }
         }
