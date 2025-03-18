@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,7 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.White
+import java.lang.IllegalStateException
 
 @Composable
 fun BasicLikeItem(
@@ -42,6 +44,7 @@ fun BasicLikeItem(
     onClickItem: () -> Unit, // 아이템 전체 클릭 시 동작
     onClickHeart: () -> Unit, // 하트 클릭 시 동작
     productName: String,
+    state: String,
     price: String,
     img: Painter? = null,
 ) {
@@ -50,9 +53,7 @@ fun BasicLikeItem(
         modifier = Modifier
             .wrapContentSize()
             .shadow(elevation = 4.dp, shape = RoundedCornerShape(16.dp)) // 필요한 경우 추가적인 shadow
-
     ) {
-
 
         Box(
             modifier = Modifier
@@ -71,22 +72,51 @@ fun BasicLikeItem(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.Start, // 수평 중앙 정렬
             ) {
-                img?.let {
-                    Image(
-                        painter = img,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .width(140.dp)
-                            .height(140.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                    )
+                Box(
+                    modifier = Modifier
+                        .width(140.dp)
+                        .height(140.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                ) {
+                    // 상품 이미지
+                    img?.let {
+                        Image(
+                            painter = img,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(150.dp)
+                                .height(150.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+
+                    // 🔹 거래 완료 오버레이 추가
+                    if (state == "거래완료") {
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .background(Color.Black.copy(alpha = 0.4f)) // 반투명 배경
+                                .clip(RoundedCornerShape(8.dp)), // 모서리 둥글게
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "거래완료",
+                                color = White,
+                                style = AchuTheme.typography.semiBold16Pink
+                            )
+                        }
+                    }
                 }
+
+
 
                 Text(
                     text = productName,
                     style = AchuTheme.typography.regular18,
                     modifier = Modifier.padding(top = 8.dp, start = 4.dp),
                 )
+
 
                 Row(
                     modifier = Modifier
@@ -119,6 +149,7 @@ fun BasicLikeItem(
                     )
                 }
             }
+
         }
     }
 }
@@ -127,7 +158,7 @@ fun BasicLikeItem(
 @Composable
 fun preItem() {
     AchuTheme {
-        Row() {
+        Row(Modifier.padding(4.dp)) {
             BasicLikeItem(
                 isLiked = true,
                 onClickItem = {
@@ -138,24 +169,11 @@ fun preItem() {
                     println("하트 클릭됨")
                 },
                 productName = "유아식기",
-                price = "5,000원",
-                img = ColorPainter(LightGray)
-            )
-            BasicLikeItem(
-                isLiked = false,
-                onClickItem = {
-                    // 아이템 전체 클릭 시 동작
-                    println("아이템 클릭됨")
-                },
-                onClickHeart = {
-                    println("하트 클릭됨")
-                },
-                productName = "유아식기",
+                state = "거래완료", // 거래완료 상태
                 price = "5,000원",
                 img = ColorPainter(LightGray)
             )
 
         }
-
     }
 }
