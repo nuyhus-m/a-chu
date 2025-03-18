@@ -17,42 +17,52 @@ public class ApiControllerAdvice {
 
   private final Logger log = LoggerFactory.getLogger(getClass());
 
+  private static final String CORE_API_EXCEPTION_LOG_FORMAT = "CoreApiException : {}";
+  private static final String CORE_EXCEPTION_LOG_FORMAT = "CoreException : {}";
+  private static final String EXCEPTION_LOG_FORMAT = "Exception : {}";
+
   @ExceptionHandler(CoreApiException.class)
-  public ResponseEntity<ApiResponse<?>> handleCoreApiException(CoreApiException e) {
+  public ResponseEntity<ApiResponse<Void>> handleCoreApiException(CoreApiException e) {
     switch (e.getErrorType().getLevel()) {
       case ERROR:
-        log.error("CoreApiException : {}", e.getMessage(), e);
+        log.error(CORE_API_EXCEPTION_LOG_FORMAT, e.getMessage(), e);
+        break;
       case WARN:
-        log.warn("CoreApiException : {}", e.getMessage(), e);
+        log.warn(CORE_API_EXCEPTION_LOG_FORMAT, e.getMessage(), e);
+        break;
       default:
-        log.info("CoreApiException : {}", e.getMessage(), e);
+        log.info(CORE_API_EXCEPTION_LOG_FORMAT, e.getMessage(), e);
+        break;
     }
 
     return new ResponseEntity<>(
-        ApiResponse.error(e.getErrorType(), e.getData()), e.getErrorType().getStatus());
+        ApiResponse.error(e.getErrorType()), e.getErrorType().getStatus());
   }
 
   @ExceptionHandler(CoreException.class)
-  public ResponseEntity<ApiResponse<?>> handleCoreException(CoreException e) {
+  public ResponseEntity<ApiResponse<Void>> handleCoreException(CoreException e) {
     switch (e.getErrorType().getLevel()) {
       case ERROR:
-        log.error("CoreException : {}", e.getMessage(), e);
+        log.error(CORE_EXCEPTION_LOG_FORMAT, e.getMessage(), e);
+        break;
       case WARN:
-        log.warn("CoreException : {}", e.getMessage(), e);
+        log.warn(CORE_EXCEPTION_LOG_FORMAT, e.getMessage(), e);
+        break;
       default:
-        log.info("CoreException : {}", e.getMessage(), e);
+        log.info(CORE_EXCEPTION_LOG_FORMAT, e.getMessage(), e);
+        break;
     }
 
     HttpStatus status = e.getErrorType().getKind() == CoreErrorKind.CLIENT_ERROR
         ? HttpStatus.BAD_REQUEST
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    return new ResponseEntity<>(ApiResponse.error(e.getErrorType(), e.getData()), status);
+    return new ResponseEntity<>(ApiResponse.error(e.getErrorType()), status);
   }
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<?> handleException(Exception e) {
-    log.error("Exception : {}", e.getMessage(), e);
+  public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
+    log.error(EXCEPTION_LOG_FORMAT, e.getMessage(), e);
     return new ResponseEntity<>(
         ApiResponse.error(CoreApiErrorType.INTERNAL_SERVER_ERROR),
         CoreApiErrorType.INTERNAL_SERVER_ERROR.getStatus());

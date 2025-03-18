@@ -30,7 +30,7 @@ public abstract class BaseEntity {
 
   protected BaseEntity() {}
 
-  public BaseEntity(Long id) {
+  protected BaseEntity(Long id) {
     this.id = id;
   }
 

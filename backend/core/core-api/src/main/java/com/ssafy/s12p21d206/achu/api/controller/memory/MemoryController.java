@@ -58,21 +58,21 @@ public class MemoryController {
   }
 
   @PatchMapping("/memories/{memoryId}/image")
-  public ApiResponse<?> modifyMemoryImage(
+  public ApiResponse<Void> modifyMemoryImage(
       Long userId, @PathVariable Long memoryId, @RequestParam List<MultipartFile> memoryImages) {
 
     return ApiResponse.success();
   }
 
   @PatchMapping("/memories/{memoryId}")
-  public ApiResponse<?> modifyMemory(
+  public ApiResponse<Void> modifyMemory(
       Long userId, @PathVariable Long memoryId, @RequestBody ModifyMemoryRequest request) {
 
     return ApiResponse.success();
   }
 
   @DeleteMapping("/memories/{memoryId}")
-  public ApiResponse<?> deleteMemory(Long userId, @PathVariable Long memoryId) {
+  public ApiResponse<Void> deleteMemory(Long userId, @PathVariable Long memoryId) {
     return ApiResponse.success();
   }
 }

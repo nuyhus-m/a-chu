@@ -19,18 +19,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+// sonarqube에서 test에 assertions이 없더라도 code smell로 인식하지 않음
+@SuppressWarnings("java:S2699")
 class MemoryControllerTest extends RestDocsTest {
 
   private MemoryController controller;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     controller = new MemoryController();
     mockMvc = mockController(controller);
   }
 
   @Test
-  public void appendMemory() {
+  void appendMemory() {
     given()
         .contentType(ContentType.MULTIPART)
         .multiPart("memoryImages", "test1.jpg", new byte[0], "image/jpeg") // 파일 파트
@@ -57,7 +59,7 @@ class MemoryControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void findMemory() {
+  void findMemory() {
     given()
         .contentType(ContentType.JSON)
         .get("memories/{memoryId}", 1L)
@@ -81,7 +83,7 @@ class MemoryControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void findMemories() {
+  void findMemories() {
     given()
         .contentType(ContentType.JSON)
         .queryParam("offset", 0)
@@ -115,7 +117,7 @@ class MemoryControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void modifyMemoryImage() {
+  void modifyMemoryImage() {
     given()
         .contentType(ContentType.MULTIPART)
         .multiPart("memoryImages", "modify-test1.jpg", new byte[0], "image/jpeg")
@@ -134,7 +136,7 @@ class MemoryControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void modifyMemory() {
+  void modifyMemory() {
     given()
         .contentType(ContentType.JSON)
         .body(new ModifyMemoryRequest("수정 제목", "수정 내용"))
@@ -153,7 +155,7 @@ class MemoryControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void deleteMemory() {
+  void deleteMemory() {
     given()
         .contentType(ContentType.JSON)
         .delete("/memories/{memoryId}", 1L)
