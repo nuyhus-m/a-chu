@@ -12,6 +12,7 @@ plugins {
 apply from: 'lint.gradle'
 apply from: 'sonarqube.gradle'
 
+
 allprojects {
 	group = "${projectGroup}"
 	version = "${applicationVersion}"
