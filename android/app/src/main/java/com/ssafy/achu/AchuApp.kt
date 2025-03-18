@@ -1,66 +1,37 @@
 package com.ssafy.achu
 
-import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.components.BottomNavBar
-import com.ssafy.achu.core.navigation.BottomNavScreen.Companion.CHAT_LIST
-import com.ssafy.achu.core.navigation.BottomNavScreen.Companion.HOME
-import com.ssafy.achu.core.navigation.BottomNavScreen.Companion.MEMORY_LIST
-import com.ssafy.achu.core.navigation.BottomNavScreen.Companion.MY_PAGE
-import com.ssafy.achu.core.navigation.BottomNavScreen.Companion.MY_TRADE_LIST
-import com.ssafy.achu.core.navigation.BottomNavScreen.Companion.PRODUCT_LIST
 import com.ssafy.achu.core.navigation.NavGraph
-
-private const val TAG = "AchuApp"
+import com.ssafy.achu.core.theme.White
 
 @Composable
 fun AchuApp() {
     val navController = rememberNavController()
-    val onBackClick: () -> Unit = { navController.popBackStack() }
 
-    val currentBackStack by navController.currentBackStackEntryAsState()
-    // 현재 화면 루트
-    val currentScreenRoute by remember {
-        derivedStateOf {
-            currentBackStack?.destination?.route ?: HOME
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Content
+        NavGraph(
+            navController = navController,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = White)
+                .padding(bottom = 80.dp)
+        )
+
+        // Bottom Bar
+        Box(
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            BottomNavBar(navController)
         }
-    }
-    Log.d(TAG, "현재 화면 루트: $currentScreenRoute")
-
-    // BottomBar 표시 여부
-    val isBottomBarVisible = when (currentScreenRoute) {
-        HOME, PRODUCT_LIST, MEMORY_LIST, CHAT_LIST, MY_PAGE -> true
-        else -> false
-    }
-
-    Scaffold(
-        topBar = {
-            when (currentScreenRoute) {
-                CHAT_LIST -> BasicTopAppBar(
-                    title = stringResource(R.string.chat_list),
-                    onBackClick = onBackClick
-                )
-
-                else -> {}
-            }
-        },
-        bottomBar = {
-            if (isBottomBarVisible) {
-                BottomNavBar(navController)
-            }
-        },
-    ) { innerPadding ->
-        NavGraph(navController, Modifier.padding(innerPadding))
     }
 }
