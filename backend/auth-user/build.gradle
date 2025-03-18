@@ -1,0 +1,5 @@
+dependencies {
+
+    compileOnly 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation project(":tests:api-docs")
+}
