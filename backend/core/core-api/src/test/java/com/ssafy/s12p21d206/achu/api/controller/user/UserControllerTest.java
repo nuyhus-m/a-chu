@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+// sonarqube에서 test에 assertions이 없더라도 code smell로 인식하지 않음
+@SuppressWarnings("java:S2699")
 class UserControllerTest extends RestDocsTest {
 
   private UserController controller;

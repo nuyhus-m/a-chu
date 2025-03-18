@@ -13,18 +13,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+// sonarqube에서 test에 assertions이 없더라도 code smell로 인식하지 않음
+@SuppressWarnings("java:S2699")
 class GoodsControllerTest extends RestDocsTest {
 
   private GoodsController controller;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     controller = new GoodsController();
     mockMvc = mockController(controller);
   }
 
   @Test
-  public void findCategories() {
+  void findCategories() {
     given()
         .contentType(ContentType.JSON)
         .get("/categories")
@@ -43,7 +45,7 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void findCategoryGoods() {
+  void findCategoryGoods() {
     given()
         .contentType(ContentType.JSON)
         .queryParam("offset", 0)
@@ -82,7 +84,7 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void findGoods() {
+  void findGoods() {
     given()
         .contentType(ContentType.JSON)
         .queryParam("offset", 0)
@@ -120,7 +122,7 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void searchGoods() {
+  void searchGoods() {
     given()
         .contentType(ContentType.JSON)
         .queryParam("keyword", "유")
@@ -162,7 +164,7 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void searchCategoryGoods() {
+  void searchCategoryGoods() {
     given()
         .contentType(ContentType.JSON)
         .queryParam("keyword", "장난감")
@@ -205,7 +207,7 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void findGoodsDetail() {
+  void findGoodsDetail() {
     given()
         .contentType(ContentType.JSON)
         .get("/goods/{goodsId}", 2L)
@@ -253,7 +255,7 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void appendGoods() {
+  void appendGoods() {
     given()
         .contentType(MediaType.MULTIPART_FORM_DATA)
         .multiPart(
@@ -287,7 +289,7 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void modifyGoodsImages() {
+  void modifyGoodsImages() {
     given()
         .contentType(MediaType.MULTIPART_FORM_DATA)
         .multiPart("goodsImages", "modify-test.jpg", new byte[0], "image/jpeg")
@@ -304,7 +306,7 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void modifyGoods() {
+  void modifyGoods() {
     given()
         .contentType(ContentType.JSON)
         .body(new ModifyGoodsRequest("수정된 제목", "수정된 설명", 2000L, "장난감", 2L))
@@ -328,7 +330,7 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void deleteGoods() {
+  void deleteGoods() {
     given()
         .contentType(ContentType.JSON)
         .delete("/goods/{goodsId}", 1L)
@@ -343,7 +345,7 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void findGoodsTradeHistory() {
+  void findGoodsTradeHistory() {
     given()
         .contentType(ContentType.JSON)
         .queryParam("tradeType", TradeType.SALE)
@@ -374,7 +376,7 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void findLikedGoods() {
+  void findLikedGoods() {
     given()
         .contentType(ContentType.JSON)
         .get("/goods/liked")
@@ -396,7 +398,7 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void appendLikedGoods() {
+  void appendLikedGoods() {
     given()
         .contentType(ContentType.JSON)
         .post("/goods/{goodsId}/like", 1L)
@@ -411,7 +413,7 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void deleteLikedGoods() {
+  void deleteLikedGoods() {
     given()
         .contentType(ContentType.JSON)
         .delete("/goods/{goodsId}/like", 1L)
@@ -426,7 +428,7 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void modifyTradeStatus() {
+  void modifyTradeStatus() {
     given()
         .contentType(ContentType.JSON)
         .patch("/trade/{tradeId}/complete", 5L)

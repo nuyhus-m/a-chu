@@ -109,19 +109,19 @@ public class GoodsController {
   }
 
   @PatchMapping("/goods/{goodsId}/images")
-  public ApiResponse<?> modifyGoodsImages(
+  public ApiResponse<Void> modifyGoodsImages(
       Long userId, @PathVariable Long goodsId, @RequestParam("goodsImages") MultipartFile[] files) {
     return ApiResponse.success();
   }
 
   @PutMapping("/goods/{goodsId}")
-  public ApiResponse<?> modifyGoods(
+  public ApiResponse<Void> modifyGoods(
       Long userId, @PathVariable Long goodsId, @RequestBody ModifyGoodsRequest request) {
     return ApiResponse.success();
   }
 
   @DeleteMapping("/goods/{goodsId}")
-  public ApiResponse<?> deleteGoods(Long userId, @PathVariable Long goodsId) {
+  public ApiResponse<Void> deleteGoods(Long userId, @PathVariable Long goodsId) {
     return ApiResponse.success();
   }
 
@@ -147,17 +147,17 @@ public class GoodsController {
   }
 
   @PostMapping("/goods/{goodsId}/like")
-  public ApiResponse<?> appendLikedGoods(Long userId, @PathVariable Long goodsId) {
+  public ApiResponse<Void> appendLikedGoods(Long userId, @PathVariable Long goodsId) {
     return ApiResponse.success();
   }
 
   @DeleteMapping("/goods/{goodsId}/like")
-  public ApiResponse<?> deleteLikedGoods(Long userId, @PathVariable Long goodsId) {
+  public ApiResponse<Void> deleteLikedGoods(Long userId, @PathVariable Long goodsId) {
     return ApiResponse.success();
   }
 
   @PatchMapping("/trade/{tradeId}/complete")
-  public ApiResponse<?> modifyTradeStatus(Long userId, @PathVariable Long tradeId) {
+  public ApiResponse<Void> modifyTradeStatus(Long userId, @PathVariable Long tradeId) {
     return ApiResponse.success();
   }
 }
