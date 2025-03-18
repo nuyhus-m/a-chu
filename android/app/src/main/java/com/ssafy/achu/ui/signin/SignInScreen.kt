@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -31,7 +33,9 @@ import com.ssafy.achu.core.theme.White
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SignInScreen(modifier: Modifier = Modifier) {
+fun SignInScreen(modifier: Modifier = Modifier, viewModel: SignInViewModel) {
+
+    val uiState by viewModel.uiState.collectAsState()
 
     Box(
         modifier = modifier
@@ -84,8 +88,8 @@ fun SignInScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(8.dp))
 
             BasicTextField(
-                value = "",
-                onValueChange = {},
+                value = uiState.id,
+                onValueChange = { viewModel.updateId(it) },
                 placeholder = stringResource(R.string.enter_id),
                 placeholderColor = PointBlue,
                 borderColor = PointBlue
@@ -101,8 +105,8 @@ fun SignInScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(8.dp))
 
             PasswordTextField(
-                value = "",
-                onValueChange = {},
+                value = uiState.pwd,
+                onValueChange = { viewModel.updatePwd(it) },
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -128,6 +132,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
 @Composable
 fun SignInScreenPreview() {
     AchuTheme {
-        SignInScreen()
+//        val viewModel: SignInViewModel = viewModel()
+//        SignInScreen(viewModel = viewModel)
     }
 }
