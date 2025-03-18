@@ -44,7 +44,6 @@ public class UserController {
     return ApiResponse.success();
   }
 
-  // Q. 프로필 이미지는 왜 처음부터 안받아?
   @PatchMapping("/users/profile-image")
   public ApiResponse<Void> modifyProfileImage(
       Long userId, @RequestParam("profileImage") MultipartFile profileImage) {
