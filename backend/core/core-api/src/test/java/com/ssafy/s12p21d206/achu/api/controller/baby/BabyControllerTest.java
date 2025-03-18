@@ -23,18 +23,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+// sonarqube에서 test에 assertions이 없더라도 code smell로 인식하지 않음
+@SuppressWarnings("java:S2699")
 class BabyControllerTest extends RestDocsTest {
 
   private BabyController controller;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     controller = new BabyController();
     mockMvc = mockController(controller);
   }
 
   @Test
-  public void appendBaby() {
+  void appendBaby() {
     given()
         .contentType(ContentType.MULTIPART)
         .multiPart("profileImage", "test.jpg", new byte[0], "image/jpeg")
@@ -65,7 +67,7 @@ class BabyControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void findBaby() {
+  void findBaby() {
     given()
         .contentType(ContentType.JSON)
         .get("/babies/{babyId}", 1L)
@@ -90,7 +92,7 @@ class BabyControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void findBabies() {
+  void findBabies() {
     given()
         .contentType(ContentType.JSON)
         .queryParam("offset", 0)
@@ -120,7 +122,7 @@ class BabyControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void modifyProfileImage() {
+  void modifyProfileImage() {
     given()
         .contentType(MediaType.MULTIPART_FORM_DATA)
         .multiPart("profileImage", "modify-test.jpg", new byte[0], "image/jpeg")
@@ -137,7 +139,7 @@ class BabyControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void modifyBaby() {
+  void modifyBaby() {
     given()
         .contentType(ContentType.JSON)
         .body(new ModifyBabyRequest("채용수", Sex.MALE, LocalDate.of(1997, 3, 20)))
@@ -159,7 +161,7 @@ class BabyControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void deleteBaby() {
+  void deleteBaby() {
 
     given()
         .contentType(ContentType.JSON)

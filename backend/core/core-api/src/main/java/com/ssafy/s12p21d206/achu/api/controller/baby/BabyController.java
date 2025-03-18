@@ -56,21 +56,21 @@ public class BabyController {
   }
 
   @PatchMapping("/babies/{babyId}/profile-image")
-  public ApiResponse<?> modifyProfileImage(
+  public ApiResponse<Void> modifyProfileImage(
       Long userId, @PathVariable Long babyId, @RequestParam MultipartFile profileImage) {
 
     return ApiResponse.success();
   }
 
   @PutMapping("/babies/{babyId}")
-  public ApiResponse<?> modifyBaby(
+  public ApiResponse<Void> modifyBaby(
       Long userId, @PathVariable Long babyId, @RequestBody ModifyBabyRequest request) {
 
     return ApiResponse.success();
   }
 
   @DeleteMapping("/babies/{babyId}")
-  public ApiResponse<?> deleteBaby(Long userId, @PathVariable Long babyId) {
+  public ApiResponse<Void> deleteBaby(Long userId, @PathVariable Long babyId) {
     return ApiResponse.success();
   }
 }
