@@ -33,7 +33,8 @@ fun BasicTopAppBar(title: String = "", onBackClick: () -> Unit) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
         },
-        modifier = Modifier.padding(vertical = 24.dp),
+        modifier = Modifier.padding(vertical = 24
+            .dp),
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.White
         )

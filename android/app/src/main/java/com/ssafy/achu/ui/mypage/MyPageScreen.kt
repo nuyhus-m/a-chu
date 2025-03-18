@@ -20,12 +20,14 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.ssafy.achu.R
+import com.ssafy.achu.core.navigation.BottomNavScreen
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.White
 
 @Composable
-fun MyPageScreen(modifier: Modifier = Modifier, profileImg: Int = R.drawable.img_profile_test) {
+fun MyPageScreen(onNavigateToTradeList: () -> Unit ,modifier: Modifier = Modifier, profileImg: Int = R.drawable.img_profile_test) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -126,7 +128,9 @@ fun MyPageScreen(modifier: Modifier = Modifier, profileImg: Int = R.drawable.img
                     img = R.drawable.ic_mypage_tradelist,
                     title = "거래내역 확인",
                     content = "판매, 구매 기록을 확인해 보세요",
-                    onClick = { /* 클릭 시 동작 */ }
+                    onClick = {
+                        onNavigateToTradeList()
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -244,7 +248,10 @@ fun MyPageItem(img: Int, title: String, content: String? = null, onClick: () -> 
                 modifier = Modifier
                     .height(20.dp)
                     .width(20.dp)
-                    .weight(1f), // 나머지 공간을 채우고
+                    .weight(1f)
+                    .clickable {
+
+                    },
                 colorFilter = ColorFilter.tint(Color(0xFFBEBEBE)) // 색을 빨간색으로 변경
             )
 
@@ -253,14 +260,14 @@ fun MyPageItem(img: Int, title: String, content: String? = null, onClick: () -> 
 }
 
 
-@Preview
-@Composable
-fun MyPageScreenPreview() {
-    AchuTheme {  // 테마를 감싸기
-        MyPageScreen()
-    }
-}
-
+//@Preview
+//@Composable
+//fun MyPageScreenPreview() {
+//    AchuTheme {  // 테마를 감싸기
+//        MyPageScreen()
+//    }
+//}
+//
 
 //@Preview
 //@Composable

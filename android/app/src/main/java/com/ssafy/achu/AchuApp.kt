@@ -18,6 +18,7 @@ import com.ssafy.achu.core.navigation.BottomNavScreen.Companion.CHAT_LIST
 import com.ssafy.achu.core.navigation.BottomNavScreen.Companion.HOME
 import com.ssafy.achu.core.navigation.BottomNavScreen.Companion.MEMORY_LIST
 import com.ssafy.achu.core.navigation.BottomNavScreen.Companion.MY_PAGE
+import com.ssafy.achu.core.navigation.BottomNavScreen.Companion.MY_TRADE_LIST
 import com.ssafy.achu.core.navigation.BottomNavScreen.Companion.PRODUCT_LIST
 import com.ssafy.achu.core.navigation.NavGraph
 
