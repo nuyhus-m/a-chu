@@ -44,7 +44,8 @@ public class AuthUserController {
   @GetMapping("/users/username/is-unique")
   public AuthApiResponse<AuthIsUniqueResponse> checkUsernameIsUnique(
       @RequestParam String username) {
-    AuthIsUniqueResponse response = new AuthIsUniqueResponse(true);
+    AuthIsUniqueResponse response =
+        new AuthIsUniqueResponse(authUserService.isUsernameUnique(username));
     return AuthApiResponse.success(response);
   }
 

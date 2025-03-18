@@ -14,4 +14,8 @@ public class AuthUserService {
   public boolean isNicknameUnique(String nickname) {
     return authUserValidator.isNicknameUnique(nickname);
   }
+
+  public boolean isUsernameUnique(String username) {
+    return authUserValidator.isUsernameUnique(username);
+  }
 }
