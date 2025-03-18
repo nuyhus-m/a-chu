@@ -13,18 +13,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
-public class UserControllerTest extends RestDocsTest {
+class UserControllerTest extends RestDocsTest {
 
   private UserController controller;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     controller = new UserController();
     mockMvc = mockController(controller);
   }
 
   @Test
-  public void appendUser() {
+  void appendUser() {
     given()
         .contentType(ContentType.JSON)
         .body(new AppendUserRequest("아이디", "비밀번호", "닉네임", "전화번호", "전화번호 인증코드"))
@@ -61,7 +61,7 @@ public class UserControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void findUser() {
+  void findUser() {
     given()
         .contentType(ContentType.JSON)
         .get("/users/{userId}", 1L)
@@ -82,7 +82,7 @@ public class UserControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void findMe() {
+  void findMe() {
     given()
         .contentType(ContentType.JSON)
         .get("/users/me")
@@ -102,7 +102,7 @@ public class UserControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void checkUsernameIsUnique() {
+  void checkUsernameIsUnique() {
     given()
         .contentType(ContentType.JSON)
         .queryParam("username", "아이디")
@@ -124,7 +124,7 @@ public class UserControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void checkNicknameIsUnique() {
+  void checkNicknameIsUnique() {
     given()
         .contentType(ContentType.JSON)
         .queryParam("nickname", "닉네임")
@@ -146,7 +146,7 @@ public class UserControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void modifyNickname() {
+  void modifyNickname() {
     given()
         .contentType(ContentType.JSON)
         .body(new ModifyNicknameRequest("새로운 닉네임"))
@@ -165,7 +165,7 @@ public class UserControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void modifyProfileImage() {
+  void modifyProfileImage() {
     given()
         .contentType(MediaType.MULTIPART_FORM_DATA)
         .multiPart("profileImage", "test.jpg", new byte[0], "image/jpeg")
@@ -181,7 +181,7 @@ public class UserControllerTest extends RestDocsTest {
   }
 
   @Test
-  public void modifyPhoneNumber() {
+  void modifyPhoneNumber() {
     given()
         .contentType(ContentType.JSON)
         .body(new ModifyPhoneRequest("새 전화번호", "전화번호 인증코드"))

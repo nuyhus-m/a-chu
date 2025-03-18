@@ -40,19 +40,19 @@ public class UserController {
   }
 
   @PatchMapping("/users/nickname")
-  public ApiResponse<?> modifyNickname(Long userId, @RequestBody ModifyNicknameRequest request) {
+  public ApiResponse<Void> modifyNickname(Long userId, @RequestBody ModifyNicknameRequest request) {
     return ApiResponse.success();
   }
 
   // Q. 프로필 이미지는 왜 처음부터 안받아?
   @PatchMapping("/users/profile-image")
-  public ApiResponse<?> modifyProfileImage(
+  public ApiResponse<Void> modifyProfileImage(
       Long userId, @RequestParam("profileImage") MultipartFile profileImage) {
     return ApiResponse.success();
   }
 
   @PatchMapping("/users/change-phone")
-  public ApiResponse<?> modifyPhoneNumber(Long userId, @RequestBody ModifyPhoneRequest request) {
+  public ApiResponse<Void> modifyPhoneNumber(Long userId, @RequestBody ModifyPhoneRequest request) {
     return ApiResponse.success();
   }
 }
