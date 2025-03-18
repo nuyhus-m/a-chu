@@ -22,5 +22,4 @@ endif::[]
 
 이 API문서는 'A-Chu' 프로젝트의 산출물입니다.
 
-include::example.adoc[]
 include::user.adoc[]
