@@ -5,4 +5,5 @@ dependencies {
     api 'org.springframework.restdocs:spring-restdocs-mockmvc'
     api 'org.springframework.restdocs:spring-restdocs-restassured'
     api 'io.rest-assured:spring-mock-mvc'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
