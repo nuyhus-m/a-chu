@@ -3,6 +3,7 @@ package com.ssafy.s12p21d206.achu.auth.api.controller.user;
 import com.ssafy.s12p21d206.achu.auth.api.response.AuthApiResponse;
 import com.ssafy.s12p21d206.achu.auth.api.response.AuthDefaultIdResponse;
 import com.ssafy.s12p21d206.achu.auth.api.response.AuthIsUniqueResponse;
+import com.ssafy.s12p21d206.achu.auth.domain.AuthUserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class AuthUserController {
+
+  private final AuthUserService authUserService;
+
+  public AuthUserController(AuthUserService authUserService) {
+    this.authUserService = authUserService;
+  }
 
   @PostMapping("/users")
   public AuthApiResponse<AuthDefaultIdResponse> appendUser(
@@ -44,7 +51,8 @@ public class AuthUserController {
   @GetMapping("/users/nickname/is-unique")
   public AuthApiResponse<AuthIsUniqueResponse> checkNicknameIsUnique(
       @RequestParam String nickname) {
-    AuthIsUniqueResponse response = new AuthIsUniqueResponse(true);
+    AuthIsUniqueResponse response =
+        new AuthIsUniqueResponse(authUserService.isNicknameUnique(nickname));
     return AuthApiResponse.success(response);
   }
 
