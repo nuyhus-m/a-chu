@@ -13,4 +13,15 @@
 
     <!--탑바-->
     <string name="chat_list">채팅 목록</string>
+
+    <!--로그인 화면-->
+    <string name="welcome">환영합니다!</string>
+    <string name="question_not_user">회원이 아니신가요?</string>
+    <string name="go_sign_up">회원가입하기</string>
+    <string name="id">아이디</string>
+    <string name="enter_id">아이디를 입력해주세요</string>
+    <string name="password">비밀번호</string>
+    <string name="question_forget_account">아이디, 비밀번호를 잊으셨나요?</string>
+    <string name="login">로그인</string>
+    <string name="enter_password">비밀번호를 입력해주세요</string>
 </resources>

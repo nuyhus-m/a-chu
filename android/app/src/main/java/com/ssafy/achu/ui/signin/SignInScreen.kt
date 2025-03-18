@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ssafy.achu.R
@@ -44,7 +45,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = 80.dp),
-            contentScale = ContentScale.FillBounds  // 화면에 꽉 차도록 설정
+            contentScale = ContentScale.FillBounds
         )
 
         Column(
@@ -53,7 +54,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
                 .padding(top = 270.dp, start = 24.dp, end = 24.dp)
         ) {
             Text(
-                text = "환영합니다!",
+                text = stringResource(R.string.welcome),
                 style = AchuTheme.typography.bold24
             )
 
@@ -61,14 +62,14 @@ fun SignInScreen(modifier: Modifier = Modifier) {
 
             Row {
                 Text(
-                    text = "회원이 아니신가요?",
+                    text = stringResource(R.string.question_not_user),
                     style = AchuTheme.typography.regular18
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = "회원가입하기",
+                    text = stringResource(R.string.go_sign_up),
                     style = AchuTheme.typography.semiBold18.copy(color = PointBlue)
                 )
             }
@@ -76,7 +77,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = "아이디",
+                text = stringResource(R.string.id),
                 style = AchuTheme.typography.regular18
             )
 
@@ -85,7 +86,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
             BasicTextField(
                 value = "",
                 onValueChange = {},
-                placeholder = "아이디를 입력하세요.",
+                placeholder = stringResource(R.string.enter_id),
                 placeholderColor = PointBlue,
                 borderColor = PointBlue
             )
@@ -93,7 +94,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "비밀번호",
+                text = stringResource(R.string.password),
                 style = AchuTheme.typography.regular18
             )
 
@@ -107,7 +108,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = "아이디, 비밀번호를 잊으셨나요?",
+                text = stringResource(R.string.question_forget_account),
                 style = AchuTheme.typography.semiBold16.copy(color = PointBlue),
                 modifier = Modifier.align(Alignment.End)
             )
@@ -115,14 +116,14 @@ fun SignInScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(32.dp))
 
             PointBlueButton(
-                buttonText = "로그인",
-                onClick = { /* 로그인 로직 구현 */ },
-                radius = 30.dp
+                buttonText = stringResource(R.string.login),
+                onClick = { /* 로그인 로직 구현 */ }
             )
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun SignInScreenPreview() {

@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -75,7 +76,7 @@ fun PasswordTextField(
             .height(50.dp),
         placeholder = {
             Text(
-                text = "비밀번호를 입력하세요.",
+                text = stringResource(R.string.enter_password),
                 style = AchuTheme.typography.regular16.copy(color = PointBlue)
             )
         },
@@ -104,7 +105,7 @@ fun PasswordTextField(
 
 // 연필 아이콘 TextField
 @Composable
-fun clearTextField(
+fun ClearTextField(
     value: String,
     onValueChange: (String) -> Unit,
     pointColor: Color = PointBlue
@@ -163,9 +164,9 @@ fun PasswordTextFieldPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun clearTextFieldPreview() {
+fun ClearTextFieldPreview() {
     AchuTheme {
-        clearTextField(
+        ClearTextField(
             value = "",
             onValueChange = {},
             pointColor = PointPink
