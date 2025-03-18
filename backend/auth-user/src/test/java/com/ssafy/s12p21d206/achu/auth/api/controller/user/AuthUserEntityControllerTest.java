@@ -1,9 +1,11 @@
 package com.ssafy.s12p21d206.achu.auth.api.controller.user;
 
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 
+import com.ssafy.s12p21d206.achu.auth.domain.AuthUserService;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsUtils;
 import io.restassured.http.ContentType;
@@ -21,7 +23,8 @@ class AuthUserEntityControllerTest extends RestDocsTest {
 
   @BeforeEach
   void setup() {
-    controller = new AuthUserController();
+    AuthUserService authUserService = mock(AuthUserService.class);
+    controller = new AuthUserController(authUserService);
     mockMvc = mockController(controller);
   }
 

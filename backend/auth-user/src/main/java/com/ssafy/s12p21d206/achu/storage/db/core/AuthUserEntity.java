@@ -20,4 +20,20 @@ public class AuthUserEntity extends AuthBaseEntity {
     this.nickname = nickname;
     this.phoneNumber = phoneNumber;
   }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public String getNickname() {
+    return nickname;
+  }
+
+  public String getPhoneNumber() {
+    return phoneNumber;
+  }
 }
