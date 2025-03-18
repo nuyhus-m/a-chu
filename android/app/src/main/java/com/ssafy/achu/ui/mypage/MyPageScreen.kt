@@ -17,17 +17,20 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.ssafy.achu.R
-import com.ssafy.achu.core.navigation.BottomNavScreen
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.White
 
 @Composable
-fun MyPageScreen(onNavigateToTradeList: () -> Unit ,modifier: Modifier = Modifier, profileImg: Int = R.drawable.img_profile_test) {
+fun MyPageScreen(
+    onNavigateToTradeList: () -> Unit,
+    modifier: Modifier = Modifier,
+    profileImg: Int = R.drawable.img_profile_test,
+    onNavigateToLikeList: () -> Unit,
+    onNavigateToRecommend: () -> Unit
+) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -39,9 +42,8 @@ fun MyPageScreen(onNavigateToTradeList: () -> Unit ,modifier: Modifier = Modifie
             painter = painterResource(id = R.drawable.img_background_mypage),
             contentDescription = "Background",
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom =80.dp),
-            contentScale = ContentScale.Crop  // 화면에 꽉 차도록 설정
+                .fillMaxSize(),
+            contentScale = ContentScale.FillBounds  // 화면에 꽉 차도록 설정
         )
 
         // 텍스트 표시 (위에 위치)
@@ -118,7 +120,6 @@ fun MyPageScreen(onNavigateToTradeList: () -> Unit ,modifier: Modifier = Modifie
                 MyPageItem(
                     img = R.drawable.ic_mypage_baby,
                     title = "우리 아이 정보 관리",
-                    content = "추억 기록을 위한 아이정보를 관리하세요",
                     onClick = { /* 클릭 시 동작 */ }
                 )
 
@@ -138,7 +139,9 @@ fun MyPageScreen(onNavigateToTradeList: () -> Unit ,modifier: Modifier = Modifie
                 MyPageItem(
                     img = R.drawable.ic_mypage_like,
                     title = "찜한상품보기",
-                    onClick = { /* 클릭 시 동작 */ }
+                    onClick = {
+                        onNavigateToLikeList()
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -147,7 +150,7 @@ fun MyPageScreen(onNavigateToTradeList: () -> Unit ,modifier: Modifier = Modifie
                     img = R.drawable.ic_mypage_recomend,
                     title = "추천상품보기",
                     content = "우리아이에게 딱 맞는 상품보기",
-                    onClick = { /* 클릭 시 동작 */ }
+                    onClick = { onNavigateToRecommend() }
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -210,7 +213,7 @@ fun MyPageItem(img: Int, title: String, content: String? = null, onClick: () -> 
             .background(color = White) // 배경색은 shadow 뒤에 설정
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(

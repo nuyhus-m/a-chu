@@ -6,9 +6,14 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.ssafy.achu.core.navigation.MyPage.MY_LIKE_LIST
+import com.ssafy.achu.core.navigation.MyPage.MY_RECOMMEND_LIST
+import com.ssafy.achu.core.navigation.MyPage.MY_TRADE_LIST
 import com.ssafy.achu.ui.chat.ChatListScreen
 import com.ssafy.achu.ui.home.HomeScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
+import com.ssafy.achu.ui.mypage.LikeItemListScreen
+import com.ssafy.achu.ui.mypage.RecommendItemScreen
 import com.ssafy.achu.ui.mypage.TradeListScreen
 import com.ssafy.achu.ui.product.ProductListScreen
 
@@ -36,30 +41,30 @@ fun NavGraph(
         }
         composable(route = BottomNavScreen.MyPage.route) {
             MyPageScreen(
-                onNavigateToTradeList = { navController.navigate(route = "tradeList") },)
+                onNavigateToTradeList = { navController.navigate(route = "tradeList") },
+                onNavigateToLikeList = { navController.navigate(route = "likelist") },
+                onNavigateToRecommend = { navController.navigate(route = "recommend") })
         }
 
-        composable(route = BottomNavScreen.MY_TRADE_LIST) {
+        composable(MY_TRADE_LIST) {
             TradeListScreen()
+        }
+
+        composable(MY_LIKE_LIST) {
+            LikeItemListScreen()
+        }
+
+        composable(MY_RECOMMEND_LIST) {
+            RecommendItemScreen()
         }
 
     }
 }
 
 
-@Composable
-fun MyPageNavGraph(navController: NavHostController) {
-    NavHost(
-        navController = navController,
-        startDestination = "myPageMain" // 마이페이지의 기본 화면
-    ) {
-        composable(route = "myPageMain") {
-            MyPageScreen(
-                onNavigateToTradeList = { navController.navigate("tradeList") }
-            )
-        }
-        composable(route = "tradeList") {
-            TradeListScreen()
-        }
-    }
+object MyPage {
+    const val MY_TRADE_LIST = "tradelist"
+    const val MY_LIKE_LIST = "likelist"
+    const val MY_RECOMMEND_LIST = "recommend"
 }
+

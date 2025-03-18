@@ -2,6 +2,7 @@ package com.ssafy.achu.ui.mypage
 
 import LargeLikeItem
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,7 +67,8 @@ fun LikeItemListScreen() {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 2.dp), // 좌우 여백 추가
+                            .padding(top = 2.dp)
+                            .clickable {  }, // 좌우 여백 추가
                         horizontalArrangement = Arrangement.SpaceBetween // 아이템 간 간격 추가
                     ) {
                         rowItems.forEach { item ->
@@ -106,6 +108,7 @@ data class LikeItem(
     val productName: String, // 제품명
     val price: String // 가격
 )
+
 
 @Preview
 @Composable
