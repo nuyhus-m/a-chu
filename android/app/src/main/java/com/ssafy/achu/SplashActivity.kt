@@ -1,6 +1,7 @@
 package com.ssafy.achu
 
 import android.annotation.SuppressLint
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -29,7 +30,7 @@ private const val SplashWaitTime: Long = 2000
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : ComponentActivity() {
 
-    private val isUserLoggedIn: Boolean = true
+    private val isUserLoggedIn: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,20 +50,20 @@ class SplashActivity : ComponentActivity() {
     }
 
     private fun navigateToMainActivity() {
+        val options = ActivityOptions.makeCustomAnimation(this, 0, 0)
         Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }.also { intent ->
-            startActivity(intent)
-            finish()
+            startActivity(intent, options.toBundle())
         }
     }
 
     private fun navigateToSignInActivity() {
+        val options = ActivityOptions.makeCustomAnimation(this, 0, 0)
         Intent(this, AuthActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }.also { intent ->
-            startActivity(intent)
-            finish()
+            startActivity(intent, options.toBundle())
         }
     }
 }

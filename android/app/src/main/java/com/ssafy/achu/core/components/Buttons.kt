@@ -53,7 +53,7 @@ fun PointBlueButton(buttonText: String, onClick: () -> Unit) {
                     offsetY = 4.dp
                 )
                 .height(50.dp)
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(30.dp))
                 .background(PointBlue)
                 .clickable(
                     onClick = onClick
@@ -153,7 +153,7 @@ fun PointPinkBtn(buttonText: String, onClick: () -> Unit) {
                     offsetY = 4.dp             // Y축으로 그림자 이동
                 )
                 .height(50.dp)
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(30.dp))
                 .background(PointPink)
                 .clickable(onClick = onClick),
             contentAlignment = Alignment.Center
