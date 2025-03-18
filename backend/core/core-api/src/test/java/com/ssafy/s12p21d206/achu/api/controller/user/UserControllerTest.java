@@ -1,13 +1,9 @@
-package com.ssafy.s12p21d206.achu.api.controller.example;
+package com.ssafy.s12p21d206.achu.api.controller.user;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 
-import com.ssafy.s12p21d206.achu.api.controller.user.AppendUserRequest;
-import com.ssafy.s12p21d206.achu.api.controller.user.ModifyNicknameRequest;
-import com.ssafy.s12p21d206.achu.api.controller.user.ModifyPhoneRequest;
-import com.ssafy.s12p21d206.achu.api.controller.user.UserController;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsUtils;
 import io.restassured.http.ContentType;
