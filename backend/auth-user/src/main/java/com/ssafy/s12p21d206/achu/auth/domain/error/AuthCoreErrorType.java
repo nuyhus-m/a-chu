@@ -1,7 +1,11 @@
 package com.ssafy.s12p21d206.achu.auth.domain.error;
 
 public enum AuthCoreErrorType {
-  ;
+  INVALID_CREDENTIALS(
+      AuthCoreErrorKind.CLIENT_ERROR,
+      AuthCoreErrorCode.AUE1000,
+      "잘못된 인증 정보입니다.",
+      AuthCoreErrorLevel.INFO);
 
   private final AuthCoreErrorKind kind;
   private final AuthCoreErrorCode code;

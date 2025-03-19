@@ -1,3 +1,5 @@
 package com.ssafy.s12p21d206.achu.auth.domain.error;
 
-public enum AuthCoreErrorCode {}
+public enum AuthCoreErrorCode {
+  AUE1000,
+}
