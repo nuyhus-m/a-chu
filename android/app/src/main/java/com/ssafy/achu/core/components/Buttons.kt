@@ -112,7 +112,7 @@ fun PointBlueLineBtn(buttonText: String, onClick: () -> Unit) {
         Box(
             modifier = Modifier
                 .background(buttonColor, shape = RoundedCornerShape(50.dp))
-                .border(2.dp, PointBlue, RoundedCornerShape(50.dp))
+                .border(1.dp, PointBlue, RoundedCornerShape(50.dp))
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
@@ -148,7 +148,7 @@ fun SmallLineBtn(buttonText: String,color: Color, onClick: () -> Unit) {
         Box(
             modifier = Modifier
                 .background(White, shape = RoundedCornerShape(50.dp))
-                .border(2.dp, color, RoundedCornerShape(50.dp))
+                .border(1.dp, color, RoundedCornerShape(50.dp))
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
@@ -247,7 +247,7 @@ fun PointPinkLineBtn(buttonText: String, onClick: () -> Unit) {
         Box(
             modifier = Modifier
                 .background(buttonColor, shape = RoundedCornerShape(50.dp))
-                .border(2.dp, PointPink, RoundedCornerShape(50.dp))
+                .border(1.dp, PointPink, RoundedCornerShape(50.dp))
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
