@@ -108,13 +108,13 @@ fun PasswordTextField(
 fun ClearTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    pointColor: Color = PointBlue
+    pointColor: Color = PointBlue,
+    modifier: Modifier = Modifier // modifier를 외부에서 설정할 수 있도록 추가
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .height(50.dp),
         textStyle = AchuTheme.typography.regular16,
         singleLine = true,

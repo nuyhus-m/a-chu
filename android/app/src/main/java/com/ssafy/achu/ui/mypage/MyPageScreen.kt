@@ -161,37 +161,7 @@ fun MyPageScreen(
                     onClick = { /* 클릭 시 동작 */ }
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 8.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Text(
-                        text = "로그아웃",
-                        style = AchuTheme.typography.semiBold14PointBlue.copy(
-                            textDecoration = TextDecoration.Underline
-                        ),
-                        modifier = Modifier.clickable {
-                            // 클릭 시 동작
-                        }
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text(
-                        text = "화원탈퇴",
-                        style = AchuTheme.typography.semiBold14PointBlue.copy(
-                            textDecoration = TextDecoration.Underline
-                        ),
-                        modifier = Modifier.clickable {
-                            // 클릭 시 동작
-                        }
-
-                    )
-                }
 
             }
 
@@ -251,10 +221,7 @@ fun MyPageItem(img: Int, title: String, content: String? = null, onClick: () -> 
                 modifier = Modifier
                     .height(20.dp)
                     .width(20.dp)
-                    .weight(1f)
-                    .clickable {
-
-                    },
+                    .weight(1f),
                 colorFilter = ColorFilter.tint(Color(0xFFBEBEBE)) // 색을 빨간색으로 변경
             )
 
