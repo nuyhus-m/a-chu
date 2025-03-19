@@ -10,8 +10,6 @@ import androidx.navigation.compose.rememberNavController
 import com.ssafy.achu.core.components.BottomNavBar
 import com.ssafy.achu.core.navigation.NavGraph
 
-private const val TAG = "AchuApp"
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AchuApp() {
@@ -23,5 +21,6 @@ fun AchuApp() {
         },
     ) { innerPadding ->
         NavGraph(navController, Modifier.padding(innerPadding))
+
     }
 }
