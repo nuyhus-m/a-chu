@@ -30,7 +30,7 @@ private const val SplashWaitTime: Long = 2000
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : ComponentActivity() {
 
-    private val isUserLoggedIn: Boolean = false
+    private val isUserLoggedIn: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
