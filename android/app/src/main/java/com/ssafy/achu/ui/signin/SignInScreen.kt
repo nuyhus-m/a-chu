@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,7 +34,11 @@ import com.ssafy.achu.core.theme.White
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SignInScreen(modifier: Modifier = Modifier, viewModel: SignInViewModel) {
+fun SignInScreen(
+    modifier: Modifier = Modifier,
+    viewModel: SignInViewModel,
+    onNavigateToSignUp: () -> Unit
+) {
 
     val uiState by viewModel.uiState.collectAsState()
 
@@ -74,7 +79,8 @@ fun SignInScreen(modifier: Modifier = Modifier, viewModel: SignInViewModel) {
 
                 Text(
                     text = stringResource(R.string.go_sign_up),
-                    style = AchuTheme.typography.semiBold18.copy(color = PointBlue)
+                    style = AchuTheme.typography.semiBold18.copy(color = PointBlue),
+                    modifier = Modifier.clickable { onNavigateToSignUp() }
                 )
             }
 
