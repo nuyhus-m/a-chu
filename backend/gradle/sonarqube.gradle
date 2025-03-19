@@ -23,7 +23,7 @@ configure(subprojects.findAll {
 tasks.named('sonar') {
     dependsOn subprojects*.test
     doFirst {
-        println "SonarQube 분석 시작 (브랜치: ${getBranchName()}})"
+        println "SonarQube 분석 시작 (브랜치: ${getBranchName()})"
     }
 }
 
