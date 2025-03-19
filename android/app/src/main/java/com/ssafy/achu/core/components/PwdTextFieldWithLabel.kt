@@ -10,6 +10,8 @@ import com.ssafy.achu.R
 
 @Composable
 fun PwdTextFieldWithLabel(
+    value: String = "",
+    onValueChange: (String) -> Unit = {},
     label: String,
     errorMessage: String = ""
 ) {
@@ -18,8 +20,8 @@ fun PwdTextFieldWithLabel(
     Spacer(modifier = Modifier.height(8.dp))
 
     PasswordTextField(
-        value = "",
-        onValueChange = { },
+        value = value,
+        onValueChange = onValueChange,
         placeholder = stringResource(R.string.password_format)
     )
 }

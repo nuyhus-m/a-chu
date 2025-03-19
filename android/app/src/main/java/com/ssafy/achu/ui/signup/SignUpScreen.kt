@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,8 +25,9 @@ import com.ssafy.achu.core.theme.White
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SignUpScreen() {
+fun SignUpScreen(modifier: Modifier = Modifier, viewModel: SignUpViewModel) {
 
+    val uiState by viewModel.uiState.collectAsState()
     val space = 16.dp
 
     Column(
@@ -41,8 +44,8 @@ fun SignUpScreen() {
 
         // 아이디
         TextFieldWithLabelAndBtn(
-            value = "",
-            onValueChange = {},
+            value = uiState.id,
+            onValueChange = { viewModel.updateId(it) },
             label = stringResource(R.string.id),
             placeholder = stringResource(R.string.enter_id),
             buttonText = stringResource(R.string.check),
@@ -53,6 +56,8 @@ fun SignUpScreen() {
 
         // 비밀번호
         PwdTextFieldWithLabel(
+            value = uiState.pwd,
+            onValueChange = { viewModel.updatePwd(it) },
             label = stringResource(R.string.password)
         )
 
@@ -60,6 +65,8 @@ fun SignUpScreen() {
 
         // 비밀번호 확인
         PwdTextFieldWithLabel(
+            value = uiState.pwdCheck,
+            onValueChange = { viewModel.updatePwdCheck(it) },
             label = stringResource(R.string.password_check)
         )
 
@@ -67,8 +74,8 @@ fun SignUpScreen() {
 
         // 닉네임
         TextFieldWithLabelAndBtn(
-            value = "",
-            onValueChange = {},
+            value = uiState.nickname,
+            onValueChange = { viewModel.updateNickname(it) },
             label = stringResource(R.string.nickname),
             placeholder = stringResource(R.string.nickname_ex),
             buttonText = stringResource(R.string.check),
@@ -79,8 +86,8 @@ fun SignUpScreen() {
 
         // 전화번호
         TextFieldWithLabelAndBtn(
-            value = "",
-            onValueChange = {},
+            value = uiState.phoneNumber,
+            onValueChange = { viewModel.updatePhoneNumber(it) },
             label = stringResource(R.string.phone_number),
             placeholder = stringResource(R.string.phone_number_ex),
             buttonText = stringResource(R.string.auth),
@@ -102,6 +109,6 @@ fun SignUpScreen() {
 @Composable
 fun SignUpScreenPreview() {
     AchuTheme {
-        SignUpScreen()
+//        SignUpScreen()
     }
 }
