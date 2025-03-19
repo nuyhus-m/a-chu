@@ -1,5 +1,6 @@
 package com.ssafy.achu.core.components
 
+import android.R.attr.textColor
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -29,9 +30,11 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.ssafy.achu.core.components.SmallLineBtn
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
+import com.ssafy.achu.core.theme.White
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -127,6 +130,42 @@ fun PointBlueLineBtn(buttonText: String, onClick: () -> Unit) {
                 text = buttonText,
                 color = textColor,
                 style = AchuTheme.typography.semiBold18White
+            )
+        }
+    }
+}
+
+
+
+@Composable
+fun SmallLineBtn(buttonText: String,color: Color, onClick: () -> Unit) {
+    var isClicked by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .wrapContentWidth()
+            .wrapContentHeight()
+    ) {
+        Box(
+            modifier = Modifier
+                .background(White, shape = RoundedCornerShape(50.dp))
+                .border(2.dp, color, RoundedCornerShape(50.dp))
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {
+                        isClicked = !isClicked
+                        onClick()
+                    }
+                )
+                .height(40.dp)
+                .padding(horizontal = 16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = buttonText,
+                color = color,
+                style = AchuTheme.typography.semiBold16
             )
         }
     }
@@ -334,6 +373,17 @@ fun basicButton6() {
 
     AchuTheme {  // ✅ AchuTheme을 감싸줌
         PointPinkLineBtn("수정") { }
+    }
+}
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview
+@Composable
+fun basicButton67() {
+
+    AchuTheme {  // ✅ AchuTheme을 감싸줌
+        SmallLineBtn("프로필수정", PointBlue){}
     }
 }
 
