@@ -2,17 +2,23 @@ package com.ssafy.achu.ui.mypage
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,20 +28,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.achu.R
-import com.ssafy.achu.core.components.BasicDialog
 import com.ssafy.achu.core.components.BasicTopAppBar
-import com.ssafy.achu.core.components.BasicTopAppBarPreview
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontBlue
-import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
@@ -63,107 +65,113 @@ fun TradeListScreen() {
 //    var selectedProduct by remember { mutableStateOf<ProductItem?>(null) }
 
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = White)
-                .padding(horizontal = 24.dp)
-        ) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = White)
+    ) {
 
-            Column(modifier = Modifier.fillMaxSize()) {
-                Box() {
-                    BasicTopAppBar(
-                        title = "거래목록",
-                        onBackClick = {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Box() {
+                BasicTopAppBar(
+                    title = "거래목록",
+                    onBackClick = {
 
-                        }
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                ) {
-
-
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = if (selectedTab == "purchase") PointBlue else White,
-                                shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
-                            )
-                            .height(50.dp)
-                            .weight(1f)
-                            .clickable {
-                                selectedTab = "purchase"
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "구매",
-                            style = AchuTheme.typography.semiBold20White,
-                            fontSize = 20.sp,
-                            color = if (selectedTab == "purchase") White else PointBlue
-                        )
                     }
-
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = if (selectedTab == "sale") PointBlue else White,
-                                shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
-                            )
-                            .height(50.dp)
-                            .weight(1f)
-                            .clickable {
-                                selectedTab = "sale"
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "판매",
-                            style = AchuTheme.typography.semiBold20White,
-                            fontSize = 20.sp,
-                            color = if (selectedTab == "sale") White else PointBlue
-                        )
-                    }
-                }
-
-                Box(
-                    modifier = Modifier
-                        .height(4.dp)
-                        .fillMaxWidth()
-                        .background(color = PointBlue)
                 )
+            }
 
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 16.dp)
-                ) {
-                    val listToDisplay = if (selectedTab == "purchase") purchaseList else saleList
+            Box(
+                modifier = Modifier.padding(horizontal = 24.dp)
+            ) {
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                    ) {
 
-                    items(listToDisplay) { productItem ->
-                        ListItem(
-                            img = productItem.img,
-                            state = productItem.state,
-                            productName = productItem.productName,
-                            price = productItem.price,
-                            onClick = {
-                            },
+
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = if (selectedTab == "purchase") PointBlue else White,
+                                    shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                                )
+                                .height(50.dp)
+                                .weight(1f)
+                                .clickable {
+                                    selectedTab = "purchase"
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "구매",
+                                style = AchuTheme.typography.semiBold20White,
+                                fontSize = 20.sp,
+                                color = if (selectedTab == "purchase") White else PointBlue
+                            )
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = if (selectedTab == "sale") PointBlue else White,
+                                    shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                                )
+                                .height(50.dp)
+                                .weight(1f)
+                                .clickable {
+                                    selectedTab = "sale"
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "판매",
+                                style = AchuTheme.typography.semiBold20White,
+                                fontSize = 20.sp,
+                                color = if (selectedTab == "sale") White else PointBlue
+                            )
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .height(4.dp)
+                            .fillMaxWidth()
+                            .background(color = PointBlue)
+                    )
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 16.dp)
+                    ) {
+                        val listToDisplay =
+                            if (selectedTab == "purchase") purchaseList else saleList
+
+                        items(listToDisplay) { productItem ->
+                            ListItem(
+                                img = productItem.img,
+                                state = productItem.state,
+                                productName = productItem.productName,
+                                price = productItem.price,
+                                onClick = {
+                                },
 //                            onDeleteClick = {
 //                                selectedProduct = productItem
 //                                showDialog = true
 //                            }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
                     }
                 }
             }
-
-
         }
+
+
+    }
 
 //    if (showDialog && selectedProduct != null) {
 //        BasicDialog(
