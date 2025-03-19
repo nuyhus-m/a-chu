@@ -2,7 +2,7 @@ package com.ssafy.s12p21d206.achu.auth.domain;
 
 public interface AuthUserRepository {
 
-  boolean isNicknameUnique(String nickname);
+  boolean existsByNickname(String nickname);
 
-  boolean isUsernameUnique(String username);
+  boolean existsByUsername(String username);
 }

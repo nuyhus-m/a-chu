@@ -12,10 +12,10 @@ public class AuthUserValidator {
   }
 
   public boolean isNicknameUnique(String nickname) {
-    return authUserRepository.isNicknameUnique(nickname);
+    return !authUserRepository.existsByNickname(nickname);
   }
 
   public boolean isUsernameUnique(String username) {
-    return authUserRepository.isUsernameUnique(username);
+    return !authUserRepository.existsByUsername(username);
   }
 }

@@ -13,12 +13,12 @@ public class AuthUserCoreRepository implements AuthUserRepository {
   }
 
   @Override
-  public boolean isNicknameUnique(String nickname) {
-    return !authUserJpaRepository.existsByNickname(nickname);
+  public boolean existsByNickname(String nickname) {
+    return authUserJpaRepository.existsByNickname(nickname);
   }
 
   @Override
-  public boolean isUsernameUnique(String username) {
-    return !authUserJpaRepository.existsByUsername(username);
+  public boolean existsByUsername(String username) {
+    return authUserJpaRepository.existsByUsername(username);
   }
 }
