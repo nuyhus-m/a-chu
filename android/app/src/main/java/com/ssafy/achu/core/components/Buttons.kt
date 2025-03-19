@@ -42,7 +42,6 @@ fun PointBlueButton(buttonText: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 60.dp)
     ) {
         Box(
             modifier = Modifier
@@ -66,7 +65,7 @@ fun PointBlueButton(buttonText: String, onClick: () -> Unit) {
             Text(
                 text = buttonText,
                 color = Color.White,
-                style = AchuTheme.typography.semiBold20White
+                style = AchuTheme.typography.semiBold18White
             )
         }
     }
@@ -182,7 +181,6 @@ fun PointPinkBtn(buttonText: String, onClick: () -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 60.dp)
                 .drawColoredShadow(
                     color = PointPink,         // 그림자의 색상을 빨간색으로 설정
                     alpha = 0.5f,              // 그림자의 투명도를 50%로 설정
@@ -200,7 +198,7 @@ fun PointPinkBtn(buttonText: String, onClick: () -> Unit) {
             Text(
                 text = buttonText,
                 color = Color.White,
-                style = AchuTheme.typography.semiBold20White
+                style = AchuTheme.typography.semiBold18White
             )
         }
     }
