@@ -29,7 +29,8 @@ fun MyPageScreen(
     profileImg: Int = R.drawable.img_profile_test,
     onNavigateToLikeList: () -> Unit,
     onNavigateToRecommend: () -> Unit,
-    onNavigateToUserInfo: () -> Unit
+    onNavigateToUserInfo: () -> Unit,
+    onNavigateToBabyList: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -120,7 +121,7 @@ fun MyPageScreen(
                 MyPageItem(
                     img = R.drawable.ic_mypage_baby,
                     title = "우리 아이 정보 관리",
-                    onClick = { /* 클릭 시 동작 */ }
+                    onClick = { onNavigateToBabyList() }
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
