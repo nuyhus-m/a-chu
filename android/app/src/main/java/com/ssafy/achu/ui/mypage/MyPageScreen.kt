@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.achu.R
@@ -29,7 +28,8 @@ fun MyPageScreen(
     modifier: Modifier = Modifier,
     profileImg: Int = R.drawable.img_profile_test,
     onNavigateToLikeList: () -> Unit,
-    onNavigateToRecommend: () -> Unit
+    onNavigateToRecommend: () -> Unit,
+    onNavigateToUserInfo: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -158,7 +158,7 @@ fun MyPageScreen(
                 MyPageItem(
                     img = R.drawable.ic_maypage_myinfo,
                     title = "내 정보 수정",
-                    onClick = { /* 클릭 시 동작 */ }
+                    onClick = { onNavigateToUserInfo()}
                 )
 
 
