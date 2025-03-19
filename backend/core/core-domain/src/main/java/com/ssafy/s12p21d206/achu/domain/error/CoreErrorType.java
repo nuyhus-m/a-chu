@@ -1,7 +1,8 @@
 package com.ssafy.s12p21d206.achu.domain.error;
 
 public enum CoreErrorType {
-  ;
+  DATA_NOT_FOUND(
+      CoreErrorKind.CLIENT_ERROR, CoreErrorCode.E1000, "데이터를 찾을 수 없습니다.", CoreErrorLevel.INFO);
 
   private final CoreErrorKind kind;
   private final CoreErrorCode code;

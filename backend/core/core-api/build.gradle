@@ -12,5 +12,7 @@ dependencies {
     implementation project(':support:logging')
     implementation project(':support:monitoring')
 
+    runtimeOnly project(':auth-user')
+
     testImplementation project(":tests:api-docs")
 }

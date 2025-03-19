@@ -1,9 +1,11 @@
-package com.ssafy.s12p21d206.achu.api.controller.user;
+package com.ssafy.s12p21d206.achu.auth.api.controller.user;
 
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 
+import com.ssafy.s12p21d206.achu.auth.domain.AuthUserService;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsUtils;
 import io.restassured.http.ContentType;
@@ -15,13 +17,14 @@ import org.springframework.restdocs.payload.JsonFieldType;
 
 // sonarqube에서 test에 assertions이 없더라도 code smell로 인식하지 않음
 @SuppressWarnings("java:S2699")
-class UserControllerTest extends RestDocsTest {
+class AuthUserEntityControllerTest extends RestDocsTest {
 
-  private UserController controller;
+  private AuthUserController controller;
 
   @BeforeEach
   void setup() {
-    controller = new UserController();
+    AuthUserService authUserService = mock(AuthUserService.class);
+    controller = new AuthUserController(authUserService);
     mockMvc = mockController(controller);
   }
 
@@ -29,7 +32,7 @@ class UserControllerTest extends RestDocsTest {
   void appendUser() {
     given()
         .contentType(ContentType.JSON)
-        .body(new AppendUserRequest("아이디", "비밀번호", "닉네임", "전화번호", "전화번호 인증코드"))
+        .body(new AppendAuthUserRequest("아이디", "비밀번호", "닉네임", "전화번호", "전화번호 인증코드"))
         .post("/users")
         .then()
         .status(HttpStatus.OK)

@@ -1,6 +1,6 @@
-package com.ssafy.s12p21d206.achu.api.controller.user;
+package com.ssafy.s12p21d206.achu.auth.api.controller.user;
 
-public record AppendUserRequest(
+public record AppendAuthUserRequest(
     String username,
     String password,
     String nickname,
