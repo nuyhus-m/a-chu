@@ -3,6 +3,7 @@ package com.ssafy.achu.core.components
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -35,7 +36,8 @@ fun BasicTextField(
     placeholder: String,
     placeholderColor: Color,
     borderColor: Color,
-    radius: Int = 30
+    radius: Int = 30,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
     OutlinedTextField(
         value = value,
@@ -56,7 +58,8 @@ fun BasicTextField(
             focusedBorderColor = borderColor,
             unfocusedBorderColor = borderColor,
             cursorColor = Color.Black
-        )
+        ),
+        keyboardOptions = keyboardOptions
     )
 }
 
@@ -65,6 +68,7 @@ fun BasicTextField(
 fun PasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
+    placeholder: String = stringResource(R.string.enter_password)
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -76,7 +80,7 @@ fun PasswordTextField(
             .height(50.dp),
         placeholder = {
             Text(
-                text = stringResource(R.string.enter_password),
+                text = placeholder,
                 style = AchuTheme.typography.regular16.copy(color = PointBlue)
             )
         },
