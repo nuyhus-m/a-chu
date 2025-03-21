@@ -1,0 +1,35 @@
+package com.ssafy.s12p21d206.achu.storage.db.core;
+
+import com.ssafy.s12p21d206.achu.auth.domain.NewVerificationCode;
+import com.ssafy.s12p21d206.achu.auth.domain.Phone;
+import com.ssafy.s12p21d206.achu.auth.domain.VerificationCode;
+import com.ssafy.s12p21d206.achu.auth.domain.VerificationCodeRepository;
+import com.ssafy.s12p21d206.achu.auth.domain.VerificationPurpose;
+import java.util.Optional;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class OnetimeCodeCoreRepository implements VerificationCodeRepository {
+
+  private final OneTimeCodeJpaRepository oneTimeCodeJpaRepository;
+
+  public OnetimeCodeCoreRepository(OneTimeCodeJpaRepository oneTimeCodeJpaRepository) {
+    this.oneTimeCodeJpaRepository = oneTimeCodeJpaRepository;
+  }
+
+  @Override
+  public VerificationCode save(
+      NewVerificationCode verificationCode, Phone phone, VerificationPurpose purpose) {
+    return oneTimeCodeJpaRepository
+        .save(OneTimeCodeEntity.from(verificationCode, phone, purpose))
+        .toVerificationCode();
+  }
+
+  @Override
+  public Optional<VerificationCode> findLatestByPhone(Phone phone) {
+    return oneTimeCodeJpaRepository
+        .findTopByPhoneNumberAndEntityStatusOrderByCreatedAtDesc(
+            phone.number(), AuthEntityStatus.ACTIVE)
+        .map(OneTimeCodeEntity::toVerificationCode);
+  }
+}
