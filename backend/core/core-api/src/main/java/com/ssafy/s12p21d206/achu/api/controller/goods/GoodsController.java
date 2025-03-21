@@ -1,7 +1,10 @@
 package com.ssafy.s12p21d206.achu.api.controller.goods;
 
+import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
+import com.ssafy.s12p21d206.achu.domain.Category;
+import com.ssafy.s12p21d206.achu.domain.CategoryService;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import com.ssafy.s12p21d206.achu.domain.support.TradeStatus;
 import com.ssafy.s12p21d206.achu.domain.support.TradeType;
@@ -13,13 +16,17 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class GoodsController {
 
+  private final CategoryService categoryService;
+
+  public GoodsController(CategoryService categoryService) {
+    this.categoryService = categoryService;
+  }
+
   @GetMapping("/categories")
-  public ApiResponse<List<CategoryResponse>> findCategories(Long userId) {
-    List<CategoryResponse> response = List.of(
-        new CategoryResponse(1L, "출산"),
-        new CategoryResponse(2L, "육아"),
-        new CategoryResponse(3L, "실내"));
-    return ApiResponse.success(response);
+  public ApiResponse<List<CategoryResponse>> findCategories() {
+    List<Category> categories = categoryService.findCategories();
+    List<CategoryResponse> responses = CategoryResponse.of(categories);
+    return ApiResponse.success(responses);
   }
 
   @GetMapping("/categories/{categoryId}/goods")
@@ -39,7 +46,7 @@ public class GoodsController {
 
   @GetMapping("/goods")
   public ApiResponse<List<GoodsResponse>> findGoods(
-      Long userId,
+      ApiUser apiUser,
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
