@@ -5,6 +5,11 @@ public enum AuthCoreErrorType {
       AuthCoreErrorKind.CLIENT_ERROR,
       AuthCoreErrorCode.AUE1000,
       "잘못된 인증 정보입니다.",
+      AuthCoreErrorLevel.INFO),
+  VERIFICATION_REQUEST_TOO_FREQUENT(
+      AuthCoreErrorKind.CLIENT_ERROR,
+      AuthCoreErrorCode.AUE1001,
+      "인증 코드 요청은 {0}초 후에 다시 시도해주세요.",
       AuthCoreErrorLevel.INFO);
 
   private final AuthCoreErrorKind kind;

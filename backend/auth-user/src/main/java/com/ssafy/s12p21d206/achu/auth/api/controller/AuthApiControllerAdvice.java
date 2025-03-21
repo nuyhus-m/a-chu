@@ -2,6 +2,7 @@ package com.ssafy.s12p21d206.achu.auth.api.controller;
 
 import com.ssafy.s12p21d206.achu.auth.api.error.AuthCoreApiErrorType;
 import com.ssafy.s12p21d206.achu.auth.api.error.AuthCoreApiException;
+import com.ssafy.s12p21d206.achu.auth.api.error.AuthErrorMessage;
 import com.ssafy.s12p21d206.achu.auth.api.response.AuthApiResponse;
 import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreErrorKind;
 import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreException;
@@ -35,8 +36,9 @@ public class AuthApiControllerAdvice {
         break;
     }
 
+    AuthErrorMessage errorMessage = new AuthErrorMessage(e.getErrorType(), e.getMessage());
     return new ResponseEntity<>(
-        AuthApiResponse.error(e.getErrorType()), e.getErrorType().getStatus());
+        AuthApiResponse.error(errorMessage), e.getErrorType().getStatus());
   }
 
   @ExceptionHandler(AuthCoreException.class)
@@ -57,14 +59,17 @@ public class AuthApiControllerAdvice {
         ? HttpStatus.BAD_REQUEST
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    return new ResponseEntity<>(AuthApiResponse.error(e.getErrorType()), status);
+    AuthErrorMessage errorMessage = new AuthErrorMessage(e.getErrorType(), e.getMessage());
+    return new ResponseEntity<>(AuthApiResponse.error(errorMessage), status);
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<AuthApiResponse<Void>> handleException(Exception e) {
     log.error(EXCEPTION_LOG_FORMAT, e.getMessage(), e);
+    AuthCoreApiErrorType errorType = AuthCoreApiErrorType.INTERNAL_SERVER_ERROR;
+    AuthErrorMessage errorMessage = new AuthErrorMessage(errorType, e.getMessage());
     return new ResponseEntity<>(
-        AuthApiResponse.error(AuthCoreApiErrorType.INTERNAL_SERVER_ERROR),
+        AuthApiResponse.error(errorMessage),
         AuthCoreApiErrorType.INTERNAL_SERVER_ERROR.getStatus());
   }
 }
