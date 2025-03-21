@@ -16,7 +16,7 @@ public class PhoneVerificationController {
     this.phoneVerificationService = phoneVerificationService;
   }
 
-  @PostMapping("/users/phone/phone-verification")
+  @PostMapping("/verification/request")
   public AuthApiResponse<PhoneVerificationResponse> createPhoneVerificationCode(
       @RequestBody PhoneVerificationRequest request) {
     VerificationCode phoneVerificationCode = phoneVerificationService.issuePhoneVerificationCode(
