@@ -67,7 +67,7 @@ fun MyPageScreen(
                     Box(
                         modifier = Modifier
                             .size(100.dp) // 크기 지정
-                            .shadow(elevation = 8.dp, shape = CircleShape) // 그림자 적용
+                            .shadow(elevation = 4.dp, shape = CircleShape) // 그림자 적용
                             .clip(CircleShape) // 원형 이미지 적용
                     ) {
                         Image(

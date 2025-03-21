@@ -233,11 +233,9 @@ fun PointPinkFlexibleBtn(buttonText: String, onClick: () -> Unit) {
 
 //핑크색 라인 버튼 -> 클릭시 색상 반전
 @Composable
-fun PointPinkLineBtn(buttonText: String, onClick: () -> Unit) {
-    var isClicked by remember { mutableStateOf(false) }
-
-    val buttonColor = if (isClicked) PointPink else Color.White
-    val textColor = if (isClicked) Color.White else PointPink
+fun PointPinkLineBtn(buttonText: String, isSelected: Boolean, onClick: () -> Unit) {
+    val buttonColor = if (isSelected) PointPink else Color.White
+    val textColor = if (isSelected) Color.White else PointPink
 
     Box(
         modifier = Modifier
@@ -251,10 +249,7 @@ fun PointPinkLineBtn(buttonText: String, onClick: () -> Unit) {
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = {
-                        isClicked = !isClicked
-                        onClick()
-                    }
+                    onClick = onClick
                 )
                 .height(50.dp)
                 .padding(horizontal = 24.dp),
@@ -370,7 +365,7 @@ fun basicButton5() {
 fun basicButton6() {
 
     AchuTheme {  // ✅ AchuTheme을 감싸줌
-        PointPinkLineBtn("수정") { }
+        PointPinkLineBtn("수정", false) { }
     }
 }
 

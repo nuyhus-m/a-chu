@@ -2,6 +2,7 @@ package com.ssafy.achu.ui.mypage
 
 import android.R.attr.radius
 import android.R.attr.text
+import android.R.attr.type
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -23,6 +24,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,8 +60,10 @@ import com.ssafy.achu.core.theme.White
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun BabyDetailScreen(type: String) {
-    val type = type
+fun BabyDetailScreen() {
+
+    val type = "등록"//뷰모델에서 관리해야지
+    var selectedGender by remember { mutableStateOf(if (type == "등록") null else "남") }
     val titleText = if (type == "등록") "아이 정보 관리" else "두식이 정보"
     val profileBtnText = if (type == "등록") "프로필 사진 등록하기" else "프로필 사진 수정하기"
     val nicknameText = if (type == "등록") "닉네임" else "두식이"
@@ -87,7 +94,7 @@ fun BabyDetailScreen(type: String) {
                 Box(
                     modifier = Modifier
                         .size(150.dp) // 크기 지정
-                        .shadow(elevation = 8.dp, shape = CircleShape) // 그림자 적용
+                        .shadow(elevation = 4.dp, shape = CircleShape) // 그림자 적용
                         .clip(CircleShape), // 원형 이미지 적용
                     contentAlignment = Alignment.Center // 내부 컨텐츠 중앙 정렬
                 ) {
@@ -108,7 +115,7 @@ fun BabyDetailScreen(type: String) {
                         }
                     } else {
                         Image(
-                            painter = painterResource(id = R.drawable.img_profile_test),
+                            painter = painterResource(id = R.drawable.img_baby_profile),
                             contentDescription = "Profile",
                             modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
                             contentScale = ContentScale.Crop
@@ -184,17 +191,31 @@ fun BabyDetailScreen(type: String) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(), // Row가 가로 전체를 차지하도록 설정
-                    horizontalArrangement = Arrangement.Start, // 왼쪽 정렬
-                    verticalAlignment = Alignment.CenterVertically // 세로 가운데 정렬
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    PointPinkLineBtn("남자") { }
+                    PointPinkLineBtn(
+                        buttonText = "남자",
+                        isSelected = selectedGender == "남"
+                    ) {
+                        selectedGender = if (selectedGender == "여") null else "남"
+                    }
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    PointPinkLineBtn("여자") { }
+
+                    PointPinkLineBtn(
+                        buttonText = "여자",
+                        isSelected = selectedGender == "여"
+                    ) {
+                        selectedGender = if (selectedGender == "여여") null else "여"
+                    }
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
-                PointPinkBtn("등록하기", onClick = {})
+                if (type=="등록"){
+                    PointPinkBtn("등록하기", onClick = {})
+                }
                 Spacer(modifier = Modifier.height(60.dp))
 
 
@@ -212,7 +233,8 @@ fun BabyDetailScreen(type: String) {
 @Composable
 fun BabyDetailScreenPreview() {
     AchuTheme {
-        BabyDetailScreen("등록")
+        BabyDetailScreen()
+
     }
 
 }

@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.ssafy.achu.core.navigation.MyPage.MY_BABY_DETAIL
 import com.ssafy.achu.core.navigation.MyPage.MY_BABY_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_INFO
 import com.ssafy.achu.core.navigation.MyPage.MY_LIKE_LIST
@@ -16,6 +17,7 @@ import com.ssafy.achu.core.navigation.MyPage.MY_TRADE_LIST
 import com.ssafy.achu.ui.chat.ChatListScreen
 import com.ssafy.achu.ui.home.HomeScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
+import com.ssafy.achu.ui.mypage.BabyDetailScreen
 import com.ssafy.achu.ui.mypage.BabyListScreen
 import com.ssafy.achu.ui.mypage.LikeItemListScreen
 import com.ssafy.achu.ui.mypage.RecommendItemScreen
@@ -72,7 +74,13 @@ fun NavGraph(
         }
 
         composable(MY_BABY_LIST) {
-            BabyListScreen()
+            BabyListScreen(
+                onNavigateToBabyDetail = { navController.navigate(route = "babydetail") }
+            )
+        }
+
+        composable(MY_BABY_DETAIL) {
+            BabyDetailScreen("")
         }
 
     }
@@ -85,5 +93,6 @@ object MyPage {
     const val MY_RECOMMEND_LIST = "recommend"
     const val MY_INFO = "info"
     const val MY_BABY_LIST = "babylist"
+    const val MY_BABY_DETAIL = "babydetail"
 }
 
