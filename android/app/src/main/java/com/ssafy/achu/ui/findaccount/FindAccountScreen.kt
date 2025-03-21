@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,8 +26,9 @@ import com.ssafy.achu.core.theme.White
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun FindAccountScreen(modifier: Modifier = Modifier) {
+fun FindAccountScreen(modifier: Modifier = Modifier, viewModel: FindAccountViewModel) {
 
+    val uiState by viewModel.uiState.collectAsState()
     val space = 16.dp
 
     Column(
@@ -43,8 +46,8 @@ fun FindAccountScreen(modifier: Modifier = Modifier) {
 
         // 전화번호
         TextFieldWithLabelAndBtn(
-            value = "",
-            onValueChange = { },
+            value = uiState.phoneNumber,
+            onValueChange = { viewModel.updatePhoneNumber(it) },
             label = stringResource(R.string.phone_number),
             placeholder = stringResource(R.string.phone_number_ex),
             buttonText = stringResource(R.string.auth),
@@ -55,17 +58,17 @@ fun FindAccountScreen(modifier: Modifier = Modifier) {
 
         // 아이디
         TextFieldWithLabel(
-            value = "",
-            onValueChange = { },
+            value = uiState.id,
+            onValueChange = { viewModel.updateId(it) },
             label = stringResource(R.string.id)
         )
 
         Spacer(modifier = Modifier.height(space))
 
-        // 비밀번호
+        // 비밀번호 재설정
         PwdTextFieldWithLabel(
-            value = "",
-            onValueChange = { },
+            value = uiState.pwd,
+            onValueChange = { viewModel.updatePwd(it) },
             label = stringResource(R.string.reenter_password)
         )
 
@@ -73,14 +76,14 @@ fun FindAccountScreen(modifier: Modifier = Modifier) {
 
         // 비밀번호 확인
         PwdTextFieldWithLabel(
-            value = "",
-            onValueChange = { },
+            value = uiState.pwdCheck,
+            onValueChange = { viewModel.updatePwdCheck(it) },
             label = stringResource(R.string.password_check)
         )
 
         Spacer(modifier = Modifier.height(96.dp))
 
-        // 회원가입 버튼
+        // 완료 버튼
         PointBlueButton(
             buttonText = stringResource(R.string.complete),
             onClick = {}
@@ -94,6 +97,6 @@ fun FindAccountScreen(modifier: Modifier = Modifier) {
 @Composable
 fun FindAccountScreenPreview() {
     AchuTheme {
-        FindAccountScreen()
+//        FindAccountScreen()
     }
 }
