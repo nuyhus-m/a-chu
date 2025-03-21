@@ -12,10 +12,12 @@ import com.ssafy.achu.core.navigation.MyPage.MY_BABY_DETAIL
 import com.ssafy.achu.core.navigation.MyPage.MY_BABY_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_INFO
 import com.ssafy.achu.core.navigation.MyPage.MY_LIKE_LIST
+import com.ssafy.achu.core.navigation.MyPage.MY_MEMORY_DETAIL
 import com.ssafy.achu.core.navigation.MyPage.MY_RECOMMEND_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_TRADE_LIST
 import com.ssafy.achu.ui.chat.ChatListScreen
 import com.ssafy.achu.ui.home.HomeScreen
+import com.ssafy.achu.ui.memory.MemoryDetailScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
 import com.ssafy.achu.ui.mypage.BabyDetailScreen
 import com.ssafy.achu.ui.mypage.BabyListScreen
@@ -43,7 +45,7 @@ fun NavGraph(
             ProductListScreen()
         }
         composable(route = BottomNavScreen.MemoryList.route) {
-            MemoryListScreen()
+            MemoryListScreen { navController.navigate(route = "memorydetail") }
         }
         composable(route = BottomNavScreen.ChatList.route) {
             ChatListScreen()
@@ -83,6 +85,11 @@ fun NavGraph(
             BabyDetailScreen()
         }
 
+
+        composable(MY_MEMORY_DETAIL) {
+            MemoryDetailScreen()
+        }
+
     }
 }
 
@@ -94,5 +101,6 @@ object MyPage {
     const val MY_INFO = "info"
     const val MY_BABY_LIST = "babylist"
     const val MY_BABY_DETAIL = "babydetail"
+    const val MY_MEMORY_DETAIL = "memorydetail"
 }
 

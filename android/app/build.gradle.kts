@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -59,4 +61,8 @@ dependencies {
 
     // Jetpack Navigation
     implementation(libs.androidx.navigation.compose)
+
+    //pager
+    implementation("com.google.accompanist:accompanist-pager:0.27.0")
+
 }
