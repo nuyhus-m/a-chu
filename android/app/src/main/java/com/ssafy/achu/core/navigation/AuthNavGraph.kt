@@ -39,7 +39,8 @@ fun AuthNavGraph(
             val viewModel: SignInViewModel = viewModel()
             SignInScreen(
                 viewModel = viewModel,
-                onNavigateToSignUp = { navController.navigate(SIGN_UP) }
+                onNavigateToSignUp = { navController.navigate(SIGN_UP) },
+                onNavigateToFindAccount = { navController.navigate(FIND_ACCOUNT) }
             )
         }
 

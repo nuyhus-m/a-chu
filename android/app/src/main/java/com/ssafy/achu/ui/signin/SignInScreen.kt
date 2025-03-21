@@ -37,7 +37,8 @@ import com.ssafy.achu.core.theme.White
 fun SignInScreen(
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel,
-    onNavigateToSignUp: () -> Unit
+    onNavigateToSignUp: () -> Unit,
+    onNavigateToFindAccount: () -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -120,7 +121,9 @@ fun SignInScreen(
             Text(
                 text = stringResource(R.string.question_forget_account),
                 style = AchuTheme.typography.semiBold16.copy(color = PointBlue),
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .clickable { onNavigateToFindAccount() }
             )
 
             Spacer(modifier = Modifier.height(32.dp))
