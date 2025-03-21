@@ -47,7 +47,7 @@ import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 
 @Composable
-fun MemoryListScreen(modifier: Modifier = Modifier) {
+fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf("두식이") }
     val items = listOf("두식이", "삼식이", "튼튼이")
@@ -169,7 +169,7 @@ fun MemoryListScreen(modifier: Modifier = Modifier) {
                         img = memoryList[index].imgRes,
                         title = memoryList[index].title,
                         date = memoryList[index].date,
-                        onClick = {}
+                        onClick = {onNavigateToMemoryDetail()}
                     )
                     Spacer(modifier = Modifier.height(16.dp)) // 아이템 간 간격 추가
                 }
@@ -242,7 +242,7 @@ data class MemoryItemDto(
 fun MemoryListScreenPreview() {
 
     AchuTheme {
-        MemoryListScreen()
+        MemoryListScreen {}
 //        MemoryListItem(
 //            img = R.drawable.img_baby_profile,
 //            title = "정말 귀여운 원피스",
