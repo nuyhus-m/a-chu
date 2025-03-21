@@ -88,7 +88,6 @@ fun RecommendItemScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp)
         ) {
             Box() {
                 BasicTopAppBar(
@@ -99,18 +98,22 @@ fun RecommendItemScreen() {
                 )
             }
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize() // LazyColumn 크기 설정
-            ) {
-                itemsIndexed(babyList) { index, babyInfo ->
-                    BabyListItem(babyInfo) // BabyListItem을 LazyColumn 내에 추가
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize() // LazyColumn 크기 설정
+                ) {
+                    itemsIndexed(babyList) { index, babyInfo ->
+                        BabyListItem(babyInfo) // BabyListItem을 LazyColumn 내에 추가
+                    }
                 }
+
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+
             }
-
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-
         }
     }
 }
@@ -122,10 +125,12 @@ fun BabyListItem(babyInfo: BabyInfo) {
         "남" -> {
             PointBlue
         }
+
         "여" -> {
             // 여성의 경우 텍스트 색상 (예: 분홍색)
             PointPink
         }
+
         else -> {
             FontGray
         }

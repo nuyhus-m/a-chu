@@ -32,11 +32,11 @@ fun LikeItemListScreen() {
 
     var likeItemList = remember {
         mutableListOf(
-            LikeItem(R.drawable.img_miffy_doll, true, "판매중","토끼 인형", "3,000원"),
-            LikeItem(R.drawable.img_miffy_doll, true, "거래완료","곰인형", "2,500원"),
-            LikeItem(R.drawable.img_miffy_doll, true, "판매중","곰인형", "2,500원"),
-            LikeItem(R.drawable.img_miffy_doll, true, "판매중","곰인형", "2,500원"),
-            LikeItem(R.drawable.img_miffy_doll, true, "거래완료","곰인형", "2,500원")
+            LikeItem(R.drawable.img_miffy_doll, true, "판매중", "토끼 인형", "3,000원"),
+            LikeItem(R.drawable.img_miffy_doll, true, "거래완료", "곰인형", "2,500원"),
+            LikeItem(R.drawable.img_miffy_doll, true, "판매중", "곰인형", "2,500원"),
+            LikeItem(R.drawable.img_miffy_doll, true, "판매중", "곰인형", "2,500원"),
+            LikeItem(R.drawable.img_miffy_doll, true, "거래완료", "곰인형", "2,500원")
         )
     }
 
@@ -49,7 +49,6 @@ fun LikeItemListScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp)
         ) {
             Box() {
                 BasicTopAppBar(
@@ -59,46 +58,48 @@ fun LikeItemListScreen() {
                 )
             }
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                itemsIndexed(likeItemList.chunked(2)) { _, rowItems ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 2.dp)
-                            .clickable {  }, // 좌우 여백 추가
-                        horizontalArrangement = Arrangement.SpaceBetween // 아이템 간 간격 추가
-                    ) {
-                        rowItems.forEach { item ->
-                            LargeLikeItem(
-                                img = item.img?.let { painterResource(id = it) }, // 🔹 Int? -> Painter? 변환
-                                isLiked = item.like,
-                                state = item.sate,
-                                productName = item.productName,
-                                price = item.price,
-                                onClickItem = {}, // 클릭 이벤트
-                                onClickHeart = {
+            Column(modifier = Modifier.padding(24.dp)) {
 
-                                },
-                            )
-                        }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    itemsIndexed(likeItemList.chunked(2)) { _, rowItems ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 2.dp)
+                                .clickable { }, // 좌우 여백 추가
+                            horizontalArrangement = Arrangement.SpaceBetween // 아이템 간 간격 추가
+                        ) {
+                            rowItems.forEach { item ->
+                                LargeLikeItem(
+                                    img = item.img?.let { painterResource(id = it) }, // 🔹 Int? -> Painter? 변환
+                                    isLiked = item.like,
+                                    state = item.sate,
+                                    productName = item.productName,
+                                    price = item.price,
+                                    onClickItem = {}, // 클릭 이벤트
+                                    onClickHeart = {
 
-                        // 홀수 개일 경우 빈 공간 추가하여 정렬 유지
-                        if (rowItems.size == 1) {
-                            Spacer(modifier = Modifier.weight(1f))
+                                    },
+                                )
+                            }
+
+                            // 홀수 개일 경우 빈 공간 추가하여 정렬 유지
+                            if (rowItems.size == 1) {
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
                         }
+                        Spacer(modifier = Modifier.height(8.dp)) // 줄 간 간격 추가
                     }
-                    Spacer(modifier = Modifier.height(8.dp)) // 줄 간 간격 추가
                 }
+
+
             }
 
-
         }
-
     }
-
 }
 
 data class LikeItem(
