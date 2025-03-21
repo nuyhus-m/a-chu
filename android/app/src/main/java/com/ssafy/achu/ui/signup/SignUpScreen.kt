@@ -31,13 +31,13 @@ fun SignUpScreen(modifier: Modifier = Modifier, viewModel: SignUpViewModel) {
     val space = 16.dp
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(color = White)
             .padding(horizontal = 24.dp)
     ) {
         Text(
-            text = "회원가입",
+            text = stringResource(R.string.sign_up),
             style = AchuTheme.typography.bold24,
             modifier = Modifier.padding(vertical = 48.dp)
         )

@@ -10,8 +10,8 @@ import com.ssafy.achu.R
 
 @Composable
 fun PwdTextFieldWithLabel(
-    value: String = "",
-    onValueChange: (String) -> Unit = {},
+    value: String,
+    onValueChange: (String) -> Unit,
     label: String,
     errorMessage: String = ""
 ) {
