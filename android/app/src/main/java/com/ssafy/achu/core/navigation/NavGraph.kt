@@ -80,7 +80,7 @@ fun NavGraph(
         }
 
         composable(MY_BABY_DETAIL) {
-            BabyDetailScreen("")
+            BabyDetailScreen()
         }
 
     }
