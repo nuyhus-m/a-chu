@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.signup
+package com.ssafy.achu.ui.findaccount
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,13 +19,14 @@ import androidx.compose.ui.unit.dp
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.PwdTextFieldWithLabel
+import com.ssafy.achu.core.components.TextFieldWithLabel
 import com.ssafy.achu.core.components.TextFieldWithLabelAndBtn
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.White
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SignUpScreen(modifier: Modifier = Modifier, viewModel: SignUpViewModel) {
+fun FindAccountScreen(modifier: Modifier = Modifier, viewModel: FindAccountViewModel) {
 
     val uiState by viewModel.uiState.collectAsState()
     val space = 16.dp
@@ -36,53 +37,12 @@ fun SignUpScreen(modifier: Modifier = Modifier, viewModel: SignUpViewModel) {
             .background(color = White)
             .padding(horizontal = 24.dp)
     ) {
+
         Text(
-            text = stringResource(R.string.sign_up),
+            text = stringResource(R.string.find_account),
             style = AchuTheme.typography.bold24,
             modifier = Modifier.padding(vertical = 48.dp)
         )
-
-        // 아이디
-        TextFieldWithLabelAndBtn(
-            value = uiState.id,
-            onValueChange = { viewModel.updateId(it) },
-            label = stringResource(R.string.id),
-            placeholder = stringResource(R.string.enter_id),
-            buttonText = stringResource(R.string.check),
-            onClick = {}
-        )
-
-        Spacer(modifier = Modifier.height(space))
-
-        // 비밀번호
-        PwdTextFieldWithLabel(
-            value = uiState.pwd,
-            onValueChange = { viewModel.updatePwd(it) },
-            label = stringResource(R.string.password)
-        )
-
-        Spacer(modifier = Modifier.height(space))
-
-        // 비밀번호 확인
-        PwdTextFieldWithLabel(
-            value = uiState.pwdCheck,
-            onValueChange = { viewModel.updatePwdCheck(it) },
-            label = stringResource(R.string.password_check)
-        )
-
-        Spacer(modifier = Modifier.height(space))
-
-        // 닉네임
-        TextFieldWithLabelAndBtn(
-            value = uiState.nickname,
-            onValueChange = { viewModel.updateNickname(it) },
-            label = stringResource(R.string.nickname),
-            placeholder = stringResource(R.string.nickname_ex),
-            buttonText = stringResource(R.string.check),
-            onClick = {}
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         // 전화번호
         TextFieldWithLabelAndBtn(
@@ -94,21 +54,49 @@ fun SignUpScreen(modifier: Modifier = Modifier, viewModel: SignUpViewModel) {
             onClick = {}
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // 회원가입 버튼
+        // 아이디
+        TextFieldWithLabel(
+            value = uiState.id,
+            onValueChange = { viewModel.updateId(it) },
+            label = stringResource(R.string.id)
+        )
+
+        Spacer(modifier = Modifier.height(space))
+
+        // 비밀번호 재설정
+        PwdTextFieldWithLabel(
+            value = uiState.pwd,
+            onValueChange = { viewModel.updatePwd(it) },
+            label = stringResource(R.string.reenter_password)
+        )
+
+        Spacer(modifier = Modifier.height(space))
+
+        // 비밀번호 확인
+        PwdTextFieldWithLabel(
+            value = uiState.pwdCheck,
+            onValueChange = { viewModel.updatePwdCheck(it) },
+            label = stringResource(R.string.password_check)
+        )
+
+        Spacer(modifier = Modifier.height(96.dp))
+
+        // 완료 버튼
         PointBlueButton(
-            buttonText = stringResource(R.string.sign_up),
+            buttonText = stringResource(R.string.complete),
             onClick = {}
         )
     }
 }
 
+
 @RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun SignUpScreenPreview() {
+fun FindAccountScreenPreview() {
     AchuTheme {
-//        SignUpScreen()
+//        FindAccountScreen()
     }
 }

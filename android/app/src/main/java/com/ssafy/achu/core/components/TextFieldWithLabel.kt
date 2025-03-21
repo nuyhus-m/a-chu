@@ -7,9 +7,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ssafy.achu.R
+import com.ssafy.achu.core.theme.PointBlue
 
 @Composable
-fun PwdTextFieldWithLabel(
+fun TextFieldWithLabel(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
@@ -19,9 +20,11 @@ fun PwdTextFieldWithLabel(
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    PasswordTextField(
+    BasicTextField(
         value = value,
         onValueChange = onValueChange,
-        placeholder = stringResource(R.string.password_format)
+        placeholder = stringResource(R.string.enter_id),
+        placeholderColor = PointBlue,
+        borderColor = PointBlue,
     )
 }
