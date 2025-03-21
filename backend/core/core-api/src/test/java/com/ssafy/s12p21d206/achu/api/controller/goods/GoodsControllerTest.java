@@ -1,9 +1,11 @@
 package com.ssafy.s12p21d206.achu.api.controller.goods;
 
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 
+import com.ssafy.s12p21d206.achu.domain.CategoryService;
 import com.ssafy.s12p21d206.achu.domain.support.TradeType;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import io.restassured.http.ContentType;
@@ -18,10 +20,12 @@ import org.springframework.restdocs.payload.JsonFieldType;
 class GoodsControllerTest extends RestDocsTest {
 
   private GoodsController controller;
+  private CategoryService categoryService;
 
   @BeforeEach
   void setup() {
-    controller = new GoodsController();
+    categoryService = mock(CategoryService.class);
+    controller = new GoodsController(categoryService);
     mockMvc = mockController(controller);
   }
 
