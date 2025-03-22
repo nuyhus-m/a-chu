@@ -224,7 +224,10 @@ pipeline {
         }
 
         stage('API DOCS : Build and Tag Docker Image with Kaniko') {
-            when { expression { develop() } }
+            when {
+                beforeAgent true
+                expression { develop() }
+            }
             agent {
                 kubernetes {
                     yaml """
