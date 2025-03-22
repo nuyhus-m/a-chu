@@ -27,7 +27,6 @@ subprojects {
 	apply plugin: 'java-library'
 	apply plugin: 'org.springframework.boot'
 	apply plugin: 'io.spring.dependency-management'
-	apply plugin: 'org.asciidoctor.jvm.convert'
 
 	java {
 		toolchain {
@@ -45,7 +44,6 @@ subprojects {
 	}
 
 	dependencies {
-		asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 		testImplementation 'org.springframework.boot:spring-boot-starter-test'
 		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	}
@@ -93,17 +91,6 @@ subprojects {
 		classpath = sourceSets.test.runtimeClasspath         // 명시적 설정'
 		useJUnitPlatform {
 			includeTags('develop')
-		}
-	}
-
-	tasks.named('asciidoctor', AsciidoctorTask) {
-		configurations 'asciidoctorExt'
-		dependsOn restDocsTest
-		baseDirFollowsSourceFile()
-		attributes 'snippets': file('build/generated-snippets')
-
-		sources {
-			include "index.adoc"
 		}
 	}
 

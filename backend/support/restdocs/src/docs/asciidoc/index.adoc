@@ -22,6 +22,12 @@ endif::[]
 
 이 API문서는 'A-Chu' 프로젝트의 산출물입니다.
 
-include::goods.adoc[]
-include::memory.adoc[]
-include::baby.adoc[]
+
+:snippets: +{project-root}+/build/generated-snippets/user-auth
+include::modules/auth-user/auth.adoc[]
+include::modules/auth-user/user.adoc[]
+
+:snippets: +{project-root}+/build/generated-snippets/core-api
+include::modules/core-api/baby.adoc[]
+include::modules/core-api/goods.adoc[]
+include::modules/core-api/memory.adoc[]
