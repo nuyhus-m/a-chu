@@ -2,6 +2,9 @@ package com.ssafy.s12p21d206.achu.api.controller.baby;
 
 import static com.ssafy.s12p21d206.achu.test.api.RestDocsUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -13,6 +16,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 
+import com.ssafy.s12p21d206.achu.domain.BabyService;
 import com.ssafy.s12p21d206.achu.domain.support.Sex;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import io.restassured.http.ContentType;
@@ -28,15 +32,19 @@ import org.springframework.restdocs.payload.JsonFieldType;
 class BabyControllerTest extends RestDocsTest {
 
   private BabyController controller;
+  private BabyService babyService;
 
   @BeforeEach
   void setup() {
-    controller = new BabyController();
+    babyService = mock(BabyService.class);
+    controller = new BabyController(babyService);
     mockMvc = mockController(controller);
   }
 
   @Test
   void appendBaby() {
+    when(babyService.append(any(), any())).thenReturn(1L);
+
     given()
         .contentType(ContentType.MULTIPART)
         .multiPart("profileImage", "test.jpg", new byte[0], "image/jpeg")

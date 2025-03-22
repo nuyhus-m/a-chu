@@ -1,7 +1,10 @@
 package com.ssafy.s12p21d206.achu.api.controller.baby;
 
+import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
+import com.ssafy.s12p21d206.achu.domain.BabyService;
+import com.ssafy.s12p21d206.achu.domain.NewBaby;
 import com.ssafy.s12p21d206.achu.domain.support.Sex;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import java.time.LocalDate;
@@ -21,13 +24,21 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class BabyController {
 
+  private final BabyService babyService;
+
+  public BabyController(BabyService babyService) {
+    this.babyService = babyService;
+  }
+
   @PostMapping("/babies")
   public ApiResponse<DefaultIdResponse> appendBaby(
+      ApiUser apiUser,
       @RequestPart(name = "profileImage") MultipartFile profileImage,
       @RequestPart AppendBabyRequest request) {
-
-    DefaultIdResponse response = new DefaultIdResponse(1L);
-    return ApiResponse.success(response);
+    String imageUrl = "https://dummy-image-url.com/image.png";
+    NewBaby newBaby = request.toNewBaby(imageUrl);
+    Long id = babyService.append(apiUser.toUser(), newBaby);
+    return ApiResponse.success(new DefaultIdResponse(id));
   }
 
   @GetMapping("/babies/{babyId}")
