@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.auth.domain;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,6 +16,7 @@ public class VerificationCodeSender {
     this.verificationCodeMessageGenerator = verificationCodeMessageGenerator;
   }
 
+  @Async
   public void push(VerificationCode verificationCode, Phone phone, VerificationPurpose purpose) {
     String verificationCodeMessage =
         verificationCodeMessageGenerator.generate(verificationCode, purpose);

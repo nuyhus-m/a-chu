@@ -5,5 +5,7 @@ dependencies {
 
     implementation 'net.nurigo:sdk:4.3.2'
 
+    compileOnly project(':core:core-api')
+
     testImplementation project(":tests:api-docs")
 }
