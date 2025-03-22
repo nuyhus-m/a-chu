@@ -40,4 +40,20 @@ public class Baby {
   public Long getId() {
     return id;
   }
+
+  public String getNickname() {
+    return nickname;
+  }
+
+  public Sex getGender() {
+    return gender;
+  }
+
+  public String getImageUrl() {
+    return imageUrl;
+  }
+
+  public LocalDate getBirth() {
+    return birth;
+  }
 }

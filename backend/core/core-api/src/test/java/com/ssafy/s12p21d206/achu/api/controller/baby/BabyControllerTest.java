@@ -16,11 +16,15 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 
+import com.ssafy.s12p21d206.achu.domain.Baby;
 import com.ssafy.s12p21d206.achu.domain.BabyService;
+import com.ssafy.s12p21d206.achu.domain.support.DefaultDateTime;
 import com.ssafy.s12p21d206.achu.domain.support.Sex;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -101,6 +105,16 @@ class BabyControllerTest extends RestDocsTest {
 
   @Test
   void findBabies() {
+
+    DefaultDateTime now = new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now());
+
+    Baby baby1 =
+        new Baby(1L, 1L, "강두식", Sex.MALE, "https://test-image1.png", LocalDate.of(2025, 1, 1), now);
+    Baby baby2 = new Baby(
+        2L, 1L, "강삼식", Sex.FEMALE, "https://test-image2.png", LocalDate.of(2025, 3, 1), now);
+
+    when(babyService.findBabies(any())).thenReturn(List.of(baby1, baby2));
+
     given()
         .contentType(ContentType.JSON)
         .queryParam("offset", 0)
@@ -123,6 +137,9 @@ class BabyControllerTest extends RestDocsTest {
                 fieldWithPath("data.[].nickname")
                     .type(JsonFieldType.STRING)
                     .description("자녀 이름 혹은 별명"),
+                fieldWithPath("data.[].gender")
+                    .type(JsonFieldType.STRING)
+                    .description("자녀 성별: MALE or FEMALE"),
                 fieldWithPath("data.[].imgUrl")
                     .type(JsonFieldType.STRING)
                     .description("자녀 프로필 이미지 주소"),

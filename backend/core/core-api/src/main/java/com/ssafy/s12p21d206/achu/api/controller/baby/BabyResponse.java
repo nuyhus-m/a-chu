@@ -1,5 +1,19 @@
 package com.ssafy.s12p21d206.achu.api.controller.baby;
 
+import com.ssafy.s12p21d206.achu.domain.Baby;
+import com.ssafy.s12p21d206.achu.domain.support.Sex;
 import java.time.LocalDate;
+import java.util.List;
 
-public record BabyResponse(Long id, String nickname, String imgUrl, LocalDate birth) {}
+public record BabyResponse(Long id, String nickname, Sex gender, String imgUrl, LocalDate birth) {
+  public static List<BabyResponse> of(List<Baby> babies) {
+    return babies.stream()
+        .map(baby -> new BabyResponse(
+            baby.getId(),
+            baby.getNickname(),
+            baby.getGender(),
+            baby.getImageUrl(),
+            baby.getBirth()))
+        .toList();
+  }
+}

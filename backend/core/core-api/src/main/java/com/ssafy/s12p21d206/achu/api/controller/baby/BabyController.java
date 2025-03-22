@@ -3,6 +3,7 @@ package com.ssafy.s12p21d206.achu.api.controller.baby;
 import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
+import com.ssafy.s12p21d206.achu.domain.Baby;
 import com.ssafy.s12p21d206.achu.domain.BabyService;
 import com.ssafy.s12p21d206.achu.domain.NewBaby;
 import com.ssafy.s12p21d206.achu.domain.support.Sex;
@@ -51,19 +52,12 @@ public class BabyController {
 
   @GetMapping("/babies")
   public ApiResponse<List<BabyResponse>> findBabies(
-      Long userId,
+      ApiUser apiUser,
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
-
-    LocalDate birth1 = LocalDate.of(2025, 3, 20);
-    LocalDate birth2 = LocalDate.of(2026, 5, 5);
-
-    List<BabyResponse> response = List.of(
-        new BabyResponse(1L, "강두식", "https://test-image1.png", birth1),
-        new BabyResponse(2L, "강삼식", "https://test-image2.png", birth2));
-
-    return ApiResponse.success(response);
+    List<Baby> babies = babyService.findBabies(apiUser.toUser());
+    return ApiResponse.success(BabyResponse.of(babies));
   }
 
   @PatchMapping("/babies/{babyId}/profile-image")
