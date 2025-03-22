@@ -4,6 +4,6 @@ public enum AuthCoreApiErrorCode {
   AE1000,
 
   AE2000,
-  AE2002,
-  AE2001
+  AE2001,
+  AE2002
 }
