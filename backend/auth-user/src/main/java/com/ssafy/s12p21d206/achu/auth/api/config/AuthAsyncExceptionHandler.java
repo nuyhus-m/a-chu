@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AuthAsyncExceptionHandler implements AsyncExceptionHandler {
+  private static final String AUTH_CORE_EXCEPTION_LOG_FORMAT = "AuthCoreException : {}";
   private final Logger log = LoggerFactory.getLogger(getClass());
 
   @Override
@@ -20,9 +21,9 @@ public class AuthAsyncExceptionHandler implements AsyncExceptionHandler {
   public void handle(Throwable e, Method method, Object... params) {
     AuthCoreException authCoreException = (AuthCoreException) e;
     switch (authCoreException.getErrorType().getLevel()) {
-      case ERROR -> log.error("CoreException : {}", e.getMessage(), e);
-      case WARN -> log.warn("CoreException : {}", e.getMessage(), e);
-      default -> log.info("CoreException : {}", e.getMessage(), e);
+      case ERROR -> log.error(AUTH_CORE_EXCEPTION_LOG_FORMAT, e.getMessage(), e);
+      case WARN -> log.warn(AUTH_CORE_EXCEPTION_LOG_FORMAT, e.getMessage(), e);
+      default -> log.info(AUTH_CORE_EXCEPTION_LOG_FORMAT, e.getMessage(), e);
     }
   }
 }
