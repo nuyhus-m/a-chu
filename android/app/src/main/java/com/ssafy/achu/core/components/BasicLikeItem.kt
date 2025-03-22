@@ -18,10 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.ColorPainter
@@ -36,7 +33,6 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.White
-import java.lang.IllegalStateException
 
 @Composable
 fun BasicLikeItem(
@@ -135,7 +131,7 @@ fun BasicLikeItem(
 
                     // 하트 클릭 처리
                     Image(
-                        painter = painterResource(id = if (isLiked) R.drawable.ic_favorite else R.drawable.favorite_line),
+                        painter = painterResource(id = if (isLiked) R.drawable.ic_favorite else R.drawable.ic_favorite_line),
                         contentDescription = null,
                         colorFilter = ColorFilter.tint(if (isLiked) FontPink else FontGray),
                         modifier = Modifier

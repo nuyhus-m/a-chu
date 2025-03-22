@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,8 +36,6 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.White
-
-import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
 fun LargeLikeItem(
@@ -112,7 +111,7 @@ fun LargeLikeItem(
                 Text(
                     text = productName,
                     style = AchuTheme.typography.regular18,
-                    modifier = Modifier.padding( start = 4.dp),
+                    modifier = Modifier.padding(start = 4.dp),
                 )
 
                 Row(
@@ -130,7 +129,7 @@ fun LargeLikeItem(
                     )
 
                     Image(
-                        painter = painterResource(id = if (isLiked) R.drawable.ic_favorite else R.drawable.favorite_line),
+                        painter = painterResource(id = if (isLiked) R.drawable.ic_favorite else R.drawable.ic_favorite_line),
                         contentDescription = null,
                         colorFilter = ColorFilter.tint(if (isLiked) FontPink else FontGray),
                         modifier = Modifier
