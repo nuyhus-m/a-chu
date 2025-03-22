@@ -130,7 +130,7 @@ class BabyControllerTest extends RestDocsTest {
         .then()
         .status(HttpStatus.OK)
         .apply(document(
-            "modify-profile-image",
+            "modify-baby-profile-image",
             pathParameters(parameterWithName("babyId").description("프로필 이미지를 변경할 자녀의 id")),
             requestParts(partWithName("profileImage").description("프로필 이미지 파일")),
             responseFields(fieldWithPath("result")

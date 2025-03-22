@@ -208,13 +208,11 @@ pipeline {
         }
 
         stage('API Documentation') {
-            when { expression { develop() } }
             steps {
                 sh """
                 cd ${params.BACKEND_DIR} && ./gradlew asciidoctor
-                ls ./core/core-api/build/docs/asciidoc
                 """
-                stash includes: 'backend/core/core-api/build/docs/asciidoc/index.html', name: 'api-docs-stash'
+                stash includes: 'backend/support/restdocs/build/docs/asciidoc/index.html', name: 'api-docs-stash'
             }
             post {
                 always {
@@ -260,9 +258,6 @@ spec:
                     script {
                         unstash 'api-docs-stash'
                         sh """
-                        echo "Current directory: \$(pwd)"
-                        ls
-
                         /kaniko/executor \\
                             --context `pwd` \\
                             --dockerfile=${API_DOCS_DOCKERFILE_PATH} \\
@@ -326,9 +321,9 @@ post {
             |${env.SONARQUBE_PROJECT_URL ? "▫️ [소나큐브 대시보드 보기](${env.SONARQUBE_PROJECT_URL})" : ""}
             ${env.SONARQUBE_QG_DETAILS ? "|⚠️ *실패 항목*: ${env.SONARQUBE_QG_DETAILS}" : ""}
 
-            ${develop() ? """|
             |\n**📚 API 문서화**
             |▫️ 문서 생성: ${env.API_DOCS_STATUS ?: '❔'} 
+            ${develop() ? """|
             |▫️ 이미지 배포: ${env.API_DOCS_IMAGE_BUILD_PUSH_STATUS ?: '❔'}
             |▫️ GitOps 업데이트: ${env.COMMIT_TO_GITOPS_REPO_STATUS ?: '❔'}
             """ : ""}

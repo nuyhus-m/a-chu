@@ -14,7 +14,7 @@ operation::find-babies[snippets='http-request,query-parameters,http-response,res
 
 === 자녀 프로필 사진 변경
 
-operation::modify-profile-image[snippets='http-request,path-parameters,request-parts,http-response,response-fields']
+operation::modify-baby-profile-image[snippets='http-request,path-parameters,request-parts,http-response,response-fields']
 
 === 자녀 정보 변경
 

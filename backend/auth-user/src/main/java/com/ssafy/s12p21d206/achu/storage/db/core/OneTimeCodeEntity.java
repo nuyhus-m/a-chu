@@ -1,0 +1,63 @@
+package com.ssafy.s12p21d206.achu.storage.db.core;
+
+import com.ssafy.s12p21d206.achu.auth.domain.NewVerificationCode;
+import com.ssafy.s12p21d206.achu.auth.domain.Phone;
+import com.ssafy.s12p21d206.achu.auth.domain.VerificationCode;
+import com.ssafy.s12p21d206.achu.auth.domain.VerificationPurpose;
+import com.ssafy.s12p21d206.achu.auth.domain.support.AuthDefaultDateTime;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.Duration;
+import java.util.UUID;
+
+@Table(name = "verification_code")
+@Entity
+public class OneTimeCodeEntity extends AuthMetaEntity {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id; // java.util.uuid
+
+  private String phoneNumber;
+  private String code;
+  private VerificationPurpose purpose;
+
+  private boolean isVerified;
+
+  private Duration expiresIn;
+
+  protected OneTimeCodeEntity() {}
+
+  public OneTimeCodeEntity(
+      String phoneNumber,
+      String code,
+      VerificationPurpose purpose,
+      boolean isVerified,
+      Duration expiresIn) {
+    this.phoneNumber = phoneNumber;
+    this.code = code;
+    this.purpose = purpose;
+    this.isVerified = isVerified;
+    this.expiresIn = expiresIn;
+  }
+
+  public static OneTimeCodeEntity from(
+      NewVerificationCode verificationCode, Phone phone, VerificationPurpose purpose) {
+    return new OneTimeCodeEntity(
+        phone.number(), verificationCode.code(), purpose, false, verificationCode.expiresIn());
+  }
+
+  public VerificationCode toVerificationCode() {
+    return new VerificationCode(
+        this.id,
+        new Phone(phoneNumber),
+        code,
+        purpose,
+        isVerified,
+        expiresIn,
+        new AuthDefaultDateTime(getCreatedAt(), getUpdatedAt()));
+  }
+}

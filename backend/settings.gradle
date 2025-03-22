@@ -20,5 +20,6 @@ include 'tests:api-docs'
 
 include 'support:logging'
 include 'support:monitoring'
+include 'support:restdocs'
 
 include 'auth-user'

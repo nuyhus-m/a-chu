@@ -7,6 +7,7 @@ import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
@@ -78,9 +79,9 @@ public abstract class RestDocsTest {
   }
 
   private ObjectMapper objectMapper() {
-    return new ObjectMapper()
-        .findAndRegisterModules()
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        .disable(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS);
+    return Jackson2ObjectMapperBuilder.json()
+        .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        .featuresToDisable(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS)
+        .build();
   }
 }

@@ -1,0 +1,69 @@
+package com.ssafy.s12p21d206.achu.auth.api.controller.verification;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+
+import com.ssafy.s12p21d206.achu.auth.domain.PhoneVerificationService;
+import com.ssafy.s12p21d206.achu.auth.domain.VerificationPurpose;
+import com.ssafy.s12p21d206.achu.builder.VerificationCodeBuilder;
+import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
+import com.ssafy.s12p21d206.achu.test.api.RestDocsUtils;
+import io.restassured.http.ContentType;
+import java.time.LocalDateTime;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.restdocs.payload.JsonFieldType;
+
+// sonarqube에서 test에 assertions이 없더라도 code smell로 인식하지 않음
+@SuppressWarnings("java:S2699")
+class PhoneVerificationControllerTest extends RestDocsTest {
+
+  private PhoneVerificationController controller;
+  private PhoneVerificationService phoneVerificationService;
+
+  @BeforeEach
+  void setup() {
+    phoneVerificationService = mock(PhoneVerificationService.class);
+    controller = new PhoneVerificationController(phoneVerificationService);
+    mockMvc = mockController(controller);
+  }
+
+  @Test
+  void requestVerification() {
+    when(phoneVerificationService.issuePhoneVerificationCode(any(), any()))
+        .thenReturn(VerificationCodeBuilder.createNonVerified(
+            VerificationPurpose.SIGN_UP, LocalDateTime.now()));
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(new PhoneVerificationRequest("01012341234", VerificationPurpose.SIGN_UP))
+        .post("/verification/request")
+        .then()
+        .status(HttpStatus.OK)
+        .apply(document(
+            "request-verification",
+            requestFields(
+                fieldWithPath("phoneNumber")
+                    .type(JsonFieldType.STRING)
+                    .description("생성할 user 아이디")
+                    .attributes(RestDocsUtils.constraints("11자리 전화번호 숫자")),
+                fieldWithPath("purpose")
+                    .type(JsonFieldType.STRING)
+                    .description("인증 목적")
+                    .attributes(
+                        RestDocsUtils.constraints("SIGN_UP(회원가입), CHANGE_PASSWORD(비밀번호 변경)"))),
+            responseFields(
+                fieldWithPath("result")
+                    .type(JsonFieldType.STRING)
+                    .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
+                fieldWithPath("data.id").type(JsonFieldType.STRING).description("생성된 인증 번호 id"),
+                fieldWithPath("data.expiresIn")
+                    .type(JsonFieldType.STRING)
+                    .description("ISO 8601 표준 duration, 인증 번호 인증 가능 만료 기간"))));
+  }
+}

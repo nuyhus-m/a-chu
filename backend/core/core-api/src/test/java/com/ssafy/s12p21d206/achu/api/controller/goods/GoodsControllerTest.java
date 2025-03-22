@@ -1,14 +1,17 @@
 package com.ssafy.s12p21d206.achu.api.controller.goods;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 
+import com.ssafy.s12p21d206.achu.domain.Category;
 import com.ssafy.s12p21d206.achu.domain.CategoryService;
 import com.ssafy.s12p21d206.achu.domain.support.TradeType;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import io.restassured.http.ContentType;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -31,6 +34,9 @@ class GoodsControllerTest extends RestDocsTest {
 
   @Test
   void findCategories() {
+    when(categoryService.findCategories())
+        .thenReturn(List.of(new Category(1L, "카테고리1"), new Category(2L, "카테고리2")));
+
     given()
         .contentType(ContentType.JSON)
         .get("/categories")
