@@ -1,6 +1,5 @@
 package com.ssafy.achu.core.components
 
-import android.R.attr.textColor
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -30,7 +29,6 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.ssafy.achu.core.components.SmallLineBtn
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
@@ -98,11 +96,10 @@ fun PointBlueFlexibleBtn(buttonText: String, onClick: () -> Unit) {
 
 //파란색 라인 버튼 -> 클릭시 색상반전
 @Composable
-fun PointBlueLineBtn(buttonText: String, onClick: () -> Unit) {
-    var isClicked by remember { mutableStateOf(false) }
+fun PointBlueLineBtn(buttonText: String, isSelected: Boolean, onClick: () -> Unit) {
 
-    val buttonColor = if (isClicked) PointBlue else Color.White
-    val textColor = if (isClicked) Color.White else Color.Black
+    val buttonColor = if (isSelected) PointBlue else Color.White
+    val textColor = if (isSelected) Color.White else Color.Black
 
     Box(
         modifier = Modifier
@@ -117,7 +114,6 @@ fun PointBlueLineBtn(buttonText: String, onClick: () -> Unit) {
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
                     onClick = {
-                        isClicked = !isClicked
                         onClick()
                     }
                 )
@@ -128,16 +124,15 @@ fun PointBlueLineBtn(buttonText: String, onClick: () -> Unit) {
             Text(
                 text = buttonText,
                 color = textColor,
-                style = AchuTheme.typography.semiBold18White
+                style = AchuTheme.typography.semiBold16
             )
         }
     }
 }
 
 
-
 @Composable
-fun SmallLineBtn(buttonText: String,color: Color, onClick: () -> Unit) {
+fun SmallLineBtn(buttonText: String, color: Color, onClick: () -> Unit) {
     var isClicked by remember { mutableStateOf(false) }
 
     Box(
@@ -355,7 +350,7 @@ fun basicButton4() {
 fun basicButton5() {
 
     AchuTheme {  // ✅ AchuTheme을 감싸줌
-        PointBlueLineBtn("수정") { }
+        PointBlueLineBtn("수정", false) { }
     }
 }
 
@@ -376,7 +371,7 @@ fun basicButton6() {
 fun basicButton67() {
 
     AchuTheme {  // ✅ AchuTheme을 감싸줌
-        SmallLineBtn("프로필수정", PointBlue){}
+        SmallLineBtn("프로필수정", PointBlue) {}
     }
 }
 

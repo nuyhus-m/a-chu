@@ -15,7 +15,7 @@ val pretandard = FontFamily(
     Font(R.font.pretendardbold, FontWeight.Bold),
     Font(R.font.pretendardsemibold, FontWeight.SemiBold),
     Font(R.font.pretendardregular, FontWeight.Normal),
-    Font(R.font.pretendard_medium,FontWeight.Medium)
+    Font(R.font.pretendard_medium, FontWeight.Medium)
 )
 
 
@@ -112,7 +112,11 @@ internal val Typography = MyTypography(
         fontSize = 12.sp,
         color = FontGray,
     ),
-
+    regular20 = TextStyle(
+        fontFamily = pretandard,
+        fontWeight = FontWeight.Normal,
+        fontSize = 20.sp,
+    ),
     regular18 = TextStyle(
         fontFamily = pretandard,
         fontWeight = FontWeight.Normal,
@@ -138,7 +142,6 @@ internal val Typography = MyTypography(
         fontWeight = FontWeight.Medium,
         fontSize = 18.sp,
     ),
-
 )
 
 @Immutable
@@ -157,6 +160,7 @@ data class MyTypography(
     val semiBold12FontGray: TextStyle,
     val semiBold12PointBlue: TextStyle,
     val semiBold14PointBlue: TextStyle,
+    val regular20: TextStyle,
     val regular18: TextStyle,
     val regular16: TextStyle,
     val regular14: TextStyle,
@@ -180,11 +184,11 @@ val LocalTypography = staticCompositionLocalOf {
         semiBold12FontGray = TextStyle.Default,
         semiBold12PointBlue = TextStyle.Default,
         semiBold14PointBlue = TextStyle.Default,
+        regular20 = TextStyle.Default,
         regular18 = TextStyle.Default,
         regular16 = TextStyle.Default,
         regular14 = TextStyle.Default,
         regular12 = TextStyle.Default,
         medium18 = TextStyle.Default,
-
     )
 }

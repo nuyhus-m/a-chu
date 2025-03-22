@@ -38,4 +38,9 @@
     <string name="find_account">계정 찾기</string>
     <string name="complete">완료</string>
     <string name="reenter_password">비밀번호 재설정</string>
+
+    <!--중고 거래-->
+    <string name="searchbar_placeholder">검색어를 입력하세요</string>
+    <string name="search_icon">Search Icon</string>
+
 </resources>

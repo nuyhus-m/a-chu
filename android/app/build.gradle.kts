@@ -65,4 +65,7 @@ dependencies {
     //pager
     implementation("com.google.accompanist:accompanist-pager:0.27.0")
 
+    // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 }
