@@ -41,7 +41,12 @@ fun NavGraph(
         modifier = modifier
     ) {
         composable(route = BottomNavScreen.Home.route) {
-            HomeScreen()
+            HomeScreen(
+                onNavigateToLikeList = { navController.navigate(route = "likelist") },
+                onNavigateToRecommend = { navController.navigate(route = "recommend") },
+                onNavigateToBabyList = { navController.navigate(route = "babylist") },
+                onNavigateToProductList = { navController.navigate(route = "productlist") }
+            )
         }
         composable(route = BottomNavScreen.ProductList.route) {
             ProductListScreen()

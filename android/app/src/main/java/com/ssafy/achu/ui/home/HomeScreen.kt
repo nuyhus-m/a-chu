@@ -2,6 +2,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,7 +61,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    onNavigateToLikeList: () -> Unit,
+    onNavigateToRecommend: () -> Unit,
+    onNavigateToBabyList: () -> Unit,
+    onNavigateToProductList: () -> Unit
+) {
 
     val likeItemList = remember {
         mutableListOf(
@@ -151,14 +158,12 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .clip(RoundedCornerShape(8.dp))
         ) {
             LazyRow(
                 state = listState,
                 modifier = Modifier
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(0.dp),
-                userScrollEnabled = false // 사용자 스크롤 비활성화
+                userScrollEnabled = true
             ) {
                 items(imageList.size * 2) { index -> // 2배로 늘려 무한 반복 느낌 구현
                     val actualIndex = index % imageList.size // 실제 이미지 인덱스
@@ -167,6 +172,15 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .fillParentMaxWidth() // 부모 너비에 맞춤
                             .wrapContentHeight()
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() }, // 리플 제거
+                                indication = null
+                            )  {
+                                when (actualIndex) {
+                                    0 -> onNavigateToBabyList()
+                                    1 -> onNavigateToRecommend()
+                                }
+                            }
                     ) {
                         Image(
                             painter = painterResource(id = imageList[actualIndex]),
@@ -197,7 +211,11 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 "의류",
                 modifier = Modifier
                     .weight(1.0f)
-                    .clickable {
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
+                        indication = null
+                    )  {
+                        onNavigateToProductList()
 
                     })
             CategoryItem(
@@ -205,8 +223,11 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 "잡화",
                 modifier = Modifier
                     .weight(1.0f)
-                    .clickable {
-
+                    .clickable (
+                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
+                        indication = null
+                    )  {
+                        onNavigateToProductList()
                     })
 
             CategoryItem(
@@ -214,16 +235,22 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 "장난감",
                 modifier = Modifier
                     .weight(1.0f)
-                    .clickable {
-
+                    .clickable (
+                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
+                        indication = null
+                    )  {
+                        onNavigateToProductList()
                     })
             CategoryItem(
                 R.drawable.ic_category_maternity,
                 "출산",
                 modifier = Modifier
                     .weight(1.0f)
-                    .clickable {
-
+                    .clickable (
+                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
+                        indication = null
+                    )  {
+                        onNavigateToProductList()
                     })
         }
 
@@ -241,32 +268,44 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 "가구",
                 modifier = Modifier
                     .weight(1.0f)
-                    .clickable {
-
+                    .clickable (
+                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
+                        indication = null
+                    )  {
+                        onNavigateToProductList()
                     })
             CategoryItem(
                 R.drawable.ic_category_parenting,
                 "육아",
                 modifier = Modifier
                     .weight(1.0f)
-                    .clickable {
-
+                    .clickable (
+                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
+                        indication = null
+                    )  {
+                        onNavigateToProductList()
                     })
             CategoryItem(
                 R.drawable.ic_category_indoor,
                 "실내",
                 modifier = Modifier
                     .weight(1.0f)
-                    .clickable {
-
+                    .clickable (
+                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
+                        indication = null
+                    )  {
+                        onNavigateToProductList()
                     })
             CategoryItem(
                 R.drawable.ic_category_others,
                 "기타",
                 modifier = Modifier
                     .weight(1.0f)
-                    .clickable {
-
+                    .clickable (
+                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
+                        indication = null
+                    )  {
+                        onNavigateToProductList()
                     })
         }
 
@@ -292,7 +331,10 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     textDecoration = TextDecoration.Underline
 
                 ),
-                color = FontGray
+                color = FontGray,
+                modifier = Modifier.clickable {
+                    onNavigateToRecommend()
+                }
             )
         }
 
@@ -552,6 +594,7 @@ fun CategoryItem(
     modifier: Modifier
 ) {
     Column(
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -589,7 +632,6 @@ fun BabyDropdown(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { expanded = true }
             .padding(2.dp)
             .height(66.dp)
     ) {
@@ -618,7 +660,9 @@ fun BabyDropdown(
         ) {
             Row(
                 modifier = Modifier
-                    .wrapContentWidth(),
+                    .wrapContentWidth()
+                    .clickable { expanded = true }
+                ,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -638,30 +682,32 @@ fun BabyDropdown(
                     modifier = Modifier.size(24.dp),
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(FontBlack)
                 )
-            }
 
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .background(color = White)
-            ) {
-                babyList.forEach { baby ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = baby.babyNickname,
-                                style = AchuTheme.typography.semiBold16
-                            )
-                        },
-                        onClick = {
-                            onBabySelected(baby)
-                            expanded = false
-                        }
-                    )
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .background(color = White)
+                ) {
+                    babyList.forEach { baby ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = baby.babyNickname,
+                                    style = AchuTheme.typography.semiBold16
+                                )
+                            },
+                            onClick = {
+                                onBabySelected(baby)
+                                expanded = false
+                            }
+                        )
+                    }
                 }
             }
+
+
 
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -677,6 +723,10 @@ fun BabyDropdown(
 @Composable
 fun HomeScreenPreview() {
     AchuTheme {
-        HomeScreen()
+        HomeScreen(
+            onNavigateToLikeList = { },
+            onNavigateToRecommend = { },
+            onNavigateToBabyList = { },
+            onNavigateToProductList = {  })
     }
 }
