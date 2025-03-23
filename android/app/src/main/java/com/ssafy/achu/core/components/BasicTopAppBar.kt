@@ -4,7 +4,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -12,11 +15,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,8 +41,10 @@ fun BasicTopAppBar(title: String = "", onBackClick: () -> Unit) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
         },
-        modifier = Modifier.padding(vertical = 24
-            .dp),
+        modifier = Modifier.padding(
+            vertical = 24
+                .dp
+        ),
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.White
         )
@@ -63,6 +73,66 @@ fun CenterTopAppBar(title: String = "", onBackClick: () -> Unit) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBarWithMenu(
+    title: String = "",
+    onBackClick: () -> Unit,
+    menuFirstText: String = "",
+    menuSecondText: String = "",
+    onMenuFirstItemClick: () -> Unit,
+    onMenuSecondItemClick: () -> Unit
+) {
+    var menuExpanded by remember { mutableStateOf(false) } // 메뉴 상태 관리
+
+    TopAppBar(
+        title = {
+            Text(
+                text = title,
+                style = AchuTheme.typography.bold24
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = { onBackClick() }) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            }
+        },
+        modifier = Modifier.padding(
+            vertical = 24
+                .dp
+        ),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.White
+        ),
+        actions = {
+            IconButton(onClick = { menuExpanded = true }) {
+                Icon(Icons.Default.MoreVert, contentDescription = "더보기")
+            }
+
+            DropdownMenu(
+                expanded = menuExpanded,
+                onDismissRequest = { menuExpanded = false },
+                containerColor = White
+            ) {
+                DropdownMenuItem(
+                    text = { Text(menuFirstText) },
+                    onClick = {
+                        menuExpanded = false
+                        onMenuFirstItemClick()
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text(menuSecondText) },
+                    onClick = {
+                        menuExpanded = false
+                        onMenuSecondItemClick()
+                    }
+                )
+            }
+        }
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun BasicTopAppBarPreview() {
@@ -76,6 +146,21 @@ fun BasicTopAppBarPreview() {
 fun CenterTopAppBarPreview() {
     AchuTheme {
         CenterTopAppBar(title = "추억업로드", onBackClick = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TopBarWithMenuPreview() {
+    AchuTheme {
+        TopBarWithMenu(
+            title = "거래상세",
+            onBackClick = {},
+            menuFirstText = "수정",
+            menuSecondText = "삭제",
+            onMenuFirstItemClick = {},
+            onMenuSecondItemClick = {}
+        )
     }
 }
 
