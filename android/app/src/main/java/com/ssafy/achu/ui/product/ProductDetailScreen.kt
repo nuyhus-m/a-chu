@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -57,236 +58,245 @@ import com.ssafy.achu.data.model.Product
 @Composable
 fun ProductDetailScreen(modifier: Modifier = Modifier) {
 
-    val scrollState = rememberScrollState()
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(color = White)
-            .verticalScroll(scrollState)
-    ) {
-        // 탑바
-        TopBarWithMenu(
-            title = stringResource(R.string.product_detail),
-            onBackClick = {},
-            menuFirstText = stringResource(R.string.modify),
-            menuSecondText = stringResource(R.string.delete),
-            onMenuFirstItemClick = {},
-            onMenuSecondItemClick = {}
-        )
-
-        // 이미지 페이저
-        ImagePager()
-
-        // 프로필
-        Row(
-            modifier = Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .padding(top = 24.dp, bottom = 16.dp, start = 24.dp, end = 24.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.img_profile_test),
-                contentDescription = stringResource(R.string.profile),
-                modifier = Modifier
-                    .fillMaxWidth(0.16f)
-                    .aspectRatio(1f)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
+    Scaffold(
+        topBar = {
+            // 탑바
+            TopBarWithMenu(
+                title = stringResource(R.string.product_detail),
+                onBackClick = {},
+                menuFirstText = stringResource(R.string.modify),
+                menuSecondText = stringResource(R.string.delete),
+                onMenuFirstItemClick = {},
+                onMenuSecondItemClick = {}
             )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Text(
-                    text = "재영맘",
-                    style = AchuTheme.typography.semiBold20
+        },
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
+                    .background(color = White),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_favorite_line),
+                    contentDescription = stringResource(R.string.like),
+                    tint = FontGray,
+                    modifier = Modifier.size(40.dp)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(R.string.sale),
-                    style = AchuTheme.typography.semiBold14PointBlue
+                    text = "11",
+                    style = AchuTheme.typography.regular18.copy(color = FontGray),
+                    modifier = Modifier.padding(start = 8.dp)
                 )
+                Spacer(modifier = Modifier.width(16.dp))
+                Box(
+                    modifier = modifier
+                        .width(1.dp)
+                        .height(48.dp)
+                        .background(LightGray)
+                )
+                Text(
+                    text = "10,000원",
+                    style = AchuTheme.typography.semiBold20.copy(color = FontPink),
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Button(
+                    onClick = {},
+                    modifier = Modifier
+                        .height(50.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.go_chat),
+                        style = AchuTheme.typography.semiBold20White
+                    )
+                }
             }
         }
-        Divider()
+    ) { innerPadding ->
+        val scrollState = rememberScrollState()
 
-        // 물품 정보
         Column(
-            modifier = Modifier
-                .wrapContentHeight()
-                .defaultMinSize(minHeight = 200.dp)
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 24.dp)
+            modifier = modifier
+                .fillMaxSize()
+                .background(color = White)
+                .padding(innerPadding)
+                .verticalScroll(scrollState)
         ) {
-            Text(
-                text = "미피 인형",
-                style = AchuTheme.typography.bold24
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row {
-                Text(
-                    text = "장난감",
-                    style = AchuTheme.typography.regular14.copy(
-                        color = FontGray,
-                        textDecoration = TextDecoration.Underline
+
+
+            // 이미지 페이저
+            ImagePager()
+
+            // 프로필
+            Row(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .padding(top = 24.dp, bottom = 16.dp, start = 24.dp, end = 24.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.img_profile_test),
+                    contentDescription = stringResource(R.string.profile),
+                    modifier = Modifier
+                        .fillMaxWidth(0.16f)
+                        .aspectRatio(1f)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Column {
+                    Text(
+                        text = "재영맘",
+                        style = AchuTheme.typography.semiBold20
                     )
-                )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(R.string.sale),
+                        style = AchuTheme.typography.semiBold14PointBlue
+                    )
+                }
+            }
+            Divider()
+
+            // 물품 정보
+            Column(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .defaultMinSize(minHeight = 200.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 24.dp)
+            ) {
                 Text(
-                    text = stringResource(R.string.symbol),
-                    style = AchuTheme.typography.regular14.copy(color = FontGray)
+                    text = "미피 인형",
+                    style = AchuTheme.typography.bold24
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row {
+                    Text(
+                        text = "장난감",
+                        style = AchuTheme.typography.regular14.copy(
+                            color = FontGray,
+                            textDecoration = TextDecoration.Underline
+                        )
+                    )
+                    Text(
+                        text = stringResource(R.string.symbol),
+                        style = AchuTheme.typography.regular14.copy(color = FontGray)
+                    )
+                    Text(
+                        text = "2025.03.07",
+                        style = AchuTheme.typography.regular14.copy(color = FontGray)
+                    )
+                }
+                Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = "2025.03.07",
-                    style = AchuTheme.typography.regular14.copy(color = FontGray)
+                    text = "8/31일에 사고 2번 시착한 제품입니다.",
+                    style = AchuTheme.typography.regular18
+                )
+            }
+            Divider()
+
+            // 추천 리스트
+            Row(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 24.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(R.string.recommend_title),
+                    style = AchuTheme.typography.semiBold18
+                )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = stringResource(R.string.more)
+                )
+            }
+            val products = listOf(
+                Product(
+                    chatCount = 11,
+                    createdAt = "3일 전",
+                    id = 1,
+                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                    likedByUser = false,
+                    likedUsersCount = 18,
+                    price = 5000,
+                    title = "미피 인형"
+                ),
+                Product(
+                    chatCount = 11,
+                    createdAt = "3일 전",
+                    id = 1,
+                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                    likedByUser = true,
+                    likedUsersCount = 18,
+                    price = 5000,
+                    title = "미피 인형"
+                ),
+                Product(
+                    chatCount = 11,
+                    createdAt = "3일 전",
+                    id = 1,
+                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                    likedByUser = true,
+                    likedUsersCount = 18,
+                    price = 5000,
+                    title = "미피 인형"
+                ),
+                Product(
+                    chatCount = 11,
+                    createdAt = "3일 전",
+                    id = 1,
+                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                    likedByUser = true,
+                    likedUsersCount = 18,
+                    price = 5000,
+                    title = "미피 인형"
+                ),
+                Product(
+                    chatCount = 11,
+                    createdAt = "3일 전",
+                    id = 1,
+                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                    likedByUser = true,
+                    likedUsersCount = 18,
+                    price = 5000,
+                    title = "미피 인형"
+                ),
+                Product(
+                    chatCount = 11,
+                    createdAt = "3일 전",
+                    id = 1,
+                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                    likedByUser = true,
+                    likedUsersCount = 18,
+                    price = 5000,
+                    title = "미피 인형"
+                ),
+                Product(
+                    chatCount = 11,
+                    createdAt = "3일 전",
+                    id = 1,
+                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                    likedByUser = true,
+                    likedUsersCount = 18,
+                    price = 5000,
+                    title = "미피 인형"
+                ),
+            )
+            Row(
+                modifier = Modifier.padding(start = 24.dp)
+            ) {
+                RecommendList(
+                    items = products
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                text = "8/31일에 사고 2번 시착한 제품입니다.",
-                style = AchuTheme.typography.regular18
-            )
-        }
-        Divider()
-
-        // 추천 리스트
-        Row(
-            modifier = Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.recommend_title),
-                style = AchuTheme.typography.semiBold18
-            )
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = stringResource(R.string.more)
-            )
-        }
-        val products = listOf(
-            Product(
-                chatCount = 11,
-                createdAt = "3일 전",
-                id = 1,
-                imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                likedByUser = false,
-                likedUsersCount = 18,
-                price = 5000,
-                title = "미피 인형"
-            ),
-            Product(
-                chatCount = 11,
-                createdAt = "3일 전",
-                id = 1,
-                imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                likedByUser = true,
-                likedUsersCount = 18,
-                price = 5000,
-                title = "미피 인형"
-            ),
-            Product(
-                chatCount = 11,
-                createdAt = "3일 전",
-                id = 1,
-                imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                likedByUser = true,
-                likedUsersCount = 18,
-                price = 5000,
-                title = "미피 인형"
-            ),
-            Product(
-                chatCount = 11,
-                createdAt = "3일 전",
-                id = 1,
-                imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                likedByUser = true,
-                likedUsersCount = 18,
-                price = 5000,
-                title = "미피 인형"
-            ),
-            Product(
-                chatCount = 11,
-                createdAt = "3일 전",
-                id = 1,
-                imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                likedByUser = true,
-                likedUsersCount = 18,
-                price = 5000,
-                title = "미피 인형"
-            ),
-            Product(
-                chatCount = 11,
-                createdAt = "3일 전",
-                id = 1,
-                imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                likedByUser = true,
-                likedUsersCount = 18,
-                price = 5000,
-                title = "미피 인형"
-            ),
-            Product(
-                chatCount = 11,
-                createdAt = "3일 전",
-                id = 1,
-                imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                likedByUser = true,
-                likedUsersCount = 18,
-                price = 5000,
-                title = "미피 인형"
-            ),
-        )
-        Row(
-            modifier = Modifier.padding(start = 24.dp)
-        ) {
-            RecommendList(
-                items = products
-            )
-        }
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_favorite_line),
-                contentDescription = stringResource(R.string.like),
-                tint = FontGray,
-                modifier = Modifier.size(40.dp)
-            )
-            Text(
-                text = "11",
-                style = AchuTheme.typography.regular18.copy(color = FontGray),
-                modifier = Modifier.padding(start = 8.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Box(
-                modifier = modifier
-                    .width(1.dp)
-                    .height(48.dp)
-                    .background(LightGray)
-            )
-            Text(
-                text = "10,000원",
-                style = AchuTheme.typography.semiBold20.copy(color = FontPink),
-                modifier = Modifier.padding(start = 16.dp)
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Button(
-                onClick = {},
-                modifier = Modifier
-                    .height(50.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.go_chat),
-                    style = AchuTheme.typography.semiBold20White
-                )
-            }
         }
     }
 }
