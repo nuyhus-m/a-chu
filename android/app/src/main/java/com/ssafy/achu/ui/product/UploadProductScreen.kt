@@ -69,7 +69,6 @@ fun UploadProductScreen(modifier: Modifier = Modifier) {
                     .padding(vertical = 16.dp, horizontal = 24.dp)
                     .background(color = Color.White)
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
                 PointBlueButton(
                     buttonText = stringResource(R.string.write_complete),
                     onClick = {}
@@ -83,9 +82,9 @@ fun UploadProductScreen(modifier: Modifier = Modifier) {
             modifier = modifier
                 .fillMaxSize()
                 .background(color = White)
-                .verticalScroll(scrollState)
                 .padding(innerPadding)
                 .padding(horizontal = 24.dp)
+                .verticalScroll(scrollState)
         ) {
             // 이미지 추가
             AddImageIcon()
