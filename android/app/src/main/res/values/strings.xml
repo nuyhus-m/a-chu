@@ -14,6 +14,7 @@
     <!--탑바-->
     <string name="chat_list">채팅 목록</string>
     <string name="trade_list">거래 내역</string>
+    <string name="upload_product">내 물건 팔기</string>
 
     <!--로그인, 회원가입, 계정찾기 화면-->
     <string name="welcome">환영합니다!</string>
@@ -52,5 +53,16 @@
     <string name="more">더보기</string>
     <string name="like">좋아요</string>
     <string name="go_chat">채팅하기</string>
+    <string name="write_complete">작성 완료</string>
+    <string name="title">제목</string>
+    <string name="writing_title">글 제목</string>
+    <string name="category">카테고리</string>
+    <string name="price">가격</string>
+    <string name="detail_description">자세한 설명</string>
+    <string name="baby_question">누가 쓰던 물건인가요?</string>
+    <string name="add_img">이미지 추가</string>
+    <string name="enter_price">가격을 입력해주세요.</string>
+    <string name="won">원</string>
+    <string name="enter_description">올릴 게시글 내용을 작성해 주세요.\n신뢰할 수 있는 거래를 위해 자세히 적어주세요.</string>
 
 </resources>
