@@ -13,12 +13,14 @@ import com.ssafy.achu.core.navigation.MyPage.MY_BABY_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_INFO
 import com.ssafy.achu.core.navigation.MyPage.MY_LIKE_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_MEMORY_DETAIL
+import com.ssafy.achu.core.navigation.MyPage.MY_MEMORY_UPLOAD
 import com.ssafy.achu.core.navigation.MyPage.MY_RECOMMEND_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_TRADE_LIST
 import com.ssafy.achu.ui.chat.ChatListScreen
 import com.ssafy.achu.ui.home.HomeScreen
 import com.ssafy.achu.ui.memory.MemoryDetailScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
+import com.ssafy.achu.ui.memory.MemoryUploadScreen
 import com.ssafy.achu.ui.mypage.BabyDetailScreen
 import com.ssafy.achu.ui.mypage.BabyListScreen
 import com.ssafy.achu.ui.mypage.LikeItemListScreen
@@ -86,8 +88,14 @@ fun NavGraph(
         }
 
 
+        composable(MY_MEMORY_UPLOAD) {
+            MemoryUploadScreen()
+        }
+
         composable(MY_MEMORY_DETAIL) {
-            MemoryDetailScreen()
+            MemoryDetailScreen(
+                onNavigateToMemoryUpload = { navController.navigate(route = "memoryupload") }
+            )
         }
 
     }
@@ -102,5 +110,6 @@ object MyPage {
     const val MY_BABY_LIST = "babylist"
     const val MY_BABY_DETAIL = "babydetail"
     const val MY_MEMORY_DETAIL = "memorydetail"
+    const val MY_MEMORY_UPLOAD = "memoryupload"
 }
 
