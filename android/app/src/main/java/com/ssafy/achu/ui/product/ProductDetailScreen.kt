@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ssafy.achu.R
+import com.ssafy.achu.core.components.Divider
 import com.ssafy.achu.core.components.TopBarWithMenu
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
@@ -107,12 +108,7 @@ fun ProductDetailScreen(modifier: Modifier = Modifier) {
                 )
             }
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(LightGray)
-        )
+        Divider()
 
         // 물품 정보
         Column(
@@ -150,12 +146,7 @@ fun ProductDetailScreen(modifier: Modifier = Modifier) {
                 style = AchuTheme.typography.regular18
             )
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(LightGray)
-        )
+        Divider()
 
         // 추천 리스트
         Row(
@@ -374,6 +365,7 @@ fun ImagePager() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun PreviewProductDetailScreen() {
@@ -399,6 +391,6 @@ fun PreviewTopBarWithMenu() {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewImagePagerWithIndicators() {
+fun PreviewImagePager() {
     ImagePager()
 }
