@@ -1,5 +1,6 @@
 package com.ssafy.achu.core.navigation
 
+import HomeScreen
 import MyPageScreen
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -17,7 +18,6 @@ import com.ssafy.achu.core.navigation.MyPage.MY_MEMORY_UPLOAD
 import com.ssafy.achu.core.navigation.MyPage.MY_RECOMMEND_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_TRADE_LIST
 import com.ssafy.achu.ui.chat.ChatListScreen
-import com.ssafy.achu.ui.home.HomeScreen
 import com.ssafy.achu.ui.memory.MemoryDetailScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
 import com.ssafy.achu.ui.memory.MemoryUploadScreen
