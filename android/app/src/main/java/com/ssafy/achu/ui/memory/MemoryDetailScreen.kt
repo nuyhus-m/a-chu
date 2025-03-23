@@ -2,6 +2,7 @@ package com.ssafy.achu.ui.memory
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,8 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -38,7 +37,7 @@ import com.ssafy.achu.core.theme.White
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun MemoryDetailScreen() {
+fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
     val pagerState = rememberPagerState()
     val images = listOf(
         R.drawable.img_test_baby_doll,
@@ -57,14 +56,15 @@ fun MemoryDetailScreen() {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 40.dp, start = 24.dp, end = 24.dp, bottom = 8.dp)
+                    .padding(top = 56.dp, start = 24.dp, end = 24.dp, bottom = 16.dp)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_arrow_back_),
                     contentDescription = "Arrow",
                     modifier = Modifier
                         .size(30.dp)
-                        .alignByBaseline(),
+                        .alignByBaseline()
+                        .clickable{},
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(FontBlack)
                 )
 
@@ -74,7 +74,10 @@ fun MemoryDetailScreen() {
                     contentDescription = "Arrow",
                     modifier = Modifier
                         .size(32.dp)
-                        .alignByBaseline(),
+                        .alignByBaseline()
+                        .clickable {
+                            onNavigateToMemoryUpload()
+                        },
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(PointBlue)
                 )
 
@@ -85,7 +88,8 @@ fun MemoryDetailScreen() {
                     contentDescription = "Arrow",
                     modifier = Modifier
                         .size(32.dp)
-                        .alignByBaseline(),
+                        .alignByBaseline()
+                        .clickable {  },
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(PointBlue)
                 )
             }
@@ -98,7 +102,7 @@ fun MemoryDetailScreen() {
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(400.dp)
+                    .height(350.dp)
             ) { page ->
                 Image(
                     painter = painterResource(id = images[page]),
@@ -174,5 +178,5 @@ fun PageIndicator(totalPages: Int, currentPage: Int) {
 @Preview
 @Composable
 fun MemoryDetailScreenPreview() {
-    AchuTheme { MemoryDetailScreen() }
+    AchuTheme { MemoryDetailScreen {} }
 }
