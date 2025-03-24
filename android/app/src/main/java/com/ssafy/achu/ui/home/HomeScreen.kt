@@ -55,12 +55,14 @@ import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.data.model.Product
 import com.ssafy.achu.ui.home.BabyDropdown
 import com.ssafy.achu.ui.home.RecommendGrid
 import com.ssafy.achu.ui.mypage.BabyInfo
 import com.ssafy.achu.ui.mypage.LikeItem2
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
 
 @Composable
 fun HomeScreen(
