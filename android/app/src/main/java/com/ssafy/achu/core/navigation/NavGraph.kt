@@ -35,7 +35,7 @@ import com.ssafy.achu.ui.product.ProductListScreen
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,
