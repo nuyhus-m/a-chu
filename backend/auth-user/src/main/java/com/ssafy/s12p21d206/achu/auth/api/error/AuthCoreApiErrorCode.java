@@ -8,5 +8,8 @@ public enum AuthCoreApiErrorCode {
   AE2003,
   AE2005,
   AE2006,
+  AE2007,
+  AE2008,
+  AE2009,
   AE2002
 }

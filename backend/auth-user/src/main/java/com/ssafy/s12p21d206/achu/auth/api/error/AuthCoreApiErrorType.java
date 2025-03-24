@@ -37,6 +37,23 @@ public enum AuthCoreApiErrorType {
       AuthCoreApiErrorCode.AE2006,
       "id는 null일 수 없습니다.",
       AuthCoreApiErrorLevel.INFO,
+      HttpStatus.BAD_REQUEST),
+  INVALID_USERNAME_FORMAT(
+      AuthCoreApiErrorCode.AE2007,
+      "아이디는 영어 대소문자와 숫자로 구성된 4~16자리여야 합니다.",
+      AuthCoreApiErrorLevel.INFO,
+      HttpStatus.BAD_REQUEST),
+
+  INVALID_PASSWORD_FORMAT(
+      AuthCoreApiErrorCode.AE2008,
+      "비밀번호는 영어 대소문자, 숫자, 지정된 특수문자(! @ # $ % ^ & * ( ) _ + - = ~)로만 이루어진 8~16자리여야 합니다.",
+      AuthCoreApiErrorLevel.INFO,
+      HttpStatus.BAD_REQUEST),
+
+  INVALID_NICKNAME_FORMAT(
+      AuthCoreApiErrorCode.AE2009,
+      "닉네임은 한글, 영어, 숫자로 구성된 2~6자리여야 합니다.",
+      AuthCoreApiErrorLevel.INFO,
       HttpStatus.BAD_REQUEST);
 
   private final AuthCoreApiErrorCode code;

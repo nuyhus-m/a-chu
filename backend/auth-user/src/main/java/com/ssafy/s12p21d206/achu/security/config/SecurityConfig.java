@@ -21,6 +21,10 @@ public class SecurityConfig {
     http.authorizeHttpRequests(auth -> auth.requestMatchers("/verification/**")
         .permitAll()
         .requestMatchers(HttpMethod.POST, "/users")
+        .permitAll()
+        .requestMatchers(HttpMethod.GET, "/users/username/is-unique")
+        .permitAll()
+        .requestMatchers(HttpMethod.GET, "/users/nickname/is-unique")
         .permitAll());
     return http.build();
   }
