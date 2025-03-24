@@ -2,6 +2,9 @@ package com.ssafy.s12p21d206.achu.auth.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationCode;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationCodeMessageGenerator;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationPurpose;
 import com.ssafy.s12p21d206.achu.builder.VerificationCodeBuilder;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,8 +30,8 @@ class VerificationCodeMessageGeneratorTest {
 
     // then
     assertThat(verificationCodeMessage)
-        .contains(verificationCode.code())
-        .contains(verificationCode.purpose().getDescription())
-        .contains(String.valueOf(verificationCode.expiresIn().getSeconds()));
+        .contains(verificationCode.getCode())
+        .contains(verificationCode.getPurpose().getDescription())
+        .contains(String.valueOf(verificationCode.getExpiresIn().getSeconds()));
   }
 }

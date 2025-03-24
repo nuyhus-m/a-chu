@@ -1,7 +1,7 @@
 package com.ssafy.s12p21d206.achu.client.sms;
 
-import com.ssafy.s12p21d206.achu.auth.domain.Phone;
-import com.ssafy.s12p21d206.achu.auth.domain.VerificationCodeSmsClient;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationCodeSmsClient;
 import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.service.DefaultMessageService;
@@ -27,7 +27,6 @@ public class NurigoSmsClient implements VerificationCodeSmsClient {
     message.setTo(phone.number());
 
     message.setText(text);
-
     messageService.sendOne(new SingleMessageSendingRequest(message));
   }
 }

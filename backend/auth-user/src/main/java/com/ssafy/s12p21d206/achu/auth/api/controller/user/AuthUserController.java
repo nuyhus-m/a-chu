@@ -1,9 +1,11 @@
 package com.ssafy.s12p21d206.achu.auth.api.controller.user;
 
+import com.ssafy.s12p21d206.achu.auth.api.controller.AuthApiUser;
 import com.ssafy.s12p21d206.achu.auth.api.response.AuthApiResponse;
 import com.ssafy.s12p21d206.achu.auth.api.response.AuthDefaultIdResponse;
 import com.ssafy.s12p21d206.achu.auth.api.response.AuthIsUniqueResponse;
-import com.ssafy.s12p21d206.achu.auth.domain.AuthUserService;
+import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUser;
+import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +27,9 @@ public class AuthUserController {
   @PostMapping("/users")
   public AuthApiResponse<AuthDefaultIdResponse> appendUser(
       @RequestBody AppendAuthUserRequest request) {
-    AuthDefaultIdResponse response = new AuthDefaultIdResponse(1L);
+    AuthUser authUser =
+        authUserService.appendAuthUser(request.toNewAuthUser(), request.verificationCodeId());
+    AuthDefaultIdResponse response = new AuthDefaultIdResponse(authUser.id());
     return AuthApiResponse.success(response);
   }
 
@@ -59,19 +63,20 @@ public class AuthUserController {
 
   @PatchMapping("/users/nickname")
   public AuthApiResponse<Void> modifyNickname(
-      Long userId, @RequestBody ModifyNicknameRequest request) {
+      AuthApiUser authApiUser, @RequestBody ModifyNicknameRequest request) {
+    authUserService.modifyNickname(authApiUser.id(), request.nickname());
     return AuthApiResponse.success();
   }
 
   @PatchMapping("/users/profile-image")
   public AuthApiResponse<Void> modifyProfileImage(
-      Long userId, @RequestParam("profileImage") MultipartFile profileImage) {
+      AuthApiUser authApiUser, @RequestParam("profileImage") MultipartFile profileImage) {
     return AuthApiResponse.success();
   }
 
   @PatchMapping("/users/change-phone")
   public AuthApiResponse<Void> modifyPhoneNumber(
-      Long userId, @RequestBody ModifyPhoneRequest request) {
+      AuthApiUser authApiUser, @RequestBody ModifyPhoneRequest request) {
     return AuthApiResponse.success();
   }
 }

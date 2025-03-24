@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.ssafy.s12p21d206.achu.auth.domain.Phone;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package com.ssafy.s12p21d206.achu.auth.domain;
+package com.ssafy.s12p21d206.achu.auth.domain.verification;
 
 import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreErrorType;
 import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreException;
@@ -27,7 +27,7 @@ public class RequestIntervalValidator {
     if (latestVerificationCode.isPresent()) {
       VerificationCode latestCode = latestVerificationCode.get();
       LocalDateTime now = LocalDateTime.now();
-      LocalDateTime createdAt = latestCode.defaultDateTime().createdAt();
+      LocalDateTime createdAt = latestCode.getDefaultDateTime().createdAt();
 
       long secondsSinceCreation = ChronoUnit.SECONDS.between(createdAt, now);
 

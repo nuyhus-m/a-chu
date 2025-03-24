@@ -5,10 +5,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
 
-import com.ssafy.s12p21d206.achu.auth.domain.PhoneVerificationService;
-import com.ssafy.s12p21d206.achu.auth.domain.VerificationPurpose;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.PhoneVerificationService;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationPurpose;
 import com.ssafy.s12p21d206.achu.builder.VerificationCodeBuilder;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsUtils;

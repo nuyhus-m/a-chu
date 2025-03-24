@@ -14,6 +14,38 @@ public class ValidationUtils {
     }
   }
 
+  public static void validateVerificationCode(String code) {
+    String regex = "^\\d{6}$";
+
+    if (!code.matches(regex)) {
+      throw new AuthCoreApiException(AuthCoreApiErrorType.INVALID_VERIFICATION_CODE_FORMAT);
+    }
+  }
+
+  public static void validateUsername(String username) {
+    String regex = "^[a-zA-Z0-9]{4,16}$";
+
+    if (!username.matches(regex)) {
+      throw new AuthCoreApiException(AuthCoreApiErrorType.INVALID_USERNAME_FORMAT);
+    }
+  }
+
+  public static void validatePassword(String password) {
+    String regex = "^[A-Za-z0-9!@#$%^&*()_+\\-=~]{8,16}$";
+
+    if (!password.matches(regex)) {
+      throw new AuthCoreApiException(AuthCoreApiErrorType.INVALID_PASSWORD_FORMAT);
+    }
+  }
+
+  public static void validateNickname(String nickname) {
+    String regex = "^[a-zA-Z0-9가-힣]{2,6}$";
+
+    if (!nickname.matches(regex)) {
+      throw new AuthCoreApiException(AuthCoreApiErrorType.INVALID_NICKNAME_FORMAT);
+    }
+  }
+
   public static <T> void validateNotNull(T value, AuthCoreApiErrorType errorType) {
     if (value == null) {
       throw new AuthCoreApiException(errorType);

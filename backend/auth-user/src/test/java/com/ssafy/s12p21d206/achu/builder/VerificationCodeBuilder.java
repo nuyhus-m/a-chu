@@ -1,9 +1,9 @@
 package com.ssafy.s12p21d206.achu.builder;
 
-import com.ssafy.s12p21d206.achu.auth.domain.Phone;
-import com.ssafy.s12p21d206.achu.auth.domain.VerificationCode;
-import com.ssafy.s12p21d206.achu.auth.domain.VerificationPurpose;
 import com.ssafy.s12p21d206.achu.auth.domain.support.AuthDefaultDateTime;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationCode;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationPurpose;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -21,9 +21,9 @@ public class VerificationCodeBuilder {
         new Phone("01012341234"),
         code,
         purpose,
-        true,
         expiresIn,
-        new AuthDefaultDateTime(createdAt, createdAt));
+        new AuthDefaultDateTime(createdAt, createdAt),
+        true);
   }
 
   public static VerificationCode createNonVerified(
@@ -36,8 +36,8 @@ public class VerificationCodeBuilder {
         new Phone("01012341234"),
         code,
         purpose,
-        false,
         expiresIn,
-        new AuthDefaultDateTime(createdAt, createdAt));
+        new AuthDefaultDateTime(createdAt, createdAt),
+        false);
   }
 }

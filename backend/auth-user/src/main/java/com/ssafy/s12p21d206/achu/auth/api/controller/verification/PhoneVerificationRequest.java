@@ -2,8 +2,8 @@ package com.ssafy.s12p21d206.achu.auth.api.controller.verification;
 
 import com.ssafy.s12p21d206.achu.auth.api.controller.ValidationUtils;
 import com.ssafy.s12p21d206.achu.auth.api.error.AuthCoreApiErrorType;
-import com.ssafy.s12p21d206.achu.auth.domain.Phone;
-import com.ssafy.s12p21d206.achu.auth.domain.VerificationPurpose;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationPurpose;
 
 public record PhoneVerificationRequest(String phoneNumber, VerificationPurpose purpose) {
 
