@@ -194,16 +194,20 @@ class BabyControllerTest extends RestDocsTest {
   @Test
   void deleteBaby() {
 
+    when(babyService.delete(any())).thenReturn(1L);
+
     given()
         .contentType(ContentType.JSON)
-        .delete("/babies/{babyId}", 1L)
+        .delete("/babies/{id}", 1L)
         .then()
         .status(HttpStatus.OK)
         .apply(document(
             "delete-baby",
-            pathParameters(parameterWithName("babyId").description("삭제 할 자녀의 id")),
-            responseFields(fieldWithPath("result")
-                .type(JsonFieldType.STRING)
-                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
+            pathParameters(parameterWithName("id").description("삭제 할 자녀의 id")),
+            responseFields(
+                fieldWithPath("result")
+                    .type(JsonFieldType.STRING)
+                    .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
+                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("삭제된 자녀의 id"))));
   }
 }

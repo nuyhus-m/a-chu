@@ -1,5 +1,7 @@
 package com.ssafy.s12p21d206.achu.domain;
 
+import com.ssafy.s12p21d206.achu.domain.error.CoreErrorType;
+import com.ssafy.s12p21d206.achu.domain.error.CoreException;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -12,13 +14,13 @@ public class BabyReader {
     this.babyRepository = babyRepository;
   }
 
-  public List<Baby> readBabies(User user) {
-    return babyRepository.findByUser(user);
-  }
-
   public Baby readBaby(Long id) {
     return babyRepository
         .findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("해당 아기를 찾을 수 없습니다: " + id));
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+  }
+
+  public List<Baby> readBabies(User user) {
+    return babyRepository.findByUser(user);
   }
 }

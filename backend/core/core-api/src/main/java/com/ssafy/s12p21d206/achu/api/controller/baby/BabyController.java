@@ -70,8 +70,9 @@ public class BabyController {
     return ApiResponse.success();
   }
 
-  @DeleteMapping("/babies/{babyId}")
-  public ApiResponse<Void> deleteBaby(Long userId, @PathVariable Long babyId) {
-    return ApiResponse.success();
+  @DeleteMapping("/babies/{id}")
+  public ApiResponse<DefaultIdResponse> deleteBaby(Long userId, @PathVariable Long id) {
+    babyService.delete(id);
+    return ApiResponse.success(new DefaultIdResponse(id));
   }
 }

@@ -10,4 +10,6 @@ public interface BabyRepository {
   List<Baby> findByUser(User user);
 
   Optional<Baby> findById(Long id);
+
+  Long delete(Long id);
 }
