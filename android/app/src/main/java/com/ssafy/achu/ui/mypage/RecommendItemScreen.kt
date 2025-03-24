@@ -201,7 +201,7 @@ fun BabyListItem(babyInfo: BabyInfo) {
             LazyRow(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                itemsIndexed(babyInfo.recommendList) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
+                itemsIndexed(babyInfo.recommendList!!) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
                     BasicLikeItem(
                         isLiked = likeItem.like,
                         onClickItem = { }, // 아이템 전체 클릭 시 동작

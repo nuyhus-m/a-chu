@@ -2,7 +2,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -158,12 +157,14 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
+                .clip(RoundedCornerShape(8.dp))
         ) {
             LazyRow(
                 state = listState,
                 modifier = Modifier
                     .fillMaxWidth(),
-                userScrollEnabled = true
+                horizontalArrangement = Arrangement.spacedBy(0.dp),
+                userScrollEnabled = false // 사용자 스크롤 비활성화
             ) {
                 items(imageList.size * 2) { index -> // 2배로 늘려 무한 반복 느낌 구현
                     val actualIndex = index % imageList.size // 실제 이미지 인덱스
@@ -594,7 +595,6 @@ fun CategoryItem(
     modifier: Modifier
 ) {
     Column(
-        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -632,6 +632,7 @@ fun BabyDropdown(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { expanded = true }
             .padding(2.dp)
             .height(66.dp)
     ) {
@@ -660,9 +661,7 @@ fun BabyDropdown(
         ) {
             Row(
                 modifier = Modifier
-                    .wrapContentWidth()
-                    .clickable { expanded = true }
-                ,
+                    .wrapContentWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -682,32 +681,30 @@ fun BabyDropdown(
                     modifier = Modifier.size(24.dp),
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(FontBlack)
                 )
-
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .background(color = White)
-                ) {
-                    babyList.forEach { baby ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = baby.babyNickname,
-                                    style = AchuTheme.typography.semiBold16
-                                )
-                            },
-                            onClick = {
-                                onBabySelected(baby)
-                                expanded = false
-                            }
-                        )
-                    }
-                }
             }
 
-
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .background(color = White)
+            ) {
+                babyList.forEach { baby ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = baby.babyNickname,
+                                style = AchuTheme.typography.semiBold16
+                            )
+                        },
+                        onClick = {
+                            onBabySelected(baby)
+                            expanded = false
+                        }
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(4.dp))
 
