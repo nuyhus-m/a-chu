@@ -1,14 +1,20 @@
 package com.ssafy.s12p21d206.achu.auth.api.controller.user;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 
+import com.ssafy.s12p21d206.achu.auth.domain.support.AuthDefaultDateTime;
+import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUser;
 import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUserService;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsUtils;
 import io.restassured.http.ContentType;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,19 +27,30 @@ import org.springframework.restdocs.payload.JsonFieldType;
 class AuthUserEntityControllerTest extends RestDocsTest {
 
   private AuthUserController controller;
+  private AuthUserService authUserService;
 
   @BeforeEach
   void setup() {
-    AuthUserService authUserService = mock(AuthUserService.class);
+    authUserService = mock(AuthUserService.class);
     controller = new AuthUserController(authUserService);
     mockMvc = mockController(controller);
   }
 
   @Test
   void appendUser() {
+    when(authUserService.appendAuthUser(any(), any()))
+        .thenReturn(new AuthUser(
+            1L,
+            "username",
+            "password!",
+            "nick",
+            new Phone("01012341234"),
+            new AuthDefaultDateTime(LocalDateTime.now(), LocalDateTime.now())));
+
     given()
         .contentType(ContentType.JSON)
-        .body(new AppendAuthUserRequest("아이디", "비밀번호", "닉네임", "전화번호", UUID.randomUUID()))
+        .body(new AppendAuthUserRequest(
+            "username", "password!", "nick", "01012341234", UUID.randomUUID()))
         .post("/users")
         .then()
         .status(HttpStatus.OK)
@@ -56,9 +73,9 @@ class AuthUserEntityControllerTest extends RestDocsTest {
                     .type(JsonFieldType.STRING)
                     .description("생성할 user 전화번호")
                     .attributes(RestDocsUtils.constraints("15자 이하")),
-                fieldWithPath("phoneVerificationCode")
+                fieldWithPath("verificationCodeId")
                     .type(JsonFieldType.STRING)
-                    .description("전화번호 인증 코드")),
+                    .description("인증 코드 식별자")),
             responseFields(
                 fieldWithPath("result")
                     .type(JsonFieldType.STRING)
@@ -155,7 +172,7 @@ class AuthUserEntityControllerTest extends RestDocsTest {
   void modifyNickname() {
     given()
         .contentType(ContentType.JSON)
-        .body(new ModifyNicknameRequest("새로운 닉네임"))
+        .body(new ModifyNicknameRequest("새로운닉네임"))
         .patch("/users/nickname")
         .then()
         .status(HttpStatus.OK)
