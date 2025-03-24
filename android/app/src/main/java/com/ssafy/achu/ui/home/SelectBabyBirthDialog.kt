@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -84,7 +85,7 @@ fun SelectBabyBirthDialog(
                     )
 
                     Text(
-                        text = "님",
+                        text = "님의",
                         style = AchuTheme.typography.medium18.copy(lineHeight = 30.sp),
 
                         )
@@ -126,11 +127,13 @@ fun SelectBabyBirthDialog(
                         Spacer(modifier = Modifier.weight(1.0f))
 
                         Image(
-                            painter = painterResource(id = com.ssafy.achu.R.drawable.ic_arrow_drop_down),
+                            painter = painterResource(id = com.ssafy.achu.R.drawable.ic_calendar),
                             contentDescription = null,
                             modifier = Modifier
                                 .width(20.dp)
-                                .height(20.dp)
+                                .height(20.dp),
+                            colorFilter = ColorFilter.tint(FontGray)
+
                         )
                     }
 
@@ -193,6 +196,10 @@ fun SelectBabyBirthDialog(
     }
 }
 
+
+
+
+
 @Preview
 @Composable
 fun PasswordUpdateDialogPreview() {
@@ -202,5 +209,7 @@ fun PasswordUpdateDialogPreview() {
             onDismiss = { /* 취소 클릭 시 동작 */ },
             onConfirm = { birthDate -> /* 확인 클릭 시 동작 */ }
         )
+
+
     }
 }
