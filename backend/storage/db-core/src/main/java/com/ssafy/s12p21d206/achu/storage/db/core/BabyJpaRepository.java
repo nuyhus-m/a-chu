@@ -8,4 +8,6 @@ public interface BabyJpaRepository extends JpaRepository<BabyEntity, Long> {
   List<BabyEntity> findByUserIdAndEntityStatus(Long userId, EntityStatus status);
 
   Optional<BabyEntity> findByIdAndEntityStatus(Long id, EntityStatus status);
+
+  boolean existsByIdAndUserId(Long id, Long userId);
 }

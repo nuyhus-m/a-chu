@@ -2,7 +2,9 @@ package com.ssafy.s12p21d206.achu.domain.error;
 
 public enum CoreErrorType {
   DATA_NOT_FOUND(
-      CoreErrorKind.CLIENT_ERROR, CoreErrorCode.E1000, "데이터를 찾을 수 없습니다.", CoreErrorLevel.INFO);
+      CoreErrorKind.CLIENT_ERROR, CoreErrorCode.E1000, "데이터를 찾을 수 없습니다.", CoreErrorLevel.INFO),
+  CANNOT_ACCESS_BABY(
+      CoreErrorKind.CLIENT_ERROR, CoreErrorCode.E1001, "해당 아기에 접근 권한이 없습니다.", CoreErrorLevel.INFO);
 
   private final CoreErrorKind kind;
   private final CoreErrorCode code;

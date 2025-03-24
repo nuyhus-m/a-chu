@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -41,8 +40,8 @@ public class BabyController {
   }
 
   @GetMapping("/babies/{id}")
-  public ApiResponse<BabyResponse> findBaby(Long userId, @PathVariable Long id) {
-    Baby baby = babyService.findBaby(id);
+  public ApiResponse<BabyResponse> findBaby(ApiUser apiUser, @PathVariable Long id) {
+    Baby baby = babyService.findBaby(apiUser.toUser(), id);
     return ApiResponse.success(BabyResponse.from(baby));
   }
 
@@ -63,9 +62,9 @@ public class BabyController {
     return ApiResponse.success();
   }
 
-  @PutMapping("/babies/{babyId}")
+  @PatchMapping("/babies/{id}")
   public ApiResponse<Void> modifyBaby(
-      Long userId, @PathVariable Long babyId, @RequestBody ModifyBabyRequest request) {
+      ApiUser apiUser, @PathVariable Long id, @RequestBody ModifyBabyRequest request) {
 
     return ApiResponse.success();
   }

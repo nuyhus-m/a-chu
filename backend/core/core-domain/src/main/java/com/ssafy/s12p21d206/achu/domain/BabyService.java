@@ -9,11 +9,17 @@ public class BabyService {
   private final BabyAppender babyAppender;
   private final BabyReader babyReader;
   private final BabyDeleter babyDeleter;
+  private final BabyValidator babyValidator;
 
-  public BabyService(BabyAppender babyAppender, BabyReader babyReader, BabyDeleter babyDeleter) {
+  public BabyService(
+      BabyAppender babyAppender,
+      BabyReader babyReader,
+      BabyDeleter babyDeleter,
+      BabyValidator babyValidator) {
     this.babyAppender = babyAppender;
     this.babyReader = babyReader;
     this.babyDeleter = babyDeleter;
+    this.babyValidator = babyValidator;
   }
 
   public Long append(User user, NewBaby newBaby) {
@@ -21,7 +27,8 @@ public class BabyService {
     return baby.getId();
   }
 
-  public Baby findBaby(Long id) {
+  public Baby findBaby(User user, Long id) {
+    babyValidator.validateParent(user, id);
     return babyReader.readBaby(id);
   }
 

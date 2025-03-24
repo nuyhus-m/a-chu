@@ -17,4 +17,10 @@ public class BabyValidator {
       throw new CoreException(CoreErrorType.DATA_NOT_FOUND);
     }
   }
+
+  public void validateParent(User user, Long id) {
+    if (!babyRepository.existsByIdAndUser(id, user)) {
+      throw new CoreException(CoreErrorType.CANNOT_ACCESS_BABY);
+    }
+  }
 }

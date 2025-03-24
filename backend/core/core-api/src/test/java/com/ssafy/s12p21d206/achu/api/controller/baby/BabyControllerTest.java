@@ -1,7 +1,5 @@
 package com.ssafy.s12p21d206.achu.api.controller.baby;
 
-import static com.ssafy.s12p21d206.achu.test.api.RestDocsUtils.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -84,7 +82,7 @@ class BabyControllerTest extends RestDocsTest {
     DefaultDateTime now = new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now());
     Baby baby =
         new Baby(1L, 1L, "강두식", Sex.MALE, "https://test-image1.png", LocalDate.of(2025, 1, 1), now);
-    when(babyService.findBaby(any())).thenReturn(baby);
+    when(babyService.findBaby(any(), any())).thenReturn(baby);
 
     given()
         .contentType(ContentType.JSON)
