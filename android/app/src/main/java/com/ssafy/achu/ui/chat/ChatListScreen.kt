@@ -1,6 +1,7 @@
 package com.ssafy.achu.ui.chat
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,7 +36,7 @@ import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 
 @Composable
-fun ChatListScreen(modifier: Modifier = Modifier) {
+fun ChatListScreen(modifier: Modifier = Modifier, onNavigateToChat: () -> Unit) {
 
     Column(
         modifier = modifier
@@ -65,16 +66,19 @@ fun ChatListScreen(modifier: Modifier = Modifier) {
                 unreadCount = 1
             ),
         )
-        ChatList(chats)
+        ChatList(items = chats, onNavigateToChat = onNavigateToChat)
     }
 }
 
 @Composable
-fun ChatItem() {
+fun ChatItem(
+    onNavigateToChat: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
+            .clickable(onClick = onNavigateToChat)
     ) {
         Row(
             modifier = Modifier
@@ -141,10 +145,12 @@ fun ChatItem() {
 }
 
 @Composable
-fun ChatList(items: List<Chat>) {
+fun ChatList(items: List<Chat>, onNavigateToChat: () -> Unit) {
     LazyColumn {
         items(items) { item ->
-            ChatItem()
+            ChatItem(
+                onNavigateToChat = onNavigateToChat
+            )
         }
     }
 }
@@ -163,7 +169,7 @@ data class Chat(
 @Composable
 fun ChatListScreenPreview() {
     AchuTheme {
-        ChatListScreen()
+//        ChatListScreen()
     }
 }
 
