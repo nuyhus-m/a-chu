@@ -27,8 +27,8 @@ class VerificationCodeMessageGeneratorTest {
 
     // then
     assertThat(verificationCodeMessage)
-        .contains(verificationCode.code())
-        .contains(verificationCode.purpose().getDescription())
-        .contains(String.valueOf(verificationCode.expiresIn().getSeconds()));
+        .contains(verificationCode.getCode())
+        .contains(verificationCode.getPurpose().getDescription())
+        .contains(String.valueOf(verificationCode.getExpiresIn().getSeconds()));
   }
 }

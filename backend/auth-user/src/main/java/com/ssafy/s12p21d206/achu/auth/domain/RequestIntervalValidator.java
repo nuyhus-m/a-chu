@@ -27,7 +27,7 @@ public class RequestIntervalValidator {
     if (latestVerificationCode.isPresent()) {
       VerificationCode latestCode = latestVerificationCode.get();
       LocalDateTime now = LocalDateTime.now();
-      LocalDateTime createdAt = latestCode.defaultDateTime().createdAt();
+      LocalDateTime createdAt = latestCode.getDefaultDateTime().createdAt();
 
       long secondsSinceCreation = ChronoUnit.SECONDS.between(createdAt, now);
 

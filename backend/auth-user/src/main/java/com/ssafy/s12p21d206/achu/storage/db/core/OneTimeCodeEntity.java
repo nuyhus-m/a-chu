@@ -32,11 +32,13 @@ public class OneTimeCodeEntity extends AuthMetaEntity {
   protected OneTimeCodeEntity() {}
 
   public OneTimeCodeEntity(
+      UUID id,
       String phoneNumber,
       String code,
       VerificationPurpose purpose,
       boolean isVerified,
       Duration expiresIn) {
+    this.id = id;
     this.phoneNumber = phoneNumber;
     this.code = code;
     this.purpose = purpose;
@@ -47,7 +49,22 @@ public class OneTimeCodeEntity extends AuthMetaEntity {
   public static OneTimeCodeEntity from(
       NewVerificationCode verificationCode, Phone phone, VerificationPurpose purpose) {
     return new OneTimeCodeEntity(
-        phone.number(), verificationCode.code(), purpose, false, verificationCode.expiresIn());
+        null,
+        phone.number(),
+        verificationCode.code(),
+        purpose,
+        false,
+        verificationCode.expiresIn());
+  }
+
+  public static OneTimeCodeEntity from(VerificationCode verificationCode) {
+    return new OneTimeCodeEntity(
+        verificationCode.getId(),
+        verificationCode.getPhone().number(),
+        verificationCode.getCode(),
+        verificationCode.getPurpose(),
+        verificationCode.isVerified(),
+        verificationCode.getExpiresIn());
   }
 
   public VerificationCode toVerificationCode() {
@@ -56,8 +73,8 @@ public class OneTimeCodeEntity extends AuthMetaEntity {
         new Phone(phoneNumber),
         code,
         purpose,
-        isVerified,
         expiresIn,
-        new AuthDefaultDateTime(getCreatedAt(), getUpdatedAt()));
+        new AuthDefaultDateTime(getCreatedAt(), getUpdatedAt()),
+        isVerified);
   }
 }

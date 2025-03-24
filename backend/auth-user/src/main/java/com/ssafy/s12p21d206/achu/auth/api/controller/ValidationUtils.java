@@ -14,6 +14,14 @@ public class ValidationUtils {
     }
   }
 
+  public static void validateVerificationCode(String code) {
+    String regex = "^\\d{6}$";
+
+    if (!code.matches(regex)) {
+      throw new AuthCoreApiException(AuthCoreApiErrorType.INVALID_VERIFICATION_CODE_FORMAT);
+    }
+  }
+
   public static <T> void validateNotNull(T value, AuthCoreApiErrorType errorType) {
     if (value == null) {
       throw new AuthCoreApiException(errorType);

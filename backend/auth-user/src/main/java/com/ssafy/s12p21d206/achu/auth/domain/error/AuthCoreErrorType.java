@@ -1,16 +1,13 @@
 package com.ssafy.s12p21d206.achu.auth.domain.error;
 
+import static com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreErrorCode.*;
+import static com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreErrorKind.*;
+import static com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreErrorLevel.*;
+
 public enum AuthCoreErrorType {
-  INVALID_CREDENTIALS(
-      AuthCoreErrorKind.CLIENT_ERROR,
-      AuthCoreErrorCode.AUE1000,
-      "잘못된 인증 정보입니다.",
-      AuthCoreErrorLevel.WARN),
-  VERIFICATION_REQUEST_TOO_FREQUENT(
-      AuthCoreErrorKind.CLIENT_ERROR,
-      AuthCoreErrorCode.AUE1001,
-      "인증 코드 요청은 {0}초 후에 다시 시도해주세요.",
-      AuthCoreErrorLevel.WARN);
+  INVALID_CREDENTIALS(CLIENT_ERROR, AUE1000, "잘못된 인증 정보입니다.", WARN),
+  VERIFICATION_REQUEST_TOO_FREQUENT(CLIENT_ERROR, AUE1001, "인증 코드 요청은 {0}초 후에 다시 시도해주세요.", WARN),
+  INVALID_VERIFICATION_CODE(CLIENT_ERROR, AUE1002, "잘못된 인증 코드입니다.", WARN);
 
   private final AuthCoreErrorKind kind;
   private final AuthCoreErrorCode code;

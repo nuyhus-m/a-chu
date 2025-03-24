@@ -8,6 +8,6 @@ public record PhoneVerificationResponse(UUID id, Duration expiresIn) {
 
   public static PhoneVerificationResponse of(VerificationCode phoneVerificationCode) {
     return new PhoneVerificationResponse(
-        phoneVerificationCode.id(), phoneVerificationCode.expiresIn());
+        phoneVerificationCode.getId(), phoneVerificationCode.getExpiresIn());
   }
 }

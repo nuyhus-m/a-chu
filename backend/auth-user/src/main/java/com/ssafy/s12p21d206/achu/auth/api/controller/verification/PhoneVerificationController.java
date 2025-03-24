@@ -23,4 +23,11 @@ public class PhoneVerificationController {
         request.toPhoneNumber(), request.toVerificationPurpose());
     return AuthApiResponse.success(PhoneVerificationResponse.of(phoneVerificationCode));
   }
+
+  @PostMapping("/verification/verify")
+  public AuthApiResponse<Void> validatePhoneVerificationCode(
+      @RequestBody VerifyVerificationCodeRequest request) {
+    phoneVerificationService.verifyPhoneVerificationCode(request.id(), request.code());
+    return AuthApiResponse.success();
+  }
 }

@@ -76,8 +76,8 @@ class RequestIntervalValidatorTest {
         phone,
         "123456",
         VerificationPurpose.SIGN_UP,
-        false,
         Duration.ofMinutes(5),
-        new AuthDefaultDateTime(createdAt, createdAt));
+        new AuthDefaultDateTime(createdAt, createdAt),
+        false);
   }
 }

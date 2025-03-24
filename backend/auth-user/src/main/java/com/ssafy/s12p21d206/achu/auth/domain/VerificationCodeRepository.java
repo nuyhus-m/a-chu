@@ -1,6 +1,7 @@
 package com.ssafy.s12p21d206.achu.auth.domain;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface VerificationCodeRepository {
 
@@ -8,4 +9,8 @@ public interface VerificationCodeRepository {
       NewVerificationCode verificationCode, Phone phone, VerificationPurpose purpose);
 
   Optional<VerificationCode> findLatestByPhone(Phone phone);
+
+  Optional<VerificationCode> findById(UUID id);
+
+  void update(VerificationCode verificationCode);
 }

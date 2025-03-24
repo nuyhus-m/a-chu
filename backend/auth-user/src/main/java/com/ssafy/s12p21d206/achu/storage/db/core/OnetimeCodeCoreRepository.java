@@ -6,6 +6,7 @@ import com.ssafy.s12p21d206.achu.auth.domain.VerificationCode;
 import com.ssafy.s12p21d206.achu.auth.domain.VerificationCodeRepository;
 import com.ssafy.s12p21d206.achu.auth.domain.VerificationPurpose;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -31,5 +32,17 @@ public class OnetimeCodeCoreRepository implements VerificationCodeRepository {
         .findTopByPhoneNumberAndEntityStatusOrderByCreatedAtDesc(
             phone.number(), AuthEntityStatus.ACTIVE)
         .map(OneTimeCodeEntity::toVerificationCode);
+  }
+
+  @Override
+  public Optional<VerificationCode> findById(UUID id) {
+    return oneTimeCodeJpaRepository
+        .findByIdAndEntityStatus(id, AuthEntityStatus.ACTIVE)
+        .map(OneTimeCodeEntity::toVerificationCode);
+  }
+
+  @Override
+  public void update(VerificationCode verificationCode) {
+    oneTimeCodeJpaRepository.save(OneTimeCodeEntity.from(verificationCode));
   }
 }

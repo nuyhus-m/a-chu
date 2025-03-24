@@ -8,4 +8,6 @@ public interface OneTimeCodeJpaRepository extends JpaRepository<OneTimeCodeEntit
 
   Optional<OneTimeCodeEntity> findTopByPhoneNumberAndEntityStatusOrderByCreatedAtDesc(
       String phoneNumber, AuthEntityStatus entityStatus);
+
+  Optional<OneTimeCodeEntity> findByIdAndEntityStatus(UUID id, AuthEntityStatus entityStatus);
 }

@@ -21,9 +21,9 @@ public class VerificationCodeBuilder {
         new Phone("01012341234"),
         code,
         purpose,
-        true,
         expiresIn,
-        new AuthDefaultDateTime(createdAt, createdAt));
+        new AuthDefaultDateTime(createdAt, createdAt),
+        true);
   }
 
   public static VerificationCode createNonVerified(
@@ -36,8 +36,8 @@ public class VerificationCodeBuilder {
         new Phone("01012341234"),
         code,
         purpose,
-        false,
         expiresIn,
-        new AuthDefaultDateTime(createdAt, createdAt));
+        new AuthDefaultDateTime(createdAt, createdAt),
+        false);
   }
 }
