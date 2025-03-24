@@ -54,8 +54,12 @@ import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.data.model.Product
+import com.ssafy.achu.ui.home.BabyDropdown
+import com.ssafy.achu.ui.home.RecommendGrid
 import com.ssafy.achu.ui.mypage.BabyInfo
 import com.ssafy.achu.ui.mypage.LikeItem2
+import com.ssafy.achu.ui.mypage.babyList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -116,7 +120,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         modifier = Modifier
             .fillMaxSize()
             .background(color = White)
-            .padding( start = 24.dp, end = 24.dp)
+            .padding(start = 24.dp, end = 24.dp)
             .verticalScroll(scrollState)
     ) {
 
@@ -298,218 +302,50 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(278.dp) // Row의 전체 높이를 설정
-        ) {
-            // 첫 번째 이미지가 포함된 Box
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = Color.LightGray,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .shadow(4.dp, RoundedCornerShape(8.dp))
-                    .fillMaxHeight() // Row의 높이에 맞게 이미지 크기 설정
-                    .weight(1.0f) // 가로 비율을 1로 설정하여 나머지 영역 차지
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.img_miffy_doll),
-                    contentDescription = "recommend1",
-                    modifier = Modifier
-                        .fillMaxSize() // 박스를 꽉 채우도록 설정
-                        .align(Alignment.Center) // 이미지를 중앙에 배치
-                        .clip(RoundedCornerShape(8.dp)) // 이미지를 라운드 처리
 
-                    ,
-                    contentScale = ContentScale.Crop // 이미지를 박스를 꽉 채우도록 조정
-                )
-                Row(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .height(42.dp)
-                        .align(Alignment.TopStart)
-                        .fillMaxWidth()
-                        .background(
-                            color = Color.White.copy(alpha = 0.7f),
-                            RoundedCornerShape(4.dp)
-                        ),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Spacer(Modifier.width(8.dp))
-                    Column {
-                        Text(
-                            text = "추천 상품 2",
-                            style = AchuTheme.typography.semiBold14PointBlue,
-                            color = FontBlack,
-                        )
-                        Text(
-                            text = "5,000원",
-                            style = AchuTheme.typography.semiBold12PointBlue,
-                            color = FontPink,
-                        )
-                    }
+        RecommendGrid(
+            products =
+                mutableListOf(
+                    Product(
 
+                        chatCount = 11,
+                        createdAt = "3일 전",
+                        id = 1,
+                        imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                        likedByUser = true,
+                        likedUsersCount = 18,
+                        price = 5000,
+                        title = "미피 인형"
+                    ),
+                    Product(
 
-                    Spacer(Modifier.weight(1.0f))
+                        chatCount = 11,
+                        createdAt = "3일 전",
+                        id = 1,
+                        imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                        likedByUser = true,
+                        likedUsersCount = 18,
+                        price = 5000,
+                        title = "미피 인형"
+                    ),
+                    Product(
 
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_favorite_line),
-                        contentDescription = "Arrow",
-                        modifier = Modifier
-                            .size(16.dp)
-                            .clickable {
-
-                            },
-                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(FontGray)
+                        chatCount = 11,
+                        createdAt = "3일 전",
+                        id = 1,
+                        imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                        likedByUser = true,
+                        likedUsersCount = 18,
+                        price = 5000,
+                        title = "미피 인형"
                     )
 
-                    Spacer(Modifier.width(8.dp))
-                }
+                ),
+            onClick = {
+                //프로덕트 아이디를 넘겨줌 이걸가지고 화면 이동 ㄱㄱ(중고 물품 상세)
             }
+        )
 
-            Spacer(modifier = Modifier.width(8.dp)) // 이미지들 사이에 여백 추가
-
-            // 두 번째 이미지와 세 번째 이미지가 포함된 Column
-            Column(modifier = Modifier.weight(0.65f)) {
-                // 두 번째 이미지가 포함된 Box
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = Color.LightGray,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .shadow(4.dp, RoundedCornerShape(8.dp))
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.img_miffy_doll),
-                        contentDescription = "recommend2",
-                        modifier = Modifier
-                            .fillMaxSize() // 박스를 꽉 채우도록 설정
-                            .clip(RoundedCornerShape(8.dp)) // 이미지를 라운드 처리
-                            .align(Alignment.Center),
-                        contentScale = ContentScale.Crop
-                    )
-
-                    Row(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .height(28.dp)
-                            .align(Alignment.TopStart)
-                            .fillMaxWidth()
-                            .background(
-                                color = Color.White.copy(alpha = 0.7f),
-                                RoundedCornerShape(4.dp)
-                            ),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Spacer(Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                text = "추천 상품 2",
-                                style = AchuTheme.typography.semiBold12,
-                                fontSize = 10.sp,
-                                color = FontBlack,
-                            )
-                            Text(
-                                text = "5,000원",
-                                style = AchuTheme.typography.semiBold12,
-                                fontSize = 8.sp,
-                                color = FontPink,
-                            )
-                        }
-
-
-                        Spacer(Modifier.weight(1.0f))
-
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_favorite_line),
-                            contentDescription = "Arrow",
-                            modifier = Modifier
-                                .size(12.dp)
-                                .clickable {
-
-                                },
-                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(FontGray)
-                        )
-
-                        Spacer(Modifier.width(8.dp))
-                    }
-
-                }
-                Spacer(modifier = Modifier.height(8.dp)) // 이미지들 사이에 여백 추가
-
-                // 세 번째 이미지가 포함된 Box
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = Color.LightGray,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .fillMaxWidth()
-                        .height(120.dp)
-                        .shadow(4.dp, RoundedCornerShape(8.dp))
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.img_miffy_doll),
-                        contentDescription = "recommend3",
-                        modifier = Modifier
-                            .fillMaxSize() // 박스를 꽉 채우도록 설정
-                            .clip(RoundedCornerShape(8.dp)) // 이미지를 라운드 처리
-                            .align(Alignment.Center),
-                        contentScale = ContentScale.Crop
-                    )
-                    Row(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .height(28.dp)
-                            .align(Alignment.TopStart)
-                            .fillMaxWidth()
-                            .background(
-                                color = Color.White.copy(alpha = 0.7f),
-                                RoundedCornerShape(4.dp)
-                            ),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Spacer(Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                text = "추천 상품 3",
-                                style = AchuTheme.typography.semiBold12,
-                                fontSize = 10.sp,
-                                color = FontBlack,
-                            )
-                            Text(
-                                text = "5,000원",
-                                style = AchuTheme.typography.semiBold12,
-                                fontSize = 8.sp,
-                                color = FontPink,
-                            )
-                        }
-
-
-                        Spacer(Modifier.weight(1.0f))
-
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_favorite_line),
-                            contentDescription = "Arrow",
-                            modifier = Modifier
-                                .size(12.dp)
-                                .clickable {
-
-                                },
-                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(FontGray)
-                        )
-
-                        Spacer(Modifier.width(8.dp))
-                    }
-
-                }
-            }
-        }
 
         Spacer(Modifier.height(24.dp))
 
@@ -541,9 +377,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
 
     }
-
 }
-
 
 @Composable
 fun CategoryItem(
@@ -566,112 +400,6 @@ fun CategoryItem(
     }
 }
 
-@Composable
-fun BabyDropdown(
-    babyList: MutableList<BabyInfo>,
-    selectedBaby: BabyInfo,
-    onBabySelected: (BabyInfo) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    val birthTextColor = when (selectedBaby.gender) {
-        "남" -> PointBlue
-        "여" -> PointPink
-        else -> FontGray
-    }
-
-    val NicknameTextColor = when (selectedBaby.gender) {
-        "남" -> FontBlue
-        "여" -> PointPink
-        else -> FontGray
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { expanded = true }
-            .padding(2.dp)
-            .height(66.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(66.dp)
-                .clip(CircleShape)
-                .border(1.dp, birthTextColor, CircleShape)
-        ) {
-            Image(
-                painter = painterResource(id = selectedBaby.profileImg!!),
-                contentDescription = "Profile",
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(CircleShape)
-                    .align(Alignment.Center),
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        Spacer(modifier = Modifier.size(16.dp))
-
-        Column(
-            modifier = Modifier.fillMaxHeight(),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Row(
-                modifier = Modifier
-                    .wrapContentWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "재영맘의 ",
-                    style = AchuTheme.typography.semiBold16
-                )
-
-                Text(
-                    text = selectedBaby.babyNickname,
-                    style = AchuTheme.typography.semiBold18,
-                    color = NicknameTextColor
-                )
-
-                Image(
-                    painter = painterResource(id = R.drawable.ic_arrow_drop_down),
-                    contentDescription = "Arrow",
-                    modifier = Modifier.size(24.dp),
-                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(FontBlack)
-                )
-            }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .background(color = White)
-            ) {
-                babyList.forEach { baby ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = baby.babyNickname,
-                                style = AchuTheme.typography.semiBold16
-                            )
-                        },
-                        onClick = {
-                            onBabySelected(baby)
-                            expanded = false
-                        }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = selectedBaby.birth,
-                style = AchuTheme.typography.semiBold16.copy(color = birthTextColor)
-            )
-        }
-    }
-}
 
 @Preview
 @Composable
