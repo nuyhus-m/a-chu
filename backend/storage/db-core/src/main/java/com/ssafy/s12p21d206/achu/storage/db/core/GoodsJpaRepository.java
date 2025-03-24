@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GoodsJpaRepository extends JpaRepository<GoodsEntity, Long> {
 
-  List<GoodsEntity> findAllByAndEntityStatus(Pageable pageable, EntityStatus entityStatus);
+  List<GoodsEntity> findAllByEntityStatus(Pageable pageable, EntityStatus entityStatus);
 
   List<GoodsEntity> findAllByCategoryIdAndEntityStatus(
       Long categoryId, Pageable pageable, EntityStatus entityStatus);

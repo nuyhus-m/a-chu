@@ -23,7 +23,7 @@ public class GoodsCoreRepository implements GoodsRepository {
   public List<Goods> findGoods(User user, Long offset, Long limit, SortType sort) {
     Pageable pageable = PageRequest.of(offset.intValue(), limit.intValue(), convertSort(sort));
     List<GoodsEntity> goodsEntities =
-        goodsJpaRepository.findAllByAndEntityStatus(pageable, EntityStatus.ACTIVE);
+        goodsJpaRepository.findAllByEntityStatus(pageable, EntityStatus.ACTIVE);
     return goodsEntities.stream().map(GoodsEntity::toGoods).toList();
   }
 
