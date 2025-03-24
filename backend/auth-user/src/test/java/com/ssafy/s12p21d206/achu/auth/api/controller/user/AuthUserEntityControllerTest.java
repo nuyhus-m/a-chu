@@ -9,6 +9,7 @@ import com.ssafy.s12p21d206.achu.auth.domain.AuthUserService;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsUtils;
 import io.restassured.http.ContentType;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,7 @@ class AuthUserEntityControllerTest extends RestDocsTest {
   void appendUser() {
     given()
         .contentType(ContentType.JSON)
-        .body(new AppendAuthUserRequest("아이디", "비밀번호", "닉네임", "전화번호", "전화번호 인증코드"))
+        .body(new AppendAuthUserRequest("아이디", "비밀번호", "닉네임", "전화번호", UUID.randomUUID()))
         .post("/users")
         .then()
         .status(HttpStatus.OK)

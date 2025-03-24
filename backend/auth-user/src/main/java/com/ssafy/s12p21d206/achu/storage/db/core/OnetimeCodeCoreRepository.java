@@ -45,4 +45,11 @@ public class OnetimeCodeCoreRepository implements VerificationCodeRepository {
   public void update(VerificationCode verificationCode) {
     oneTimeCodeJpaRepository.save(OneTimeCodeEntity.from(verificationCode));
   }
+
+  @Override
+  public Optional<VerificationCode> findByIdAndPurpose(UUID id, VerificationPurpose purpose) {
+    return oneTimeCodeJpaRepository
+        .findByIdAndPurposeAndEntityStatus(id, purpose, AuthEntityStatus.ACTIVE)
+        .map(OneTimeCodeEntity::toVerificationCode);
+  }
 }

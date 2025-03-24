@@ -21,4 +21,19 @@ public class VerificationCodeVerifier {
     verificationCode.verify(code);
     verificationCodeRepository.update(verificationCode);
   }
+
+  public void validateVerificationCodeVerified(
+      Phone phone, UUID verificationCodeId, VerificationPurpose purpose) {
+    VerificationCode verificationCode = verificationCodeRepository
+        .findByIdAndPurpose(verificationCodeId, purpose)
+        .orElseThrow(() -> new AuthCoreException(AuthCoreErrorType.UNVERIFIED_VERIFICATION_CODE));
+
+    if (!verificationCode.isVerified()) {
+      throw new AuthCoreException(AuthCoreErrorType.UNVERIFIED_VERIFICATION_CODE);
+    }
+
+    if (!verificationCode.isOwner(phone)) {
+      throw new AuthCoreException(AuthCoreErrorType.UNVERIFIED_VERIFICATION_CODE);
+    }
+  }
 }

@@ -1,6 +1,8 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
+import com.ssafy.s12p21d206.achu.auth.domain.AuthUser;
 import com.ssafy.s12p21d206.achu.auth.domain.AuthUserRepository;
+import com.ssafy.s12p21d206.achu.auth.domain.NewAuthUser;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -20,5 +22,10 @@ public class AuthUserCoreRepository implements AuthUserRepository {
   @Override
   public boolean existsByUsername(String username) {
     return authUserJpaRepository.existsByUsername(username);
+  }
+
+  @Override
+  public AuthUser save(NewAuthUser newAuthUser) {
+    return authUserJpaRepository.save(AuthUserEntity.from(newAuthUser)).toAuthUser();
   }
 }

@@ -27,7 +27,6 @@ public class NurigoSmsClient implements VerificationCodeSmsClient {
     message.setTo(phone.number());
 
     message.setText(text);
-
     messageService.sendOne(new SingleMessageSendingRequest(message));
   }
 }

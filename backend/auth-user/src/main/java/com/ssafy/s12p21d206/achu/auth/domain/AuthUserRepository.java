@@ -5,4 +5,6 @@ public interface AuthUserRepository {
   boolean existsByNickname(String nickname);
 
   boolean existsByUsername(String username);
+
+  AuthUser save(NewAuthUser newAuthUser);
 }

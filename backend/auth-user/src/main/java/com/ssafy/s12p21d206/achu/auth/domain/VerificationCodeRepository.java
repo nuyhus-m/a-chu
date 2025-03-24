@@ -13,4 +13,7 @@ public interface VerificationCodeRepository {
   Optional<VerificationCode> findById(UUID id);
 
   void update(VerificationCode verificationCode);
+
+  Optional<VerificationCode> findByIdAndPurpose(
+      UUID verificationCodeId, VerificationPurpose purpose);
 }

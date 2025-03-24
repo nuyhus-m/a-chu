@@ -14,7 +14,7 @@ public class VerificationCode {
   private final VerificationPurpose purpose;
   private final Duration expiresIn;
   private final AuthDefaultDateTime defaultDateTime;
-  boolean isVerified;
+  private boolean isVerified;
 
   public VerificationCode(
       UUID id,
@@ -75,5 +75,9 @@ public class VerificationCode {
 
   public boolean isVerified() {
     return isVerified;
+  }
+
+  public boolean isOwner(Phone phone) {
+    return this.phone.equals(phone);
   }
 }

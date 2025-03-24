@@ -1,5 +1,7 @@
 package com.ssafy.s12p21d206.achu.auth.domain;
 
+import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreErrorType;
+import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,5 +19,17 @@ public class AuthUserValidator {
 
   public boolean isUsernameUnique(String username) {
     return !authUserRepository.existsByUsername(username);
+  }
+
+  public void validateUsernameUnique(String username) {
+    if (authUserRepository.existsByUsername(username)) {
+      throw new AuthCoreException(AuthCoreErrorType.DUPLICATED_USERNAME);
+    }
+  }
+
+  public void validateNicknameUnique(String nickname) {
+    if (authUserRepository.existsByNickname(nickname)) {
+      throw new AuthCoreException(AuthCoreErrorType.DUPLICATED_NICKNAME);
+    }
   }
 }

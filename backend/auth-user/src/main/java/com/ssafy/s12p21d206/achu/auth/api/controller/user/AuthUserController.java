@@ -3,6 +3,7 @@ package com.ssafy.s12p21d206.achu.auth.api.controller.user;
 import com.ssafy.s12p21d206.achu.auth.api.response.AuthApiResponse;
 import com.ssafy.s12p21d206.achu.auth.api.response.AuthDefaultIdResponse;
 import com.ssafy.s12p21d206.achu.auth.api.response.AuthIsUniqueResponse;
+import com.ssafy.s12p21d206.achu.auth.domain.AuthUser;
 import com.ssafy.s12p21d206.achu.auth.domain.AuthUserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,7 +26,9 @@ public class AuthUserController {
   @PostMapping("/users")
   public AuthApiResponse<AuthDefaultIdResponse> appendUser(
       @RequestBody AppendAuthUserRequest request) {
-    AuthDefaultIdResponse response = new AuthDefaultIdResponse(1L);
+    AuthUser authUser =
+        authUserService.appendAuthUser(request.toNewAuthUser(), request.verificationCodeId());
+    AuthDefaultIdResponse response = new AuthDefaultIdResponse(authUser.getId());
     return AuthApiResponse.success(response);
   }
 
