@@ -28,7 +28,7 @@ public class BabyCoreRepository implements BabyRepository {
 
   @Override
   public List<Baby> findByUser(User user) {
-    return babyJpaRepository.findByUserId(user.id()).stream()
+    return babyJpaRepository.findByUserIdAndEntityStatus(user.id(), EntityStatus.ACTIVE).stream()
         .map(BabyEntity::toBaby)
         .toList();
   }
@@ -53,5 +53,10 @@ public class BabyCoreRepository implements BabyRepository {
     BabyEntity babyEntity = optionalEntity.get();
     babyEntity.delete();
     return babyEntity.getId();
+  }
+
+  @Override
+  public boolean existsById(Long id) {
+    return babyJpaRepository.existsById(id);
   }
 }

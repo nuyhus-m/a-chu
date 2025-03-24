@@ -12,4 +12,6 @@ public interface BabyRepository {
   Optional<Baby> findById(Long id);
 
   Long delete(Long id);
+
+  boolean existsById(Long id);
 }

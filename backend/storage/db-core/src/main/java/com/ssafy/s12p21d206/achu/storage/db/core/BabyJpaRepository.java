@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BabyJpaRepository extends JpaRepository<BabyEntity, Long> {
-  List<BabyEntity> findByUserId(Long userId);
+  List<BabyEntity> findByUserIdAndEntityStatus(Long userId, EntityStatus status);
 
   Optional<BabyEntity> findByIdAndEntityStatus(Long id, EntityStatus status);
 }
