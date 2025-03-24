@@ -1,5 +1,6 @@
-package com.ssafy.s12p21d206.achu.auth.domain;
+package com.ssafy.s12p21d206.achu.auth.domain.user;
 
+import com.ssafy.s12p21d206.achu.auth.domain.Phone;
 import com.ssafy.s12p21d206.achu.auth.domain.support.AuthDefaultDateTime;
 
 public record AuthUser(

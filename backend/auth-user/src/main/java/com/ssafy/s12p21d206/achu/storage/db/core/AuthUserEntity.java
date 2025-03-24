@@ -1,9 +1,9 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
-import com.ssafy.s12p21d206.achu.auth.domain.AuthUser;
-import com.ssafy.s12p21d206.achu.auth.domain.NewAuthUser;
 import com.ssafy.s12p21d206.achu.auth.domain.Phone;
 import com.ssafy.s12p21d206.achu.auth.domain.support.AuthDefaultDateTime;
+import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUser;
+import com.ssafy.s12p21d206.achu.auth.domain.user.NewAuthUser;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 

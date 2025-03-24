@@ -5,7 +5,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 
-import com.ssafy.s12p21d206.achu.auth.domain.AuthUserService;
+import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUserService;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsUtils;
 import io.restassured.http.ContentType;

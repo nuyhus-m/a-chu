@@ -1,10 +1,10 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
-import com.ssafy.s12p21d206.achu.auth.domain.AuthUser;
-import com.ssafy.s12p21d206.achu.auth.domain.AuthUserRepository;
-import com.ssafy.s12p21d206.achu.auth.domain.NewAuthUser;
 import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreErrorType;
 import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreException;
+import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUser;
+import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUserRepository;
+import com.ssafy.s12p21d206.achu.auth.domain.user.NewAuthUser;
 import org.springframework.stereotype.Repository;
 
 @Repository

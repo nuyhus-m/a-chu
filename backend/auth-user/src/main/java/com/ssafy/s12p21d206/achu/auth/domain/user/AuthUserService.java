@@ -1,4 +1,4 @@
-package com.ssafy.s12p21d206.achu.auth.domain;
+package com.ssafy.s12p21d206.achu.auth.domain.user;
 
 import java.util.UUID;
 import org.springframework.stereotype.Service;
