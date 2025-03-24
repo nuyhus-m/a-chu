@@ -1,6 +1,6 @@
 package com.ssafy.s12p21d206.achu.auth.domain.user;
 
-import com.ssafy.s12p21d206.achu.auth.domain.Phone;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class NewAuthUser {

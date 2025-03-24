@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreException;
 import com.ssafy.s12p21d206.achu.auth.domain.support.AuthDefaultDateTime;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
 import com.ssafy.s12p21d206.achu.auth.domain.verification.RequestIntervalValidator;
 import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationCode;
 import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationCodeRepository;

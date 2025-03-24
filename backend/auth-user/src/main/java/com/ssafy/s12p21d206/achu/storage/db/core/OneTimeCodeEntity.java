@@ -1,8 +1,8 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
-import com.ssafy.s12p21d206.achu.auth.domain.Phone;
 import com.ssafy.s12p21d206.achu.auth.domain.support.AuthDefaultDateTime;
 import com.ssafy.s12p21d206.achu.auth.domain.verification.NewVerificationCode;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
 import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationCode;
 import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationPurpose;
 import jakarta.persistence.Entity;

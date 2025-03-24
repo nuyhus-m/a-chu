@@ -1,6 +1,6 @@
 package com.ssafy.s12p21d206.achu.client.sms;
 
-import com.ssafy.s12p21d206.achu.auth.domain.Phone;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
 import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationCodeSmsClient;
 import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;

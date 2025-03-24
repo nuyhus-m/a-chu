@@ -1,6 +1,5 @@
 package com.ssafy.s12p21d206.achu.auth.domain.verification;
 
-import com.ssafy.s12p21d206.achu.auth.domain.Phone;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
