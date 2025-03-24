@@ -3,8 +3,7 @@ package com.ssafy.s12p21d206.achu.api.controller.goods;
 import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
-import com.ssafy.s12p21d206.achu.domain.Category;
-import com.ssafy.s12p21d206.achu.domain.CategoryService;
+import com.ssafy.s12p21d206.achu.domain.*;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import com.ssafy.s12p21d206.achu.domain.support.TradeStatus;
 import com.ssafy.s12p21d206.achu.domain.support.TradeType;
@@ -17,9 +16,20 @@ import org.springframework.web.multipart.MultipartFile;
 public class GoodsController {
 
   private final CategoryService categoryService;
+  private final GoodsService goodsService;
 
-  public GoodsController(CategoryService categoryService) {
+  private final LikeService likeService;
+  private final ChatRoomService chatRoomService;
+
+  public GoodsController(
+      CategoryService categoryService,
+      GoodsService goodsService,
+      LikeService likeService,
+      ChatRoomService chatRoomService) {
     this.categoryService = categoryService;
+    this.goodsService = goodsService;
+    this.likeService = likeService;
+    this.chatRoomService = chatRoomService;
   }
 
   @GetMapping("/categories")
@@ -31,17 +41,18 @@ public class GoodsController {
 
   @GetMapping("/categories/{categoryId}/goods")
   public ApiResponse<List<GoodsResponse>> findCategoryGoods(
-      Long userId,
+      ApiUser apiUser,
       @PathVariable Long categoryId,
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
-    LocalDateTime createdAt = LocalDateTime.of(2025, 3, 12, 16, 16);
-    List<GoodsResponse> response = List.of(
-        new GoodsResponse(1L, "물품1", "img_url1", 5000L, createdAt, 3L, 11L, true),
-        new GoodsResponse(3L, "물품3", "img_url3", 10000L, createdAt, 0L, 3L, false),
-        new GoodsResponse(10L, "물품10", "img_url10", 0L, createdAt, 7L, 0L, true));
-    return ApiResponse.success(response);
+    List<Goods> goods =
+        goodsService.findCategoryGoods(apiUser.toUser(), categoryId, offset, limit, sort);
+    List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
+    List<LikeStatus> likeStatuses = likeService.findLikeStatus(apiUser.toUser(), goodsIds);
+    List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
+    List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
+    return ApiResponse.success(responses);
   }
 
   @GetMapping("/goods")
@@ -50,11 +61,12 @@ public class GoodsController {
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
-    LocalDateTime createdAt = LocalDateTime.of(2025, 3, 12, 22, 56);
-    List<GoodsResponse> response = List.of(
-        new GoodsResponse(1L, "물품1", "img_url1", 5000L, createdAt, 3L, 11L, false),
-        new GoodsResponse(2L, "물품2", "img_url2", 13000L, createdAt.plusDays(1L), 0L, 5L, true));
-    return ApiResponse.success(response);
+    List<Goods> goods = goodsService.findGoods(apiUser.toUser(), offset, limit, sort);
+    List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
+    List<LikeStatus> likeStatuses = likeService.findLikeStatus(apiUser.toUser(), goodsIds);
+    List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
+    List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
+    return ApiResponse.success(responses);
   }
 
   @GetMapping("/goods/search")
