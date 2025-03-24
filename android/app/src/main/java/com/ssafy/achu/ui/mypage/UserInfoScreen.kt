@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.mypage
 
+import android.R.attr.text
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -21,6 +22,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.achu.R
+import com.ssafy.achu.core.components.BasicDialog
 import com.ssafy.achu.core.components.BasicTextField
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.components.ClearTextField
@@ -49,12 +55,19 @@ import com.ssafy.achu.core.theme.White
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun UserInfoScreen() {
+
+    var showNickNameUpdateDialog by remember { mutableStateOf(false) }
+    var showPasswordUpdateDialog by remember { mutableStateOf(false) }
+    var LogoutDialog by remember { mutableStateOf(false) }
+    var DeleteUserDialog by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = White)
 
     ) {
+
         Column {
             BasicTopAppBar(
                 title = "내 정보 수정",
@@ -105,7 +118,7 @@ fun UserInfoScreen() {
                             .height(20.dp)
                             .width(20.dp)
                             .clickable {
-                                //클릭시 다이얼로그 띄우기
+                                showNickNameUpdateDialog = true
                             },
                     )
                 }
@@ -154,7 +167,9 @@ fun UserInfoScreen() {
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                PointBlueButton("비밀번호 수정", onClick = {})
+                PointBlueButton("비밀번호 수정", onClick = {
+                    showPasswordUpdateDialog = true
+                })
                 Spacer(modifier = Modifier.height(48.dp))
 
                 Row(
@@ -169,7 +184,7 @@ fun UserInfoScreen() {
                             textDecoration = TextDecoration.Underline
                         ),
                         modifier = Modifier.clickable {
-                            // 클릭 시 동작
+                            LogoutDialog = true
                         }
                     )
 
@@ -181,7 +196,7 @@ fun UserInfoScreen() {
                             textDecoration = TextDecoration.Underline
                         ),
                         modifier = Modifier.clickable {
-                            // 클릭 시 동작
+                            DeleteUserDialog = true
                         }
 
                     )
@@ -190,10 +205,41 @@ fun UserInfoScreen() {
 
             }
         }
+    }
 
+    if (showNickNameUpdateDialog) {
+        NicknameUpdateDialog(
+            onDismiss = { showNickNameUpdateDialog = false },
+            onConfirm = { showNickNameUpdateDialog = false }
+        )
+    }
+    if (showPasswordUpdateDialog) {
+        PasswordUpdateDialog(
+            onDismiss = { showPasswordUpdateDialog = false },
+            onConfirm = { showPasswordUpdateDialog = false }
+        )
+    }
 
+    if (LogoutDialog) {
+        BasicDialog(
+            text = "로그아웃 하시겠습니까?",
+            onDismiss = { LogoutDialog = false },
+            onConfirm = { LogoutDialog = false }
+        )
+    }
+
+    if (DeleteUserDialog) {
+        BasicDialog(
+            img = painterResource(id = R.drawable.img_crying_face),
+            "A - Chu",
+            "와 함께한",
+            text = "모든 추억이 삭제됩니다.\n정말 탈퇴하시겠습니까?",
+            onDismiss = { DeleteUserDialog = false },
+            onConfirm = { DeleteUserDialog = false }
+        )
     }
 }
+
 
 
 @RequiresApi(Build.VERSION_CODES.O)

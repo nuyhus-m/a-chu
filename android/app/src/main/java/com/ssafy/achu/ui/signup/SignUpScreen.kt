@@ -109,6 +109,6 @@ fun SignUpScreen(modifier: Modifier = Modifier, viewModel: SignUpViewModel) {
 @Composable
 fun SignUpScreenPreview() {
     AchuTheme {
-//        SignUpScreen()
+//       SignUpScreen()
     }
 }
