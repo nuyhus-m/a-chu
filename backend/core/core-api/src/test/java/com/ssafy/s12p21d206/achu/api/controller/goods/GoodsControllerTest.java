@@ -1,16 +1,18 @@
 package com.ssafy.s12p21d206.achu.api.controller.goods;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 
-import com.ssafy.s12p21d206.achu.domain.Category;
-import com.ssafy.s12p21d206.achu.domain.CategoryService;
+import com.ssafy.s12p21d206.achu.domain.*;
+import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import com.ssafy.s12p21d206.achu.domain.support.TradeType;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import io.restassured.http.ContentType;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,13 +26,25 @@ class GoodsControllerTest extends RestDocsTest {
 
   private GoodsController controller;
   private CategoryService categoryService;
+  private GoodsService goodsService;
+
+  private LikeService likeService;
+  private ChatRoomService chatRoomService;
 
   @BeforeEach
   void setup() {
     categoryService = mock(CategoryService.class);
-    controller = new GoodsController(categoryService);
+    goodsService = mock(GoodsService.class);
+    likeService = mock(LikeService.class);
+    chatRoomService = mock(ChatRoomService.class);
+    controller = new GoodsController(categoryService, goodsService, likeService, chatRoomService);
     mockMvc = mockController(controller);
   }
+
+  Goods goods = new Goods(
+      1L, "장난감 자동차", "https://example.com/img1.jpg", 10000L, LocalDateTime.now().minusDays(1)
+      // 필드가 더 있다면 채워야 함
+      );
 
   @Test
   void findCategories() {
@@ -56,6 +70,15 @@ class GoodsControllerTest extends RestDocsTest {
 
   @Test
   void findCategoryGoods() {
+    when(goodsService.findCategoryGoods(
+            any(User.class), anyLong(), anyLong(), anyLong(), any(SortType.class)))
+        .thenReturn(List.of(goods));
+
+    when(likeService.findLikeStatus(any(User.class), anyList()))
+        .thenReturn(List.of(new LikeStatus(goods.getId(), 5L, true)));
+
+    when(chatRoomService.findChatStatus(any(User.class), anyList()))
+        .thenReturn(List.of(new ChatStatus(goods.getId(), 3L)));
     given()
         .contentType(ContentType.JSON)
         .queryParam("offset", 0)
@@ -95,6 +118,14 @@ class GoodsControllerTest extends RestDocsTest {
 
   @Test
   void findGoods() {
+    when(goodsService.findGoods(any(User.class), anyLong(), anyLong(), any(SortType.class)))
+        .thenReturn(List.of(goods));
+
+    when(likeService.findLikeStatus(any(User.class), anyList()))
+        .thenReturn(List.of(new LikeStatus(goods.getId(), 5L, true)));
+
+    when(chatRoomService.findChatStatus(any(User.class), anyList()))
+        .thenReturn(List.of(new ChatStatus(goods.getId(), 3L)));
     given()
         .contentType(ContentType.JSON)
         .queryParam("offset", 0)
