@@ -23,25 +23,25 @@ public class ValidationUtils {
   }
 
   public static void validateUsername(String username) {
-    String usernameRegex = "^[a-zA-Z0-9]{4,16}$";
+    String regex = "^[a-zA-Z0-9]{4,16}$";
 
-    if (!username.matches(usernameRegex)) {
+    if (!username.matches(regex)) {
       throw new AuthCoreApiException(AuthCoreApiErrorType.INVALID_USERNAME_FORMAT);
     }
   }
 
   public static void validatePassword(String password) {
-    String passwordRegex = "^[A-Za-z0-9!@#$%^&*()_+\\-=~]{8,16}$";
+    String regex = "^[A-Za-z0-9!@#$%^&*()_+\\-=~]{8,16}$";
 
-    if (!password.matches(passwordRegex)) {
+    if (!password.matches(regex)) {
       throw new AuthCoreApiException(AuthCoreApiErrorType.INVALID_PASSWORD_FORMAT);
     }
   }
 
   public static void validateNickname(String nickname) {
-    String nicknameRegex = "^[a-zA-Z0-9가-힣]{2,6}$";
+    String regex = "^[a-zA-Z0-9가-힣]{2,6}$";
 
-    if (!nickname.matches(nicknameRegex)) {
+    if (!nickname.matches(regex)) {
       throw new AuthCoreApiException(AuthCoreApiErrorType.INVALID_NICKNAME_FORMAT);
     }
   }
