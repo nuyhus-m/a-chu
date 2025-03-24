@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,51 +64,57 @@ fun BottomNavBar(navController: NavHostController) {
             color = White,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp)
+                .height(with(LocalDensity.current) {
+                    WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 80.dp
+                })
                 .shadow(elevation = 8.dp, shape = RectangleShape)
                 .padding(WindowInsets.navigationBars.asPaddingValues())
         ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                bottomNavBarScreens.forEach { screen ->
-                    val selected = currentRoute == screen.route
+            Column {
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    bottomNavBarScreens.forEach { screen ->
+                        val selected = currentRoute == screen.route
 
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = ripple(color = PointBlue)
-                            ) {
-                                navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = ripple(color = PointBlue)
+                                ) {
+                                    navController.navigate(screen.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
                                 }
-                            }
-                    ) {
-                        Icon(
-                            painter = painterResource(screen.icon),
-                            contentDescription = null,
-                            tint = if (selected) PointBlue else FontGray
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = stringResource(screen.titleResId),
-                            color = if (selected) PointBlue else FontGray,
-                            fontSize = 12.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        ) {
+                            Icon(
+                                painter = painterResource(screen.icon),
+                                contentDescription = null,
+                                tint = if (selected) PointBlue else FontGray
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = stringResource(screen.titleResId),
+                                color = if (selected) PointBlue else FontGray,
+                                fontSize = 12.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }

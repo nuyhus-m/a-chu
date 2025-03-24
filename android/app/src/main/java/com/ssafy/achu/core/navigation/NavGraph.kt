@@ -35,29 +35,33 @@ import com.ssafy.achu.ui.product.ProductListScreen
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier
 ) {
     NavHost(
         navController = navController,
-        startDestination = BottomNavScreen.Home.route,
-        modifier = modifier
+        startDestination = BottomNavScreen.Home.route
     ) {
+        // 바텀바 화면들
         composable(route = BottomNavScreen.Home.route) {
-            HomeScreen()
+            HomeScreen(modifier = modifier)
         }
         composable(route = BottomNavScreen.ProductList.route) {
-            ProductListScreen()
+            ProductListScreen(modifier = modifier)
         }
         composable(route = BottomNavScreen.MemoryList.route) {
-            MemoryListScreen { navController.navigate(route = "memorydetail") }
+            MemoryListScreen(
+                modifier = modifier,
+                onNavigateToMemoryDetail = { navController.navigate(route = "memorydetail") })
         }
         composable(route = BottomNavScreen.ChatList.route) {
             ChatListScreen(
+                modifier = modifier,
                 onNavigateToChat = { navController.navigate(route = "chat") }
             )
         }
         composable(route = BottomNavScreen.MyPage.route) {
             MyPageScreen(
+                modifier = modifier,
                 onNavigateToTradeList = { navController.navigate(route = "tradeList") },
                 onNavigateToLikeList = { navController.navigate(route = "likelist") },
                 onNavigateToRecommend = { navController.navigate(route = "recommend") },
@@ -65,43 +69,41 @@ fun NavGraph(
                 onNavigateToUserInfo = { navController.navigate(route = "info") })
         }
 
+        // 마이페이지 화면들
         composable(MY_TRADE_LIST) {
             TradeListScreen()
         }
-
         composable(MY_LIKE_LIST) {
             LikeItemListScreen()
         }
-
         composable(MY_RECOMMEND_LIST) {
             RecommendItemScreen()
         }
-
         composable(MY_INFO) {
             UserInfoScreen()
         }
 
+        // 마이페이지 - 아기정보관리 화면들
         composable(MY_BABY_LIST) {
             BabyListScreen(
                 onNavigateToBabyDetail = { navController.navigate(route = "babydetail") }
             )
         }
-
         composable(MY_BABY_DETAIL) {
             BabyDetailScreen()
         }
 
-
+        // 추억 관련 화면들
         composable(MY_MEMORY_UPLOAD) {
             MemoryUploadScreen()
         }
-
         composable(MY_MEMORY_DETAIL) {
             MemoryDetailScreen(
                 onNavigateToMemoryUpload = { navController.navigate(route = "memoryupload") }
             )
         }
 
+        // 채팅 관련 화면들
         composable(MY_CHAT) {
             ChatScreen()
         }
