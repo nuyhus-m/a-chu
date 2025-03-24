@@ -61,8 +61,4 @@ public abstract class BaseEntity {
   public LocalDateTime getUpdatedAt() {
     return updatedAt;
   }
-
-  public EntityStatus getEntityStatus() {
-    return entityStatus;
-  }
 }
