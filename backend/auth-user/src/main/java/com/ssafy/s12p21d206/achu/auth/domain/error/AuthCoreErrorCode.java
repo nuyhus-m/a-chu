@@ -7,4 +7,5 @@ public enum AuthCoreErrorCode {
   AUE1003,
   AUE1004,
   AUE1005,
+  AUE0000,
 }

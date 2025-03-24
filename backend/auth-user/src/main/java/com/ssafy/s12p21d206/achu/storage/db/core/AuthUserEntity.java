@@ -42,4 +42,8 @@ public class AuthUserEntity extends AuthBaseEntity {
         new Phone(this.phoneNumber),
         new AuthDefaultDateTime(this.getCreatedAt(), this.getUpdatedAt()));
   }
+
+  public void changeNickname(String nickname) {
+    this.nickname = nickname;
+  }
 }

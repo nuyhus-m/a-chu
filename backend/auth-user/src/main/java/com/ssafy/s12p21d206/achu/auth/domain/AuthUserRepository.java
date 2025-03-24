@@ -7,4 +7,6 @@ public interface AuthUserRepository {
   boolean existsByUsername(String username);
 
   AuthUser save(NewAuthUser newAuthUser);
+
+  AuthUser modifyNickname(Long userId, String nickname);
 }
