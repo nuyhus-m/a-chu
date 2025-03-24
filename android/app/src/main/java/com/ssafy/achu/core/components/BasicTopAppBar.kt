@@ -42,8 +42,7 @@ fun BasicTopAppBar(title: String = "", onBackClick: () -> Unit) {
             }
         },
         modifier = Modifier.padding(
-            vertical = 24
-                .dp
+            vertical = 24.dp
         ),
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.White
