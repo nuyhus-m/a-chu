@@ -15,4 +15,10 @@ public class BabyReader {
   public List<Baby> readBabies(User user) {
     return babyRepository.findByUser(user);
   }
+
+  public Baby readBaby(Long id) {
+    return babyRepository
+        .findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("해당 아기를 찾을 수 없습니다: " + id));
+  }
 }

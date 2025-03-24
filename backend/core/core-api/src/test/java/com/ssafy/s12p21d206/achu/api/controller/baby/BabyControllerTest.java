@@ -80,14 +80,20 @@ class BabyControllerTest extends RestDocsTest {
 
   @Test
   void findBaby() {
+
+    DefaultDateTime now = new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now());
+    Baby baby =
+        new Baby(1L, 1L, "강두식", Sex.MALE, "https://test-image1.png", LocalDate.of(2025, 1, 1), now);
+    when(babyService.findBaby(any())).thenReturn(baby);
+
     given()
         .contentType(ContentType.JSON)
-        .get("/babies/{babyId}", 1L)
+        .get("/babies/{id}", 1L)
         .then()
         .status(HttpStatus.OK)
         .apply(document(
             "find-baby",
-            pathParameters(parameterWithName("babyId").description("조회하고자 하는 자녀 id")),
+            pathParameters(parameterWithName("id").description("조회하고자 하는 자녀 id")),
             responseFields(
                 fieldWithPath("result")
                     .type(JsonFieldType.STRING)

@@ -6,9 +6,7 @@ import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
 import com.ssafy.s12p21d206.achu.domain.Baby;
 import com.ssafy.s12p21d206.achu.domain.BabyService;
 import com.ssafy.s12p21d206.achu.domain.NewBaby;
-import com.ssafy.s12p21d206.achu.domain.support.Sex;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,12 +40,10 @@ public class BabyController {
     return ApiResponse.success(new DefaultIdResponse(id));
   }
 
-  @GetMapping("/babies/{babyId}")
-  public ApiResponse<BabyDetailResponse> findBaby(Long userId, @PathVariable Long babyId) {
-
-    BabyDetailResponse response = new BabyDetailResponse(
-        babyId, "강두식", Sex.FEMALE, "https://test-image.png", LocalDate.of(2025, 3, 20));
-    return ApiResponse.success(response);
+  @GetMapping("/babies/{id}")
+  public ApiResponse<BabyResponse> findBaby(Long userId, @PathVariable Long id) {
+    Baby baby = babyService.findBaby(id);
+    return ApiResponse.success(BabyResponse.from(baby));
   }
 
   @GetMapping("/babies")

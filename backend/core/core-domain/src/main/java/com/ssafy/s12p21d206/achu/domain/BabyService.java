@@ -22,4 +22,8 @@ public class BabyService {
   public List<Baby> findBabies(User user) {
     return babyReader.readBabies(user);
   }
+
+  public Baby findBaby(Long id) {
+    return babyReader.readBaby(id);
+  }
 }

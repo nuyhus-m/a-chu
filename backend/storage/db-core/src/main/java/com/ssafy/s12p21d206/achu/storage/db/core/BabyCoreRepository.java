@@ -5,6 +5,7 @@ import com.ssafy.s12p21d206.achu.domain.BabyRepository;
 import com.ssafy.s12p21d206.achu.domain.NewBaby;
 import com.ssafy.s12p21d206.achu.domain.User;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -29,5 +30,10 @@ public class BabyCoreRepository implements BabyRepository {
     return babyJpaRepository.findByUserId(user.id()).stream()
         .map(BabyEntity::toBaby)
         .toList();
+  }
+
+  @Override
+  public Optional<Baby> findById(Long id) {
+    return babyJpaRepository.findById(id).map(BabyEntity::toBaby);
   }
 }
