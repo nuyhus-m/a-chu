@@ -5,9 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -49,7 +51,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.ssafy.achu.R
+import com.ssafy.achu.core.components.Divider
+import com.ssafy.achu.core.components.SmallLineBtn
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
@@ -190,53 +195,57 @@ fun ChatScreen() {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // 프로필 이미지
-                        Image(
-                            painter = painterResource(R.drawable.img_profile_test),
-                            contentDescription = stringResource(R.string.profile_img),
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape),
-                            contentScale = ContentScale.Crop
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        // 사용자 이름
-                        Text(
-                            text = "홍길동",
-                            style = AchuTheme.typography.bold24
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = { /* 뒤로가기 동작 */ }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.KeyboardArrowLeft,
-                            contentDescription = stringResource(R.string.back),
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* 나가기 동작 */ }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_leave),
-                            contentDescription = stringResource(R.string.leave),
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = White
-                ),
-                modifier = Modifier.padding(vertical = 24.dp)
-            )
+            Column() {
+                TopAppBar(
+                    title = {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // 프로필 이미지
+                            Image(
+                                painter = painterResource(R.drawable.img_profile_test),
+                                contentDescription = stringResource(R.string.profile_img),
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            // 사용자 이름
+                            Text(
+                                text = "홍길동",
+                                style = AchuTheme.typography.bold24
+                            )
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { /* 뒤로가기 동작 */ }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.KeyboardArrowLeft,
+                                contentDescription = stringResource(R.string.back),
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { /* 나가기 동작 */ }) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_leave),
+                                contentDescription = stringResource(R.string.leave),
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = White
+                    ),
+                    modifier = Modifier.padding(vertical = 24.dp)
+                )
+                ChatProduct()
+                Divider()
+            }
         },
         bottomBar = {
             // 입력 필드
@@ -273,6 +282,61 @@ fun ChatScreen() {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ChatProduct() {
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 24.dp)
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AsyncImage(
+                model = "imgUrl",
+                contentDescription = null,
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(8.dp))
+                    .aspectRatio(1f),
+                contentScale = ContentScale.Crop,
+                error = painterResource(R.drawable.img_miffy_doll)
+            )
+
+            Column(
+                modifier = Modifier
+                    .weight(1.3f)
+                    .padding(start = 16.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "미피 인형",
+                    style = AchuTheme.typography.regular18
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "5,000원",
+                    style = AchuTheme.typography.semiBold18.copy(color = FontPink)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "판매중",
+                    style = AchuTheme.typography.semiBold16.copy(color = PointPink)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            SmallLineBtn("거래 완료", PointPink) { }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -507,6 +571,14 @@ fun addSystemMessage(messages: List<ChatMessage>, content: String): List<ChatMes
 fun ChatScreenPreview() {
     AchuTheme {
         ChatScreen()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChatProductPreview() {
+    AchuTheme {
+        ChatProduct()
     }
 }
 
