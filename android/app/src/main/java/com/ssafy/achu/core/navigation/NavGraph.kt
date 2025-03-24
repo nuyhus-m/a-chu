@@ -1,5 +1,6 @@
 package com.ssafy.achu.core.navigation
 
+import HomeScreen
 import MyPageScreen
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,7 +20,6 @@ import com.ssafy.achu.core.navigation.MyPage.MY_RECOMMEND_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_TRADE_LIST
 import com.ssafy.achu.ui.chat.ChatListScreen
 import com.ssafy.achu.ui.chat.ChatScreen
-import com.ssafy.achu.ui.home.HomeScreen
 import com.ssafy.achu.ui.memory.MemoryDetailScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
 import com.ssafy.achu.ui.memory.MemoryUploadScreen
@@ -43,7 +43,12 @@ fun NavGraph(
         modifier = modifier
     ) {
         composable(route = BottomNavScreen.Home.route) {
-            HomeScreen()
+            HomeScreen(
+                onNavigateToLikeList = { navController.navigate(route = "likelist") },
+                onNavigateToRecommend = { navController.navigate(route = "recommend") },
+                onNavigateToBabyList = { navController.navigate(route = "babylist") },
+                onNavigateToProductList = { navController.navigate(route = "productlist") }
+            )
         }
         composable(route = BottomNavScreen.ProductList.route) {
             ProductListScreen()

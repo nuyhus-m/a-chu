@@ -58,7 +58,7 @@ fun LikeItemListScreen() {
                 )
             }
 
-            Column(modifier = Modifier.padding(24.dp)) {
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
 
                 LazyColumn(
                     modifier = Modifier
