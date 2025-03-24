@@ -8,9 +8,11 @@ import jakarta.persistence.Table;
 @Entity
 public class CategoryEntity extends BaseEntity {
 
-  private final String name;
+  private String name;
 
-  protected CategoryEntity(String name) {
+  protected CategoryEntity() {}
+
+  public CategoryEntity(String name) {
     this.name = name;
   }
 
