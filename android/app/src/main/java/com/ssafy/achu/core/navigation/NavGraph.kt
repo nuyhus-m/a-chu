@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.ssafy.achu.core.navigation.MyPage.MY_BABY_DETAIL
 import com.ssafy.achu.core.navigation.MyPage.MY_BABY_LIST
+import com.ssafy.achu.core.navigation.MyPage.MY_CHAT
 import com.ssafy.achu.core.navigation.MyPage.MY_INFO
 import com.ssafy.achu.core.navigation.MyPage.MY_LIKE_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_MEMORY_DETAIL
@@ -17,6 +18,7 @@ import com.ssafy.achu.core.navigation.MyPage.MY_MEMORY_UPLOAD
 import com.ssafy.achu.core.navigation.MyPage.MY_RECOMMEND_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_TRADE_LIST
 import com.ssafy.achu.ui.chat.ChatListScreen
+import com.ssafy.achu.ui.chat.ChatScreen
 import com.ssafy.achu.ui.home.HomeScreen
 import com.ssafy.achu.ui.memory.MemoryDetailScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
@@ -50,7 +52,9 @@ fun NavGraph(
             MemoryListScreen { navController.navigate(route = "memorydetail") }
         }
         composable(route = BottomNavScreen.ChatList.route) {
-            ChatListScreen()
+            ChatListScreen(
+                onNavigateToChat = { navController.navigate(route = "chat") }
+            )
         }
         composable(route = BottomNavScreen.MyPage.route) {
             MyPageScreen(
@@ -98,6 +102,9 @@ fun NavGraph(
             )
         }
 
+        composable(MY_CHAT) {
+            ChatScreen()
+        }
     }
 }
 
@@ -111,5 +118,6 @@ object MyPage {
     const val MY_BABY_DETAIL = "babydetail"
     const val MY_MEMORY_DETAIL = "memorydetail"
     const val MY_MEMORY_UPLOAD = "memoryupload"
+    const val MY_CHAT = "chat"
 }
 

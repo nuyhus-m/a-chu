@@ -67,5 +67,10 @@
 
     <!--채팅-->
     <string name="product_img">물건 이미지</string>
+    <string name="profile_img">프로필 이미지</string>
+    <string name="back">뒤로가기</string>
+    <string name="leave">채팅방 나가기</string>
+    <string name="send">전송</string>
+    <string name="enter_message">메세지를 입력하세요.</string>
 
 </resources>
