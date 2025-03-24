@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,6 +18,7 @@ import com.ssafy.achu.core.navigation.MyPage.MY_MEMORY_DETAIL
 import com.ssafy.achu.core.navigation.MyPage.MY_MEMORY_UPLOAD
 import com.ssafy.achu.core.navigation.MyPage.MY_RECOMMEND_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_TRADE_LIST
+import com.ssafy.achu.core.navigation.MyPage.MY_UPLOAD_PRODUCT
 import com.ssafy.achu.ui.chat.ChatListScreen
 import com.ssafy.achu.ui.chat.ChatScreen
 import com.ssafy.achu.ui.home.HomeScreen
@@ -30,6 +32,9 @@ import com.ssafy.achu.ui.mypage.RecommendItemScreen
 import com.ssafy.achu.ui.mypage.TradeListScreen
 import com.ssafy.achu.ui.mypage.UserInfoScreen
 import com.ssafy.achu.ui.product.ProductListScreen
+import com.ssafy.achu.ui.product.ProductListViewModel
+import com.ssafy.achu.ui.product.UploadProductScreen
+import com.ssafy.achu.ui.signin.SignInViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -46,7 +51,11 @@ fun NavGraph(
             HomeScreen(modifier = modifier)
         }
         composable(route = BottomNavScreen.ProductList.route) {
-            ProductListScreen(modifier = modifier)
+            val viewModel: ProductListViewModel = viewModel()
+            ProductListScreen(
+                modifier = modifier,
+                viewModel = viewModel,
+                onNavigateToUploadProduct = { navController.navigate(route = "uploadproduct") })
         }
         composable(route = BottomNavScreen.MemoryList.route) {
             MemoryListScreen(
@@ -103,6 +112,11 @@ fun NavGraph(
             )
         }
 
+        // 중고 거래 관련 화면들
+        composable(MY_UPLOAD_PRODUCT) {
+            UploadProductScreen()
+        }
+
         // 채팅 관련 화면들
         composable(MY_CHAT) {
             ChatScreen()
@@ -120,6 +134,9 @@ object MyPage {
     const val MY_BABY_DETAIL = "babydetail"
     const val MY_MEMORY_DETAIL = "memorydetail"
     const val MY_MEMORY_UPLOAD = "memoryupload"
+
+    const val MY_PRODUCT_DETAIL = "productdetail"
+    const val MY_UPLOAD_PRODUCT = "uploadproduct"
     const val MY_CHAT = "chat"
 }
 
