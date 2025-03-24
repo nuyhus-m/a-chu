@@ -1,4 +1,4 @@
-package com.ssafy.s12p21d206.achu.auth.domain;
+package com.ssafy.s12p21d206.achu.auth.domain.verification;
 
 public enum VerificationPurpose {
   SIGN_UP("회원가입"),

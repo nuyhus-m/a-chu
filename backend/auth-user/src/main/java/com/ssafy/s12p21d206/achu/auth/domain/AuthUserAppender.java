@@ -1,5 +1,7 @@
 package com.ssafy.s12p21d206.achu.auth.domain;
 
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationCodeVerifier;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationPurpose;
 import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
 package com.ssafy.s12p21d206.achu.auth.api.controller.verification;
 
-import com.ssafy.s12p21d206.achu.auth.domain.VerificationCode;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationCode;
 import java.time.Duration;
 import java.util.UUID;
 

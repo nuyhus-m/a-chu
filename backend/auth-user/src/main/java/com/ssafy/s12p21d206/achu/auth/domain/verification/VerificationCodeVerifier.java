@@ -1,5 +1,6 @@
-package com.ssafy.s12p21d206.achu.auth.domain;
+package com.ssafy.s12p21d206.achu.auth.domain.verification;
 
+import com.ssafy.s12p21d206.achu.auth.domain.Phone;
 import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreErrorType;
 import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreException;
 import java.util.UUID;

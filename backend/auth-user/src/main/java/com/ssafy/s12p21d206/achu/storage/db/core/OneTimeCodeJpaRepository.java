@@ -1,6 +1,6 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
-import com.ssafy.s12p21d206.achu.auth.domain.VerificationPurpose;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationPurpose;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

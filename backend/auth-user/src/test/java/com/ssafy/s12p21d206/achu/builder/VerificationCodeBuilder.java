@@ -1,9 +1,9 @@
 package com.ssafy.s12p21d206.achu.builder;
 
 import com.ssafy.s12p21d206.achu.auth.domain.Phone;
-import com.ssafy.s12p21d206.achu.auth.domain.VerificationCode;
-import com.ssafy.s12p21d206.achu.auth.domain.VerificationPurpose;
 import com.ssafy.s12p21d206.achu.auth.domain.support.AuthDefaultDateTime;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationCode;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationPurpose;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
