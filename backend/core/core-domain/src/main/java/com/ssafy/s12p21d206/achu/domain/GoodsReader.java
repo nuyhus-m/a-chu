@@ -21,4 +21,6 @@ public class GoodsReader {
       User user, Long categoryId, Long offset, Long limit, SortType sort) {
     return goodsRepository.findCategoryGoods(user, categoryId, offset, limit, sort);
   }
+
+  public GoodsDetail readGoodsDetail() {}
 }

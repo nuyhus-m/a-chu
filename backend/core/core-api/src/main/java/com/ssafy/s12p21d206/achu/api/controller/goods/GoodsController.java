@@ -100,10 +100,10 @@ public class GoodsController {
   }
 
   @GetMapping("/goods/{goodsId}")
-  public ApiResponse<GoodsDetailResponse> findGoodsDetail(Long userId, @PathVariable Long goodsId) {
-    LocalDateTime createdAt = LocalDateTime.of(2025, 3, 13, 14, 11);
-    CategoryResponse category = new CategoryResponse(2L, "의류");
+  public ApiResponse<GoodsDetailResponse> findGoodsDetail(
+      ApiUser apiUser, @PathVariable Long goodsId) {
     UserResponse seller = new UserResponse(1L, "재영 맘", "재영맘_img_url");
+    CategoryResponse category = new CategoryResponse(2L, "의류");
     GoodsDetailResponse response = new GoodsDetailResponse(
         13L,
         "여아 원피스",
