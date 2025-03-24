@@ -1,34 +1,28 @@
-package com.ssafy.achu.core.components
+package com.ssafy.achu.ui.mypage
 
-import androidx.compose.foundation.Image
+import android.R.attr.radius
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.ssafy.achu.R
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ssafy.achu.core.theme.AchuTheme
-import com.ssafy.achu.core.theme.FontPink
+import com.ssafy.achu.core.theme.PointBlue
+import com.ssafy.achu.core.theme.White
 
-//pinkText여기 넣는 글씨는 핑크색, 큰 크기로 조절됨
-//이 텍스트 바로옆에 붙는 글씨는 textLine1(핑크랑 같은 라인)여기에 입력해야함
-//그냥 다 검정 글씨면 text이걸로 하면됨 앞에 애들은 안 넣으면 null이 디폴트임!
 @Composable
-fun BasicDialog(
-    img: Painter? = null,
-    pinkText: String? = null,
-    textLine1: String? =null,
-    text: String,
+fun NicknameUpdateDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -47,55 +41,63 @@ fun BasicDialog(
         ) {
 
             Column(
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally, // 수평 중앙 정렬
                 verticalArrangement = Arrangement.Center // 수직 중앙 정렬
             ) {
 
-                img?.let {
 
-                    Image(
-                        painter = img,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(80.dp)
-                    )
-                }
+                Spacer(modifier = Modifier.height(16.dp))
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "새로운 닉네임을 입력하세요.",
+                    style = AchuTheme.typography.medium18,
+                )
 
-                if (pinkText != null && textLine1 != null) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().height(30.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                Spacer(modifier = Modifier.height(24.dp))
+
+                OutlinedTextField(
+                    value = "",
+                    onValueChange = {},
+                    modifier = Modifier
+                        .fillMaxWidth().padding(horizontal = 16.dp)
+                        .height(50.dp),
+                    placeholder = {
                         Text(
-                            text = pinkText,
-                            style = AchuTheme.typography.semiBold20.copy(lineHeight = 30.sp), // 🔹 줄 간격 조정
-                            color = FontPink
+                            text = "닉네임 입력",
+                            style = AchuTheme.typography.regular16.copy(color = PointBlue)
                         )
+                    },
+                    textStyle = AchuTheme.typography.regular16,
+                    singleLine = true,
+                    shape = RoundedCornerShape(radius.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PointBlue,
+                        unfocusedBorderColor = PointBlue,
+                        cursorColor = Color.Black
+                    ),
+                    keyboardOptions = KeyboardOptions.Default,
 
-                        Text(
-                            text = textLine1,
-                            style = AchuTheme.typography.medium18.copy(lineHeight = 30.sp), // 🔹 줄 간격 조정
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-
+                    // 🔹 trailingIcon에 버튼 추가
+                    trailingIcon = {
+                        Button(
+                            onClick = { /* 버튼 클릭 로직 */ },
+                            modifier = Modifier.padding(4.dp).size(60.dp),
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Text(text = "확인",
+                                style = AchuTheme.typography.semiBold14PointBlue,
+                                color = White
+                            )
+                        }
                     }
 
-
-                }
-
-                // 텍스트
-                Text(
-                    text = text,
-                    style = AchuTheme.typography.medium18.copy(lineHeight = 30.sp), // 🔹 줄 간격 조정
-                    modifier = Modifier.padding(bottom = 24.dp), // 텍스트와 버튼 간격
-                    color = Color.Black,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center // 텍스트를 중앙 정렬
                 )
+
+
+
+                Spacer(modifier = Modifier.height(24.dp))
+
 
                 // 버튼들
                 Row(
@@ -124,7 +126,7 @@ fun BasicDialog(
                     Box(
                         modifier = Modifier
                             .weight(1.0f)
-                            .background(FontPink, shape = RoundedCornerShape(8.dp))
+                            .background(PointBlue, shape = RoundedCornerShape(8.dp))
                             .clickable(onClick = onConfirm)
                             .padding(vertical = 12.dp),
                         contentAlignment = Alignment.Center
@@ -146,13 +148,9 @@ fun BasicDialog(
 
 @Preview
 @Composable
-fun pre() {
+fun NicknameDialogPreview() {
     AchuTheme {
-        BasicDialog(
-            img = painterResource(id = R.drawable.img_crying_face),
-            "A - Chu",
-            "와 함께한",
-            text = "모든 추억이 삭제됩니다.\n정말 탈퇴하시겠습니까??",
+        NicknameUpdateDialog(
             onDismiss = { /* 취소 클릭 시 동작 */ },
             onConfirm = { /* 확인 클릭 시 동작 */ }
         )
