@@ -56,29 +56,29 @@ fun NavGraph(
             ProductListScreen(
                 modifier = modifier,
                 viewModel = viewModel,
-                onNavigateToUploadProduct = { navController.navigate(route = "uploadproduct") },
-                onNavigateToProductDetail = { navController.navigate(route = "productdetail") }
+                onNavigateToUploadProduct = { navController.navigate(route = MY_UPLOAD_PRODUCT) },
+                onNavigateToProductDetail = { navController.navigate(route = MY_PRODUCT_DETAIL) }
             )
         }
         composable(route = BottomNavScreen.MemoryList.route) {
             MemoryListScreen(
                 modifier = modifier,
-                onNavigateToMemoryDetail = { navController.navigate(route = "memorydetail") })
+                onNavigateToMemoryDetail = { navController.navigate(route = MY_MEMORY_DETAIL) })
         }
         composable(route = BottomNavScreen.ChatList.route) {
             ChatListScreen(
                 modifier = modifier,
-                onNavigateToChat = { navController.navigate(route = "chat") }
+                onNavigateToChat = { navController.navigate(route = MY_CHAT) }
             )
         }
         composable(route = BottomNavScreen.MyPage.route) {
             MyPageScreen(
                 modifier = modifier,
-                onNavigateToTradeList = { navController.navigate(route = "tradeList") },
-                onNavigateToLikeList = { navController.navigate(route = "likelist") },
-                onNavigateToRecommend = { navController.navigate(route = "recommend") },
-                onNavigateToBabyList = { navController.navigate(route = "babylist") },
-                onNavigateToUserInfo = { navController.navigate(route = "info") })
+                onNavigateToTradeList = { navController.navigate(route = MY_TRADE_LIST) },
+                onNavigateToLikeList = { navController.navigate(route = MY_LIKE_LIST) },
+                onNavigateToRecommend = { navController.navigate(route = MY_RECOMMEND_LIST) },
+                onNavigateToBabyList = { navController.navigate(route = MY_BABY_LIST) },
+                onNavigateToUserInfo = { navController.navigate(route = MY_INFO) })
         }
 
         // 마이페이지 화면들
@@ -98,7 +98,7 @@ fun NavGraph(
         // 마이페이지 - 아기정보관리 화면들
         composable(MY_BABY_LIST) {
             BabyListScreen(
-                onNavigateToBabyDetail = { navController.navigate(route = "babydetail") }
+                onNavigateToBabyDetail = { navController.navigate(route = MY_BABY_DETAIL) }
             )
         }
         composable(MY_BABY_DETAIL) {
@@ -111,7 +111,7 @@ fun NavGraph(
         }
         composable(MY_MEMORY_DETAIL) {
             MemoryDetailScreen(
-                onNavigateToMemoryUpload = { navController.navigate(route = "memoryupload") }
+                onNavigateToMemoryUpload = { navController.navigate(route = MY_MEMORY_UPLOAD) }
             )
         }
 
@@ -134,7 +134,6 @@ fun NavGraph(
         }
     }
 }
-
 
 object MyPage {
     const val MY_TRADE_LIST = "tradelist"
