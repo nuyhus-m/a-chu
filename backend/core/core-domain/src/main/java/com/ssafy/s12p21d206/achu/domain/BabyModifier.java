@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.domain;
 
+import java.time.LocalDate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,5 +14,9 @@ public class BabyModifier {
 
   public Baby modifyNickname(Long id, String nickname) {
     return babyRepository.modifyNickname(id, nickname);
+  }
+
+  public Baby modifyBirth(Long id, LocalDate birth) {
+    return babyRepository.modifyBirth(id, birth);
   }
 }

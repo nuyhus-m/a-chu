@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.domain;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -48,5 +49,11 @@ public class BabyService {
     babyValidator.validateExists(id);
     babyValidator.validateParent(user, id);
     return babyModifier.modifyNickname(id, nickname);
+  }
+
+  public Baby modifyBirth(User user, Long id, LocalDate birth) {
+    babyValidator.validateExists(id);
+    babyValidator.validateParent(user, id);
+    return babyModifier.modifyBirth(id, birth);
   }
 }

@@ -182,11 +182,35 @@ class BabyControllerTest extends RestDocsTest {
         .then()
         .status(HttpStatus.OK)
         .apply(document(
-            "modify-baby",
+            "modify-baby-nickname",
             pathParameters(parameterWithName("id").description("정보를 수정할 자녀의 id")),
             requestFields(fieldWithPath("nickname")
                 .type(JsonFieldType.STRING)
                 .description("수정할 자녀의 이름 혹은 별명")),
+            responseFields(fieldWithPath("result")
+                .type(JsonFieldType.STRING)
+                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
+  }
+
+  @Test
+  void modifyBabyBirth() {
+
+    DefaultDateTime now = new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now());
+    Baby baby =
+        new Baby(1L, 1L, "강두식", Sex.MALE, "https://test-image1.png", LocalDate.of(2025, 2, 1), now);
+    when(babyService.modifyBirth(any(), any(), any())).thenReturn(baby);
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(new ModifyBabyBirthRequest(LocalDate.of(2025, 1, 1)))
+        .patch("/babies/{id}/birth", 1L)
+        .then()
+        .status(HttpStatus.OK)
+        .apply(document(
+            "modify-baby-birth",
+            pathParameters(parameterWithName("id").description("정보를 수정할 자녀의 id")),
+            requestFields(
+                fieldWithPath("birth").type(JsonFieldType.ARRAY).description("자녀의 수정할 생년월일")),
             responseFields(fieldWithPath("result")
                 .type(JsonFieldType.STRING)
                 .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));

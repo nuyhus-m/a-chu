@@ -45,4 +45,8 @@ public class BabyEntity extends BaseEntity {
   public void changeNickname(String nickname) {
     this.nickname = nickname;
   }
+
+  public void changeBirth(LocalDate birth) {
+    this.birth = birth;
+  }
 }

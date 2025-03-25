@@ -16,9 +16,13 @@ operation::find-babies[snippets='http-request,query-parameters,http-response,res
 
 operation::modify-baby-profile-image[snippets='http-request,path-parameters,request-parts,http-response,response-fields']
 
-=== 자녀 정보 변경
+=== 자녀 닉네임 변경
 
-operation::modify-baby[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+operation::modify-baby-nickname[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+=== 자녀 생년월일 변경
+
+operation::modify-baby-birth[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
 
 === 자녀 삭제
 

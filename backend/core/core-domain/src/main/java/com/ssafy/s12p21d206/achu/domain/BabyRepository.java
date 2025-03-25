@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.domain;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,4 +19,6 @@ public interface BabyRepository {
   boolean existsByIdAndUser(Long id, User user);
 
   Baby modifyNickname(Long id, String nickname);
+
+  Baby modifyBirth(Long id, LocalDate birth);
 }
