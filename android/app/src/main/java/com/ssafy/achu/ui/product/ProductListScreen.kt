@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -124,7 +125,7 @@ fun ProductListScreen(
                     likedByUser = false,
                     likedUsersCount = 18,
                     price = 5000,
-                    title = "미피 인형"
+                    title = "미피 인형 어쩌고 저쩌고 저쩌고 아무말 대잔치 두줄 불가"
                 ),
                 Product(
                     chatCount = 11,
@@ -312,17 +313,23 @@ fun ProductItem(
             ) {
                 Text(
                     text = product.title,
-                    style = AchuTheme.typography.regular18
+                    style = AchuTheme.typography.regular18,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = product.createdAt,
-                    style = AchuTheme.typography.regular16.copy(color = FontGray)
+                    style = AchuTheme.typography.regular16.copy(color = FontGray),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "${product.price}원",
-                    style = AchuTheme.typography.semiBold18.copy(color = FontPink)
+                    style = AchuTheme.typography.semiBold18.copy(color = FontPink),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Row(
