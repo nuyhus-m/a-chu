@@ -194,7 +194,7 @@ fun ProductListScreen(
 
         // FAB 버튼
         FloatingActionButton(
-            onClick = { onNavigateToUploadProduct() },
+            onClick = onNavigateToUploadProduct,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp),
@@ -272,7 +272,7 @@ fun ProductList(items: List<Product>, onNavigateToProductDetail: () -> Unit) {
         items(items) { item ->
             ProductItem(
                 product = item,
-                onItemClick = { onNavigateToProductDetail() }
+                onItemClick = onNavigateToProductDetail
             )
         }
     }
