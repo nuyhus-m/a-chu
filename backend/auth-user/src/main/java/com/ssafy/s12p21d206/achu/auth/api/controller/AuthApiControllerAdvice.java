@@ -1,6 +1,5 @@
 package com.ssafy.s12p21d206.achu.auth.api.controller;
 
-import com.ssafy.s12p21d206.achu.auth.api.error.AuthCoreApiErrorType;
 import com.ssafy.s12p21d206.achu.auth.api.error.AuthCoreApiException;
 import com.ssafy.s12p21d206.achu.auth.api.error.AuthErrorMessage;
 import com.ssafy.s12p21d206.achu.auth.api.response.AuthApiResponse;
@@ -20,7 +19,6 @@ public class AuthApiControllerAdvice {
 
   private static final String CORE_API_EXCEPTION_LOG_FORMAT = "CoreApiException : {}";
   private static final String CORE_EXCEPTION_LOG_FORMAT = "CoreException : {}";
-  private static final String EXCEPTION_LOG_FORMAT = "Exception : {}";
 
   @ExceptionHandler(AuthCoreApiException.class)
   public ResponseEntity<AuthApiResponse<Void>> handleCoreApiException(AuthCoreApiException e) {
@@ -61,15 +59,5 @@ public class AuthApiControllerAdvice {
 
     AuthErrorMessage errorMessage = new AuthErrorMessage(e.getErrorType(), e.getMessage());
     return new ResponseEntity<>(AuthApiResponse.error(errorMessage), status);
-  }
-
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<AuthApiResponse<Void>> handleException(Exception e) {
-    log.error(EXCEPTION_LOG_FORMAT, e.getMessage(), e);
-    AuthCoreApiErrorType errorType = AuthCoreApiErrorType.INTERNAL_SERVER_ERROR;
-    AuthErrorMessage errorMessage = new AuthErrorMessage(errorType, e.getMessage());
-    return new ResponseEntity<>(
-        AuthApiResponse.error(errorMessage),
-        AuthCoreApiErrorType.INTERNAL_SERVER_ERROR.getStatus());
   }
 }

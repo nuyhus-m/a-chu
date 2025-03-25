@@ -6,6 +6,7 @@ import com.ssafy.s12p21d206.achu.auth.api.response.AuthDefaultIdResponse;
 import com.ssafy.s12p21d206.achu.auth.api.response.AuthIsUniqueResponse;
 import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUser;
 import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUserService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +27,7 @@ public class AuthUserController {
 
   @PostMapping("/users")
   public AuthApiResponse<AuthDefaultIdResponse> appendUser(
-      @RequestBody AppendAuthUserRequest request) {
+      @RequestBody @Validated AppendAuthUserRequest request) {
     AuthUser authUser =
         authUserService.appendAuthUser(request.toNewAuthUser(), request.verificationCodeId());
     AuthDefaultIdResponse response = new AuthDefaultIdResponse(authUser.id());
@@ -63,7 +64,7 @@ public class AuthUserController {
 
   @PatchMapping("/users/nickname")
   public AuthApiResponse<Void> modifyNickname(
-      AuthApiUser authApiUser, @RequestBody ModifyNicknameRequest request) {
+      AuthApiUser authApiUser, @RequestBody @Validated ModifyNicknameRequest request) {
     authUserService.modifyNickname(authApiUser.id(), request.nickname());
     return AuthApiResponse.success();
   }

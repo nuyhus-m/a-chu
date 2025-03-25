@@ -37,6 +37,10 @@ public class ApiResponse<S> {
     return new ApiResponse<>(ResultType.ERROR, null, new ErrorMessage(error));
   }
 
+  public static ApiResponse<Void> error(CoreApiErrorType error, String message) {
+    return new ApiResponse<>(ResultType.ERROR, null, new ErrorMessage(error, message));
+  }
+
   public ResultType getResult() {
     return result;
   }

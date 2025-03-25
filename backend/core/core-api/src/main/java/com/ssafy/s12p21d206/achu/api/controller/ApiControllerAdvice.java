@@ -1,6 +1,5 @@
 package com.ssafy.s12p21d206.achu.api.controller;
 
-import com.ssafy.s12p21d206.achu.api.error.CoreApiErrorType;
 import com.ssafy.s12p21d206.achu.api.error.CoreApiException;
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.domain.error.CoreErrorKind;
@@ -19,7 +18,6 @@ public class ApiControllerAdvice {
 
   private static final String CORE_API_EXCEPTION_LOG_FORMAT = "CoreApiException : {}";
   private static final String CORE_EXCEPTION_LOG_FORMAT = "CoreException : {}";
-  private static final String EXCEPTION_LOG_FORMAT = "Exception : {}";
 
   @ExceptionHandler(CoreApiException.class)
   public ResponseEntity<ApiResponse<Void>> handleCoreApiException(CoreApiException e) {
@@ -58,13 +56,5 @@ public class ApiControllerAdvice {
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
     return new ResponseEntity<>(ApiResponse.error(e.getErrorType()), status);
-  }
-
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
-    log.error(EXCEPTION_LOG_FORMAT, e.getMessage(), e);
-    return new ResponseEntity<>(
-        ApiResponse.error(CoreApiErrorType.INTERNAL_SERVER_ERROR),
-        CoreApiErrorType.INTERNAL_SERVER_ERROR.getStatus());
   }
 }

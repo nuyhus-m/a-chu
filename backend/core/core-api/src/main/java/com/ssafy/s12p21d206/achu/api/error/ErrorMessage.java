@@ -36,6 +36,12 @@ public class ErrorMessage {
     this.data = data;
   }
 
+  public ErrorMessage(CoreApiErrorType errorType, String message) {
+    this.code = errorType.getCode().name();
+    this.message = message;
+    this.data = null;
+  }
+
   public String getCode() {
     return code;
   }
