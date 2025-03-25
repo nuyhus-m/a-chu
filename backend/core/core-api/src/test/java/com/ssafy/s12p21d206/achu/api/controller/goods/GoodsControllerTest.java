@@ -9,6 +9,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 
 import com.ssafy.s12p21d206.achu.domain.*;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
+import com.ssafy.s12p21d206.achu.domain.support.TradeStatus;
 import com.ssafy.s12p21d206.achu.domain.support.TradeType;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import io.restassured.http.ContentType;
@@ -31,6 +32,7 @@ class GoodsControllerTest extends RestDocsTest {
 
   private LikeService likeService;
   private ChatRoomService chatRoomService;
+  private UserService userService;
 
   @BeforeEach
   void setup() {
@@ -38,7 +40,9 @@ class GoodsControllerTest extends RestDocsTest {
     goodsService = mock(GoodsService.class);
     likeService = mock(LikeService.class);
     chatRoomService = mock(ChatRoomService.class);
-    controller = new GoodsController(categoryService, goodsService, likeService, chatRoomService);
+    userService = mock(UserService.class);
+    controller = new GoodsController(
+        categoryService, goodsService, likeService, chatRoomService, userService);
     mockMvc = mockController(controller);
   }
 
@@ -121,10 +125,8 @@ class GoodsControllerTest extends RestDocsTest {
   void findGoods() {
     when(goodsService.findGoods(any(User.class), anyLong(), anyLong(), any(SortType.class)))
         .thenReturn(List.of(goods));
-
     when(likeService.status(any(User.class), anyList()))
         .thenReturn(Map.of(goods.getId(), new LikeStatus(5, true)));
-
     when(chatRoomService.findChatStatus(any(User.class), anyList()))
         .thenReturn(List.of(new ChatStatus(goods.getId(), 3L)));
     given()
@@ -250,6 +252,23 @@ class GoodsControllerTest extends RestDocsTest {
 
   @Test
   void findGoodsDetail() {
+    when(goodsService.findGoodsDetail(anyLong()))
+        .thenReturn(new GoodsDetail(
+            1L,
+            "제목",
+            "설명",
+            List.of("goods1-image1.jpg", "goods1-image2.jpg"),
+            TradeStatus.SELLING,
+            5000L,
+            LocalDateTime.now().minusDays(1)));
+    when(goodsService.findCategoryIdByGoodsId(anyLong())).thenReturn(new CategoryId(1L));
+    when(goodsService.findUserIdByGoodsId(anyLong())).thenReturn(new User(1L));
+    when(categoryService.findCategoryInfo(anyLong())).thenReturn(new Category(1L, "카테고리명"));
+
+    when(likeService.findLikeStatus(any(User.class), anyLong()))
+        .thenReturn(new LikeStatus(1L, 5L, true));
+
+    when(userService.findSellerInfo(any(User.class))).thenReturn(new Seller(1L, "닉네임", "img.jpg"));
     given()
         .contentType(ContentType.JSON)
         .get("/goods/{goodsId}", 2L)
