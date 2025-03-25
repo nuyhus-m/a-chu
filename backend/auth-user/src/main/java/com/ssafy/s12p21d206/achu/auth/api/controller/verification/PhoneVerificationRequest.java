@@ -4,9 +4,11 @@ import com.ssafy.s12p21d206.achu.auth.api.controller.validation.PhoneNumber;
 import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
 import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationPurpose;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 public record PhoneVerificationRequest(
-    @NotNull @PhoneNumber String phoneNumber, @NotNull VerificationPurpose purpose) {
+    @NotNull @PhoneNumber @Pattern(regexp = "") String phoneNumber,
+    @NotNull VerificationPurpose purpose) {
 
   public Phone toPhoneNumber() {
     return new Phone(phoneNumber);
