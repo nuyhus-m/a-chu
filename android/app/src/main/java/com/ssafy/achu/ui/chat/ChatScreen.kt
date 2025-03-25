@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,19 +23,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +48,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
-import com.ssafy.achu.core.components.Divider
 import com.ssafy.achu.core.components.SmallLineBtn
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
@@ -107,9 +101,8 @@ class ChatMessagePreviewProvider : PreviewParameterProvider<ChatMessage> {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen() {
+fun ChatScreen(onBackClick: () -> Unit = {}) {
     // 메시지 상태 관리
     var messageText by remember { mutableStateOf("") }
 
@@ -193,97 +186,48 @@ fun ChatScreen() {
         }
     }
 
-    Scaffold(
-        topBar = {
-            Column() {
-                TopAppBar(
-                    title = {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // 프로필 이미지
-                            Image(
-                                painter = painterResource(R.drawable.img_profile_test),
-                                contentDescription = stringResource(R.string.profile_img),
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape),
-                                contentScale = ContentScale.Crop
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            // 사용자 이름
-                            Text(
-                                text = "홍길동",
-                                style = AchuTheme.typography.bold24
-                            )
-                        }
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { /* 뒤로가기 동작 */ }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Default.KeyboardArrowLeft,
-                                contentDescription = stringResource(R.string.back),
-                                modifier = Modifier.size(32.dp)
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { /* 나가기 동작 */ }) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_leave),
-                                contentDescription = stringResource(R.string.leave),
-                                modifier = Modifier.size(28.dp)
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = White
-                    ),
-                    modifier = Modifier.padding(vertical = 24.dp)
-                )
-                ChatProduct()
-                Divider()
-            }
-        },
-        bottomBar = {
-            // 입력 필드
-            ChatInputField(
-                value = messageText,
-                onValueChange = { messageText = it },
-                onSendClick = { sendMessage() }
-            )
-        },
-        containerColor = White
-    ) { paddingValues ->
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = White)
+    ) {
+        CustomChatTopBar(
+            onBackClick = onBackClick,
+            onLeaveClick = { /* 나가기 동작 */ },
+            userName = "덕윤맘"
+        )
+        ChatProduct()
+
+        // 채팅 메시지 목록
+        LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .background(color = White)
-                .padding(paddingValues)
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            state = listState,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(vertical = 8.dp)
         ) {
-            // 채팅 메시지 목록
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                state = listState,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(vertical = 8.dp)
-            ) {
-                items(messages) { message ->
-                    when (message.type) {
-                        MessageType.DATE -> DateDivider(timestamp = message.timestamp)
-                        MessageType.SYSTEM -> SystemMessage(message = message)
-                        else -> ChatMessageItem(message = message)
-                    }
+            items(messages) { message ->
+                when (message.type) {
+                    MessageType.DATE -> DateDivider(timestamp = message.timestamp)
+                    MessageType.SYSTEM -> SystemMessage(message = message)
+                    else -> ChatMessageItem(message = message)
                 }
             }
         }
+
+        // 입력 필드
+        ChatInputField(
+            value = messageText,
+            onValueChange = { messageText = it },
+            onSendClick = { sendMessage() }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
+
 
 @Composable
 fun ChatProduct() {
@@ -473,11 +417,12 @@ fun ChatInputField(
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(start = 8.dp, end = 8.dp, top = 8.dp)
+            .navigationBarsPadding()
             .background(color = White),
     ) {
         Row(
             modifier = Modifier
-                .padding(8.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -523,10 +468,8 @@ fun ChatTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
+            .fillMaxWidth(),
         textStyle = AchuTheme.typography.regular16,
-        singleLine = true,
         placeholder = {
             Text(
                 text = stringResource(R.string.enter_message),
@@ -565,12 +508,83 @@ fun addSystemMessage(messages: List<ChatMessage>, content: String): List<ChatMes
     return messages + systemMessage
 }
 
+@Composable
+fun CustomChatTopBar(
+    onBackClick: () -> Unit,
+    onLeaveClick: () -> Unit,
+    userName: String
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(White)
+            .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // 뒤로가기 버튼
+        IconButton(onClick = onBackClick) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_back),
+                contentDescription = stringResource(R.string.back),
+                modifier = Modifier.size(28.dp)
+            )
+        }
+
+        // 프로필 및 사용자 정보 섹션
+        Row(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // 프로필 이미지
+            Image(
+                painter = painterResource(R.drawable.img_profile_test),
+                contentDescription = stringResource(R.string.profile_img),
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            // 사용자 이름
+            Text(
+                text = userName,
+                style = AchuTheme.typography.bold24
+            )
+        }
+
+        // 나가기 버튼
+        IconButton(
+            onClick = onLeaveClick
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_leave),
+                contentDescription = stringResource(R.string.leave),
+                modifier = Modifier.size(28.dp)
+            )
+        }
+    }
+}
+
 // 여기서부터 Preview 코드 시작
 @Preview(showBackground = true)
 @Composable
 fun ChatScreenPreview() {
     AchuTheme {
         ChatScreen()
+    }
+}
+
+// 사용 예시 프리뷰
+@Preview(showBackground = true)
+@Composable
+fun PreviewCustomChatTopBar() {
+    AchuTheme {
+        CustomChatTopBar(
+            onBackClick = { /* 뒤로가기 동작 */ },
+            onLeaveClick = { /* 나가기 동작 */ },
+            userName = "홍길동"
+        )
     }
 }
 
