@@ -57,7 +57,9 @@ public class BabyController {
 
   @PatchMapping("/babies/{id}/nickname")
   public ApiResponse<Void> modifyBabyNickname(
-      ApiUser apiUser, @PathVariable Long id, @RequestBody ModifyBabyNicknameRequest request) {
+      ApiUser apiUser,
+      @PathVariable Long id,
+      @RequestBody @Validated ModifyBabyNicknameRequest request) {
     babyService.modifyNickname(apiUser.toUser(), id, request.nickname());
     return ApiResponse.success();
   }
