@@ -192,7 +192,7 @@ class BabyControllerTest extends RestDocsTest {
   @Test
   void deleteBaby() {
 
-    when(babyService.delete(any())).thenReturn(1L);
+    when(babyService.delete(any(), any())).thenReturn(1L);
 
     given()
         .contentType(ContentType.JSON)

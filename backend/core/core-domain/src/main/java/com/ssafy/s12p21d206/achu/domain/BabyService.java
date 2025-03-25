@@ -36,7 +36,8 @@ public class BabyService {
     return babyReader.readBabies(user);
   }
 
-  public Long delete(Long id) {
+  public Long delete(User user, Long id) {
+    babyValidator.validateParent(user, id);
     return babyDeleter.delete(id);
   }
 }

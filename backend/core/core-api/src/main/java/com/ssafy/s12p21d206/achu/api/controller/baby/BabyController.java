@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,16 +61,16 @@ public class BabyController {
     return ApiResponse.success();
   }
 
-  @PatchMapping("/babies/{id}")
-  public ApiResponse<Void> modifyBaby(
-      ApiUser apiUser, @PathVariable Long id, @RequestBody ModifyBabyRequest request) {
-
-    return ApiResponse.success();
-  }
+  //  @PatchMapping("/babies/{id}")
+  //  public ApiResponse<Void> modifyBabyNickname(
+  //      ApiUser apiUser, @PathVariable Long id, @RequestBody ModifyBabyNicknameRequest request) {
+  //    babyService.modifyNickname(request);
+  //    return ApiResponse.success();
+  //  }
 
   @DeleteMapping("/babies/{id}")
-  public ApiResponse<DefaultIdResponse> deleteBaby(Long userId, @PathVariable Long id) {
-    babyService.delete(id);
+  public ApiResponse<DefaultIdResponse> deleteBaby(ApiUser apiUser, @PathVariable Long id) {
+    babyService.delete(apiUser.toUser(), id);
     return ApiResponse.success(new DefaultIdResponse(id));
   }
 }
