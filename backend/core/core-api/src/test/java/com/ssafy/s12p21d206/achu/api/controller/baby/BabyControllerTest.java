@@ -168,22 +168,25 @@ class BabyControllerTest extends RestDocsTest {
   }
 
   @Test
-  void modifyBaby() {
+  void modifyBabyNickname() {
+
+    DefaultDateTime now = new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now());
+    Baby baby =
+        new Baby(1L, 1L, "강두식", Sex.MALE, "https://test-image1.png", LocalDate.of(2025, 1, 1), now);
+    when(babyService.modifyNickname(any(), any(), any())).thenReturn(baby);
+
     given()
         .contentType(ContentType.JSON)
-        .body(new ModifyBabyRequest("채용수", Sex.MALE, LocalDate.of(1997, 3, 20)))
-        .put("/babies/{babyId}", 1L)
+        .body(new ModifyBabyNicknameRequest("새로운 닉네임"))
+        .patch("/babies/{id}", 1L)
         .then()
         .status(HttpStatus.OK)
         .apply(document(
             "modify-baby",
-            pathParameters(parameterWithName("babyId").description("정보를 수정할 자녀의 id")),
-            requestFields(
-                fieldWithPath("nickname")
-                    .type(JsonFieldType.STRING)
-                    .description("수정할 자녀의 이름 혹은 별명"),
-                fieldWithPath("gender").type(JsonFieldType.STRING).description("수정할 자녀의 성별"),
-                fieldWithPath("birth").type(JsonFieldType.ARRAY).description("수정할 자녀의 생년월일")),
+            pathParameters(parameterWithName("id").description("정보를 수정할 자녀의 id")),
+            requestFields(fieldWithPath("nickname")
+                .type(JsonFieldType.STRING)
+                .description("수정할 자녀의 이름 혹은 별명")),
             responseFields(fieldWithPath("result")
                 .type(JsonFieldType.STRING)
                 .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));

@@ -4,6 +4,8 @@ import com.ssafy.s12p21d206.achu.domain.Baby;
 import com.ssafy.s12p21d206.achu.domain.BabyRepository;
 import com.ssafy.s12p21d206.achu.domain.NewBaby;
 import com.ssafy.s12p21d206.achu.domain.User;
+import com.ssafy.s12p21d206.achu.domain.error.CoreErrorType;
+import com.ssafy.s12p21d206.achu.domain.error.CoreException;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -63,5 +65,18 @@ public class BabyCoreRepository implements BabyRepository {
   @Override
   public boolean existsByIdAndUser(Long id, User user) {
     return babyJpaRepository.existsByIdAndUserId(id, user.id());
+  }
+
+  @Override
+  public Baby modifyNickname(Long id, String nickname) {
+    BabyEntity babyEntity = babyJpaRepository
+        .findByIdAndEntityStatus(id, EntityStatus.ACTIVE)
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+
+    babyEntity.changeNickname(nickname);
+
+    babyJpaRepository.save(babyEntity);
+
+    return babyEntity.toBaby();
   }
 }

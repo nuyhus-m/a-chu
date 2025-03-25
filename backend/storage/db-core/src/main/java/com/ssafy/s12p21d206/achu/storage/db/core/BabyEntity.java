@@ -41,4 +41,8 @@ public class BabyEntity extends BaseEntity {
         this.birth,
         new DefaultDateTime(this.getCreatedAt(), this.getUpdatedAt()));
   }
+
+  public void changeNickname(String nickname) {
+    this.nickname = nickname;
+  }
 }

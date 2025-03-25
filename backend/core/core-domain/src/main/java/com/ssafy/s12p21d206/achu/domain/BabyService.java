@@ -9,16 +9,19 @@ public class BabyService {
   private final BabyAppender babyAppender;
   private final BabyReader babyReader;
   private final BabyDeleter babyDeleter;
+  private final BabyModifier babyModifier;
   private final BabyValidator babyValidator;
 
   public BabyService(
       BabyAppender babyAppender,
       BabyReader babyReader,
       BabyDeleter babyDeleter,
+      BabyModifier babyModifier,
       BabyValidator babyValidator) {
     this.babyAppender = babyAppender;
     this.babyReader = babyReader;
     this.babyDeleter = babyDeleter;
+    this.babyModifier = babyModifier;
     this.babyValidator = babyValidator;
   }
 
@@ -39,5 +42,11 @@ public class BabyService {
   public Long delete(User user, Long id) {
     babyValidator.validateParent(user, id);
     return babyDeleter.delete(id);
+  }
+
+  public Baby modifyNickname(User user, Long id, String nickname) {
+    babyValidator.validateExists(id);
+    babyValidator.validateParent(user, id);
+    return babyModifier.modifyNickname(id, nickname);
   }
 }

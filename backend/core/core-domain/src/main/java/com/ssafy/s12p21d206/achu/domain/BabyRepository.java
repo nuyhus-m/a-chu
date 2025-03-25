@@ -16,4 +16,6 @@ public interface BabyRepository {
   boolean existsById(Long id);
 
   boolean existsByIdAndUser(Long id, User user);
+
+  Baby modifyNickname(Long id, String nickname);
 }
