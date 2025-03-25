@@ -22,15 +22,19 @@ public class GoodsController {
   private final LikeService likeService;
   private final ChatRoomService chatRoomService;
 
+  private final UserService userService;
+
   public GoodsController(
       CategoryService categoryService,
       GoodsService goodsService,
       LikeService likeService,
-      ChatRoomService chatRoomService) {
+      ChatRoomService chatRoomService,
+      UserService userService) {
     this.categoryService = categoryService;
     this.goodsService = goodsService;
     this.likeService = likeService;
     this.chatRoomService = chatRoomService;
+    this.userService = userService;
   }
 
   @GetMapping("/categories")
@@ -102,20 +106,21 @@ public class GoodsController {
   @GetMapping("/goods/{goodsId}")
   public ApiResponse<GoodsDetailResponse> findGoodsDetail(
       ApiUser apiUser, @PathVariable Long goodsId) {
-    UserResponse seller = new UserResponse(1L, "재영 맘", "재영맘_img_url");
-    CategoryResponse category = new CategoryResponse(2L, "의류");
-    GoodsDetailResponse response = new GoodsDetailResponse(
-        13L,
-        "여아 원피스",
-        "8/31에 사고 2번 입은 제품입니다.",
-        List.of("goods13_img_url_1", "goods13_img_url_2", "goods13_img_url_3"),
-        TradeStatus.SOLD,
-        10000L,
-        createdAt,
-        11L,
-        false,
-        category,
-        seller);
+    GoodsDetail goodsDetail = goodsService.findGoodsDetail(goodsId);
+
+    CategoryId categoryId = goodsService.findCategoryIdByGoodsId(goodsId);
+    User userId = goodsService.findUserIdByGoodsId(goodsId);
+
+    LikeStatus likeStatus = likeService.findLikeStatus(apiUser.toUser(), goodsId);
+
+    Category category = categoryService.findCategoryInfo(categoryId.id());
+    CategoryResponse categoryResponse = CategoryResponse.from(category);
+
+    Seller seller = userService.findSellerInfo(userId);
+    UserResponse sellerResponse = UserResponse.from(seller);
+
+    GoodsDetailResponse response =
+        GoodsDetailResponse.of(goodsDetail, likeStatus, categoryResponse, sellerResponse);
     return ApiResponse.success(response);
   }
 

@@ -10,4 +10,8 @@ public record CategoryResponse(Long id, String name) {
         .map(category -> new CategoryResponse(category.getId(), category.getName()))
         .toList();
   }
+
+  public static CategoryResponse from(Category category) {
+    return new CategoryResponse(category.getId(), category.getName());
+  }
 }
