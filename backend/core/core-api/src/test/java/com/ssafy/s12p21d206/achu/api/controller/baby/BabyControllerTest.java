@@ -178,7 +178,7 @@ class BabyControllerTest extends RestDocsTest {
     given()
         .contentType(ContentType.JSON)
         .body(new ModifyBabyNicknameRequest("새로운 닉네임"))
-        .patch("/babies/{id}", 1L)
+        .patch("/babies/{id}/nickname", 1L)
         .then()
         .status(HttpStatus.OK)
         .apply(document(
