@@ -15,4 +15,8 @@ public class CategoryService {
   public List<Category> findCategories() {
     return categoryReader.readCategories();
   }
+
+  public Category findCategoryInfo(Long id) {
+    return categoryReader.readCategoryInfo(id);
+  }
 }
