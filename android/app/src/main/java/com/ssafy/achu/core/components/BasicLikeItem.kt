@@ -1,3 +1,4 @@
+import android.R.attr.top
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -6,11 +7,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +29,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ssafy.achu.R
@@ -57,7 +62,7 @@ fun BasicLikeItem(
                 .height(220.dp)
                 .width(160.dp)
                 .background(White, shape = RoundedCornerShape(16.dp))
-                .padding(10.dp)
+                .padding(8.dp)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
@@ -71,8 +76,8 @@ fun BasicLikeItem(
             ) {
                 Box(
                     modifier = Modifier
-                        .width(140.dp)
-                        .height(140.dp)
+                        .fillMaxWidth()
+                        .aspectRatio(1f) // 정사각형
                         .clip(RoundedCornerShape(8.dp))
                 ) {
                     // 상품 이미지
@@ -81,8 +86,8 @@ fun BasicLikeItem(
                             painter = img,
                             contentDescription = null,
                             modifier = Modifier
-                                .width(150.dp)
-                                .height(150.dp)
+                                .fillMaxWidth()
+                                .aspectRatio(1f) // 정사각형
                                 .clip(RoundedCornerShape(8.dp)),
                             contentScale = ContentScale.Crop
                         )
@@ -112,6 +117,8 @@ fun BasicLikeItem(
                     text = productName,
                     style = AchuTheme.typography.regular18,
                     modifier = Modifier.padding(top = 8.dp, start = 4.dp),
+                    maxLines = 1, // 한 줄만 표시
+                    overflow = TextOverflow.Ellipsis // 넘치는 부분은 "..."으로 표시
                 )
 
 
@@ -121,30 +128,39 @@ fun BasicLikeItem(
                         .height(28.dp)
                         .padding(start = 4.dp),
                     verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.Start
                 ) {
+                    // 가격 텍스트
                     Text(
                         text = price,
                         style = AchuTheme.typography.semiBold16Pink,
-                        modifier = Modifier.padding(top = 8.dp)
+                        modifier = Modifier
+                            .padding(top = 8.dp) // 오른쪽 여백 추가
+                            .weight(0.8f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,// 가격이 길어지면 ...으로 표시,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Start
                     )
 
-                    // 하트 클릭 처리
+                    // 하트 클릭 처리 (고정된 크기 유지)
                     Image(
                         painter = painterResource(id = if (isLiked) R.drawable.ic_favorite else R.drawable.ic_favorite_line),
                         contentDescription = null,
                         colorFilter = ColorFilter.tint(if (isLiked) FontPink else FontGray),
                         modifier = Modifier
-                            .width(20.dp)
-                            .height(20.dp)
+                            .width(24.dp)
+                            .height(24.dp)
+                            .weight(0.2f)
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
                                 onClick = onClickHeart
-                            ) // 하트 클릭 시 동작
-                            .padding(end = 4.dp)
+                            )
+                            .padding(end = 4.dp) // 우측 여백 추가
                     )
                 }
+
+
             }
 
         }
@@ -165,9 +181,9 @@ fun preItem() {
                 onClickHeart = {
                     println("하트 클릭됨")
                 },
-                productName = "유아식기",
+                productName = "유아fsdhkjhgdhflhg;;rioejdfivpiojbh;ktlf식기",
                 state = "거래완료", // 거래완료 상태
-                price = "5,000원",
+                price = "50,000,000원",
                 img = ColorPainter(LightGray)
             )
 

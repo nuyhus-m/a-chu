@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.memory
 
+import android.R.attr.textStyle
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -7,12 +8,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation.Companion.keyboardOptions
@@ -28,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -56,8 +60,8 @@ fun MemoryUploadScreen() {
     val pagerState = rememberPagerState()
     var titleText by remember { mutableStateOf("") }
     var contentText by remember { mutableStateOf("") }
-    val maxTitleLength = 20
-    val maxContentLength = 200
+    val maxTitleLength = 15
+    val maxContentLength = 100
 
     Box(
         modifier = Modifier
@@ -135,10 +139,13 @@ fun MemoryUploadScreen() {
                 }
             }
 
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp)
+            ) {
 
+                Spacer(modifier = Modifier.height(24.dp))
                 OutlinedTextField(
                     value = titleText,
                     onValueChange = { if (it.length <= maxTitleLength) titleText = it },
@@ -162,7 +169,7 @@ fun MemoryUploadScreen() {
                 )
 
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
 
                 Box(
@@ -183,19 +190,22 @@ fun MemoryUploadScreen() {
                             focusedBorderColor = PointPink,
                             unfocusedBorderColor = PointPink,
                             cursorColor = Color.Black
-                        )
+                        ),
                     )
 
-                    // 글자 수 표시 (하단 우측 정렬)
-                    Text(
-                        text = "${contentText.length}/$maxContentLength",
-                        color = FontGray,
-                        style = AchuTheme.typography.regular14,
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd) // 하단 우측 정렬
-                            .padding(end = 16.dp, bottom = 8.dp) // 적절한 패딩 추가
-                    )
                 }
+
+                Text(
+                    text = "${contentText.length}/$maxContentLength",
+                    color = PointPink,
+                    style = AchuTheme.typography.regular14,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier
+                        .fillMaxWidth().padding(top =  4.dp, end = 4.dp)
+                        .align(alignment = Alignment.End)
+
+                )
+
 
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -204,7 +214,8 @@ fun MemoryUploadScreen() {
                     buttonText = "작성 완료",
                     onClick = {}
                 )
-                
+                Spacer(modifier = Modifier.height(40.dp))
+
             }
 
         }

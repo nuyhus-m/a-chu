@@ -110,7 +110,7 @@ fun RecommendItemScreen() {
                 }
 
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
 
             }
@@ -142,7 +142,7 @@ fun BabyListItem(babyInfo: BabyInfo) {
             .wrapContentHeight()
             .background(color = White)
     ) {
-        Column(modifier = Modifier.padding(start = 2.dp, bottom = 28.dp)) {
+        Column(modifier = Modifier.padding(start = 2.dp, bottom = 24.dp)) {
 
             Row(
                 verticalAlignment = Alignment.CenterVertically // 세로 중앙 정렬
@@ -177,7 +177,7 @@ fun BabyListItem(babyInfo: BabyInfo) {
 
                 Text(
                     text = "${babyInfo.babyNickname}",
-                    style = AchuTheme.typography.semiBold16
+                    style = AchuTheme.typography.semiBold18
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))

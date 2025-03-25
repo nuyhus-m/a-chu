@@ -143,7 +143,7 @@ fun SelectBabyBirthDialog(
 
                 Text(
                     text = "*마이페이지->우리아이 정보관리에서\n" +
-                            "언제든 수정 가능합니다.", style = AchuTheme.typography.regular16,
+                            "언제든 수정 가능합니다.", style = AchuTheme.typography.regular14,
                     color = FontGray,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )

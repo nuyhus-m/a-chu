@@ -320,12 +320,12 @@ fun HomeScreen(
         ) {
             Text(
                 text = "추천상품  ",
-                style = AchuTheme.typography.semiBold18,
+                style = AchuTheme.typography.semiBold20,
             )
 
             Text(
                 text = "${selectedBaby.babyNickname}",
-                style = AchuTheme.typography.semiBold16Pink,
+                style = AchuTheme.typography.semiBold18,
                 color = PointBlue
             )
             Spacer(modifier = Modifier.weight(1.0f))
@@ -381,7 +381,7 @@ fun HomeScreen(
 
         Text(
             text = "찜한 상품",
-            style = AchuTheme.typography.semiBold18
+            style = AchuTheme.typography.semiBold20
         )
 
         Spacer(Modifier.height(24.dp))

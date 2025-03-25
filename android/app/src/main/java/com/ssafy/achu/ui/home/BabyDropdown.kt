@@ -98,12 +98,12 @@ fun BabyDropdown(
             ) {
                 Text(
                     text = "재영맘의 ",
-                    style = AchuTheme.typography.semiBold16
+                    style = AchuTheme.typography.semiBold18
                 )
 
                 Text(
                     text = selectedBaby.babyNickname,
-                    style = AchuTheme.typography.semiBold18,
+                    style = AchuTheme.typography.semiBold20,
                     color = NicknameTextColor
                 )
 
