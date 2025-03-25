@@ -18,12 +18,6 @@ import com.ssafy.achu.ui.signin.SignInViewModel
 import com.ssafy.achu.ui.signup.SignUpScreen
 import com.ssafy.achu.ui.signup.SignUpViewModel
 
-object Routes {
-    const val SIGN_IN = "signin"
-    const val SIGN_UP = "signup"
-    const val FIND_ACCOUNT = "findaccount"
-}
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AuthNavGraph(
@@ -56,4 +50,10 @@ fun AuthNavGraph(
             )
         }
     }
+}
+
+object Routes {
+    const val SIGN_IN = "signin"
+    const val SIGN_UP = "signup"
+    const val FIND_ACCOUNT = "findaccount"
 }

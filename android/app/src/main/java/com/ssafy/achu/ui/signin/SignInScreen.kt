@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.BasicTextField
 import com.ssafy.achu.core.components.PasswordTextField
@@ -36,9 +37,9 @@ import com.ssafy.achu.core.theme.White
 @Composable
 fun SignInScreen(
     modifier: Modifier = Modifier,
-    viewModel: SignInViewModel,
-    onNavigateToSignUp: () -> Unit,
-    onNavigateToFindAccount: () -> Unit
+    viewModel: SignInViewModel = viewModel(),
+    onNavigateToSignUp: () -> Unit = {},
+    onNavigateToFindAccount: () -> Unit = {}
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -51,7 +52,7 @@ fun SignInScreen(
         // 배경 이미지 추가
         Image(
             painter = painterResource(id = R.drawable.img_sign_in),
-            contentDescription = "Background",
+            contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = 80.dp),
@@ -61,77 +62,84 @@ fun SignInScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 270.dp, start = 24.dp, end = 24.dp)
+                .padding(horizontal = 24.dp)
         ) {
-            Text(
-                text = stringResource(R.string.welcome),
-                style = AchuTheme.typography.bold24
-            )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.weight(0.3f))
 
-            Row {
+            Column(
+                modifier = Modifier.weight(0.7f)
+            ) {
                 Text(
-                    text = stringResource(R.string.question_not_user),
-                    style = AchuTheme.typography.regular18
+                    text = stringResource(R.string.welcome),
+                    style = AchuTheme.typography.bold24
                 )
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row {
+                    Text(
+                        text = stringResource(R.string.question_not_user),
+                        style = AchuTheme.typography.regular18
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = stringResource(R.string.go_sign_up),
+                        style = AchuTheme.typography.semiBold18.copy(color = PointBlue),
+                        modifier = Modifier.clickable(onClick = onNavigateToSignUp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
 
                 Text(
-                    text = stringResource(R.string.go_sign_up),
-                    style = AchuTheme.typography.semiBold18.copy(color = PointBlue),
-                    modifier = Modifier.clickable { onNavigateToSignUp() }
+                    text = stringResource(R.string.id),
+                    style = AchuTheme.typography.regular16
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                BasicTextField(
+                    value = uiState.id,
+                    onValueChange = { viewModel.updateId(it) },
+                    placeholder = stringResource(R.string.enter_id),
+                    placeholderColor = PointBlue,
+                    borderColor = PointBlue
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = stringResource(R.string.password),
+                    style = AchuTheme.typography.regular16
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                PasswordTextField(
+                    value = uiState.pwd,
+                    onValueChange = { viewModel.updatePwd(it) },
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = stringResource(R.string.question_forget_account),
+                    style = AchuTheme.typography.semiBold14PointBlue,
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .clickable(onClick = onNavigateToFindAccount)
+                )
+
+                Spacer(modifier = Modifier.height(36.dp))
+
+                PointBlueButton(
+                    buttonText = stringResource(R.string.login),
+                    onClick = { /* 로그인 로직 구현 */ }
                 )
             }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Text(
-                text = stringResource(R.string.id),
-                style = AchuTheme.typography.regular18
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            BasicTextField(
-                value = uiState.id,
-                onValueChange = { viewModel.updateId(it) },
-                placeholder = stringResource(R.string.enter_id),
-                placeholderColor = PointBlue,
-                borderColor = PointBlue
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = stringResource(R.string.password),
-                style = AchuTheme.typography.regular18
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            PasswordTextField(
-                value = uiState.pwd,
-                onValueChange = { viewModel.updatePwd(it) },
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Text(
-                text = stringResource(R.string.question_forget_account),
-                style = AchuTheme.typography.semiBold16.copy(color = PointBlue),
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .clickable { onNavigateToFindAccount() }
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            PointBlueButton(
-                buttonText = stringResource(R.string.login),
-                onClick = { /* 로그인 로직 구현 */ }
-            )
         }
     }
 }
@@ -141,7 +149,6 @@ fun SignInScreen(
 @Composable
 fun SignInScreenPreview() {
     AchuTheme {
-//        val viewModel: SignInViewModel = viewModel()
-//        SignInScreen(viewModel = viewModel)
+        SignInScreen()
     }
 }
