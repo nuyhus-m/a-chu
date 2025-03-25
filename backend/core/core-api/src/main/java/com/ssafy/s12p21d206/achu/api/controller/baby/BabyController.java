@@ -68,6 +68,13 @@ public class BabyController {
     return ApiResponse.success();
   }
 
+  @PatchMapping("/babies/{id}/gender")
+  public ApiResponse<Void> modifyBabyGender(
+      ApiUser apiUser, @PathVariable Long id, @RequestBody ModifyBabyGenderRequest request) {
+    babyService.modifyGender(apiUser.toUser(), id, request.gender());
+    return ApiResponse.success();
+  }
+
   @DeleteMapping("/babies/{id}")
   public ApiResponse<DefaultIdResponse> deleteBaby(ApiUser apiUser, @PathVariable Long id) {
     babyService.delete(apiUser.toUser(), id);

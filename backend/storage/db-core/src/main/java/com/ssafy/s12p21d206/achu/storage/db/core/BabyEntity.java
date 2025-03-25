@@ -49,4 +49,8 @@ public class BabyEntity extends BaseEntity {
   public void changeBirth(LocalDate birth) {
     this.birth = birth;
   }
+
+  public void changeGender(Sex gender) {
+    this.gender = gender;
+  }
 }

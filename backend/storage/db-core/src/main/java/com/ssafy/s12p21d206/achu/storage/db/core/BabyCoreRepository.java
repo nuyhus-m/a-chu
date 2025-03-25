@@ -6,6 +6,7 @@ import com.ssafy.s12p21d206.achu.domain.NewBaby;
 import com.ssafy.s12p21d206.achu.domain.User;
 import com.ssafy.s12p21d206.achu.domain.error.CoreErrorType;
 import com.ssafy.s12p21d206.achu.domain.error.CoreException;
+import com.ssafy.s12p21d206.achu.domain.support.Sex;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
@@ -88,6 +89,17 @@ public class BabyCoreRepository implements BabyRepository {
         .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
 
     babyEntity.changeBirth(birth);
+    babyJpaRepository.save(babyEntity);
+    return babyEntity.toBaby();
+  }
+
+  @Override
+  public Baby modifyGender(Long id, Sex gender) {
+    BabyEntity babyEntity = babyJpaRepository
+        .findByIdAndEntityStatus(id, EntityStatus.ACTIVE)
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+
+    babyEntity.changeGender(gender);
     babyJpaRepository.save(babyEntity);
     return babyEntity.toBaby();
   }
