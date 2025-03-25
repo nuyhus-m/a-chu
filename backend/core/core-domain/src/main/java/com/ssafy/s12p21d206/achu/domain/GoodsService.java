@@ -21,4 +21,16 @@ public class GoodsService {
       User user, Long categoryId, Long offset, Long limit, SortType sort) {
     return goodsReader.readCategoryGoods(user, categoryId, offset, limit, sort);
   }
+
+  public GoodsDetail findGoodsDetail(Long id) {
+    return goodsReader.readGoodsDetail(id);
+  }
+
+  public CategoryId findCategoryIdByGoodsId(Long id) {
+    return goodsReader.readCategoryIdByGoodsId(id);
+  }
+
+  public User findUserIdByGoodsId(Long id) {
+    return goodsReader.readUserIdByGoodsId(id);
+  }
 }

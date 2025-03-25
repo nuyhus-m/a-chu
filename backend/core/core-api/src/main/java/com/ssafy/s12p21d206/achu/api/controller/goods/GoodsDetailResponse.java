@@ -1,5 +1,7 @@
 package com.ssafy.s12p21d206.achu.api.controller.goods;
 
+import com.ssafy.s12p21d206.achu.domain.GoodsDetail;
+import com.ssafy.s12p21d206.achu.domain.LikeStatus;
 import com.ssafy.s12p21d206.achu.domain.support.TradeStatus;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,4 +17,23 @@ public record GoodsDetailResponse(
     Long likedUsersCount,
     Boolean likedByUser,
     CategoryResponse category,
-    UserResponse seller) {}
+    UserResponse seller) {
+  public static GoodsDetailResponse of(
+      GoodsDetail goodsDetail,
+      LikeStatus likeStatus,
+      CategoryResponse category,
+      UserResponse seller) {
+    return new GoodsDetailResponse(
+        goodsDetail.id(),
+        goodsDetail.title(),
+        goodsDetail.description(),
+        goodsDetail.imgUrls(),
+        goodsDetail.tradeStatus(),
+        goodsDetail.price(),
+        goodsDetail.createdAt(),
+        likeStatus.likedUsersCount(),
+        likeStatus.likedByUser(),
+        category,
+        seller);
+  }
+}

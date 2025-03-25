@@ -22,5 +22,15 @@ public class GoodsReader {
     return goodsRepository.findCategoryGoods(user, categoryId, offset, limit, sort);
   }
 
-  public GoodsDetail readGoodsDetail() {}
+  public GoodsDetail readGoodsDetail(Long id) {
+    return goodsRepository.findGoodsDetail(id);
+  }
+
+  public CategoryId readCategoryIdByGoodsId(Long id) {
+    return goodsRepository.findCategoryIdByGoodsId(id);
+  }
+
+  public User readUserIdByGoodsId(Long id) {
+    return goodsRepository.findUserIdByGoodsId(id);
+  }
 }

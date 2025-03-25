@@ -8,5 +8,13 @@ public interface GoodsRepository {
 
   List<Goods> findCategoryGoods(User user, Long categoryId, Long offset, Long limit, SortType sort);
 
+
   boolean existsById(Long goodsId);
+
+  GoodsDetail findGoodsDetail(Long id);
+
+  CategoryId findCategoryIdByGoodsId(Long id);
+
+  User findUserIdByGoodsId(Long id);
+
 }
