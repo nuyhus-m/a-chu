@@ -16,6 +16,7 @@ import com.ssafy.achu.core.navigation.MyPage.MY_INFO
 import com.ssafy.achu.core.navigation.MyPage.MY_LIKE_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_MEMORY_DETAIL
 import com.ssafy.achu.core.navigation.MyPage.MY_MEMORY_UPLOAD
+import com.ssafy.achu.core.navigation.MyPage.MY_PRODUCT_DETAIL
 import com.ssafy.achu.core.navigation.MyPage.MY_RECOMMEND_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_TRADE_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_UPLOAD_PRODUCT
@@ -31,10 +32,10 @@ import com.ssafy.achu.ui.mypage.LikeItemListScreen
 import com.ssafy.achu.ui.mypage.RecommendItemScreen
 import com.ssafy.achu.ui.mypage.TradeListScreen
 import com.ssafy.achu.ui.mypage.UserInfoScreen
+import com.ssafy.achu.ui.product.ProductDetailScreen
 import com.ssafy.achu.ui.product.ProductListScreen
 import com.ssafy.achu.ui.product.ProductListViewModel
 import com.ssafy.achu.ui.product.UploadProductScreen
-import com.ssafy.achu.ui.signin.SignInViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -55,7 +56,9 @@ fun NavGraph(
             ProductListScreen(
                 modifier = modifier,
                 viewModel = viewModel,
-                onNavigateToUploadProduct = { navController.navigate(route = "uploadproduct") })
+                onNavigateToUploadProduct = { navController.navigate(route = "uploadproduct") },
+                onNavigateToProductDetail = { navController.navigate(route = "productdetail") }
+            )
         }
         composable(route = BottomNavScreen.MemoryList.route) {
             MemoryListScreen(
@@ -115,6 +118,10 @@ fun NavGraph(
         // 중고 거래 관련 화면들
         composable(MY_UPLOAD_PRODUCT) {
             UploadProductScreen()
+        }
+
+        composable(MY_PRODUCT_DETAIL) {
+            ProductDetailScreen()
         }
 
         // 채팅 관련 화면들

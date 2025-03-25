@@ -34,7 +34,7 @@ fun BasicTopAppBar(title: String, onBackClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 32.dp),
+            .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = { onBackClick() }) {
@@ -56,7 +56,7 @@ fun CenterTopAppBar(title: String, onBackClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 40.dp),
+            .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 24.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -93,7 +93,7 @@ fun TopBarWithMenu(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 40.dp)
+            .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 24.dp)
             .background(White)
     ) {
         Row(

@@ -60,6 +60,7 @@ fun ProductListScreen(
     modifier: Modifier = Modifier,
     viewModel: ProductListViewModel = viewModel(),
     onNavigateToUploadProduct: () -> Unit = {},
+    onNavigateToProductDetail: () -> Unit = {}
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -188,7 +189,7 @@ fun ProductListScreen(
                     title = "미피 인형"
                 ),
             )
-            ProductList(items = products)
+            ProductList(items = products, onNavigateToProductDetail = onNavigateToProductDetail)
         }
 
         // FAB 버튼
@@ -266,12 +267,12 @@ fun CategoryButtonList(
 }
 
 @Composable
-fun ProductList(items: List<Product>) {
+fun ProductList(items: List<Product>, onNavigateToProductDetail: () -> Unit) {
     LazyColumn {
         items(items) { item ->
             ProductItem(
                 product = item,
-                onItemClick = {}
+                onItemClick = { onNavigateToProductDetail() }
             )
         }
     }
