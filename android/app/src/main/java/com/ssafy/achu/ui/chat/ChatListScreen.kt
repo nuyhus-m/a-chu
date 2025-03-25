@@ -2,6 +2,7 @@ package com.ssafy.achu.ui.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,13 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
-import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.components.Divider
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
@@ -36,18 +37,24 @@ import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 
 @Composable
-fun ChatListScreen(modifier: Modifier = Modifier, onNavigateToChat: () -> Unit) {
+fun ChatListScreen(modifier: Modifier = Modifier, onNavigateToChat: () -> Unit = {}) {
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(color = White)
     ) {
-        BasicTopAppBar(
-            title = stringResource(R.string.chat_list),
-            onBackClick = {}
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+        // 탑바
+        Box(
+            modifier = Modifier.padding(start = 24.dp, top = 48.dp, bottom = 24.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.chat_list),
+                style = AchuTheme.typography.semiBold24
+            )
+        }
+
+        // 채팅 목록
         val chats = listOf(
             Chat(
                 imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
@@ -92,7 +99,8 @@ fun ChatItem(
                     .fillMaxWidth(0.2f)
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                error = painterResource(id = R.drawable.img_miffy_doll)
             )
             Column(
                 modifier = Modifier
@@ -106,7 +114,7 @@ fun ChatItem(
                         text = "덕윤맘",
                         style = AchuTheme.typography.semiBold18
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "미피 인형",
                         style = AchuTheme.typography.semiBold16.copy(color = PointBlue),
@@ -114,7 +122,7 @@ fun ChatItem(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "사진 추가로 볼 수 있을까요?",
                     style = AchuTheme.typography.regular16.copy(color = FontGray),
@@ -130,7 +138,7 @@ fun ChatItem(
                     text = "오후 7:59",
                     style = AchuTheme.typography.regular14.copy(color = FontGray)
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "1",
                     style = AchuTheme.typography.regular16.copy(color = White),
@@ -169,7 +177,7 @@ data class Chat(
 @Composable
 fun ChatListScreenPreview() {
     AchuTheme {
-//        ChatListScreen()
+        ChatListScreen()
     }
 }
 
