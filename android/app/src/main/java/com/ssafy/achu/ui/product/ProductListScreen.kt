@@ -268,7 +268,7 @@ fun CategoryButtonList(
 fun ProductList(items: List<Product>) {
     LazyColumn {
         items(items) { item ->
-            Product(
+            ProductItem(
                 product = item,
                 onItemClick = {}
             )
@@ -277,7 +277,7 @@ fun ProductList(items: List<Product>) {
 }
 
 @Composable
-fun Product(
+fun ProductItem(
     product: Product,
     onItemClick: () -> Unit
 ) {
@@ -376,7 +376,7 @@ fun ProductListScreenPreview() {
 @Composable
 fun ProductItemPreview() {
     AchuTheme {
-        Product(
+        ProductItem(
             product = Product(
                 chatCount = 11,
                 createdAt = "3일 전",
