@@ -117,7 +117,9 @@ fun NavGraph(
 
         // 중고 거래 관련 화면들
         composable(MY_UPLOAD_PRODUCT) {
-            UploadProductScreen()
+            UploadProductScreen(
+                onBackClick = { navController.popBackStack() }
+            )
         }
 
         composable(MY_PRODUCT_DETAIL) {
@@ -126,7 +128,9 @@ fun NavGraph(
 
         // 채팅 관련 화면들
         composable(MY_CHAT) {
-            ChatScreen()
+            ChatScreen(
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 }

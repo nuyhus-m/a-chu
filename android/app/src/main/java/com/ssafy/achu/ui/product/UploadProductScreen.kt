@@ -52,7 +52,7 @@ import com.ssafy.achu.core.theme.White
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun UploadProductScreen() {
+fun UploadProductScreen(onBackClick: () -> Unit = {}) {
     val space = 24.dp
     val smallSpace = 8.dp
 
@@ -67,7 +67,7 @@ fun UploadProductScreen() {
         // 탑바
         CenterTopAppBar(
             title = stringResource(R.string.upload_product),
-            onBackClick = {}
+            onBackClick = onBackClick
         )
 
         // 내용
