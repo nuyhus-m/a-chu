@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -25,7 +26,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,37 +52,28 @@ import com.ssafy.achu.core.theme.White
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun UploadProductScreen(modifier: Modifier = Modifier) {
+fun UploadProductScreen() {
     val space = 24.dp
-    val smallSpace = 16.dp
+    val smallSpace = 8.dp
 
-    Scaffold(
-        topBar = {
-            CenterTopAppBar(
-                title = stringResource(R.string.upload_product),
-                onBackClick = {}
-            )
-        },
-        bottomBar = {
-            Column(
-                modifier = Modifier
-                    .padding(vertical = 16.dp, horizontal = 24.dp)
-                    .background(color = Color.White)
-            ) {
-                PointBlueButton(
-                    buttonText = stringResource(R.string.write_complete),
-                    onClick = {}
-                )
-            }
-        }
-    ) { innerPadding ->
-        val scrollState = rememberScrollState()
+    val scrollState = rememberScrollState()
 
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = White)
+    ) {
+
+        // 탑바
+        CenterTopAppBar(
+            title = stringResource(R.string.upload_product),
+            onBackClick = {}
+        )
+
+        // 내용
         Column(
-            modifier = modifier
-                .fillMaxSize()
-                .background(color = White)
-                .padding(innerPadding)
+            modifier = Modifier
+                .weight(1f)
                 .padding(horizontal = 24.dp)
                 .verticalScroll(scrollState)
         ) {
@@ -147,6 +138,19 @@ fun UploadProductScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(smallSpace))
             BabyDropdown(onBabySelected = {})
             Spacer(modifier = Modifier.height(space))
+        }
+
+        // 바텀바
+        Column(
+            modifier = Modifier
+                .padding(top = 16.dp, bottom = 40.dp, start = 24.dp, end = 24.dp)
+                .navigationBarsPadding()
+                .background(color = Color.White)
+        ) {
+            PointBlueButton(
+                buttonText = stringResource(R.string.write_complete),
+                onClick = {}
+            )
         }
     }
 }
