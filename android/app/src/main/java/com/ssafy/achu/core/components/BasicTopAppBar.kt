@@ -1,78 +1,84 @@
 package com.ssafy.achu.core.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.White
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BasicTopAppBar(title: String = "", onBackClick: () -> Unit) {
-    TopAppBar(
-        title = {
-            Text(
-                text = title,
-                style = AchuTheme.typography.bold24
+fun BasicTopAppBar(title: String, onBackClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 32.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = { onBackClick() }) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_back),
+                contentDescription = stringResource(R.string.back),
+                modifier = Modifier.size(28.dp)
             )
-        },
-        navigationIcon = {
-            IconButton(onClick = { onBackClick() }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-            }
-        },
-        modifier = Modifier.padding(
-            vertical = 24.dp
-        ),
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White
+        }
+        Text(
+            text = title,
+            style = AchuTheme.typography.semiBold24
         )
-    )
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CenterTopAppBar(title: String = "", onBackClick: () -> Unit) {
-    CenterAlignedTopAppBar(
-        title = {
-            Text(
-                text = title,
-                style = AchuTheme.typography.bold24
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = { onBackClick() }) {
-                Icon(Icons.Default.Close, contentDescription = "Back")
+fun CenterTopAppBar(title: String, onBackClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 40.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_close),
+                    contentDescription = stringResource(R.string.back),
+                    modifier = Modifier.size(28.dp)
+                )
             }
-        },
-        modifier = Modifier.padding(vertical = 24.dp),
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White
+            Spacer(modifier = Modifier.weight(1f))
+        }
+        Text(
+            text = title,
+            style = AchuTheme.typography.semiBold24
         )
-    )
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarWithMenu(
     title: String = "",
@@ -82,54 +88,76 @@ fun TopBarWithMenu(
     onMenuFirstItemClick: () -> Unit,
     onMenuSecondItemClick: () -> Unit
 ) {
-    var menuExpanded by remember { mutableStateOf(false) } // 메뉴 상태 관리
+    var menuExpanded by remember { mutableStateOf(false) }
 
-    TopAppBar(
-        title = {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 40.dp)
+            .background(White)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { onBackClick() }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_back),
+                    contentDescription = stringResource(R.string.back),
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+
             Text(
                 text = title,
-                style = AchuTheme.typography.bold24
+                style = AchuTheme.typography.semiBold24,
+                modifier = Modifier.weight(1f)
             )
-        },
-        navigationIcon = {
-            IconButton(onClick = { onBackClick() }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-            }
-        },
-        modifier = Modifier.padding(
-            vertical = 24
-                .dp
-        ),
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White
-        ),
-        actions = {
-            IconButton(onClick = { menuExpanded = true }) {
-                Icon(Icons.Default.MoreVert, contentDescription = "더보기")
-            }
 
-            DropdownMenu(
-                expanded = menuExpanded,
-                onDismissRequest = { menuExpanded = false },
-                containerColor = White
-            ) {
-                DropdownMenuItem(
-                    text = { Text(menuFirstText) },
-                    onClick = {
-                        menuExpanded = false
-                        onMenuFirstItemClick()
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text(menuSecondText) },
-                    onClick = {
-                        menuExpanded = false
-                        onMenuSecondItemClick()
-                    }
-                )
+            Box {
+                IconButton(
+                    onClick = { menuExpanded = true }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = stringResource(R.string.more)
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = menuExpanded,
+                    onDismissRequest = { menuExpanded = false },
+                    containerColor = White
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = menuFirstText,
+                                style = AchuTheme.typography.regular16
+                            )
+                        },
+                        onClick = {
+                            menuExpanded = false
+                            onMenuFirstItemClick()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = menuSecondText,
+                                style = AchuTheme.typography.regular16
+                            )
+                        },
+                        onClick = {
+                            menuExpanded = false
+                            onMenuSecondItemClick()
+                        }
+                    )
+                }
             }
         }
-    )
+    }
 }
 
 @Preview(showBackground = true)
