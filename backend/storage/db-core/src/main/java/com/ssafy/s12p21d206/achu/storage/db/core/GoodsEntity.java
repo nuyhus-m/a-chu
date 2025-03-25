@@ -1,6 +1,10 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
+import com.ssafy.s12p21d206.achu.domain.CategoryId;
 import com.ssafy.s12p21d206.achu.domain.Goods;
+import com.ssafy.s12p21d206.achu.domain.GoodsDetail;
+import com.ssafy.s12p21d206.achu.domain.User;
+import com.ssafy.s12p21d206.achu.domain.support.TradeStatus;
 import com.ssafy.s12p21d206.achu.storage.db.core.converter.ImgUrlListJsonConverter;
 import jakarta.persistence.*;
 import java.util.List;
@@ -65,5 +69,18 @@ public class GoodsEntity extends BaseEntity {
 
   public Goods toGoods() {
     return new Goods(getId(), title, imgUrls.get(0), price, getCreatedAt());
+  }
+
+  public GoodsDetail toGoodsDetail() {
+    return new GoodsDetail(
+        getId(), title, description, imgUrls, tradeStatus, price, getCreatedAt());
+  }
+
+  public CategoryId toCategoryId() {
+    return new CategoryId(categoryId);
+  }
+
+  public User toUserId() {
+    return new User(userId);
   }
 }

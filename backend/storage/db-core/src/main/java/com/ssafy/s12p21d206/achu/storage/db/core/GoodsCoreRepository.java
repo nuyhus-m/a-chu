@@ -1,9 +1,8 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
-import com.ssafy.s12p21d206.achu.domain.Goods;
-import com.ssafy.s12p21d206.achu.domain.GoodsRepository;
-import com.ssafy.s12p21d206.achu.domain.User;
+import com.ssafy.s12p21d206.achu.domain.*;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +17,8 @@ public class GoodsCoreRepository implements GoodsRepository {
   public GoodsCoreRepository(GoodsJpaRepository goodsJpaRepository) {
     this.goodsJpaRepository = goodsJpaRepository;
   }
+
+  private static final String GOODS_NOT_FOUND_MESSAGE = "존재하지 않는 상품입니다.";
 
   @Override
   public List<Goods> findGoods(User user, Long offset, Long limit, SortType sort) {
@@ -37,8 +38,31 @@ public class GoodsCoreRepository implements GoodsRepository {
   }
 
   @Override
+
   public boolean existsById(Long goodsId) {
     return goodsJpaRepository.existsByIdAndEntityStatus(goodsId, EntityStatus.ACTIVE);
+
+  public GoodsDetail findGoodsDetail(Long id) {
+    GoodsEntity goodsEntity = goodsJpaRepository
+        .findByIdAndEntityStatus(id, EntityStatus.ACTIVE)
+        .orElseThrow(() -> new EntityNotFoundException(GOODS_NOT_FOUND_MESSAGE));
+    return goodsEntity.toGoodsDetail();
+  }
+
+  @Override
+  public CategoryId findCategoryIdByGoodsId(Long id) {
+    GoodsEntity goodsEntity = goodsJpaRepository
+        .findById(id)
+        .orElseThrow(() -> new EntityNotFoundException(GOODS_NOT_FOUND_MESSAGE));
+    return goodsEntity.toCategoryId();
+  }
+
+  @Override
+  public User findUserIdByGoodsId(Long id) {
+    GoodsEntity goodsEntity = goodsJpaRepository
+        .findById(id)
+        .orElseThrow(() -> new EntityNotFoundException(GOODS_NOT_FOUND_MESSAGE));
+    return goodsEntity.toUserId();
   }
 
   private Sort convertSort(SortType sort) {
