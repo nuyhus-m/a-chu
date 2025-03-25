@@ -103,4 +103,9 @@ public class BabyCoreRepository implements BabyRepository {
     babyJpaRepository.save(babyEntity);
     return babyEntity.toBaby();
   }
+
+  @Override
+  public int countByUserId(Long id) {
+    return babyJpaRepository.countByUserIdAndEntityStatus(id, EntityStatus.ACTIVE);
+  }
 }

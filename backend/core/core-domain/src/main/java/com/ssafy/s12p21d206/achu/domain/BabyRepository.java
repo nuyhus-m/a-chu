@@ -23,4 +23,6 @@ public interface BabyRepository {
   Baby modifyBirth(Long id, LocalDate birth);
 
   Baby modifyGender(Long id, Sex gender);
+
+  int countByUserId(Long id);
 }
