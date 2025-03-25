@@ -16,8 +16,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 
 import com.ssafy.s12p21d206.achu.domain.Baby;
 import com.ssafy.s12p21d206.achu.domain.BabyService;
+import com.ssafy.s12p21d206.achu.domain.Sex;
 import com.ssafy.s12p21d206.achu.domain.support.DefaultDateTime;
-import com.ssafy.s12p21d206.achu.domain.support.Sex;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;

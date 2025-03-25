@@ -1,7 +1,6 @@
 package com.ssafy.s12p21d206.achu.domain;
 
 import com.ssafy.s12p21d206.achu.domain.support.DefaultDateTime;
-import com.ssafy.s12p21d206.achu.domain.support.Sex;
 import java.time.LocalDate;
 
 public class Baby {

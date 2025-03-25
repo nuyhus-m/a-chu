@@ -8,6 +8,7 @@ import com.ssafy.s12p21d206.achu.domain.BabyService;
 import com.ssafy.s12p21d206.achu.domain.NewBaby;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import java.util.List;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +25,7 @@ public class BabyController {
   public ApiResponse<DefaultIdResponse> appendBaby(
       ApiUser apiUser,
       @RequestPart(name = "profileImage") MultipartFile profileImage,
-      @RequestPart AppendBabyRequest request) {
+      @RequestPart @Validated AppendBabyRequest request) {
     String imageUrl = "https://dummy-image-url.com/image.png";
     NewBaby newBaby = request.toNewBaby(imageUrl);
     Long id = babyService.append(apiUser.toUser(), newBaby);

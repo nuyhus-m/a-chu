@@ -1,6 +1,5 @@
 package com.ssafy.s12p21d206.achu.domain;
 
-import com.ssafy.s12p21d206.achu.domain.support.Sex;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;

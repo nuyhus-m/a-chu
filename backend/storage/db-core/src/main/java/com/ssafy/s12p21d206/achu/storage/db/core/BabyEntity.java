@@ -1,8 +1,8 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
 import com.ssafy.s12p21d206.achu.domain.Baby;
+import com.ssafy.s12p21d206.achu.domain.Sex;
 import com.ssafy.s12p21d206.achu.domain.support.DefaultDateTime;
-import com.ssafy.s12p21d206.achu.domain.support.Sex;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
