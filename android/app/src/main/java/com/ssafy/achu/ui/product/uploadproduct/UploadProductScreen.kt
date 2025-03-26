@@ -42,7 +42,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ssafy.achu.R
-import com.ssafy.achu.core.components.BasicTextField
+import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.components.CenterTopAppBar
 import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.theme.AchuTheme

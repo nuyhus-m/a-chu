@@ -26,8 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.R
-import com.ssafy.achu.core.components.BasicTextField
-import com.ssafy.achu.core.components.PasswordTextField
+import com.ssafy.achu.core.components.textfield.BasicTextField
+import com.ssafy.achu.core.components.textfield.PasswordTextField
 import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.PointBlue

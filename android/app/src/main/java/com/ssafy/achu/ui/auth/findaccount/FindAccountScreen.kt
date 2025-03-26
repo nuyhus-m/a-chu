@@ -23,9 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.PointBlueButton
-import com.ssafy.achu.core.components.PwdTextFieldWithLabel
-import com.ssafy.achu.core.components.TextFieldWithLabel
-import com.ssafy.achu.core.components.TextFieldWithLabelAndBtn
+import com.ssafy.achu.core.components.textfield.PwdTextFieldWithLabel
+import com.ssafy.achu.core.components.textfield.TextFieldWithLabel
+import com.ssafy.achu.core.components.textfield.TextFieldWithLabelAndBtn
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.White
 

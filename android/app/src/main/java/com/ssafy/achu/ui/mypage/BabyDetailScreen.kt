@@ -1,8 +1,5 @@
 package com.ssafy.achu.ui.mypage
 
-import android.R.attr.radius
-import android.R.attr.text
-import android.R.attr.type
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -21,9 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,25 +32,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.achu.R
-import com.ssafy.achu.core.components.BasicTextField
+import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.components.BasicTopAppBar
-import com.ssafy.achu.core.components.ClearTextField
-import com.ssafy.achu.core.components.PointBlueButton
-import com.ssafy.achu.core.components.PointBlueFlexibleBtn
+import com.ssafy.achu.core.components.textfield.ClearTextField
 import com.ssafy.achu.core.components.PointPinkBtn
 import com.ssafy.achu.core.components.PointPinkLineBtn
 import com.ssafy.achu.core.components.SmallLineBtn
 import com.ssafy.achu.core.theme.AchuTheme
-import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontGray
-import com.ssafy.achu.core.theme.LightGray
-import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 

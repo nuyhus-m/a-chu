@@ -1,6 +1,5 @@
 package com.ssafy.achu.ui.mypage
 
-import android.R.attr.text
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,8 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -40,12 +35,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.BasicDialog
-import com.ssafy.achu.core.components.BasicTextField
+import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.components.BasicTopAppBar
-import com.ssafy.achu.core.components.ClearTextField
+import com.ssafy.achu.core.components.textfield.ClearTextField
 import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.PointBlueFlexibleBtn
-import com.ssafy.achu.core.components.PointBlueLineBtn
 import com.ssafy.achu.core.components.SmallLineBtn
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
