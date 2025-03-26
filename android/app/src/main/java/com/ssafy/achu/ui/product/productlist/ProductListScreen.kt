@@ -52,8 +52,8 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.data.model.Category
-import com.ssafy.achu.data.model.Product
+import com.ssafy.achu.data.model.product.CategoryResponse
+import com.ssafy.achu.data.model.product.ProductResponse
 
 @Composable
 fun ProductListScreen(
@@ -88,23 +88,23 @@ fun ProductListScreen(
 
             // 카테고리 버튼 리스트
             val categories = listOf(
-                Category(
+                CategoryResponse(
                     id = 0,
                     name = "전체"
                 ),
-                Category(
+                CategoryResponse(
                     id = 1,
                     name = "인형"
                 ),
-                Category(
+                CategoryResponse(
                     id = 2,
                     name = "공구"
                 ),
-                Category(
+                CategoryResponse(
                     id = 3,
                     name = "도서"
                 ),
-                Category(
+                CategoryResponse(
                     id = 4,
                     name = "기타"
                 )
@@ -117,8 +117,8 @@ fun ProductListScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // 물품 리스트
-            val products = listOf(
-                Product(
+            val productResponses = listOf(
+                ProductResponse(
                     chatCount = 11,
                     createdAt = "3일 전",
                     id = 1,
@@ -128,7 +128,7 @@ fun ProductListScreen(
                     price = 5000,
                     title = "미피 인형 어쩌고 저쩌고 저쩌고 아무말 대잔치 두줄 불가"
                 ),
-                Product(
+                ProductResponse(
                     chatCount = 11,
                     createdAt = "3일 전",
                     id = 1,
@@ -138,7 +138,7 @@ fun ProductListScreen(
                     price = 5000,
                     title = "미피 인형"
                 ),
-                Product(
+                ProductResponse(
                     chatCount = 11,
                     createdAt = "3일 전",
                     id = 1,
@@ -148,7 +148,7 @@ fun ProductListScreen(
                     price = 5000,
                     title = "미피 인형"
                 ),
-                Product(
+                ProductResponse(
                     chatCount = 11,
                     createdAt = "3일 전",
                     id = 1,
@@ -158,7 +158,7 @@ fun ProductListScreen(
                     price = 5000,
                     title = "미피 인형"
                 ),
-                Product(
+                ProductResponse(
                     chatCount = 11,
                     createdAt = "3일 전",
                     id = 1,
@@ -168,7 +168,7 @@ fun ProductListScreen(
                     price = 5000,
                     title = "미피 인형"
                 ),
-                Product(
+                ProductResponse(
                     chatCount = 11,
                     createdAt = "3일 전",
                     id = 1,
@@ -178,7 +178,7 @@ fun ProductListScreen(
                     price = 5000,
                     title = "미피 인형"
                 ),
-                Product(
+                ProductResponse(
                     chatCount = 11,
                     createdAt = "3일 전",
                     id = 1,
@@ -189,7 +189,7 @@ fun ProductListScreen(
                     title = "미피 인형"
                 ),
             )
-            ProductList(items = products, onNavigateToProductDetail = onNavigateToProductDetail)
+            ProductList(items = productResponses, onNavigateToProductDetail = onNavigateToProductDetail)
         }
 
         // FAB 버튼
@@ -242,7 +242,7 @@ private fun SearchBar(
 
 @Composable
 fun CategoryButtonList(
-    items: List<Category>,
+    items: List<CategoryResponse>,
     onButtonClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     initialSelectedIndex: Int = 0
@@ -267,11 +267,11 @@ fun CategoryButtonList(
 }
 
 @Composable
-fun ProductList(items: List<Product>, onNavigateToProductDetail: () -> Unit) {
+fun ProductList(items: List<ProductResponse>, onNavigateToProductDetail: () -> Unit) {
     LazyColumn {
         items(items) { item ->
             ProductItem(
-                product = item,
+                productResponse = item,
                 onItemClick = onNavigateToProductDetail
             )
         }
@@ -280,7 +280,7 @@ fun ProductList(items: List<Product>, onNavigateToProductDetail: () -> Unit) {
 
 @Composable
 fun ProductItem(
-    product: Product,
+    productResponse: ProductResponse,
     onItemClick: () -> Unit
 ) {
     Column(
@@ -296,7 +296,7 @@ fun ProductItem(
                 .height(IntrinsicSize.Min)
         ) {
             AsyncImage(
-                model = product.imgUrl,
+                model = productResponse.imgUrl,
                 contentDescription = null,
                 modifier = Modifier
                     .weight(0.4f)
@@ -313,21 +313,21 @@ fun ProductItem(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = product.title,
+                    text = productResponse.title,
                     style = AchuTheme.typography.regular18,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = product.createdAt,
+                    text = productResponse.createdAt,
                     style = AchuTheme.typography.regular16.copy(color = FontGray),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "${product.price}원",
+                    text = "${productResponse.price}원",
                     style = AchuTheme.typography.semiBold18.copy(color = FontPink),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -346,21 +346,21 @@ fun ProductItem(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = product.chatCount.toString(),
+                        text = productResponse.chatCount.toString(),
                         style = AchuTheme.typography.regular16.copy(color = FontGray)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         painter =
-                            if (product.likedByUser)
+                            if (productResponse.likedByUser)
                                 painterResource(id = R.drawable.ic_favorite)
                             else painterResource(id = R.drawable.ic_favorite_line),
                         contentDescription = null,
-                        tint = if (product.likedByUser) FontPink else FontGray
+                        tint = if (productResponse.likedByUser) FontPink else FontGray
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = product.likedUsersCount.toString(),
+                        text = productResponse.likedUsersCount.toString(),
                         style = AchuTheme.typography.regular16.copy(color = FontGray)
                     )
                 }
@@ -385,7 +385,7 @@ fun ProductListScreenPreview() {
 fun ProductItemPreview() {
     AchuTheme {
         ProductItem(
-            product = Product(
+            productResponse = ProductResponse(
                 chatCount = 11,
                 createdAt = "3일 전",
                 id = 1,

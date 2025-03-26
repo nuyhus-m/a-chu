@@ -52,7 +52,7 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.data.model.Product
+import com.ssafy.achu.data.model.product.ProductResponse
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -162,8 +162,8 @@ private fun RecommendList() {
             contentDescription = stringResource(R.string.more)
         )
     }
-    val products = listOf(
-        Product(
+    val productResponses = listOf(
+        ProductResponse(
             chatCount = 11,
             createdAt = "3일 전",
             id = 1,
@@ -173,7 +173,7 @@ private fun RecommendList() {
             price = 5000,
             title = "미피 인형"
         ),
-        Product(
+        ProductResponse(
             chatCount = 11,
             createdAt = "3일 전",
             id = 1,
@@ -183,7 +183,7 @@ private fun RecommendList() {
             price = 5000,
             title = "미피 인형"
         ),
-        Product(
+        ProductResponse(
             chatCount = 11,
             createdAt = "3일 전",
             id = 1,
@@ -193,7 +193,7 @@ private fun RecommendList() {
             price = 5000,
             title = "미피 인형"
         ),
-        Product(
+        ProductResponse(
             chatCount = 11,
             createdAt = "3일 전",
             id = 1,
@@ -203,7 +203,7 @@ private fun RecommendList() {
             price = 5000,
             title = "미피 인형"
         ),
-        Product(
+        ProductResponse(
             chatCount = 11,
             createdAt = "3일 전",
             id = 1,
@@ -213,7 +213,7 @@ private fun RecommendList() {
             price = 5000,
             title = "미피 인형"
         ),
-        Product(
+        ProductResponse(
             chatCount = 11,
             createdAt = "3일 전",
             id = 1,
@@ -223,7 +223,7 @@ private fun RecommendList() {
             price = 5000,
             title = "미피 인형"
         ),
-        Product(
+        ProductResponse(
             chatCount = 11,
             createdAt = "3일 전",
             id = 1,
@@ -238,7 +238,7 @@ private fun RecommendList() {
         modifier = Modifier.padding(start = 24.dp)
     ) {
         RecommendList(
-            items = products
+            items = productResponses
         )
     }
     Spacer(modifier = Modifier.height(24.dp))
@@ -319,7 +319,7 @@ private fun ProfileInfo() {
 }
 
 @Composable
-fun RecommendList(items: List<Product>) {
+fun RecommendList(items: List<ProductResponse>) {
     LazyRow {
         items(items) { item ->
             BasicLikeItem(

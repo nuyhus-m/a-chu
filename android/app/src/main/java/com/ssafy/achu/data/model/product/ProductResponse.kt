@@ -1,6 +1,6 @@
-package com.ssafy.achu.data.model
+package com.ssafy.achu.data.model.product
 
-data class Product(
+data class ProductResponse(
     val chatCount: Int,
     val createdAt: String,
     val id: Int,

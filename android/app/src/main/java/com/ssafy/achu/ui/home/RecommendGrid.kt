@@ -1,6 +1,5 @@
 package com.ssafy.achu.ui.home
 
-import android.R.attr.onClick
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,18 +29,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
-import com.ssafy.achu.core.theme.FontBlack
-import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.data.model.Product
+import com.ssafy.achu.data.model.product.ProductResponse
 
 @Composable
-fun RecommendGrid(products: List<Product>, onClick: (productId: Int) -> Unit = {}) {
+fun RecommendGrid(productResponses: List<ProductResponse>, onClick: (productId: Int) -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -58,12 +54,12 @@ fun RecommendGrid(products: List<Product>, onClick: (productId: Int) -> Unit = {
                 .fillMaxHeight() // Row의 높이에 맞게 이미지 크기 설정
                 .weight(1.0f) // 가로 비율을 1로 설정하여 나머지 영역 차지
                 .clickable {
-                    onClick(products[0].id)
+                    onClick(productResponses[0].id)
                 }
         ) {
             Image(
                 painter = painterResource(id = R.drawable.img_miffy_doll),
-                contentDescription = "$products[0].title",
+                contentDescription = "$productResponses[0].title",
                 modifier = Modifier
                     .fillMaxSize() // 박스를 꽉 채우도록 설정
                     .align(Alignment.Center) // 이미지를 중앙에 배치
@@ -86,7 +82,7 @@ fun RecommendGrid(products: List<Product>, onClick: (productId: Int) -> Unit = {
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "${products[0].title}",
+                        text = "${productResponses[0].title}",
                         style = AchuTheme.typography.regular18.copy(
                             shadow = Shadow(
                                 color = Color.Black.copy(alpha = 0.5f),
@@ -105,14 +101,14 @@ fun RecommendGrid(products: List<Product>, onClick: (productId: Int) -> Unit = {
                             .size(24.dp)
                             .shadow(2.dp)
                             .clickable {
-                                onClick(products[0].id)
+                                onClick(productResponses[0].id)
                             },
                         colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(LightGray)
                     )
 
                 }
                 Text(
-                    text = "${products[0].price}원",
+                    text = "${productResponses[0].price}원",
                     style = AchuTheme.typography.semiBold16.copy(
                         shadow = Shadow(
                             color = Color.Black.copy(alpha = 0.5f),
@@ -144,12 +140,12 @@ fun RecommendGrid(products: List<Product>, onClick: (productId: Int) -> Unit = {
                     .height(150.dp)
                     .shadow(4.dp, RoundedCornerShape(8.dp))
                     .clickable {
-                        onClick(products[1].id)
+                        onClick(productResponses[1].id)
                     }
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.img_miffy_doll),
-                    contentDescription = "${products[1].title}",
+                    contentDescription = "${productResponses[1].title}",
                     modifier = Modifier
                         .fillMaxSize() // 박스를 꽉 채우도록 설정
                         .clip(RoundedCornerShape(8.dp)) // 이미지를 라운드 처리
@@ -169,7 +165,7 @@ fun RecommendGrid(products: List<Product>, onClick: (productId: Int) -> Unit = {
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = "${products[1].title}",
+                            text = "${productResponses[1].title}",
                             style = AchuTheme.typography.regular16.copy(
                                 shadow = Shadow(
                                     color = Color.Black.copy(alpha = 0.5f),
@@ -188,14 +184,14 @@ fun RecommendGrid(products: List<Product>, onClick: (productId: Int) -> Unit = {
                                 .size(20.dp)
                                 .shadow(2.dp)
                                 .clickable {
-                                    onClick(products[1].id)
+                                    onClick(productResponses[1].id)
                                 },
                             colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(LightGray)
                         )
 
                     }
                     Text(
-                        text = "${products[1].price}원",
+                        text = "${productResponses[1].price}원",
                         style = AchuTheme.typography.semiBold14PointBlue.copy(
                             shadow = Shadow(
                                 color = Color.Black.copy(alpha = 0.5f),
@@ -220,7 +216,7 @@ fun RecommendGrid(products: List<Product>, onClick: (productId: Int) -> Unit = {
                     .height(120.dp)
                     .shadow(4.dp, RoundedCornerShape(8.dp))
                     .clickable {
-                        onClick(products[2].id)
+                        onClick(productResponses[2].id)
                     }
             ) {
                 Image(
@@ -244,7 +240,7 @@ fun RecommendGrid(products: List<Product>, onClick: (productId: Int) -> Unit = {
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = "${products[2].title}",
+                            text = "${productResponses[2].title}",
                             style = AchuTheme.typography.regular16.copy(
                                 shadow = Shadow(
                                     color = Color.Black.copy(alpha = 0.5f),
@@ -263,14 +259,14 @@ fun RecommendGrid(products: List<Product>, onClick: (productId: Int) -> Unit = {
                                 .size(20.dp)
                                 .shadow(2.dp)
                                 .clickable {
-                                    onClick(products[2].id)
+                                    onClick(productResponses[2].id)
                                 },
                             colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(LightGray)
                         )
 
                     }
                     Text(
-                        text = "${products[2].price}원",
+                        text = "${productResponses[2].price}원",
                         style = AchuTheme.typography.semiBold14PointBlue.copy(
                             shadow = Shadow(
                                 color = Color.Black.copy(alpha = 0.5f),
@@ -292,9 +288,9 @@ fun RecommendGrid(products: List<Product>, onClick: (productId: Int) -> Unit = {
 fun preview() {
     AchuTheme {
         RecommendGrid(
-            products =
+            productResponses =
                 mutableListOf(
-                    Product(
+                    ProductResponse(
                         chatCount = 11,
                         createdAt = "3일 전",
                         id = 1,
@@ -304,7 +300,7 @@ fun preview() {
                         price = 5000,
                         title = "미피 인형"
                     ),
-                    Product(
+                    ProductResponse(
 
                         chatCount = 11,
                         createdAt = "3일 전",
@@ -315,7 +311,7 @@ fun preview() {
                         price = 5000,
                         title = "미피 인형"
                     ),
-                    Product(
+                    ProductResponse(
 
                         chatCount = 11,
                         createdAt = "3일 전",
