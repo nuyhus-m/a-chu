@@ -4,10 +4,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.ssafy.achu.R
@@ -36,7 +38,11 @@ fun BasicDialog(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.5f)) // 배경 어두운 오버레이 추가
-            .padding(32.dp), // 다이얼로그 주변 여백
+            .padding(32.dp).clickable(
+                indication = null, // 리플 효과 제거
+                interactionSource = remember { MutableInteractionSource() }
+            ) { }
+        , // 다이얼로그 주변 여백
         contentAlignment = Alignment.Center
     ) {
         Box(
