@@ -260,7 +260,10 @@ class GoodsControllerTest extends RestDocsTest {
             List.of("goods1-image1.jpg", "goods1-image2.jpg"),
             TradeStatus.SELLING,
             5000L,
-            LocalDateTime.now().minusDays(1)));
+            LocalDateTime.now().minusDays(1),
+            1L,
+            1L,
+            1L));
     when(goodsService.findCategoryIdByGoodsId(anyLong())).thenReturn(new CategoryId(1L));
     when(goodsService.findUserIdByGoodsId(anyLong())).thenReturn(new User(1L));
     when(categoryService.findCategoryInfo(anyLong())).thenReturn(new Category(1L, "카테고리명"));
@@ -320,9 +323,9 @@ class GoodsControllerTest extends RestDocsTest {
     given()
         .contentType(MediaType.MULTIPART_FORM_DATA)
         .multiPart(
-            "request", new AppendGoodsRequest("제목1", "설명1", 5000L, "의류", 1L), "application/json")
-        .multiPart("goodsImages", "goods1-image1.jpg", new byte[0], "image/jpeg")
-        .multiPart("goodsImages", "goods1-image2.jpg", new byte[0], "image/jpeg")
+            "request", new AppendGoodsRequest("제목1", "설명1", 5000L, 1L, 1L), "application/json")
+        .multiPart("Images", "goods1-image1.jpg", new byte[0], "image/jpeg")
+        .multiPart("Images", "goods1-image2.jpg", new byte[0], "image/jpeg")
         .post("/goods")
         .then()
         .status(HttpStatus.OK)
@@ -330,16 +333,18 @@ class GoodsControllerTest extends RestDocsTest {
             "append-goods",
             requestParts(
                 partWithName("request").description("등록할 상품 정보(JSON)"),
-                partWithName("goodsImages").description("첨부 이미지 파일들 (최소 1장 ~ 최대 5장)")),
+                partWithName("Images").description("첨부 이미지 파일들 (최소 1장 ~ 최대 5장)")),
             requestPartFields(
                 "request",
                 fieldWithPath("title").type(JsonFieldType.STRING).description("생성할 물건 제목"),
                 fieldWithPath("description").type(JsonFieldType.STRING).description("생성할 물건 설명"),
                 fieldWithPath("price").type(JsonFieldType.NUMBER).description("생성할 물건 가격"),
-                fieldWithPath("categoryName")
-                    .type(JsonFieldType.STRING)
-                    .description("생성할 물건 카테고리 이름"),
-                fieldWithPath("id").type(JsonFieldType.NUMBER).description("물건 주인(아기)의 baby id")),
+                fieldWithPath("categoryId")
+                    .type(JsonFieldType.NUMBER)
+                    .description("생성할 물건 카테고리 id"),
+                fieldWithPath("babyId")
+                    .type(JsonFieldType.NUMBER)
+                    .description("물건 주인(아기)의 baby id")),
             responseFields(
                 fieldWithPath("result")
                     .type(JsonFieldType.STRING)

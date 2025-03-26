@@ -126,11 +126,13 @@ public class GoodsController {
 
   @PostMapping("/goods")
   public ApiResponse<DefaultIdResponse> appendGoods(
-      Long userId,
+      ApiUser apiUser,
       @RequestPart("request") AppendGoodsRequest request,
-      @RequestPart("goodsImages") MultipartFile[] files) {
-    DefaultIdResponse response = new DefaultIdResponse(1L);
-    return ApiResponse.success(response);
+      @RequestPart("Images") MultipartFile[] files) {
+    List<String> imgUrls = List.of("goods1-img-url1.jpg", "goods1-img-url2.jpg");
+    NewGoods newGoods = request.toNewGoods(imgUrls);
+    Long id = goodsService.append(apiUser.toUser(), newGoods);
+    return ApiResponse.success(new DefaultIdResponse(id));
   }
 
   @PatchMapping("/goods/{goodsId}/images")

@@ -17,4 +17,6 @@ public interface GoodsRepository {
 
   User findUserIdByGoodsId(Long id);
 
+  GoodsDetail save(User user, NewGoods newGoods);
+
 }

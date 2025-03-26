@@ -35,6 +35,25 @@ public class GoodsEntity extends BaseEntity {
 
   protected GoodsEntity() {}
 
+  public GoodsEntity(
+      String title,
+      String description,
+      List<String> imgUrls,
+      TradeStatus tradeStatus,
+      Long price,
+      Long categoryId,
+      Long userId,
+      Long babyId) {
+    this.title = title;
+    this.description = description;
+    this.imgUrls = imgUrls;
+    this.tradeStatus = tradeStatus;
+    this.price = price;
+    this.categoryId = categoryId;
+    this.userId = userId;
+    this.babyId = babyId;
+  }
+
   public String getTitle() {
     return title;
   }
@@ -73,7 +92,16 @@ public class GoodsEntity extends BaseEntity {
 
   public GoodsDetail toGoodsDetail() {
     return new GoodsDetail(
-        getId(), title, description, imgUrls, tradeStatus, price, getCreatedAt());
+        getId(),
+        title,
+        description,
+        imgUrls,
+        tradeStatus,
+        price,
+        getCreatedAt(),
+        categoryId,
+        userId,
+        babyId);
   }
 
   public CategoryId toCategoryId() {

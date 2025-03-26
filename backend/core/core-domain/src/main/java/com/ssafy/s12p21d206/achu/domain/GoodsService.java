@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 public class GoodsService {
 
   private final GoodsReader goodsReader;
+  private final GoodsAppender goodsAppender;
 
-  public GoodsService(GoodsReader goodsReader) {
+  public GoodsService(GoodsReader goodsReader, GoodsAppender goodsAppender) {
     this.goodsReader = goodsReader;
+    this.goodsAppender = goodsAppender;
   }
 
   public List<Goods> findGoods(User user, Long offset, Long limit, SortType sort) {
@@ -32,5 +34,10 @@ public class GoodsService {
 
   public User findUserIdByGoodsId(Long id) {
     return goodsReader.readUserIdByGoodsId(id);
+  }
+
+  public Long append(User user, NewGoods newGoods) {
+    GoodsDetail goodsDetail = goodsAppender.append(user, newGoods);
+    return goodsDetail.id();
   }
 }

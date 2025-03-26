@@ -2,6 +2,7 @@ package com.ssafy.s12p21d206.achu.storage.db.core;
 
 import com.ssafy.s12p21d206.achu.domain.*;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
+import com.ssafy.s12p21d206.achu.domain.support.TradeStatus;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import org.springframework.data.domain.PageRequest;
@@ -63,6 +64,21 @@ public class GoodsCoreRepository implements GoodsRepository {
         .findById(id)
         .orElseThrow(() -> new EntityNotFoundException(GOODS_NOT_FOUND_MESSAGE));
     return goodsEntity.toUserId();
+  }
+
+  @Override
+  public GoodsDetail save(User user, NewGoods newGoods) {
+    return goodsJpaRepository
+        .save(new GoodsEntity(
+            newGoods.title(),
+            newGoods.description(),
+            newGoods.imgUrls(),
+            TradeStatus.SELLING,
+            newGoods.price(),
+            newGoods.categoryId(),
+            user.id(),
+            newGoods.babyId()))
+        .toGoodsDetail();
   }
 
   private Sort convertSort(SortType sort) {
