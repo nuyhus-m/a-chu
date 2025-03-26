@@ -188,6 +188,28 @@ class AuthUserEntityControllerTest extends RestDocsTest {
   }
 
   @Test
+  void modifyPassword() {
+    given()
+        .contentType(ContentType.JSON)
+        .body(new ModifyPasswordRequest("oldPassword", "newPassword"))
+        .patch("/users/password")
+        .then()
+        .status(HttpStatus.OK)
+        .apply(document(
+            "modify-password",
+            requestFields(
+                fieldWithPath("oldPassword").type(JsonFieldType.STRING).description("기존 비밀번호"),
+                fieldWithPath("newPassword")
+                    .type(JsonFieldType.STRING)
+                    .description("새 비밀번호")
+                    .attributes(RestDocsUtils.constraints(
+                        "비밀번호는 영어 대소문자, 숫자, 특수문자(!@#$%^&*()_+-=~) 포함 8~16자리여야 합니다."))),
+            responseFields(fieldWithPath("result")
+                .type(JsonFieldType.STRING)
+                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
+  }
+
+  @Test
   void modifyProfileImage() {
     given()
         .contentType(MediaType.MULTIPART_FORM_DATA)
