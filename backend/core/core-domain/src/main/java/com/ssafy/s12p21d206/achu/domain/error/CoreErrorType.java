@@ -14,8 +14,13 @@ public enum CoreErrorType {
   CANNOT_ACCESS_GOODS(
       CoreErrorKind.CLIENT_ERROR, CoreErrorCode.E1003, "해당 물건에 접근 권한이 없습니다.", CoreErrorLevel.INFO),
   GOODS_ALREADY_SOLD(
-      CoreErrorKind.CLIENT_ERROR, CoreErrorCode.E1004, "이미 판매 완료된 상품엔 상품입니다.", CoreErrorLevel.INFO);
+      CoreErrorKind.CLIENT_ERROR, CoreErrorCode.E1004, "이미 판매 완료된 상품엔 상품입니다.", CoreErrorLevel.INFO),
 
+  SELLER_CANNOT_BE_BUYER(
+      CoreErrorKind.CLIENT_ERROR,
+      CoreErrorCode.E1005,
+      "판매자와 구매자는 동일할 수 없습니다.",
+      CoreErrorLevel.INFO);
   private final CoreErrorKind kind;
   private final CoreErrorCode code;
   private final String message;

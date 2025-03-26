@@ -6,5 +6,6 @@ public enum CoreErrorCode {
   E1002,
 
   E1003,
-  E1004;
+  E1004,
+  E1005;
 }
