@@ -1,6 +1,6 @@
 package com.ssafy.achu.data.model
 
-data class ApiResponse<T>(
+data class ApiResult<T>(
     val result: String,
     val data: T,
     val error: Error

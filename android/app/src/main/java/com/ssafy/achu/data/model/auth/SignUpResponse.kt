@@ -1,5 +1,5 @@
 package com.ssafy.achu.data.model.auth
 
-data class SignupResponse(
+data class SignUpResponse(
     val id: Int
 )
