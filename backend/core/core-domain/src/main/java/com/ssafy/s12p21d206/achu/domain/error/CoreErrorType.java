@@ -9,7 +9,12 @@ public enum CoreErrorType {
       CoreErrorKind.CLIENT_ERROR,
       CoreErrorCode.E1002,
       "최대 15명의 아기까지만 등록할 수 있습니다.",
-      CoreErrorLevel.WARN);
+      CoreErrorLevel.WARN),
+
+  CANNOT_ACCESS_GOODS(
+      CoreErrorKind.CLIENT_ERROR, CoreErrorCode.E1003, "해당 물건에 접근 권한이 없습니다.", CoreErrorLevel.INFO),
+  GOODS_ALREADY_SOLD(
+      CoreErrorKind.CLIENT_ERROR, CoreErrorCode.E1004, "이미 판매 완료된 상품엔 상품입니다.", CoreErrorLevel.INFO);
 
   private final CoreErrorKind kind;
   private final CoreErrorCode code;
