@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.chat
+package com.ssafy.achu.ui.chat.chatlist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

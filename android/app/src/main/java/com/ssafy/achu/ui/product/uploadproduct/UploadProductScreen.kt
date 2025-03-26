@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.product
+package com.ssafy.achu.ui.product.uploadproduct
 
 import android.os.Build
 import androidx.annotation.RequiresApi

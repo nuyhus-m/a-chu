@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.findaccount
+package com.ssafy.achu.ui.auth.findaccount
 
 import android.os.Build
 import androidx.annotation.RequiresApi

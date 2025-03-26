@@ -20,8 +20,8 @@ import com.ssafy.achu.core.navigation.MyPage.MY_PRODUCT_DETAIL
 import com.ssafy.achu.core.navigation.MyPage.MY_RECOMMEND_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_TRADE_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_UPLOAD_PRODUCT
-import com.ssafy.achu.ui.chat.ChatListScreen
-import com.ssafy.achu.ui.chat.ChatScreen
+import com.ssafy.achu.ui.chat.chatlist.ChatListScreen
+import com.ssafy.achu.ui.chat.chatdetail.ChatScreen
 import com.ssafy.achu.ui.home.HomeScreen
 import com.ssafy.achu.ui.memory.MemoryDetailScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
@@ -33,9 +33,9 @@ import com.ssafy.achu.ui.mypage.RecommendItemScreen
 import com.ssafy.achu.ui.mypage.TradeListScreen
 import com.ssafy.achu.ui.mypage.UserInfoScreen
 import com.ssafy.achu.ui.product.ProductDetailScreen
-import com.ssafy.achu.ui.product.ProductListScreen
-import com.ssafy.achu.ui.product.ProductListViewModel
-import com.ssafy.achu.ui.product.UploadProductScreen
+import com.ssafy.achu.ui.product.productlist.ProductListScreen
+import com.ssafy.achu.ui.product.productlist.ProductListViewModel
+import com.ssafy.achu.ui.product.uploadproduct.UploadProductScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

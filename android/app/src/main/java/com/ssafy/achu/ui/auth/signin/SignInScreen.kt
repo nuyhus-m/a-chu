@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.signin
+package com.ssafy.achu.ui.auth.signin
 
 import android.os.Build
 import androidx.annotation.RequiresApi

@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.product
+package com.ssafy.achu.ui.product.productlist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

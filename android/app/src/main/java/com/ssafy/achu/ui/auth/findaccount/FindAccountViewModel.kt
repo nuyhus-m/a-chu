@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.findaccount
+package com.ssafy.achu.ui.auth.findaccount
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

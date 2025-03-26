@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.signin
+package com.ssafy.achu.ui.auth.signin
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
