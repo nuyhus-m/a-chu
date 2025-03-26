@@ -358,14 +358,14 @@ class GoodsControllerTest extends RestDocsTest {
   void modifyGoodsImages() {
     given()
         .contentType(MediaType.MULTIPART_FORM_DATA)
-        .multiPart("goodsImages", "modify-test.jpg", new byte[0], "image/jpeg")
+        .multiPart("Images", "modify-test.jpg", new byte[0], "image/jpeg")
         .patch("/goods/{goodsId}/images", 1L)
         .then()
         .status(HttpStatus.OK)
         .apply(document(
             "modify-goods-images",
             pathParameters(parameterWithName("goodsId").description("이미지 수정할 물건 id")),
-            requestParts(partWithName("goodsImages").description("수정할 물건 이미지 파일들 (최소 1장 ~ 최대 5장)")),
+            requestParts(partWithName("Images").description("수정할 물건 이미지 파일들 (최소 1장 ~ 최대 5장)")),
             responseFields(fieldWithPath("result")
                 .type(JsonFieldType.STRING)
                 .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
@@ -375,7 +375,7 @@ class GoodsControllerTest extends RestDocsTest {
   void modifyGoods() {
     given()
         .contentType(ContentType.JSON)
-        .body(new ModifyGoodsRequest("수정된 제목", "수정된 설명", 2000L, "장난감", 2L))
+        .body(new ModifyGoodsRequest("수정된 제목", "수정된 설명", 2000L, 1L, 2L))
         .put("/goods/{goodsId}", 1L)
         .then()
         .status(HttpStatus.OK)
@@ -386,10 +386,12 @@ class GoodsControllerTest extends RestDocsTest {
                 fieldWithPath("title").type(JsonFieldType.STRING).description("수정할 물건 제목"),
                 fieldWithPath("description").type(JsonFieldType.STRING).description("수정할 물건 설명"),
                 fieldWithPath("price").type(JsonFieldType.NUMBER).description("수정할 물건 가격"),
-                fieldWithPath("categoryName")
-                    .type(JsonFieldType.STRING)
-                    .description("수정할 물건 카테고리 이름"),
-                fieldWithPath("id").type(JsonFieldType.NUMBER).description("수정할 물건 주인(아기)의 id")),
+                fieldWithPath("categoryId")
+                    .type(JsonFieldType.NUMBER)
+                    .description("수정할 물건 카테고리 id"),
+                fieldWithPath("babyId")
+                    .type(JsonFieldType.NUMBER)
+                    .description("수정할 물건 주인(아기)의 id")),
             responseFields(fieldWithPath("result")
                 .type(JsonFieldType.STRING)
                 .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
