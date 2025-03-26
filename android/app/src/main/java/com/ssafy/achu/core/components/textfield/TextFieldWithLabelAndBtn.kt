@@ -1,4 +1,4 @@
-package com.ssafy.achu.core.components
+package com.ssafy.achu.core.components.textfield
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +11,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.ssafy.achu.core.components.LabelWithErrorMsg
+import com.ssafy.achu.core.components.PointBlueFlexibleBtn
 import com.ssafy.achu.core.theme.PointBlue
 
 @Composable

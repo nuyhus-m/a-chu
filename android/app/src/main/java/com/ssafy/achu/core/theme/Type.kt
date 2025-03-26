@@ -27,6 +27,11 @@ internal val Typography = MyTypography(
         fontSize = 24.sp,
     ),
 
+    semiBold24 = TextStyle(
+        fontFamily = pretandard,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 24.sp,
+    ),
     semiBold20 = TextStyle(
         fontFamily = pretandard,
         fontWeight = FontWeight.SemiBold,
@@ -147,6 +152,7 @@ internal val Typography = MyTypography(
 @Immutable
 data class MyTypography(
     val bold24: TextStyle,
+    val semiBold24: TextStyle,
     val semiBold20: TextStyle,
     val semiBold20White: TextStyle,
     val semiBold18: TextStyle,
@@ -171,6 +177,7 @@ data class MyTypography(
 val LocalTypography = staticCompositionLocalOf {
     MyTypography(
         bold24 = TextStyle.Default,
+        semiBold24 = TextStyle.Default,
         semiBold20 = TextStyle.Default,
         semiBold20White = TextStyle.Default,
         semiBold18 = TextStyle.Default,

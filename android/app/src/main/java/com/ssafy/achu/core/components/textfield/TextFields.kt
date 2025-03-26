@@ -1,4 +1,4 @@
-package com.ssafy.achu.core.components
+package com.ssafy.achu.core.components.textfield
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height

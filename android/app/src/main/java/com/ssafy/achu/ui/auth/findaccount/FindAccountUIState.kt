@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.findaccount
+package com.ssafy.achu.ui.auth.findaccount
 
 data class FindAccountUIState(
     val phoneNumber: String = "",

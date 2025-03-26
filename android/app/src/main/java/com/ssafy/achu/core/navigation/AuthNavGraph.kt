@@ -11,18 +11,12 @@ import androidx.navigation.compose.composable
 import com.ssafy.achu.core.navigation.Routes.FIND_ACCOUNT
 import com.ssafy.achu.core.navigation.Routes.SIGN_IN
 import com.ssafy.achu.core.navigation.Routes.SIGN_UP
-import com.ssafy.achu.ui.findaccount.FindAccountScreen
-import com.ssafy.achu.ui.findaccount.FindAccountViewModel
-import com.ssafy.achu.ui.signin.SignInScreen
-import com.ssafy.achu.ui.signin.SignInViewModel
-import com.ssafy.achu.ui.signup.SignUpScreen
-import com.ssafy.achu.ui.signup.SignUpViewModel
-
-object Routes {
-    const val SIGN_IN = "signin"
-    const val SIGN_UP = "signup"
-    const val FIND_ACCOUNT = "findaccount"
-}
+import com.ssafy.achu.ui.auth.findaccount.FindAccountScreen
+import com.ssafy.achu.ui.auth.findaccount.FindAccountViewModel
+import com.ssafy.achu.ui.auth.signin.SignInScreen
+import com.ssafy.achu.ui.auth.signin.SignInViewModel
+import com.ssafy.achu.ui.auth.signup.SignUpScreen
+import com.ssafy.achu.ui.auth.signup.SignUpViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -56,4 +50,10 @@ fun AuthNavGraph(
             )
         }
     }
+}
+
+object Routes {
+    const val SIGN_IN = "signin"
+    const val SIGN_UP = "signup"
+    const val FIND_ACCOUNT = "findaccount"
 }

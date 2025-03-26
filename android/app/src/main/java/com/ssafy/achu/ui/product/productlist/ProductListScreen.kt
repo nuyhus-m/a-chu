@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.product
+package com.ssafy.achu.ui.product.productlist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,8 +39,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.Divider
@@ -56,7 +58,9 @@ import com.ssafy.achu.data.model.Product
 @Composable
 fun ProductListScreen(
     modifier: Modifier = Modifier,
-    viewModel: ProductListViewModel = ProductListViewModel()
+    viewModel: ProductListViewModel = viewModel(),
+    onNavigateToUploadProduct: () -> Unit = {},
+    onNavigateToProductDetail: () -> Unit = {}
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -67,12 +71,11 @@ fun ProductListScreen(
             .background(color = White)
     ) {
         Column {
-
             Spacer(modifier = Modifier.height(24.dp))
 
             // 검색창
             Box(
-                modifier = modifier
+                modifier = Modifier
                     .padding(horizontal = 24.dp)
             ) {
                 SearchBar(
@@ -123,7 +126,7 @@ fun ProductListScreen(
                     likedByUser = false,
                     likedUsersCount = 18,
                     price = 5000,
-                    title = "미피 인형"
+                    title = "미피 인형 어쩌고 저쩌고 저쩌고 아무말 대잔치 두줄 불가"
                 ),
                 Product(
                     chatCount = 11,
@@ -186,12 +189,12 @@ fun ProductListScreen(
                     title = "미피 인형"
                 ),
             )
-            ProductList(items = products)
+            ProductList(items = products, onNavigateToProductDetail = onNavigateToProductDetail)
         }
 
         // FAB 버튼
         FloatingActionButton(
-            onClick = { /* 클릭 이벤트 처리 */ },
+            onClick = onNavigateToUploadProduct,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp),
@@ -200,7 +203,7 @@ fun ProductListScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
-                contentDescription = "Add"
+                contentDescription = stringResource(R.string.move_to_upload_screen)
             )
         }
     }
@@ -264,32 +267,20 @@ fun CategoryButtonList(
 }
 
 @Composable
-fun ProductList(items: List<Product>) {
+fun ProductList(items: List<Product>, onNavigateToProductDetail: () -> Unit) {
     LazyColumn {
         items(items) { item ->
-            Product(
-                title = item.title,
-                price = item.price.toString(),
-                chatCount = item.chatCount,
-                date = "3일 전",
-                likedUsersCount = item.likedUsersCount,
-                likedByUser = item.likedByUser,
-                imgUrl = item.imgUrl,
-                onItemClick = {}
+            ProductItem(
+                product = item,
+                onItemClick = onNavigateToProductDetail
             )
         }
     }
 }
 
 @Composable
-fun Product(
-    title: String,
-    price: String,
-    chatCount: Int,
-    date: String,
-    likedUsersCount: Int,
-    likedByUser: Boolean,
-    imgUrl: String,
+fun ProductItem(
+    product: Product,
     onItemClick: () -> Unit
 ) {
     Column(
@@ -305,34 +296,41 @@ fun Product(
                 .height(IntrinsicSize.Min)
         ) {
             AsyncImage(
-                model = imgUrl,
+                model = product.imgUrl,
                 contentDescription = null,
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(0.4f)
                     .clip(RoundedCornerShape(16.dp))
                     .aspectRatio(1f),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                error = painterResource(R.drawable.img_miffy_doll)
             )
 
             Column(
                 modifier = Modifier
-                    .weight(1.3f)
+                    .weight(0.6f)
                     .padding(start = 16.dp)
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = title,
-                    style = AchuTheme.typography.regular20
+                    text = product.title,
+                    style = AchuTheme.typography.regular18,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = date,
-                    style = AchuTheme.typography.regular16.copy(color = FontGray)
+                    text = product.createdAt,
+                    style = AchuTheme.typography.regular16.copy(color = FontGray),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = price,
-                    style = AchuTheme.typography.semiBold20.copy(color = FontPink)
+                    text = "${product.price}원",
+                    style = AchuTheme.typography.semiBold18.copy(color = FontPink),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Row(
@@ -348,21 +346,21 @@ fun Product(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = chatCount.toString(),
+                        text = product.chatCount.toString(),
                         style = AchuTheme.typography.regular16.copy(color = FontGray)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         painter =
-                            if (likedByUser)
+                            if (product.likedByUser)
                                 painterResource(id = R.drawable.ic_favorite)
                             else painterResource(id = R.drawable.ic_favorite_line),
                         contentDescription = null,
-                        tint = if (likedByUser) FontPink else FontGray
+                        tint = if (product.likedByUser) FontPink else FontGray
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = likedUsersCount.toString(),
+                        text = product.likedUsersCount.toString(),
                         style = AchuTheme.typography.regular16.copy(color = FontGray)
                     )
                 }
@@ -386,14 +384,17 @@ fun ProductListScreenPreview() {
 @Composable
 fun ProductItemPreview() {
     AchuTheme {
-        Product(
-            title = "미피 인형",
-            price = "5,000원",
-            chatCount = 11,
-            date = "3일 전",
-            likedUsersCount = 18,
-            likedByUser = true,
-            imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+        ProductItem(
+            product = Product(
+                chatCount = 11,
+                createdAt = "3일 전",
+                id = 1,
+                imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                likedByUser = false,
+                likedUsersCount = 18,
+                price = 5000,
+                title = "미피 인형"
+            ),
             onItemClick = {}
         )
     }

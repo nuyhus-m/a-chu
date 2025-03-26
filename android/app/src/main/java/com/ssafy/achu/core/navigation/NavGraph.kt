@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,10 +17,12 @@ import com.ssafy.achu.core.navigation.MyPage.MY_INFO
 import com.ssafy.achu.core.navigation.MyPage.MY_LIKE_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_MEMORY_DETAIL
 import com.ssafy.achu.core.navigation.MyPage.MY_MEMORY_UPLOAD
+import com.ssafy.achu.core.navigation.MyPage.MY_PRODUCT_DETAIL
 import com.ssafy.achu.core.navigation.MyPage.MY_RECOMMEND_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_TRADE_LIST
-import com.ssafy.achu.ui.chat.ChatListScreen
-import com.ssafy.achu.ui.chat.ChatScreen
+import com.ssafy.achu.core.navigation.MyPage.MY_UPLOAD_PRODUCT
+import com.ssafy.achu.ui.chat.chatdetail.ChatScreen
+import com.ssafy.achu.ui.chat.chatlist.ChatListScreen
 import com.ssafy.achu.ui.memory.MemoryDetailScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
 import com.ssafy.achu.ui.memory.MemoryUploadScreen
@@ -29,7 +32,10 @@ import com.ssafy.achu.ui.mypage.LikeItemListScreen
 import com.ssafy.achu.ui.mypage.RecommendItemScreen
 import com.ssafy.achu.ui.mypage.TradeListScreen
 import com.ssafy.achu.ui.mypage.UserInfoScreen
-import com.ssafy.achu.ui.product.ProductListScreen
+import com.ssafy.achu.ui.product.ProductDetailScreen
+import com.ssafy.achu.ui.product.productlist.ProductListScreen
+import com.ssafy.achu.ui.product.productlist.ProductListViewModel
+import com.ssafy.achu.ui.product.uploadproduct.UploadProductScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -39,80 +45,101 @@ fun NavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = BottomNavScreen.Home.route,
-        modifier = modifier
+        startDestination = BottomNavScreen.Home.route
     ) {
+        // 바텀바 화면들
         composable(route = BottomNavScreen.Home.route) {
             HomeScreen(
-                onNavigateToLikeList = { navController.navigate(route = "likelist") },
-                onNavigateToRecommend = { navController.navigate(route = "recommend") },
-                onNavigateToBabyList = { navController.navigate(route = "babylist") },
-                onNavigateToProductList = { navController.navigate(route = "productlist") }
+                modifier = modifier,
+                onNavigateToLikeList = { navController.navigate(route = MY_LIKE_LIST) },
+                onNavigateToRecommend = { navController.navigate(route = MY_RECOMMEND_LIST) },
+                onNavigateToBabyList = { navController.navigate(route = MY_BABY_LIST) },
+                onNavigateToProductList = { navController.navigate(route = BottomNavScreen.ProductList.route) }
             )
         }
         composable(route = BottomNavScreen.ProductList.route) {
-            ProductListScreen()
+            val viewModel: ProductListViewModel = viewModel()
+            ProductListScreen(
+                modifier = modifier,
+                viewModel = viewModel,
+                onNavigateToUploadProduct = { navController.navigate(route = MY_UPLOAD_PRODUCT) },
+                onNavigateToProductDetail = { navController.navigate(route = MY_PRODUCT_DETAIL) }
+            )
         }
         composable(route = BottomNavScreen.MemoryList.route) {
-            MemoryListScreen { navController.navigate(route = "memorydetail") }
+            MemoryListScreen(
+                modifier = modifier,
+                onNavigateToMemoryDetail = { navController.navigate(route = MY_MEMORY_DETAIL) })
         }
         composable(route = BottomNavScreen.ChatList.route) {
             ChatListScreen(
-                onNavigateToChat = { navController.navigate(route = "chat") }
+                modifier = modifier,
+                onNavigateToChat = { navController.navigate(route = MY_CHAT) }
             )
         }
         composable(route = BottomNavScreen.MyPage.route) {
             MyPageScreen(
-                onNavigateToTradeList = { navController.navigate(route = "tradeList") },
-                onNavigateToLikeList = { navController.navigate(route = "likelist") },
-                onNavigateToRecommend = { navController.navigate(route = "recommend") },
-                onNavigateToBabyList = { navController.navigate(route = "babylist") },
-                onNavigateToUserInfo = { navController.navigate(route = "info") })
+                modifier = modifier,
+                onNavigateToTradeList = { navController.navigate(route = MY_TRADE_LIST) },
+                onNavigateToLikeList = { navController.navigate(route = MY_LIKE_LIST) },
+                onNavigateToRecommend = { navController.navigate(route = MY_RECOMMEND_LIST) },
+                onNavigateToBabyList = { navController.navigate(route = MY_BABY_LIST) },
+                onNavigateToUserInfo = { navController.navigate(route = MY_INFO) })
         }
 
+        // 마이페이지 화면들
         composable(MY_TRADE_LIST) {
             TradeListScreen()
         }
-
         composable(MY_LIKE_LIST) {
             LikeItemListScreen()
         }
-
         composable(MY_RECOMMEND_LIST) {
             RecommendItemScreen()
         }
-
         composable(MY_INFO) {
             UserInfoScreen()
         }
 
+        // 마이페이지 - 아기정보관리 화면들
         composable(MY_BABY_LIST) {
             BabyListScreen(
-                onNavigateToBabyDetail = { navController.navigate(route = "babydetail") }
+                onNavigateToBabyDetail = { navController.navigate(route = MY_BABY_DETAIL) }
             )
         }
-
         composable(MY_BABY_DETAIL) {
             BabyDetailScreen()
         }
 
-
+        // 추억 관련 화면들
         composable(MY_MEMORY_UPLOAD) {
             MemoryUploadScreen()
         }
-
         composable(MY_MEMORY_DETAIL) {
             MemoryDetailScreen(
-                onNavigateToMemoryUpload = { navController.navigate(route = "memoryupload") }
+                onNavigateToMemoryUpload = { navController.navigate(route = MY_MEMORY_UPLOAD) }
             )
         }
 
+        // 중고 거래 관련 화면들
+        composable(MY_UPLOAD_PRODUCT) {
+            UploadProductScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(MY_PRODUCT_DETAIL) {
+            ProductDetailScreen()
+        }
+
+        // 채팅 관련 화면들
         composable(MY_CHAT) {
-            ChatScreen()
+            ChatScreen(
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 }
-
 
 object MyPage {
     const val MY_TRADE_LIST = "tradelist"
@@ -123,6 +150,9 @@ object MyPage {
     const val MY_BABY_DETAIL = "babydetail"
     const val MY_MEMORY_DETAIL = "memorydetail"
     const val MY_MEMORY_UPLOAD = "memoryupload"
+
+    const val MY_PRODUCT_DETAIL = "productdetail"
+    const val MY_UPLOAD_PRODUCT = "uploadproduct"
     const val MY_CHAT = "chat"
 }
 

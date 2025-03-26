@@ -20,7 +20,6 @@ fun AchuApp() {
             BottomNavBar(navController)
         },
     ) { innerPadding ->
-        NavGraph(navController, Modifier.padding(innerPadding))
-
+        NavGraph(navController, modifier = Modifier.padding(innerPadding))
     }
 }

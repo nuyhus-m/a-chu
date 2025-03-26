@@ -9,10 +9,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -59,8 +64,11 @@ fun BottomNavBar(navController: NavHostController) {
             color = White,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp)
+                .height(with(LocalDensity.current) {
+                    WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 80.dp
+                })
                 .shadow(elevation = 8.dp, shape = RectangleShape)
+                .windowInsetsPadding(WindowInsets.navigationBars)
         ) {
             Row(
                 modifier = Modifier.fillMaxSize(),

@@ -64,6 +64,7 @@
     <string name="enter_price">가격을 입력해주세요.</string>
     <string name="won">원</string>
     <string name="enter_description">올릴 게시글 내용을 작성해 주세요.\n신뢰할 수 있는 거래를 위해 자세히 적어주세요.</string>
+    <string name="move_to_upload_screen">물건 등록 화면으로 이동</string>
 
     <!--채팅-->
     <string name="product_img">물건 이미지</string>
