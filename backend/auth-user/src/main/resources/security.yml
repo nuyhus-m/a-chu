@@ -3,7 +3,7 @@ achu:
     enabled: true
   jwt:
     properties:
-      secret: ${JWT_SECRET}
+      secret: ${JWT_SECRET:defaultJwtSecret}
       access-token:
         expiration-seconds: 1800
       refresh-token:
