@@ -34,6 +34,13 @@ public class AuthUserController {
     return AuthApiResponse.success(response);
   }
 
+  @PatchMapping("/users/password")
+  public AuthApiResponse<Void> modifyPassword(
+      AuthApiUser apiUser, @RequestBody @Validated ModifyPasswordRequest request) {
+    authUserService.modifyPassword(apiUser.id(), request.oldPassword(), request.newPassword());
+    return AuthApiResponse.success();
+  }
+
   @GetMapping("/users/{userId}")
   public AuthApiResponse<AuthUserResponse> findUser(@PathVariable Long userId) {
     AuthUserResponse response = new AuthUserResponse(userId, "닉네임", "프로필이미지");
