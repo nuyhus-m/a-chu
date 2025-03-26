@@ -19,4 +19,12 @@ public interface GoodsRepository {
 
   GoodsDetail save(User user, NewGoods newGoods);
 
+  GoodsDetail modifyGoods(Long id, ModifyGoods modifyGoods);
+
+  boolean existsByIdAndEntityStatus(Long id);
+
+  boolean existsByIdAndUserIdAndEntityStatus(Long id, Long userId);
+
+  boolean existByIdAndTradeStatus(Long id);
+
 }

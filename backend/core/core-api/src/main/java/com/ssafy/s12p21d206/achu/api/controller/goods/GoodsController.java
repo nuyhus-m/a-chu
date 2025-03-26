@@ -37,6 +37,36 @@ public class GoodsController {
     this.userService = userService;
   }
 
+  @PostMapping("/goods")
+  public ApiResponse<DefaultIdResponse> appendGoods(
+      ApiUser apiUser,
+      @RequestPart("request") AppendGoodsRequest request,
+      @RequestPart("Images") MultipartFile[] files) {
+    List<String> imgUrls = List.of("goods1-img-url1.jpg", "goods1-img-url2.jpg");
+    NewGoods newGoods = request.toNewGoods(imgUrls);
+    Long id = goodsService.append(apiUser.toUser(), newGoods);
+    return ApiResponse.success(new DefaultIdResponse(id));
+  }
+
+  @PatchMapping("/goods/{goodsId}/images")
+  public ApiResponse<Void> modifyGoodsImages(
+      Long userId, @PathVariable Long goodsId, @RequestParam("Images") MultipartFile[] files) {
+    return ApiResponse.success();
+  }
+
+  @PutMapping("/goods/{goodsId}")
+  public ApiResponse<Void> modifyGoods(
+      ApiUser apiUser, @PathVariable Long goodsId, @RequestBody ModifyGoodsRequest request) {
+    ModifyGoods modifyGoods = ModifyGoodsRequest.toModifyGoods(request);
+    goodsService.modifyGoods(apiUser.toUser(), goodsId, modifyGoods);
+    return ApiResponse.success();
+  }
+
+  @DeleteMapping("/goods/{goodsId}")
+  public ApiResponse<Void> deleteGoods(Long userId, @PathVariable Long goodsId) {
+    return ApiResponse.success();
+  }
+
   @GetMapping("/categories")
   public ApiResponse<List<CategoryResponse>> findCategories() {
     List<Category> categories = categoryService.findCategories();
@@ -122,34 +152,6 @@ public class GoodsController {
     GoodsDetailResponse response =
         GoodsDetailResponse.of(goodsDetail, likeStatus, categoryResponse, sellerResponse);
     return ApiResponse.success(response);
-  }
-
-  @PostMapping("/goods")
-  public ApiResponse<DefaultIdResponse> appendGoods(
-      ApiUser apiUser,
-      @RequestPart("request") AppendGoodsRequest request,
-      @RequestPart("Images") MultipartFile[] files) {
-    List<String> imgUrls = List.of("goods1-img-url1.jpg", "goods1-img-url2.jpg");
-    NewGoods newGoods = request.toNewGoods(imgUrls);
-    Long id = goodsService.append(apiUser.toUser(), newGoods);
-    return ApiResponse.success(new DefaultIdResponse(id));
-  }
-
-  @PatchMapping("/goods/{goodsId}/images")
-  public ApiResponse<Void> modifyGoodsImages(
-      Long userId, @PathVariable Long goodsId, @RequestParam("goodsImages") MultipartFile[] files) {
-    return ApiResponse.success();
-  }
-
-  @PutMapping("/goods/{goodsId}")
-  public ApiResponse<Void> modifyGoods(
-      Long userId, @PathVariable Long goodsId, @RequestBody ModifyGoodsRequest request) {
-    return ApiResponse.success();
-  }
-
-  @DeleteMapping("/goods/{goodsId}")
-  public ApiResponse<Void> deleteGoods(Long userId, @PathVariable Long goodsId) {
-    return ApiResponse.success();
   }
 
   @GetMapping("/trade-history")
