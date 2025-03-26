@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -81,4 +83,8 @@ dependencies {
     implementation(libs.converter.gson)
     // https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor
     implementation(libs.logging.interceptor)
+
+    //이미지 처리
+    implementation (libs.androidx.activity.compose.v160)
+
 }

@@ -1,23 +1,37 @@
 package com.ssafy.achu.ui.memory
 
 import android.R.attr.textStyle
+import android.net.Uri
 import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -28,15 +42,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.modifier.modifierLocalOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -44,6 +65,7 @@ import com.ssafy.achu.R
 import com.ssafy.achu.core.components.CenterTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
@@ -53,13 +75,26 @@ import com.ssafy.achu.core.theme.White
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MemoryUploadScreen() {
-    val images = emptyList<Int>()
     val pagerState = rememberPagerState()
     var titleText by remember { mutableStateOf("") }
     var contentText by remember { mutableStateOf("") }
     val maxTitleLength = 15
     val maxContentLength = 100
+    var images by remember { mutableStateOf<List<Uri>>(emptyList()) }
 
+    val context = LocalContext.current
+
+    // 갤러리에서 여러 이미지를 선택하는 ActivityResultLauncher
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetMultipleContents(),
+        onResult = { uris ->
+            if (uris.size + images.size <= 3) { // 최대 3장 선택
+                images = images + uris
+            } else {
+                Toast.makeText(context, "최대 3장까지만 선택 가능합니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    )
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -80,28 +115,91 @@ fun MemoryUploadScreen() {
                     state = pagerState,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(400.dp)
+                        .height(350.dp)
+
                 ) { page ->
-                    Image(
-                        painter = painterResource(id = images[page]),
+                    AsyncImage(
+                        model = images[page], // Uri를 모델로 사용
                         contentDescription = "Memory Image",
                         modifier = Modifier.fillMaxSize(),
                         alignment = Alignment.Center,
                         contentScale = ContentScale.Crop
                     )
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        IconButton(
+                            onClick = {
+                                images = images.filterIndexed { index, _ -> index != page }
+
+                            },
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .background(PointPink, RoundedCornerShape(8.dp))
+                                .size(28.dp)
+
+
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "삭제하기",
+                                tint = Color.White,
+                                modifier = Modifier.padding(4.dp)
+                            )
+                        }
+                    }
+
+                    // "사진 추가하기" 텍스트를 우측 하단에 배치하려면 Box 사용
+                    if (images.size < 3 && images.isNotEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize() // 화면 전체를 차지하게 함
+                                .padding(16.dp)
+
+                        ) {
+
+
+                            Text(
+                                text = "사진 추가하기",
+                                style = AchuTheme.typography.semiBold14PointBlue.copy(
+                                    shadow = Shadow(
+                                        color = Color.Black.copy(alpha = 0.5f),
+                                        offset = Offset(2f, 2f),
+                                        blurRadius = 4f
+                                    )
+                                ),
+                                color = White,
+                                modifier = Modifier
+                                    .clickable {
+                                        launcher.launch("image/*") // 이미지 선택
+                                    }
+
+                                    .align(Alignment.BottomEnd) // Box 내에서 우측 하단에 배치
+                            )
+
+
+                        }
+                    }
                 }
+
 
 
                 PageIndicator(
                     totalPages = images.size,
-                    currentPage = pagerState.currentPage
+                    currentPage = pagerState.currentPage,
                 )
+
+
             } else {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(350.dp)
-                        .background(Color.LightGray),
+                        .background(Color.LightGray)
+                        .clickable {
+                            launcher.launch("image/*") // 이 부분을 추가
+                        },
                 ) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -135,6 +233,8 @@ fun MemoryUploadScreen() {
                         )
                     }
                 }
+
+                
             }
 
             Column(
@@ -144,6 +244,8 @@ fun MemoryUploadScreen() {
             ) {
 
                 Spacer(modifier = Modifier.height(24.dp))
+
+
                 OutlinedTextField(
                     value = titleText,
                     onValueChange = { if (it.length <= maxTitleLength) titleText = it },
@@ -199,7 +301,8 @@ fun MemoryUploadScreen() {
                     style = AchuTheme.typography.regular14,
                     textAlign = TextAlign.End,
                     modifier = Modifier
-                        .fillMaxWidth().padding(top =  4.dp, end = 4.dp)
+                        .fillMaxWidth()
+                        .padding(top = 4.dp, end = 4.dp)
                         .align(alignment = Alignment.End)
 
                 )
@@ -229,3 +332,4 @@ fun MemoryUploadScreenPreview() {
         MemoryUploadScreen()
     }
 }
+
