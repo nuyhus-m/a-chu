@@ -264,7 +264,6 @@ class GoodsControllerTest extends RestDocsTest {
             1L,
             1L,
             1L));
-    when(goodsService.findCategoryIdByGoodsId(anyLong())).thenReturn(new CategoryId(1L));
     when(goodsService.findUserIdByGoodsId(anyLong())).thenReturn(new User(1L));
     when(categoryService.findCategoryInfo(anyLong())).thenReturn(new Category(1L, "카테고리명"));
 

@@ -81,7 +81,7 @@ public class GoodsCoreRepository implements GoodsRepository {
   @Override
   public List<Goods> findGoods(User user, Long offset, Long limit, SortType sort) {
     Pageable pageable = PageRequest.of(offset.intValue(), limit.intValue(), convertSort(sort));
-    List<GoodsEntity> goodsEntities = goodsJpaRepository.findAllByTradeStatusAndEntityStatus(
+    List<GoodsEntity> goodsEntities = goodsJpaRepository.findByTradeStatusAndEntityStatus(
         pageable, TradeStatus.SELLING, EntityStatus.ACTIVE);
     return goodsEntities.stream().map(GoodsEntity::toGoods).toList();
   }
@@ -91,7 +91,7 @@ public class GoodsCoreRepository implements GoodsRepository {
       User user, Long categoryId, Long offset, Long limit, SortType sort) {
     Pageable pageable = PageRequest.of(offset.intValue(), limit.intValue(), convertSort(sort));
     List<GoodsEntity> goodsEntities =
-        goodsJpaRepository.findAllByCategoryIdAndTradeStatusAndEntityStatus(
+        goodsJpaRepository.findByCategoryIdAndTradeStatusAndEntityStatus(
             categoryId, pageable, TradeStatus.SELLING, EntityStatus.ACTIVE);
     return goodsEntities.stream().map(GoodsEntity::toGoods).toList();
   }
@@ -106,6 +106,27 @@ public class GoodsCoreRepository implements GoodsRepository {
         .findByIdAndEntityStatus(id, EntityStatus.ACTIVE)
         .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
     return goodsEntity.toGoodsDetail();
+  }
+
+  @Override
+  public List<Goods> searchGoods(
+      User user, String keyword, Long offset, Long limit, SortType sort) {
+    Pageable pageable = PageRequest.of(offset.intValue(), limit.intValue(), convertSort(sort));
+    List<GoodsEntity> goodsEntities =
+        goodsJpaRepository.findByTitleContainingAndTradeStatusAndEntityStatus(
+            keyword, pageable, TradeStatus.SELLING, EntityStatus.ACTIVE);
+    return goodsEntities.stream().map(GoodsEntity::toGoods).toList();
+  }
+
+  @Override
+  public List<Goods> searchCategoryGoods(
+      User user, Long categoryId, String keyword, Long offset, Long limit, SortType sort) {
+    Pageable pageable = PageRequest.of(offset.intValue(), limit.intValue(), convertSort(sort));
+    List<GoodsEntity> goodsEntities =
+        goodsJpaRepository.findByCategoryIdAndTitleContainingAndTradeStatusAndEntityStatus(
+            categoryId, keyword, pageable, TradeStatus.SELLING, EntityStatus.ACTIVE);
+
+    return goodsEntities.stream().map(GoodsEntity::toGoods).toList();
   }
 
   @Override

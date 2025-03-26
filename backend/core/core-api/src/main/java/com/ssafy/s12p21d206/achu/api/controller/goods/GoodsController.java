@@ -7,7 +7,6 @@ import com.ssafy.s12p21d206.achu.domain.*;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import com.ssafy.s12p21d206.achu.domain.support.TradeStatus;
 import com.ssafy.s12p21d206.achu.domain.support.TradeType;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import org.springframework.web.bind.annotation.*;
@@ -127,31 +126,50 @@ public class GoodsController {
 
   @GetMapping("/goods/search")
   public ApiResponse<List<GoodsResponse>> searchGoods(
-      Long userId,
+      ApiUser apiUser,
       @RequestParam String keyword,
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
+<<<<<<< HEAD
     LocalDateTime createdAt = LocalDateTime.of(2025, 3, 12, 23, 53);
     List<GoodsResponse> response = List.of(
         new GoodsResponse(5L, "유아 유모차", "goods5_img_url_1", 100000L, createdAt, 1L, 3, true),
         new GoodsResponse(7L, "유아식기", "goods7_img_url_1", 1500000L, createdAt, 0L, 10, false));
     return ApiResponse.success(response);
+=======
+    List<Goods> goods = goodsService.searchGoods(apiUser.toUser(), keyword, offset, limit, sort);
+    List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
+    List<LikeStatus> likeStatuses = likeService.findLikeStatusList(apiUser.toUser(), goodsIds);
+    List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
+    List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
+    return ApiResponse.success(responses);
+>>>>>>> cf5db19 (feat: 물품 검색, 카테고리별 물품 검색 API 구현)
   }
 
   @GetMapping("/categories/{categoryId}/goods/search")
   public ApiResponse<List<GoodsResponse>> searchCategoryGoods(
-      Long userId,
+      ApiUser apiUser,
       @PathVariable Long categoryId,
       @RequestParam String keyword,
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
+<<<<<<< HEAD
     LocalDateTime createdAt = LocalDateTime.of(2025, 3, 13, 13, 19);
     List<GoodsResponse> response = List.of(
         new GoodsResponse(11L, "튤립 장난감", "goods11_img_url_1", 3000L, createdAt, 1L, 3, false),
         new GoodsResponse(15L, "장난감 기차", "goods15_img_url_1", 10000L, createdAt, 4L, 3, true));
     return ApiResponse.success(response);
+=======
+    List<Goods> goods = goodsService.searchCategoryGoods(
+        apiUser.toUser(), categoryId, keyword, offset, limit, sort);
+    List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
+    List<LikeStatus> likeStatuses = likeService.findLikeStatusList(apiUser.toUser(), goodsIds);
+    List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
+    List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
+    return ApiResponse.success(responses);
+>>>>>>> cf5db19 (feat: 물품 검색, 카테고리별 물품 검색 API 구현)
   }
 
   @GetMapping("/trade-history")

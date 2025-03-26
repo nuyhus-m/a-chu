@@ -8,8 +8,10 @@ public interface GoodsRepository {
 
   List<Goods> findCategoryGoods(User user, Long categoryId, Long offset, Long limit, SortType sort);
 
+  List<Goods> searchGoods(User user, String keyword, Long offset, Long limit, SortType sort);
 
-  boolean existsById(Long goodsId);
+  List<Goods> searchCategoryGoods(
+      User user, Long categoryId, String keyword, Long offset, Long limit, SortType sort);
 
   GoodsDetail findGoodsDetail(Long id);
 

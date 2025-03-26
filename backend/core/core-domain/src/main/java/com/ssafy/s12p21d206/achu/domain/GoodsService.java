@@ -12,18 +12,21 @@ public class GoodsService {
   private final GoodsModifier goodsModifier;
   private final GoodsValidator goodsValidator;
   private final GoodsDeleter goodsDeleter;
+  private final GoodsSearch goodsSearch;
 
   public GoodsService(
       GoodsReader goodsReader,
       GoodsAppender goodsAppender,
       GoodsModifier goodsModifier,
       GoodsValidator goodsValidator,
-      GoodsDeleter goodsDeleter) {
+      GoodsDeleter goodsDeleter,
+      GoodsSearch goodsSearch) {
     this.goodsReader = goodsReader;
     this.goodsAppender = goodsAppender;
     this.goodsModifier = goodsModifier;
     this.goodsValidator = goodsValidator;
     this.goodsDeleter = goodsDeleter;
+    this.goodsSearch = goodsSearch;
   }
 
   public Long append(User user, NewGoods newGoods) {
@@ -63,5 +66,15 @@ public class GoodsService {
 
   public User findUserIdByGoodsId(Long id) {
     return goodsReader.readUserIdByGoodsId(id);
+  }
+
+  public List<Goods> searchGoods(
+      User user, String keyword, Long offset, Long limit, SortType sort) {
+    return goodsSearch.searchGoods(user, keyword, offset, limit, sort);
+  }
+
+  public List<Goods> searchCategoryGoods(
+      User user, Long categoryId, String keyword, Long offset, Long limit, SortType sort) {
+    return goodsSearch.searchCategoryGoods(user, categoryId, keyword, offset, limit, sort);
   }
 }

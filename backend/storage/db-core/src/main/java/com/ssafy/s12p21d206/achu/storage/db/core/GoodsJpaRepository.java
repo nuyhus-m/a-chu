@@ -7,10 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GoodsJpaRepository extends JpaRepository<GoodsEntity, Long> {
-  List<GoodsEntity> findAllByTradeStatusAndEntityStatus(
+  List<GoodsEntity> findByTradeStatusAndEntityStatus(
       Pageable pageable, TradeStatus tradeStatus, EntityStatus entityStatus);
 
-  List<GoodsEntity> findAllByCategoryIdAndTradeStatusAndEntityStatus(
+  List<GoodsEntity> findByCategoryIdAndTradeStatusAndEntityStatus(
       Long categoryId, Pageable pageable, TradeStatus tradeStatus, EntityStatus entityStatus);
 
 
@@ -23,4 +23,14 @@ public interface GoodsJpaRepository extends JpaRepository<GoodsEntity, Long> {
   Boolean existsByIdAndUserIdAndEntityStatus(Long id, Long userId, EntityStatus entityStatus);
 
   Boolean existsByIdAndTradeStatus(Long id, TradeStatus tradeStatus);
+
+  List<GoodsEntity> findByTitleContainingAndTradeStatusAndEntityStatus(
+      String keyword, Pageable pageable, TradeStatus tradeStatus, EntityStatus entityStatus);
+
+  List<GoodsEntity> findByCategoryIdAndTitleContainingAndTradeStatusAndEntityStatus(
+      Long categoryId,
+      String keyword,
+      Pageable pageable,
+      TradeStatus tradeStatus,
+      EntityStatus entityStatus);
 }
