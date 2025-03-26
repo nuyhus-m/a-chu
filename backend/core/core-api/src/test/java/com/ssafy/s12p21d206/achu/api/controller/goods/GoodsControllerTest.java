@@ -399,6 +399,7 @@ class GoodsControllerTest extends RestDocsTest {
 
   @Test
   void deleteGoods() {
+    when(goodsService.delete(any(), any())).thenReturn(1L);
     given()
         .contentType(ContentType.JSON)
         .delete("/goods/{goodsId}", 1L)
@@ -407,9 +408,11 @@ class GoodsControllerTest extends RestDocsTest {
         .apply(document(
             "delete-goods",
             pathParameters(parameterWithName("goodsId").description("삭제하고자 하는 물품 id")),
-            responseFields(fieldWithPath("result")
-                .type(JsonFieldType.STRING)
-                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
+            responseFields(
+                fieldWithPath("result")
+                    .type(JsonFieldType.STRING)
+                    .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
+                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("삭제된 물품 id"))));
   }
 
   @Test
