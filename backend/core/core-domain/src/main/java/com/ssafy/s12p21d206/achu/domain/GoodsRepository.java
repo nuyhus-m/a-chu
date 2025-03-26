@@ -15,8 +15,6 @@ public interface GoodsRepository {
 
   GoodsDetail findGoodsDetail(Long id);
 
-  CategoryId findCategoryIdByGoodsId(Long id);
-
   User findUserIdByGoodsId(Long id);
 
   GoodsDetail save(User user, NewGoods newGoods);

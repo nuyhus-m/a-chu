@@ -26,10 +26,6 @@ public class GoodsReader {
     return goodsRepository.findGoodsDetail(id);
   }
 
-  public CategoryId readCategoryIdByGoodsId(Long id) {
-    return goodsRepository.findCategoryIdByGoodsId(id);
-  }
-
   public User readUserIdByGoodsId(Long id) {
     return goodsRepository.findUserIdByGoodsId(id);
   }

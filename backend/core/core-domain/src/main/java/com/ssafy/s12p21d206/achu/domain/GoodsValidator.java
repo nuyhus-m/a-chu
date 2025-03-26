@@ -25,7 +25,7 @@ public class GoodsValidator {
     }
   }
 
-  public void validateSelling(Long id) {
+  public void validateIsSelling(Long id) {
     if (!goodsRepository.existByIdAndTradeStatus(id)) {
       throw new CoreException(CoreErrorType.GOODS_ALREADY_SOLD);
     }

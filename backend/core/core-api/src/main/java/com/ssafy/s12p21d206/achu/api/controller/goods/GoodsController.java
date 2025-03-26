@@ -23,17 +23,21 @@ public class GoodsController {
 
   private final UserService userService;
 
+  private final TradeHistoryService tradeHistoryService;
+
   public GoodsController(
       CategoryService categoryService,
       GoodsService goodsService,
       LikeService likeService,
       ChatRoomService chatRoomService,
-      UserService userService) {
+      UserService userService,
+      TradeHistoryService tradeHistoryService) {
     this.categoryService = categoryService;
     this.goodsService = goodsService;
     this.likeService = likeService;
     this.chatRoomService = chatRoomService;
     this.userService = userService;
+    this.tradeHistoryService = tradeHistoryService;
   }
 
   @PostMapping("/goods")
@@ -140,7 +144,7 @@ public class GoodsController {
 =======
     List<Goods> goods = goodsService.searchGoods(apiUser.toUser(), keyword, offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
-    List<LikeStatus> likeStatuses = likeService.findLikeStatusList(apiUser.toUser(), goodsIds);
+    List<LikeStatus> likeStatuses = likeService.findLikeStatuses(apiUser.toUser(), goodsIds);
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
@@ -165,7 +169,7 @@ public class GoodsController {
     List<Goods> goods = goodsService.searchCategoryGoods(
         apiUser.toUser(), categoryId, keyword, offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
-    List<LikeStatus> likeStatuses = likeService.findLikeStatusList(apiUser.toUser(), goodsIds);
+    List<LikeStatus> likeStatuses = likeService.findLikeStatuses(apiUser.toUser(), goodsIds);
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
@@ -174,15 +178,24 @@ public class GoodsController {
 
   @GetMapping("/trade-history")
   public ApiResponse<List<TradeHistoryResponse>> findGoodsTradeHistory(
-      Long userId,
+      ApiUser apiUser,
       @RequestParam TradeType tradeType,
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
+
     List<TradeHistoryResponse> response = List.of(
         new TradeHistoryResponse(1L, TradeStatus.SELLING, "나무 장난감", "goods1_img_url", 5000L),
         new TradeHistoryResponse(2L, TradeStatus.SOLD, "유아용 식판", "goods2_img_url", 7000L));
     return ApiResponse.success(response);
+  }
+
+  @PostMapping("/trade/complete")
+  public ApiResponse<DefaultIdResponse> completeTrade(
+      ApiUser apiUser, @RequestBody AppendTradeHistoryRequest request) {
+    TradeHistory tradeHistory = AppendTradeHistoryRequest.toTradeHistory(apiUser.toUser(), request);
+    Long id = tradeHistoryService.completeTrade(apiUser.toUser(), tradeHistory);
+    return ApiResponse.success(new DefaultIdResponse(id));
   }
 
   @GetMapping("/goods/liked")
@@ -193,8 +206,18 @@ public class GoodsController {
     return ApiResponse.success(response);
   }
 
+<<<<<<< HEAD
   @PatchMapping("/trade/{tradeId}/complete")
   public ApiResponse<Void> modifyTradeStatus(Long userId, @PathVariable Long tradeId) {
+=======
+  @PostMapping("/goods/{goodsId}/like")
+  public ApiResponse<Void> appendLikedGoods(Long userId, @PathVariable Long goodsId) {
+    return ApiResponse.success();
+  }
+
+  @DeleteMapping("/goods/{goodsId}/like")
+  public ApiResponse<Void> deleteLikedGoods(Long userId, @PathVariable Long goodsId) {
+>>>>>>> a3d63b9 (feat: 물품 거래 완료 API 구현)
     return ApiResponse.success();
   }
 }

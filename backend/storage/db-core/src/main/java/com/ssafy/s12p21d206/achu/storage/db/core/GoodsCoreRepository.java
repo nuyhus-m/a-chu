@@ -130,14 +130,6 @@ public class GoodsCoreRepository implements GoodsRepository {
   }
 
   @Override
-  public CategoryId findCategoryIdByGoodsId(Long id) {
-    GoodsEntity goodsEntity = goodsJpaRepository
-        .findById(id)
-        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
-    return goodsEntity.toCategoryId();
-  }
-
-  @Override
   public User findUserIdByGoodsId(Long id) {
     GoodsEntity goodsEntity = goodsJpaRepository
         .findById(id)

@@ -37,7 +37,7 @@ public class GoodsService {
   public GoodsDetail modify(User user, Long id, ModifyGoods modifyGoods) {
     goodsValidator.validateExists(id);
     goodsValidator.validateOwner(user.id(), id);
-    goodsValidator.validateSelling(id);
+    goodsValidator.validateIsSelling(id);
     return goodsModifier.modify(id, modifyGoods);
   }
 
@@ -58,10 +58,6 @@ public class GoodsService {
 
   public GoodsDetail findGoodsDetail(Long id) {
     return goodsReader.readGoodsDetail(id);
-  }
-
-  public CategoryId findCategoryIdByGoodsId(Long id) {
-    return goodsReader.readCategoryIdByGoodsId(id);
   }
 
   public User findUserIdByGoodsId(Long id) {
