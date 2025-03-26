@@ -13,4 +13,8 @@ public interface AuthUserRepository {
   AuthUser modifyNickname(Long userId, String nickname);
 
   Optional<AuthUser> findByUsername(String username);
+
+  Optional<AuthUser> findById(Long userId);
+
+  AuthUser modifyPassword(Long userId, String encodedPassword);
 }

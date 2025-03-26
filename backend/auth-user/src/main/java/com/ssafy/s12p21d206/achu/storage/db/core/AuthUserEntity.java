@@ -46,4 +46,8 @@ public class AuthUserEntity extends AuthBaseEntity {
   public void changeNickname(String nickname) {
     this.nickname = nickname;
   }
+
+  public void changePassword(String password) {
+    this.password = password;
+  }
 }

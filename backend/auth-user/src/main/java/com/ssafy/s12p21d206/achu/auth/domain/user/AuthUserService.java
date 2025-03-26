@@ -34,4 +34,8 @@ public class AuthUserService {
   public AuthUser modifyNickname(Long userId, String nickname) {
     return authUserModifier.modifyNickname(userId, nickname);
   }
+
+  public AuthUser modifyPassword(Long userId, String oldPassword, String newPassword) {
+    return authUserModifier.modifyPassword(userId, oldPassword, newPassword);
+  }
 }

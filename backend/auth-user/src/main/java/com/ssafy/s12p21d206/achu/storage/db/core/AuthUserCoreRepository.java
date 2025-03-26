@@ -36,7 +36,7 @@ public class AuthUserCoreRepository implements AuthUserRepository {
   public AuthUser modifyNickname(Long userId, String nickname) {
     AuthUserEntity authUserEntity = authUserJpaRepository
         .findById(userId)
-        .orElseThrow(() -> new AuthCoreException(AuthCoreErrorType.DUPLICATED_NICKNAME));
+        .orElseThrow(() -> new AuthCoreException(AuthCoreErrorType.USER_NOT_FOUND));
 
     authUserEntity.changeNickname(nickname);
 
@@ -50,5 +50,26 @@ public class AuthUserCoreRepository implements AuthUserRepository {
     return authUserJpaRepository
         .findByUsernameAndEntityStatus(username, AuthEntityStatus.ACTIVE)
         .map(AuthUserEntity::toAuthUser);
+  }
+
+  @Override
+  public Optional<AuthUser> findById(Long userId) {
+    return authUserJpaRepository
+        .findByIdAndEntityStatus(userId, AuthEntityStatus.ACTIVE)
+        .map(AuthUserEntity::toAuthUser);
+  }
+
+  @Override
+  public AuthUser modifyPassword(Long userId, String encodedPassword) {
+
+    AuthUserEntity authUserEntity = authUserJpaRepository
+        .findById(userId)
+        .orElseThrow(() -> new AuthCoreException(AuthCoreErrorType.USER_NOT_FOUND));
+
+    authUserEntity.changePassword(encodedPassword);
+
+    authUserJpaRepository.save(authUserEntity);
+
+    return authUserEntity.toAuthUser();
   }
 }
