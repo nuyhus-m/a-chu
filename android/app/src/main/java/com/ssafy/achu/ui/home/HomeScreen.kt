@@ -41,7 +41,7 @@ import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.data.model.Product
+import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.ui.home.BabyDropdown
 import com.ssafy.achu.ui.home.RecommendGrid
 import com.ssafy.achu.ui.mypage.BabyInfo
@@ -332,7 +332,7 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(16.dp))
         RecommendGrid(
             listOf(
-                Product(
+                ProductResponse(
                     chatCount = 11,
                     createdAt = "3일 전",
                     id = 1,
@@ -342,7 +342,7 @@ fun HomeScreen(
                     price = 5000,
                     title = "미피 인형"
                 ),
-                Product(
+                ProductResponse(
                     chatCount = 11,
                     createdAt = "3일 전",
                     id = 1,
@@ -352,7 +352,7 @@ fun HomeScreen(
                     price = 5000,
                     title = "미피 인형"
                 ),
-                Product(
+                ProductResponse(
                     chatCount = 11,
                     createdAt = "3일 전",
                     id = 1,
