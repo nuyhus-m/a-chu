@@ -10,4 +10,6 @@ public interface AuthUserJpaRepository extends JpaRepository<AuthUserEntity, Lon
   boolean existsByUsernameAndEntityStatus(String username, AuthEntityStatus status);
 
   Optional<AuthUserEntity> findByUsernameAndEntityStatus(String username, AuthEntityStatus status);
+
+  Optional<AuthUserEntity> findByIdAndEntityStatus(Long id, AuthEntityStatus status);
 }
