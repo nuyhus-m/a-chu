@@ -207,7 +207,8 @@ fun UserInfoScreen() {
     if (showNickNameUpdateDialog) {
         NicknameUpdateDialog(
             onDismiss = { showNickNameUpdateDialog = false },
-            onConfirm = { showNickNameUpdateDialog = false }
+            onConfirm = { showNickNameUpdateDialog = false },
+            PointBlue
         )
     }
     if (showPasswordUpdateDialog) {

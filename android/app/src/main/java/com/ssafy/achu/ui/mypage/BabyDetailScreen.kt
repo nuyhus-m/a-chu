@@ -45,6 +45,8 @@ import com.ssafy.achu.core.components.PointPinkLineBtn
 import com.ssafy.achu.core.components.SmallLineBtn
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
+import com.ssafy.achu.core.theme.FontPink
+import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 
@@ -57,6 +59,9 @@ fun BabyDetailScreen() {
     val titleText = if (type == "등록") "아이 정보 관리" else "두식이 정보"
     val profileBtnText = if (type == "등록") "프로필 사진 등록하기" else "프로필 사진 수정하기"
     val nicknameText = if (type == "등록") "닉네임" else "두식이"
+
+    var showNickNameUpdateDialog by remember { mutableStateOf(false) }
+
 
 
     Box(
@@ -146,7 +151,7 @@ fun BabyDetailScreen() {
                             .height(20.dp)
                             .width(20.dp)
                             .clickable {
-                                //클릭시 다이얼로그 띄우기
+                                showNickNameUpdateDialog = true
                             },
                         colorFilter = ColorFilter.tint(PointPink) // 색을 빨간색으로 변경
 
@@ -174,10 +179,11 @@ fun BabyDetailScreen() {
                     )
                 } else {
                     ClearTextField(
-                        value = "2019.05.04",
+                        value = "2019-05-04",
                         onValueChange = {},
                         pointColor = PointPink,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = R.drawable.ic_calendar
                     )
                 }
 
@@ -225,6 +231,14 @@ fun BabyDetailScreen() {
             }
 
         }
+    }
+
+    if (showNickNameUpdateDialog) {
+        NicknameUpdateDialog(
+            onDismiss = { showNickNameUpdateDialog = false },
+            onConfirm = { showNickNameUpdateDialog = false },
+            PointPink
+        )
     }
 }
 
