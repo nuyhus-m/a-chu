@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class LikeService {
 
-<<<<<<< HEAD
   private final LikeReader likeReader;
   private final LikeProcessor likeProcessor;
 
@@ -36,6 +35,7 @@ public class LikeService {
 
   public void deleteLike(User user, Long goodsId) {
     likeProcessor.deleteLike(user, goodsId);
+
   }
 
   public LikeStatus findLikeStatus(User user, Long goodsId) {
