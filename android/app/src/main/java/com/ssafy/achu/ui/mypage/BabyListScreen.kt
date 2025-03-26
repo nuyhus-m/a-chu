@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,9 +33,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
 import com.ssafy.achu.core.theme.AchuTheme
@@ -42,6 +47,7 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.data.model.baby.BabyResponse
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -95,28 +101,25 @@ fun BabyListScreen(onNavigateToBabyDetail: () -> Unit) {
 
 
 val babyList = listOf(
-    BabyInfo2(
-        profileImg = R.drawable.img_baby_profile,
-        babyNickname = "두식이",
+    BabyResponse(
+        imgUrl = "https://loremflickr.com/300/300/baby",
+        nickname = "두식이",
+        id = 1,
         birth = "첫째(2019.05.04)",
         gender = "남"
     ),
-    BabyInfo2(
-        profileImg = R.drawable.img_baby_profile,
-        babyNickname = "소율이",
+    BabyResponse(
+        imgUrl = "",
+        nickname = "삼식이",
+        id = 2,
         birth = "둘째(2020.07.14)",
         gender = "여"
     ),
-    BabyInfo2(
-        profileImg = R.drawable.img_baby_profile,
-        babyNickname = "민호",
-        birth = "출산예정",
-        gender = "미정"
-    )
 )
 
+
 @Composable
-fun BabyListItem(babyInfo: BabyInfo2, onClick: () -> Unit) {
+fun BabyListItem(babyInfo: BabyResponse, onClick: () -> Unit) {
     val birthTextColor = when (babyInfo.gender) {
         "남" -> {
             PointBlue
@@ -163,19 +166,38 @@ fun BabyListItem(babyInfo: BabyInfo2, onClick: () -> Unit) {
 
                     Box(
                         modifier = Modifier
-                            .size(66.dp) // 크기 지정 (부모 Box보다 2dp 더 크게)
-                            .clip(CircleShape) // 원형 이미지 적용
+                            .size(66.dp) // 크기 지정
+                            .clip(CircleShape) // 원형 이미지
                             .border(1.dp, birthTextColor, CircleShape) // 성별에 맞는 색상으로 원형 띠 적용
                     ) {
-                        Image(
-                            painter = painterResource(id = babyInfo.profileImg!!),
-                            contentDescription = "Profile",
-                            modifier = Modifier
-                                .size(60.dp) // 이미지 크기 50.dp
-                                .clip(CircleShape)
-                                .align(Alignment.Center), // 원형 이미지
-                            contentScale = ContentScale.Crop // 이미지가 Box에 맞게 잘리도록
-                        )
+                        val imageUrl = babyInfo.imgUrl
+
+                        // URL이 비어 있으면 기본 이미지 리소스를 사용하고, 그렇지 않으면 네트워크 이미지를 로드합니다.
+                        if (imageUrl.isNullOrEmpty()) {
+                            // 기본 이미지를 painter로 설정
+                            Image(
+                                painter = painterResource(id = R.drawable.img_baby_profile),
+                                contentDescription = "Profile",
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .clip(CircleShape)
+                                    .align(Alignment.Center),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            // URL을 통해 이미지를 로드
+                            AsyncImage(
+                                model = babyInfo.imgUrl,
+                                contentDescription = "Profile",
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .clip(CircleShape)
+                                    .align(Alignment.Center),
+                                contentScale = ContentScale.Crop,
+                                error = painterResource(R.drawable.img_baby_profile)
+                            )
+
+                        }
                     }
 
                     Spacer(modifier = Modifier.size(16.dp))
@@ -185,7 +207,7 @@ fun BabyListItem(babyInfo: BabyInfo2, onClick: () -> Unit) {
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "${babyInfo.babyNickname}",
+                            text = "${babyInfo.nickname}",
                             style = AchuTheme.typography.semiBold18
 
                         )
@@ -239,10 +261,3 @@ fun BabyListScreenPreview() {
     }
 }
 
-
-data class BabyInfo2(
-    val profileImg: Int?,
-    val babyNickname: String,
-    val gender: String,
-    val birth: String,
-)

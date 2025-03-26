@@ -34,6 +34,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.theme.AchuTheme
@@ -42,6 +43,7 @@ import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.data.model.baby.BabyResponse
 
 @Composable
 fun RecommendItemScreen() {
@@ -55,31 +57,22 @@ fun RecommendItemScreen() {
         )
     }
 
-    val babyList = remember {
-        mutableListOf(
-            BabyInfo(
-                profileImg = R.drawable.img_baby_profile,
-                babyNickname = "두식이",
-                birth = "첫째(2019.05.04)",
-                gender = "남",
-                recommendList = likeItemList
-            ),
-            BabyInfo(
-                profileImg = R.drawable.img_baby_profile,
-                babyNickname = "삼식이",
-                birth = "둘째(2020.05.04)",
-                gender = "여",
-                recommendList = likeItemList
-            ),
-            BabyInfo(
-                profileImg = R.drawable.img_baby_profile,
-                babyNickname = "튼튼이",
-                birth = "출산예정",
-                gender = "아직",
-                recommendList = likeItemList
-            )
-        )
-    }
+    val babyList = listOf(
+        BabyResponse(
+            imgUrl = "https://loremflickr.com/300/300/baby",
+            nickname = "두식이",
+            id = 1,
+            birth = "2019-05-04",
+            gender = "남"
+        ),
+        BabyResponse(
+            imgUrl = "",
+            nickname = "삼식이",
+            id = 2,
+            birth = "2020-07-14",
+            gender = "여"
+        ),
+    )
 
     Box(
         modifier = Modifier
@@ -107,7 +100,7 @@ fun RecommendItemScreen() {
                     modifier = Modifier.fillMaxSize() // LazyColumn 크기 설정
                 ) {
                     itemsIndexed(babyList) { index, babyInfo ->
-                        BabyListItem(babyInfo) // BabyListItem을 LazyColumn 내에 추가
+                        BabyListItem(babyInfo, likeItemList) // BabyListItem을 LazyColumn 내에 추가
                     }
                 }
 
@@ -122,7 +115,7 @@ fun RecommendItemScreen() {
 
 
 @Composable
-fun BabyListItem(babyInfo: BabyInfo) {
+fun BabyListItem(babyInfo: BabyResponse, list : List<LikeItem2>) {
     val birthTextColor = when (babyInfo.gender) {
         "남" -> {
             PointBlue
@@ -163,22 +156,40 @@ fun BabyListItem(babyInfo: BabyInfo) {
                             .align(Alignment.Center) // 중앙에 배치
                     )
 
-                    Image(
-                        painter = painterResource(id = babyInfo.profileImg!!),
-                        contentDescription = "Profile",
-                        modifier = Modifier
-                            .size(50.dp) // 이미지 크기 50.dp
-                            .clip(CircleShape) // 원형 이미지
-                            .align(Alignment.Center), // 중앙에 배치
-                        contentScale = ContentScale.Crop // 이미지가 Box에 맞게 잘리도록
-                    )
+                    val imageUrl = babyInfo.imgUrl
+
+                    // URL이 비어 있으면 기본 이미지 리소스를 사용하고, 그렇지 않으면 네트워크 이미지를 로드합니다.
+                    if (imageUrl.isNullOrEmpty()) {
+                        // 기본 이미지를 painter로 설정
+                        Image(
+                            painter = painterResource(id = R.drawable.img_baby_profile),
+                            contentDescription = "Profile",
+                            modifier = Modifier
+                                .size(50.dp) // 이미지 크기 50.dp
+                                .clip(CircleShape) // 원형 이미지
+                                .align(Alignment.Center), // 중앙에 배치
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        // URL을 통해 이미지를 로드
+                        AsyncImage(
+                            model = babyInfo.imgUrl,
+                            contentDescription = "Profile",
+                            modifier = Modifier
+                                .size(50.dp) // 이미지 크기 50.dp
+                                .clip(CircleShape) // 원형 이미지
+                                .align(Alignment.Center), // 중앙에 배치
+                            error = painterResource(R.drawable.img_baby_profile)
+                        )
+
+                    }
 
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = "${babyInfo.babyNickname}",
+                    text = "${babyInfo.nickname}",
                     style = AchuTheme.typography.semiBold18
                 )
 
@@ -203,7 +214,7 @@ fun BabyListItem(babyInfo: BabyInfo) {
             LazyRow(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                itemsIndexed(babyInfo.recommendList!!) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
+                itemsIndexed(list) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
                     BasicLikeItem(
                         isLiked = likeItem.like,
                         onClickItem = { }, // 아이템 전체 클릭 시 동작
@@ -251,13 +262,4 @@ data class LikeItem2(
     val sate: String,// 제품 상태 (판매중/구매중 등)
     val productName: String, // 제품명
     val price: String // 가격
-)
-
-data class BabyInfo(
-    val profileImg: Int?,
-    val babyNickname: String,
-    val gender: String,
-    val birth: String,
-    val recommendList: List<LikeItem2>
-
 )

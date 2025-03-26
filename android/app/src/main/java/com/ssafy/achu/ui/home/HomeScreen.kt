@@ -41,10 +41,10 @@ import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.ui.home.BabyDropdown
 import com.ssafy.achu.ui.home.RecommendGrid
-import com.ssafy.achu.ui.mypage.BabyInfo
 import com.ssafy.achu.ui.mypage.LikeItem2
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -69,31 +69,23 @@ fun HomeScreen(
         )
     }
 
-    val babyList = remember {
-        mutableListOf(
-            BabyInfo(
-                profileImg = R.drawable.img_baby_profile,
-                babyNickname = "두식이",
-                birth = "첫째(2019.05.04)",
-                gender = "남",
-                recommendList = likeItemList
-            ),
-            BabyInfo(
-                profileImg = R.drawable.img_baby_profile,
-                babyNickname = "삼식이",
-                birth = "둘째(2020.05.04)",
-                gender = "여",
-                recommendList = likeItemList
-            ),
-            BabyInfo(
-                profileImg = R.drawable.img_baby_profile,
-                babyNickname = "튼튼이",
-                birth = "출산예정",
-                gender = "아직",
-                recommendList = likeItemList
-            )
-        )
-    }
+    var babyList = listOf(
+        BabyResponse(
+            imgUrl = "https://loremflickr.com/300/300/baby",
+            nickname = "두식이",
+            id = 1,
+            birth = "첫째(2019.05.04)",
+            gender = "남"
+        ),
+        BabyResponse(
+            imgUrl = "",
+            nickname = "삼식이",
+            id = 2,
+            birth = "둘째(2020.07.14)",
+            gender = "여"
+        ),
+    )
+
 
     var selectedBaby by remember { mutableStateOf(babyList[0]) }
 
@@ -311,7 +303,7 @@ fun HomeScreen(
             )
 
             Text(
-                text = "${selectedBaby.babyNickname}",
+                text = "${selectedBaby.nickname}",
                 style = AchuTheme.typography.semiBold18,
                 color = PointBlue
             )
@@ -377,7 +369,7 @@ fun HomeScreen(
         LazyRow(
             modifier = Modifier.fillMaxWidth()
         ) {
-            itemsIndexed(babyList[0].recommendList) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
+            itemsIndexed(likeItemList) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
                 BasicLikeItem(
                     isLiked = likeItem.like,
                     onClickItem = { }, // 아이템 전체 클릭 시 동작
