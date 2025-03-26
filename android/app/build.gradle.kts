@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.implementation
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -64,7 +62,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     //pager
-    implementation("com.google.accompanist:accompanist-pager:0.27.0")
+    implementation(libs.accompanist.pager)
 
     // Coil
     implementation(libs.coil.compose)
@@ -72,6 +70,15 @@ dependencies {
 
 
     //date picker
-    implementation ("com.google.android.material:material:1.4.0")
+    implementation(libs.material)
 
+    // Retrofit
+    // https://github.com/square/retrofit
+    implementation(libs.retrofit)
+    // https://github.com/square/okhttp
+    implementation(libs.okhttp)
+    // https://github.com/square/retrofit/tree/master/retrofit-converters/gson
+    implementation(libs.converter.gson)
+    // https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor
+    implementation(libs.logging.interceptor)
 }
