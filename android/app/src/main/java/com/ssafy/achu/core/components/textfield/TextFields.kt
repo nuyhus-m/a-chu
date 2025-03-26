@@ -1,5 +1,7 @@
 package com.ssafy.achu.core.components.textfield
 
+import android.R.attr.singleLine
+import android.R.attr.textStyle
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape

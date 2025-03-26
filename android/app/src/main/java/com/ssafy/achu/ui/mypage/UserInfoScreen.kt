@@ -136,7 +136,7 @@ fun UserInfoScreen() {
                     borderColor = PointBlue,
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
                     text = "전화번호",
@@ -159,11 +159,12 @@ fun UserInfoScreen() {
                     PointBlueFlexibleBtn("인증", onClick = {})
                 }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 PointBlueButton("비밀번호 수정", onClick = {
                     showPasswordUpdateDialog = true
                 })
+
                 Spacer(modifier = Modifier.height(48.dp))
 
                 Row(

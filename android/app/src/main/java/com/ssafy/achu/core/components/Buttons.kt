@@ -82,7 +82,7 @@ fun PointBlueFlexibleBtn(buttonText: String, onClick: () -> Unit) {
                 .background(PointBlue, shape = RoundedCornerShape(50.dp)) // 버튼 색상 및 모서리 둥글게
                 .clickable(onClick = onClick)
                 .height(50.dp)
-                .padding(vertical = 16.dp, horizontal = 24.dp), // 텍스트의 여백을 설정
+                .padding( horizontal = 24.dp), // 텍스트의 여백을 설정
             contentAlignment = Alignment.Center
         ) {
             Text(

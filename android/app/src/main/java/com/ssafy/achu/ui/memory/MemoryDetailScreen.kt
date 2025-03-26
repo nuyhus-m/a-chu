@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -140,10 +141,11 @@ fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "정말정말 귀여워던 두식이! \n100일동안 건강하게 자라줘서 너무너무 고마워\n앞으로도 씩씩하게 지금처럼만 행복하자",
+                text = "너와 함께한 시간, 정말 행복했어. 앞으로도 건강하고 씩씩하게 자라길 바라. 언제나 사랑하고 응원할게! 늘 행복하자! 너와의 추억은 소중하게 간직할게, 함께한 모든 순간들이 너무나 특별했어.",
                 style = AchuTheme.typography.regular18,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                textAlign = TextAlign.Center
+                modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().padding(horizontal = 24.dp),
+                textAlign = TextAlign.Center,
+                lineHeight = 28.sp,
 
             )
 

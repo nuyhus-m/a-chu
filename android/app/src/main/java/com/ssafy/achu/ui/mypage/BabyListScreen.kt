@@ -184,14 +184,14 @@ fun BabyListItem(babyInfo: BabyInfo2, onClick: () -> Unit) {
                     ) {
                         Text(
                             text = "${babyInfo.babyNickname}",
-                            style = AchuTheme.typography.semiBold16
+                            style = AchuTheme.typography.semiBold18
 
                         )
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
                             text = "${babyInfo.birth}",
-                            style = AchuTheme.typography.semiBold14PointBlue.copy(color = birthTextColor)
+                            style = AchuTheme.typography.semiBold16.copy(color = birthTextColor)
                         )
                     }
 
@@ -212,7 +212,6 @@ fun BabyListItem(babyInfo: BabyInfo2, onClick: () -> Unit) {
                     }
 
                 }
-
 
             }
         }

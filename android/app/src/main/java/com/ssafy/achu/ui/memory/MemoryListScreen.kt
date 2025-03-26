@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -74,7 +75,7 @@ fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: ()
         ) {
             Box(
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(90.dp)
                     .shadow(elevation = 4.dp, shape = CircleShape)
                     .border(1.5.dp, PointBlue, CircleShape)
                     .background(color = Color.LightGray),
@@ -84,7 +85,7 @@ fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: ()
                     painter = painterResource(id = R.drawable.img_baby_profile),
                     contentDescription = "Profile",
                     modifier = Modifier
-                        .size(90.dp)
+                        .size(80.dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
@@ -108,15 +109,14 @@ fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: ()
                     Spacer(modifier = Modifier.padding(start = 32.dp))
                     Text(
                         text = selectedItem,
-                        style = AchuTheme.typography.bold24,
-                        fontSize = 22.sp,
+                        style = AchuTheme.typography.semiBold20,
                         modifier = Modifier.alignByBaseline()  // 베이스라인 정렬
 
                     )
 
                     Text(
                         text = "의 추억",
-                        style = AchuTheme.typography.semiBold18,
+                        style = AchuTheme.typography.semiBold16,
                         modifier = Modifier.alignByBaseline()  // 베이스라인 정렬
 
                     )
@@ -125,7 +125,7 @@ fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: ()
                         painter = painterResource(id = R.drawable.ic_arrow_drop_down),
                         contentDescription = "Arrow",
                         modifier = Modifier
-                            .size(32.dp)
+                            .size(28.dp)
                             .alignByBaseline(),
                         colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(FontBlack)
                     )
@@ -182,8 +182,8 @@ fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: ()
 fun MemoryListItem(img: Int, title: String, date: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
-            .height(350.dp)
             .fillMaxWidth()
+            .aspectRatio(1f)
             .clickable(onClick = onClick,)
             .shadow(4.dp, RoundedCornerShape(24.dp)) // 그림자 추가
             .background(color = Color.LightGray, shape = RoundedCornerShape(24.dp))

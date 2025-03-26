@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -108,7 +109,6 @@ fun TradeListScreen() {
                             Text(
                                 text = "구매",
                                 style = AchuTheme.typography.semiBold20White,
-                                fontSize = 20.sp,
                                 color = if (selectedTab == "purchase") White else PointBlue
                             )
                         }
@@ -129,7 +129,6 @@ fun TradeListScreen() {
                             Text(
                                 text = "판매",
                                 style = AchuTheme.typography.semiBold20White,
-                                fontSize = 20.sp,
                                 color = if (selectedTab == "sale") White else PointBlue
                             )
                         }
@@ -158,11 +157,8 @@ fun TradeListScreen() {
                                 price = productItem.price,
                                 onClick = {
                                 },
-//                            onDeleteClick = {
-//                                selectedProduct = productItem
-//                                showDialog = true
-//                            }
-                            )
+
+                                )
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
@@ -172,20 +168,6 @@ fun TradeListScreen() {
 
 
     }
-
-//    if (showDialog && selectedProduct != null) {
-//        BasicDialog(
-//            img = null,
-//            pinkText = null,
-//            textLine1 = null,
-//            text = "${selectedProduct?.productName}의 판매를\n정말 중지하시겠습니까?",
-//            onDismiss = { showDialog = false },
-//            onConfirm = {
-//                showDialog = false
-//                // 판매 중지 로직 추가 가능
-//            }
-//        )
-//    }
 }
 
 @Composable
@@ -195,7 +177,6 @@ fun ListItem(
     productName: String,
     price: String,
     onClick: () -> Unit,
-//    onDeleteClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -242,7 +223,9 @@ fun ListItem(
                 Text(
                     text = productName,
                     style = AchuTheme.typography.semiBold18,
-                    color = FontBlack
+                    color = FontBlack,
+                    maxLines = 1, // 한 줄만 표시
+                    overflow = TextOverflow.Ellipsis // 넘치는 부분은 "..."으로 표시
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -250,27 +233,13 @@ fun ListItem(
                     text = price,
                     style = AchuTheme.typography.semiBold16,
                     fontSize = 14.sp,
-                    color = FontBlack
+                    color = FontBlack,
+                    maxLines = 1, // 한 줄만 표시
+                    overflow = TextOverflow.Ellipsis // 넘치는 부분은 "..."으로 표시
                 )
             }
         }
-
-//        if (state == "판매중") {
-//            Icon(
-//                painter = painterResource(id = R.drawable.ic_outline_clear_24),
-//                contentDescription = "Arrow",
-//                tint = FontGray,
-//                modifier = Modifier
-//                    .height(40.dp)
-//                    .align(Alignment.TopEnd)
-//                    .padding(top = 16.dp, end = 16.dp)
-//                    .clickable {
-////                        onDeleteClick()
-//                    }
-//            )
-//        }
     }
-
 }
 
 

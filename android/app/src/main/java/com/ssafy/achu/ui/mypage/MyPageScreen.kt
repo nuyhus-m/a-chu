@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.achu.R
@@ -191,38 +192,36 @@ fun MyPageItem(img: Int, title: String, content: String? = null, onClick: () -> 
                 painter = painterResource(id = img),
                 contentDescription = "Profile",
                 modifier = Modifier
-                    .height(50.dp)
-                    .width(50.dp), // Box 크기에 맞추기
+                    .height(60.dp)
+                    .width(60.dp), // Box 크기에 맞추기
             )
 
             Column(
                 modifier = Modifier
-                    .width(
-                        250.dp
-                    ).padding(start = 16.dp)
+                    .weight(0.8f)
+                    .padding(start = 16.dp)
             ) {
 
                 Text(
                     text = title,
-                    style = AchuTheme.typography.semiBold16,
+                    style = AchuTheme.typography.medium18,
                 )
                 if (content != null) {
                     Spacer(modifier = Modifier.height(8.dp))
-
                     Text(
                         text = content,
                         style = AchuTheme.typography.regular14,
                     )
                 }
-
             }
+
             Image(
                 painter = painterResource(id = R.drawable.ic_arrow_forward),
                 contentDescription = "Arrow",
                 modifier = Modifier
                     .height(20.dp)
                     .width(20.dp)
-                    .weight(1f),
+                    .weight(0.15f),
                 colorFilter = ColorFilter.tint(Color(0xFFBEBEBE)) // 색을 빨간색으로 변경
             )
 
@@ -231,14 +230,20 @@ fun MyPageItem(img: Int, title: String, content: String? = null, onClick: () -> 
 }
 
 
-//@Preview
-//@Composable
-//fun MyPageScreenPreview() {
-//    AchuTheme {  // 테마를 감싸기
-//        MyPageScreen()
-//    }
-//}
-//
+@Preview
+@Composable
+fun MyPageScreenPreview() {
+    AchuTheme {  // 테마를 감싸기
+        MyPageScreen(
+            onNavigateToTradeList = { /* 거래내역 클릭 시 동작 */ },
+            onNavigateToLikeList = { /* 찜한 상품 클릭 시 동작 */ },
+            onNavigateToRecommend = { /* 추천상품 클릭 시 동작 */ },
+            onNavigateToUserInfo = { } ,
+            onNavigateToBabyList = {}
+        )
+    }
+}
+
 
 //@Preview
 //@Composable

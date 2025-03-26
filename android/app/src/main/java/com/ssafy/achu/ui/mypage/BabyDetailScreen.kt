@@ -124,7 +124,7 @@ fun BabyDetailScreen() {
                 }
 
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 SmallLineBtn(profileBtnText, PointPink, onClick = {})
 
@@ -180,7 +180,7 @@ fun BabyDetailScreen() {
                 }
 
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
                     text = "성별",
@@ -189,7 +189,7 @@ fun BabyDetailScreen() {
 
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
