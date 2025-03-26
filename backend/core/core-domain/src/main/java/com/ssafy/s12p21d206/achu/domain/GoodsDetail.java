@@ -11,4 +11,7 @@ public record GoodsDetail(
     List<String> imgUrls,
     TradeStatus tradeStatus,
     Long price,
-    LocalDateTime createdAt) {}
+    LocalDateTime createdAt,
+    Long categoryId,
+    Long userId,
+    Long babyId) {}
