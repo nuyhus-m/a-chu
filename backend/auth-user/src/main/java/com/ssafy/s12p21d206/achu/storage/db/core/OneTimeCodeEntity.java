@@ -6,6 +6,8 @@ import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
 import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationCode;
 import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationPurpose;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,6 +25,8 @@ public class OneTimeCodeEntity extends AuthMetaEntity {
 
   private String phoneNumber;
   private String code;
+
+  @Enumerated(EnumType.STRING)
   private VerificationPurpose purpose;
 
   private boolean isVerified;

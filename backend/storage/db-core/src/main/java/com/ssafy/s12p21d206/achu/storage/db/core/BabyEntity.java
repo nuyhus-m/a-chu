@@ -4,6 +4,8 @@ import com.ssafy.s12p21d206.achu.domain.Baby;
 import com.ssafy.s12p21d206.achu.domain.Sex;
 import com.ssafy.s12p21d206.achu.domain.support.DefaultDateTime;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 
@@ -15,6 +17,7 @@ public class BabyEntity extends BaseEntity {
 
   private String nickname;
 
+  @Enumerated(EnumType.STRING)
   private Sex gender;
 
   private String imageUrl;

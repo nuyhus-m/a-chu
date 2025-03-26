@@ -2,8 +2,10 @@ package com.ssafy.s12p21d206.achu.storage.db.core;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
+@Table(name = "refresh_token")
 @Entity
 public class RefreshTokenEntity {
 

@@ -62,9 +62,15 @@ pipeline {
         string(name: 'GITOPS_TEMP_DIR', defaultValue: 'tmp_gitops', description: 'GitOps 임시 디렉터리')
         string(name: 'GIT_COMMIT_EMAIL', defaultValue: 'jenkins@dukcode.org', description: 'Git 커밋 이메일')
         string(name: 'IMAGE_REGISTRY_ACCOUNT', defaultValue: 'duk9741', description: 'Docker 레지스트리 계정')
+
         string(name: 'API_DOCS_DOCKER_IMAGE_NAME',defaultValue: 'a-chu-api-docs', description: 'API 문서 Docker 이미지 이름')
         string(name: 'API_DOCS_GITOPS_FILE_PATH', defaultValue: 'a-chu/api-docs.yaml', description: 'API 문서 GitOps 메니페스트 위치')
         string(name: 'API_DOCS_DOCKERFILE_PATH', defaultValue: 'infrastructure/Dockerfile.api-docs',  description: 'API 문서 Dockerfile 경로')
+
+        string(name: 'API_DOCKER_IMAGE_NAME',defaultValue: 'a-chu-api', description: 'API 문서 Docker 이미지 이름')
+        string(name: 'API_GITOPS_FILE_PATH', defaultValue: 'a-chu/api.yaml', description: 'API 문서 GitOps 메니페스트 위치')
+        string(name: 'API_DOCKERFILE_PATH', defaultValue: 'infrastructure/Dockerfile.api',  description: 'API 문서 Dockerfile 경로')
+
         string(name: 'SONAR_PROJECT_KEY', defaultValue: 'com.ssafy.s12p21d206:achu', description: 'SonarQube 프로젝트 키')
     }
 
@@ -133,6 +139,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh "cd ${params.BACKEND_DIR} && ./gradlew build -x test -x spotlessCheck"
+                stash includes: 'backend/core/core-api/build/libs/core-api-0.0.1-SNAPSHOT.jar', name: 'api-jar-stash'
             }
             post {
                 always {
@@ -223,7 +230,7 @@ pipeline {
             }
         }
 
-        stage('API DOCS : Build and Tag Docker Image with Kaniko') {
+        stage('API Docs: Build and Tag Docker Image with Kaniko') {
             when {
                 beforeAgent true
                 expression { develop() }
@@ -281,12 +288,72 @@ spec:
                 }
             }
         }
+
+        stage('API: Build and Tag Docker Image with Kaniko') {
+            when {
+                beforeAgent true
+                expression { develop() }
+            }
+            agent {
+                kubernetes {
+                    yaml """
+kind: Pod
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    imagePullPolicy: Always
+    command:
+    - sleep
+    args:
+    - 9999999
+    volumeMounts:
+      - name: jenkins-docker-cfg
+        mountPath: /kaniko/.docker
+  volumes:
+  - name: jenkins-docker-cfg
+    projected:
+      sources:
+      - secret:
+          name: dockerhub-credentials
+          items:
+            - key: .dockerconfigjson
+              path: config.json
+"""
+                }
+            }
+            steps {
+                container(name: 'kaniko', shell: '/busybox/sh') {
+                    script {
+                        unstash 'api-jar-stash'
+                        sh """
+                        /kaniko/executor \\
+                            --context `pwd` \\
+                            --dockerfile=${API_DOCKERFILE_PATH} \\
+                            --destination=${DOCKER_REGISTRY_URL}/${DOCKER_HUB_USERNAME}/${API_DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER} \\
+                            --insecure \\
+                            --skip-tls-verify \\
+                            --cache=true \\
+                            --cache-dir=/workspace/cache
+                        """
+                    }
+                }
+            }
+            post {
+                always {
+                    script {
+                        env.API_IMAGE_BUILD_PUSH_STATUS = getEmoji(currentBuild.currentResult == 'SUCCESS')
+                    }
+                }
+            }
+        }
         
         stage('Update GitOps Repository') {
             when { expression { develop() } }
             steps {
                 script {
                     updateGitOpsRepository(API_DOCS_GITOPS_FILE_PATH, API_DOCS_DOCKER_IMAGE_NAME)
+                    updateGitOpsRepository(API_GITOPS_FILE_PATH, API_DOCKER_IMAGE_NAME)
                 }
             }
             post {
@@ -326,18 +393,21 @@ post {
 
             |\n**📚 API 문서화**
             |▫️ 문서 생성: ${env.API_DOCS_STATUS ?: '❔'} 
+
             ${develop() ? """|
-            |▫️ 이미지 배포: ${env.API_DOCS_IMAGE_BUILD_PUSH_STATUS ?: '❔'}
+            |\n**🐳 컨테이너 이미지 빌드&푸시**
+            |▫️ API DOCS 이미지 빌드&푸시: ${env.API_DOCS_IMAGE_BUILD_PUSH_STATUS ?: '❔'}
+            |▫️ API 이미지 빌드&푸시: ${env.API_IMAGE_BUILD_PUSH_STATUS ?: '❔'}
             |▫️ GitOps 업데이트: ${env.COMMIT_TO_GITOPS_REPO_STATUS ?: '❔'}
             """ : ""}
 
             ${develop() ? """|
             |\n**📦 아티팩트 정보**
             |▫️ API Docs Docker Image: ${DOCKER_HUB_USERNAME}/${API_DOCS_DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}
+            |▫️ API Docker Image: ${DOCKER_HUB_USERNAME}/${API_DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}
             """ : ""}
             """
 
-            // Mattermost 메시지 포맷팅
             message = message.replaceAll(/\n\s+\|/, '\n').trim()
 
             mattermostSend(

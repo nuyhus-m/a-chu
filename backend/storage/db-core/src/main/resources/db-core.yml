@@ -39,9 +39,9 @@ storage:
   datasource:
     core:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://${storage.database.core-db.url}
-      username: ${storage.database.core-db.username}
-      password: ${storage.database.core-db.password}
+      url: jdbc:mysql://${CORE_DB_URL}
+      username: ${CORE_DB_USERNAME}
+      password: ${CORE_DB_PASSWORD}
       hikari:
         maximum-pool-size: 5
         connection-timeout: 1100
@@ -69,9 +69,9 @@ storage:
   datasource:
     core:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://${storage.database.core-db.url}
-      username: ${storage.database.core-db.username}
-      password: ${storage.database.core-db.password}
+      url: jdbc:mysql://${CORE_DB_URL}
+      username: ${CORE_DB_USERNAME}
+      password: ${CORE_DB_PASSWORD}
       hikari:
         maximum-pool-size: 25
         connection-timeout: 1100
