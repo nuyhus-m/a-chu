@@ -1,5 +1,7 @@
 package com.ssafy.s12p21d206.achu.auth.domain.user;
 
+import java.util.Optional;
+
 public interface AuthUserRepository {
 
   boolean existsByNickname(String nickname);
@@ -9,4 +11,6 @@ public interface AuthUserRepository {
   AuthUser save(NewAuthUser newAuthUser);
 
   AuthUser modifyNickname(Long userId, String nickname);
+
+  Optional<AuthUser> findByUsername(String username);
 }

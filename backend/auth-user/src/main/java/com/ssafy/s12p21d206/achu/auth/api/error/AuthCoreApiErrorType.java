@@ -8,53 +8,36 @@ public enum AuthCoreApiErrorType {
       "서버 오류가 발생하였습니다.",
       AuthCoreApiErrorLevel.ERROR,
       HttpStatus.INTERNAL_SERVER_ERROR),
-  NULL_PHONE_NUMBER(
-      AuthCoreApiErrorCode.AE2000,
-      "전화번호는 null일 수 없습니다.",
-      AuthCoreApiErrorLevel.INFO,
-      HttpStatus.BAD_REQUEST),
-  INVALID_PHONE_NUMBER_FORMAT(
-      AuthCoreApiErrorCode.AE2001,
-      "유효하지 않은 전화번호 형식입니다.",
-      AuthCoreApiErrorLevel.INFO,
-      HttpStatus.BAD_REQUEST),
-  NULL_VERIFICATION_PURPOSE(
-      AuthCoreApiErrorCode.AE2002,
-      "인증 목적은 null일 수 없습니다.",
-      AuthCoreApiErrorLevel.INFO,
-      HttpStatus.BAD_REQUEST),
-  NULL_VERIFICATION_CODE(
-      AuthCoreApiErrorCode.AE2003,
-      "인증 코드는 null일 수 없습니다.",
-      AuthCoreApiErrorLevel.INFO,
-      HttpStatus.BAD_REQUEST),
-  INVALID_VERIFICATION_CODE_FORMAT(
-      AuthCoreApiErrorCode.AE2005,
-      "유효하지 않은 인증 코드 형식입니다.",
-      AuthCoreApiErrorLevel.INFO,
-      HttpStatus.BAD_REQUEST),
-  NULL_ID(
-      AuthCoreApiErrorCode.AE2006,
-      "id는 null일 수 없습니다.",
-      AuthCoreApiErrorLevel.INFO,
-      HttpStatus.BAD_REQUEST),
-  INVALID_USERNAME_FORMAT(
-      AuthCoreApiErrorCode.AE2007,
-      "아이디는 영어 대소문자와 숫자로 구성된 4~16자리여야 합니다.",
-      AuthCoreApiErrorLevel.INFO,
-      HttpStatus.BAD_REQUEST),
 
-  INVALID_PASSWORD_FORMAT(
-      AuthCoreApiErrorCode.AE2008,
-      "비밀번호는 영어 대소문자, 숫자, 지정된 특수문자(! @ # $ % ^ & * ( ) _ + - = ~)로만 이루어진 8~16자리여야 합니다.",
-      AuthCoreApiErrorLevel.INFO,
-      HttpStatus.BAD_REQUEST),
+  UNAUTHORIZED(
+      AuthCoreApiErrorCode.AE3000,
+      "인증되지 않은 사용자 입니다.",
+      AuthCoreApiErrorLevel.WARN,
+      HttpStatus.FORBIDDEN),
 
-  INVALID_NICKNAME_FORMAT(
-      AuthCoreApiErrorCode.AE2009,
-      "닉네임은 한글, 영어, 숫자로 구성된 2~6자리여야 합니다.",
-      AuthCoreApiErrorLevel.INFO,
-      HttpStatus.BAD_REQUEST);
+  INCORRECT_PASSWORD(
+      AuthCoreApiErrorCode.AE3001,
+      "아이디 또는 비밀번호가 일치하지 않습니다.",
+      AuthCoreApiErrorLevel.WARN,
+      HttpStatus.FORBIDDEN),
+
+  INVALID_ACCESS_TOKEN(
+      AuthCoreApiErrorCode.AE3002,
+      "유효하지 않은 access token 입니다.",
+      AuthCoreApiErrorLevel.WARN,
+      HttpStatus.FORBIDDEN),
+
+  INVALID_REFRESH_TOKEN(
+      AuthCoreApiErrorCode.AE3003,
+      "유효하지 않은 refresh token 입니다.",
+      AuthCoreApiErrorLevel.WARN,
+      HttpStatus.FORBIDDEN),
+
+  REFRESH_TOKEN_NOT_RENEWABLE(
+      AuthCoreApiErrorCode.AE3004,
+      "refresh token 갱신 가능한 시간이 아닙니다.",
+      AuthCoreApiErrorLevel.WARN,
+      HttpStatus.FORBIDDEN);
 
   private final AuthCoreApiErrorCode code;
   private final String message;

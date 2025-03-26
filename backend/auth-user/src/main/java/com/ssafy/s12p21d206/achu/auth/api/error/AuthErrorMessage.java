@@ -13,6 +13,11 @@ public class AuthErrorMessage {
     this.message = errorType.getMessage();
   }
 
+  public AuthErrorMessage(AuthCoreApiErrorType errorType) {
+    this.code = errorType.getCode().name();
+    this.message = errorType.getMessage();
+  }
+
   public AuthErrorMessage(AuthCoreErrorType errorType, String formattedMessage) {
     this.code = errorType.getCode().name();
     this.message = formattedMessage;
