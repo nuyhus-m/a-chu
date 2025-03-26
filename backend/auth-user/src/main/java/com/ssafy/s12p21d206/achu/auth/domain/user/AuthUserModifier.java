@@ -33,7 +33,7 @@ public class AuthUserModifier {
     AuthUser authUser = authUserReader.findAuthUser(userId);
     authUser.validatePassword(passwordEncoder, oldPassword);
 
-    String encodedPassword = passwordEncoder.encode(oldPassword);
+    String encodedPassword = passwordEncoder.encode(newPassword);
     return authUserRepository.modifyPassword(userId, encodedPassword);
   }
 }
