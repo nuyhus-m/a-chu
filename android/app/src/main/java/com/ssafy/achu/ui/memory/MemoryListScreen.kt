@@ -66,7 +66,7 @@ fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: ()
         modifier = modifier
             .fillMaxSize()
             .background(color = White)
-            .navigationBarsPadding(),
+          ,
     ) {
         Column(
             modifier = Modifier

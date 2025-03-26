@@ -233,6 +233,8 @@ fun MemoryUploadScreen() {
                         )
                     }
                 }
+
+                
             }
 
             Column(

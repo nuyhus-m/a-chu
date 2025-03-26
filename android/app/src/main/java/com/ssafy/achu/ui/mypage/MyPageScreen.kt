@@ -37,8 +37,6 @@ fun MyPageScreen(
         modifier = modifier
             .fillMaxSize()
             .background(color = White)
-            .navigationBarsPadding()
-
     ) {
         // 배경 이미지 추가
         Image(
