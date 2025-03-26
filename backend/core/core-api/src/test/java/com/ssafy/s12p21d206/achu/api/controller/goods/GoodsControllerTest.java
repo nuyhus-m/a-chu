@@ -33,6 +33,7 @@ class GoodsControllerTest extends RestDocsTest {
   private LikeService likeService;
   private ChatRoomService chatRoomService;
   private UserService userService;
+  private TradeHistoryService tradeHistoryService;
 
   @BeforeEach
   void setup() {
@@ -41,8 +42,14 @@ class GoodsControllerTest extends RestDocsTest {
     likeService = mock(LikeService.class);
     chatRoomService = mock(ChatRoomService.class);
     userService = mock(UserService.class);
+    tradeHistoryService = mock(TradeHistoryService.class);
     controller = new GoodsController(
-        categoryService, goodsService, likeService, chatRoomService, userService);
+        categoryService,
+        goodsService,
+        likeService,
+        chatRoomService,
+        userService,
+        tradeHistoryService);
     mockMvc = mockController(controller);
   }
 
@@ -81,6 +88,7 @@ class GoodsControllerTest extends RestDocsTest {
 
     when(likeService.status(any(User.class), anyList()))
         .thenReturn(Map.of(goods.getId(), new LikeStatus(5, true)));
+
 
     when(chatRoomService.findChatStatus(any(User.class), anyList()))
         .thenReturn(List.of(new ChatStatus(goods.getId(), 3L)));
@@ -125,8 +133,10 @@ class GoodsControllerTest extends RestDocsTest {
   void findGoods() {
     when(goodsService.findGoods(any(User.class), anyLong(), anyLong(), any(SortType.class)))
         .thenReturn(List.of(goods));
+
     when(likeService.status(any(User.class), anyList()))
         .thenReturn(Map.of(goods.getId(), new LikeStatus(5, true)));
+
     when(chatRoomService.findChatStatus(any(User.class), anyList()))
         .thenReturn(List.of(new ChatStatus(goods.getId(), 3L)));
     given()
@@ -468,17 +478,58 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
+<<<<<<< HEAD
   void modifyTradeStatus() {
+=======
+  void appendLikedGoods() {
     given()
         .contentType(ContentType.JSON)
-        .patch("/trade/{tradeId}/complete", 5L)
+        .post("/goods/{goodsId}/like", 1L)
         .then()
         .status(HttpStatus.OK)
         .apply(document(
-            "modify-trade-status",
-            pathParameters(parameterWithName("tradeId").description("거래내역 id")),
+            "append-liked-goods",
+            pathParameters(parameterWithName("goodsId").description("찜할 물건 id")),
             responseFields(fieldWithPath("result")
                 .type(JsonFieldType.STRING)
                 .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
+  }
+
+  @Test
+  void deleteLikedGoods() {
+    given()
+        .contentType(ContentType.JSON)
+        .delete("/goods/{goodsId}/like", 1L)
+        .then()
+        .status(HttpStatus.OK)
+        .apply(document(
+            "delete-liked-goods",
+            pathParameters(parameterWithName("goodsId").description("찜 취소할 물건 id")),
+            responseFields(fieldWithPath("result")
+                .type(JsonFieldType.STRING)
+                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
+  }
+
+  @Test
+  void completeTrade() {
+    when(tradeHistoryService.completeTrade(any(User.class), any(TradeHistory.class)))
+        .thenReturn(1L);
+>>>>>>> 6f8f9c2 (test: TradeHistoryService mock 추가)
+    given()
+        .contentType(ContentType.JSON)
+        .body(new AppendTradeHistoryRequest(1L, 1L))
+        .post("/trade/complete")
+        .then()
+        .status(HttpStatus.OK)
+        .apply(document(
+            "complete-trade-history",
+            requestFields(
+                fieldWithPath("goodsId").description("거래할 물품 id"),
+                fieldWithPath("buyerId").description("구매자 id")),
+            responseFields(
+                fieldWithPath("result")
+                    .type(JsonFieldType.STRING)
+                    .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
+                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("생성된 거래내역 id"))));
   }
 }
