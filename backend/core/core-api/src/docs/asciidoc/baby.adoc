@@ -10,7 +10,7 @@ operation::find-baby[snippets='http-request,path-parameters,http-response,respon
 
 === 자녀 목록 조회
 
-operation::find-babies[snippets='http-request,query-parameters,http-response,response-fields']
+operation::find-babies[snippets='http-request,http-response,response-fields']
 
 === 자녀 프로필 사진 변경
 

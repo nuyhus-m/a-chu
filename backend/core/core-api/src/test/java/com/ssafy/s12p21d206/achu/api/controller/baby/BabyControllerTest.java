@@ -11,7 +11,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 
 import com.ssafy.s12p21d206.achu.domain.Baby;
@@ -121,18 +120,11 @@ class BabyControllerTest extends RestDocsTest {
 
     given()
         .contentType(ContentType.JSON)
-        .queryParam("offset", 0)
-        .queryParam("limit", 20)
-        .queryParam("sort", "LATEST")
         .get("/babies")
         .then()
         .status(HttpStatus.OK)
         .apply(document(
             "find-babies",
-            queryParameters(
-                parameterWithName("offset").description("결과 목록의 시작 인덱스를 나타냅니다. (예: 0)"),
-                parameterWithName("limit").description("한 페이지에 반환할 최대 데이터 수를 지정합니다. (예: 20)"),
-                parameterWithName("sort").description("데이터 정렬 기준을 지정합니다. (예: LATEST 혹은 OLDEST)")),
             responseFields(
                 fieldWithPath("result")
                     .type(JsonFieldType.STRING)

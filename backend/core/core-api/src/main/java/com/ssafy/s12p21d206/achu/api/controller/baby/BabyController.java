@@ -6,7 +6,6 @@ import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
 import com.ssafy.s12p21d206.achu.domain.Baby;
 import com.ssafy.s12p21d206.achu.domain.BabyService;
 import com.ssafy.s12p21d206.achu.domain.NewBaby;
-import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -39,11 +38,7 @@ public class BabyController {
   }
 
   @GetMapping("/babies")
-  public ApiResponse<List<BabyResponse>> findBabies(
-      ApiUser apiUser,
-      @RequestParam Long offset,
-      @RequestParam Long limit,
-      @RequestParam SortType sort) {
+  public ApiResponse<List<BabyResponse>> findBabies(ApiUser apiUser) {
     List<Baby> babies = babyService.findBabies(apiUser.toUser());
     return ApiResponse.success(BabyResponse.of(babies));
   }
