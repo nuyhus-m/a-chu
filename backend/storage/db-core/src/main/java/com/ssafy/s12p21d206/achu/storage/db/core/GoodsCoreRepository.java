@@ -81,8 +81,8 @@ public class GoodsCoreRepository implements GoodsRepository {
   @Override
   public List<Goods> findGoods(User user, Long offset, Long limit, SortType sort) {
     Pageable pageable = PageRequest.of(offset.intValue(), limit.intValue(), convertSort(sort));
-    List<GoodsEntity> goodsEntities =
-        goodsJpaRepository.findAllByEntityStatus(pageable, EntityStatus.ACTIVE);
+    List<GoodsEntity> goodsEntities = goodsJpaRepository.findAllByTradeStatusAndEntityStatus(
+        pageable, TradeStatus.SELLING, EntityStatus.ACTIVE);
     return goodsEntities.stream().map(GoodsEntity::toGoods).toList();
   }
 
@@ -90,8 +90,9 @@ public class GoodsCoreRepository implements GoodsRepository {
   public List<Goods> findCategoryGoods(
       User user, Long categoryId, Long offset, Long limit, SortType sort) {
     Pageable pageable = PageRequest.of(offset.intValue(), limit.intValue(), convertSort(sort));
-    List<GoodsEntity> goodsEntities = goodsJpaRepository.findAllByCategoryIdAndEntityStatus(
-        categoryId, pageable, EntityStatus.ACTIVE);
+    List<GoodsEntity> goodsEntities =
+        goodsJpaRepository.findAllByCategoryIdAndTradeStatusAndEntityStatus(
+            categoryId, pageable, TradeStatus.SELLING, EntityStatus.ACTIVE);
     return goodsEntities.stream().map(GoodsEntity::toGoods).toList();
   }
 

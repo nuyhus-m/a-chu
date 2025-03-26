@@ -7,4 +7,8 @@ public record ApiUser(Long id) {
   public User toUser() {
     return new User(id);
   }
+
+  public User fromUser(Long id) {
+    return new User(id);
+  }
 }

@@ -105,6 +105,26 @@ public class GoodsController {
     return ApiResponse.success(responses);
   }
 
+  @GetMapping("/goods/{goodsId}")
+  public ApiResponse<GoodsDetailResponse> findGoodsDetail(
+      ApiUser apiUser, @PathVariable Long goodsId) {
+    GoodsDetail goodsDetail = goodsService.findGoodsDetail(goodsId);
+
+    User userId = goodsService.findUserIdByGoodsId(goodsId);
+
+    LikeStatus likeStatus = likeService.findLikeStatus(apiUser.toUser(), goodsId);
+
+    Category category = categoryService.findCategoryInfo(goodsDetail.categoryId());
+    CategoryResponse categoryResponse = CategoryResponse.from(category);
+
+    Seller seller = userService.findSellerInfo(userId);
+    UserResponse sellerResponse = UserResponse.from(seller);
+
+    GoodsDetailResponse response =
+        GoodsDetailResponse.of(goodsDetail, likeStatus, categoryResponse, sellerResponse);
+    return ApiResponse.success(response);
+  }
+
   @GetMapping("/goods/search")
   public ApiResponse<List<GoodsResponse>> searchGoods(
       Long userId,
@@ -131,27 +151,6 @@ public class GoodsController {
     List<GoodsResponse> response = List.of(
         new GoodsResponse(11L, "튤립 장난감", "goods11_img_url_1", 3000L, createdAt, 1L, 3, false),
         new GoodsResponse(15L, "장난감 기차", "goods15_img_url_1", 10000L, createdAt, 4L, 3, true));
-    return ApiResponse.success(response);
-  }
-
-  @GetMapping("/goods/{goodsId}")
-  public ApiResponse<GoodsDetailResponse> findGoodsDetail(
-      ApiUser apiUser, @PathVariable Long goodsId) {
-    GoodsDetail goodsDetail = goodsService.findGoodsDetail(goodsId);
-
-    CategoryId categoryId = goodsService.findCategoryIdByGoodsId(goodsId);
-    User userId = goodsService.findUserIdByGoodsId(goodsId);
-
-    LikeStatus likeStatus = likeService.findLikeStatus(apiUser.toUser(), goodsId);
-
-    Category category = categoryService.findCategoryInfo(categoryId.id());
-    CategoryResponse categoryResponse = CategoryResponse.from(category);
-
-    Seller seller = userService.findSellerInfo(userId);
-    UserResponse sellerResponse = UserResponse.from(seller);
-
-    GoodsDetailResponse response =
-        GoodsDetailResponse.of(goodsDetail, likeStatus, categoryResponse, sellerResponse);
     return ApiResponse.success(response);
   }
 

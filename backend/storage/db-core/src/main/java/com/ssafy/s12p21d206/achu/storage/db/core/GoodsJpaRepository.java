@@ -7,12 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GoodsJpaRepository extends JpaRepository<GoodsEntity, Long> {
+  List<GoodsEntity> findAllByTradeStatusAndEntityStatus(
+      Pageable pageable, TradeStatus tradeStatus, EntityStatus entityStatus);
 
-  // 조회할때 판매중인것들만 가져오게 수정
-  List<GoodsEntity> findAllByEntityStatus(Pageable pageable, EntityStatus entityStatus);
-
-  List<GoodsEntity> findAllByCategoryIdAndEntityStatus(
-      Long categoryId, Pageable pageable, EntityStatus entityStatus);
+  List<GoodsEntity> findAllByCategoryIdAndTradeStatusAndEntityStatus(
+      Long categoryId, Pageable pageable, TradeStatus tradeStatus, EntityStatus entityStatus);
 
 
   boolean existsByIdAndEntityStatus(Long goodsId, EntityStatus entityStatus);
