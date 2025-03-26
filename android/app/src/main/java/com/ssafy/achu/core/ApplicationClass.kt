@@ -4,6 +4,11 @@ import android.app.Application
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.ssafy.achu.data.database.SharedPreferencesUtil
+import com.ssafy.achu.data.repository.AuthRepository
+import com.ssafy.achu.data.repository.BabyRepository
+import com.ssafy.achu.data.repository.MemoryRepository
+import com.ssafy.achu.data.repository.ProductRepository
+import com.ssafy.achu.data.repository.UserRepository
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Converter
@@ -45,6 +50,13 @@ class ApplicationClass : Application() {
                 }
             }
         }
+
+        // repository 객체
+        lateinit var authRepository: AuthRepository
+        lateinit var userRepository: UserRepository
+        lateinit var productRepository: ProductRepository
+        lateinit var memoryRepository: MemoryRepository
+        lateinit var babyRepository: BabyRepository
     }
 
 
@@ -70,10 +82,18 @@ class ApplicationClass : Application() {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(okHttpClient)
             .build()
+
+        // repository 초기화
+        authRepository = AuthRepository()
+        userRepository = UserRepository()
+        productRepository = ProductRepository()
+        memoryRepository = MemoryRepository()
+        babyRepository = BabyRepository()
     }
 
     //GSon은 엄격한 json type을 요구하는데, 느슨하게 하기 위한 설정. success, fail이 json이 아니라 단순 문자열로 리턴될 경우 처리..
     val gson: Gson = GsonBuilder()
         .setLenient()
         .create()
+
 }
