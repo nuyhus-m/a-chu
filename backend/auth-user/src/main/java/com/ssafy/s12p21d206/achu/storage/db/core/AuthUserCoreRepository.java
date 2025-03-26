@@ -5,6 +5,7 @@ import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreException;
 import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUser;
 import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUserRepository;
 import com.ssafy.s12p21d206.achu.auth.domain.user.NewAuthUser;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -18,12 +19,12 @@ public class AuthUserCoreRepository implements AuthUserRepository {
 
   @Override
   public boolean existsByNickname(String nickname) {
-    return authUserJpaRepository.existsByNickname(nickname);
+    return authUserJpaRepository.existsByNicknameAndEntityStatus(nickname, AuthEntityStatus.ACTIVE);
   }
 
   @Override
   public boolean existsByUsername(String username) {
-    return authUserJpaRepository.existsByUsername(username);
+    return authUserJpaRepository.existsByUsernameAndEntityStatus(username, AuthEntityStatus.ACTIVE);
   }
 
   @Override
@@ -42,5 +43,12 @@ public class AuthUserCoreRepository implements AuthUserRepository {
     authUserJpaRepository.save(authUserEntity);
 
     return authUserEntity.toAuthUser();
+  }
+
+  @Override
+  public Optional<AuthUser> findByUsername(String username) {
+    return authUserJpaRepository
+        .findByUsernameAndEntityStatus(username, AuthEntityStatus.ACTIVE)
+        .map(AuthUserEntity::toAuthUser);
   }
 }

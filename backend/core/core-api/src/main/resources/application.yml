@@ -8,6 +8,7 @@ spring:
       - logging.yml
       - db-core.yml
       - sms.yml
+      - security.yml
   web.resources.add-mappings: false
 
 server:
