@@ -25,6 +25,8 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.GET, "/users/username/is-unique")
         .permitAll()
         .requestMatchers(HttpMethod.GET, "/users/nickname/is-unique")
+        .permitAll()
+        .anyRequest()
         .permitAll());
     return http.build();
   }

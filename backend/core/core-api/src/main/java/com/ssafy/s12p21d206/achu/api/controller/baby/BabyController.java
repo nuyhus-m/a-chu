@@ -1,58 +1,51 @@
 package com.ssafy.s12p21d206.achu.api.controller.baby;
 
+import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
-import com.ssafy.s12p21d206.achu.domain.support.Sex;
+import com.ssafy.s12p21d206.achu.domain.Baby;
+import com.ssafy.s12p21d206.achu.domain.BabyService;
+import com.ssafy.s12p21d206.achu.domain.NewBaby;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
-import java.time.LocalDate;
 import java.util.List;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class BabyController {
 
-  @PostMapping("/babies")
-  public ApiResponse<DefaultIdResponse> appendBaby(
-      @RequestPart(name = "profileImage") MultipartFile profileImage,
-      @RequestPart AppendBabyRequest request) {
+  private final BabyService babyService;
 
-    DefaultIdResponse response = new DefaultIdResponse(1L);
-    return ApiResponse.success(response);
+  public BabyController(BabyService babyService) {
+    this.babyService = babyService;
   }
 
-  @GetMapping("/babies/{babyId}")
-  public ApiResponse<BabyDetailResponse> findBaby(Long userId, @PathVariable Long babyId) {
+  @PostMapping("/babies")
+  public ApiResponse<DefaultIdResponse> appendBaby(
+      ApiUser apiUser,
+      @RequestPart(name = "profileImage") MultipartFile profileImage,
+      @RequestPart @Validated AppendBabyRequest request) {
+    String imageUrl = "https://dummy-image-url.com/image.png";
+    NewBaby newBaby = request.toNewBaby(imageUrl);
+    Long id = babyService.append(apiUser.toUser(), newBaby);
+    return ApiResponse.success(new DefaultIdResponse(id));
+  }
 
-    BabyDetailResponse response = new BabyDetailResponse(
-        babyId, "강두식", Sex.FEMALE, "https://test-image.png", LocalDate.of(2025, 3, 20));
-    return ApiResponse.success(response);
+  @GetMapping("/babies/{id}")
+  public ApiResponse<BabyResponse> findBaby(ApiUser apiUser, @PathVariable Long id) {
+    Baby baby = babyService.findBaby(apiUser.toUser(), id);
+    return ApiResponse.success(BabyResponse.from(baby));
   }
 
   @GetMapping("/babies")
   public ApiResponse<List<BabyResponse>> findBabies(
-      Long userId,
+      ApiUser apiUser,
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
-
-    LocalDate birth1 = LocalDate.of(2025, 3, 20);
-    LocalDate birth2 = LocalDate.of(2026, 5, 5);
-
-    List<BabyResponse> response = List.of(
-        new BabyResponse(1L, "강두식", "https://test-image1.png", birth1),
-        new BabyResponse(2L, "강삼식", "https://test-image2.png", birth2));
-
-    return ApiResponse.success(response);
+    List<Baby> babies = babyService.findBabies(apiUser.toUser());
+    return ApiResponse.success(BabyResponse.of(babies));
   }
 
   @PatchMapping("/babies/{babyId}/profile-image")
@@ -62,15 +55,32 @@ public class BabyController {
     return ApiResponse.success();
   }
 
-  @PutMapping("/babies/{babyId}")
-  public ApiResponse<Void> modifyBaby(
-      Long userId, @PathVariable Long babyId, @RequestBody ModifyBabyRequest request) {
-
+  @PatchMapping("/babies/{id}/nickname")
+  public ApiResponse<Void> modifyBabyNickname(
+      ApiUser apiUser,
+      @PathVariable Long id,
+      @RequestBody @Validated ModifyBabyNicknameRequest request) {
+    babyService.modifyNickname(apiUser.toUser(), id, request.nickname());
     return ApiResponse.success();
   }
 
-  @DeleteMapping("/babies/{babyId}")
-  public ApiResponse<Void> deleteBaby(Long userId, @PathVariable Long babyId) {
+  @PatchMapping("/babies/{id}/birth")
+  public ApiResponse<Void> modifyBabyBirth(
+      ApiUser apiUser, @PathVariable Long id, @RequestBody ModifyBabyBirthRequest request) {
+    babyService.modifyBirth(apiUser.toUser(), id, request.birth());
     return ApiResponse.success();
+  }
+
+  @PatchMapping("/babies/{id}/gender")
+  public ApiResponse<Void> modifyBabyGender(
+      ApiUser apiUser, @PathVariable Long id, @RequestBody ModifyBabyGenderRequest request) {
+    babyService.modifyGender(apiUser.toUser(), id, request.gender());
+    return ApiResponse.success();
+  }
+
+  @DeleteMapping("/babies/{id}")
+  public ApiResponse<DefaultIdResponse> deleteBaby(ApiUser apiUser, @PathVariable Long id) {
+    babyService.delete(apiUser.toUser(), id);
+    return ApiResponse.success(new DefaultIdResponse(id));
   }
 }
