@@ -60,13 +60,13 @@ public class BabyCoreRepository implements BabyRepository {
   }
 
   @Override
-  public boolean existsById(Long id) {
-    return babyJpaRepository.existsById(id);
+  public boolean existsByIdAndEntityStatus(Long id) {
+    return babyJpaRepository.existsByIdAndEntityStatus(id, EntityStatus.ACTIVE);
   }
 
   @Override
   public boolean existsByIdAndUser(Long id, User user) {
-    return babyJpaRepository.existsByIdAndUserId(id, user.id());
+    return babyJpaRepository.existsByIdAndUserIdAndEntityStatus(id, user.id(), EntityStatus.ACTIVE);
   }
 
   @Override

@@ -9,7 +9,9 @@ public interface BabyJpaRepository extends JpaRepository<BabyEntity, Long> {
 
   Optional<BabyEntity> findByIdAndEntityStatus(Long id, EntityStatus status);
 
-  boolean existsByIdAndUserId(Long id, Long userId);
+  boolean existsByIdAndEntityStatus(Long id, EntityStatus status);
 
-  int countByUserIdAndEntityStatus(Long id, EntityStatus entityStatus);
+  boolean existsByIdAndUserIdAndEntityStatus(Long id, Long userId, EntityStatus status);
+
+  int countByUserIdAndEntityStatus(Long id, EntityStatus status);
 }

@@ -13,7 +13,7 @@ public class BabyValidator {
   }
 
   public void validateExists(Long id) {
-    if (!babyRepository.existsById(id)) {
+    if (!babyRepository.existsByIdAndEntityStatus(id)) {
       throw new CoreException(CoreErrorType.DATA_NOT_FOUND);
     }
   }
