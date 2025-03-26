@@ -27,4 +27,5 @@ public interface GoodsRepository {
 
   boolean existByIdAndTradeStatus(Long id);
 
+  Long delete(Long id);
 }

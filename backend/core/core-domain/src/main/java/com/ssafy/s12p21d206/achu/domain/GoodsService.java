@@ -11,16 +11,19 @@ public class GoodsService {
   private final GoodsAppender goodsAppender;
   private final GoodsModifier goodsModifier;
   private final GoodsValidator goodsValidator;
+  private final GoodsDeleter goodsDeleter;
 
   public GoodsService(
       GoodsReader goodsReader,
       GoodsAppender goodsAppender,
       GoodsModifier goodsModifier,
-      GoodsValidator goodsValidator) {
+      GoodsValidator goodsValidator,
+      GoodsDeleter goodsDeleter) {
     this.goodsReader = goodsReader;
     this.goodsAppender = goodsAppender;
     this.goodsModifier = goodsModifier;
     this.goodsValidator = goodsValidator;
+    this.goodsDeleter = goodsDeleter;
   }
 
   public Long append(User user, NewGoods newGoods) {
@@ -28,11 +31,17 @@ public class GoodsService {
     return goodsDetail.id();
   }
 
-  public GoodsDetail modifyGoods(User user, Long id, ModifyGoods modifyGoods) {
+  public GoodsDetail modify(User user, Long id, ModifyGoods modifyGoods) {
     goodsValidator.validateExists(id);
     goodsValidator.validateOwner(user.id(), id);
     goodsValidator.validateSelling(id);
-    return goodsModifier.modifyGoods(id, modifyGoods);
+    return goodsModifier.modify(id, modifyGoods);
+  }
+
+  public Long delete(User user, Long id) {
+    goodsValidator.validateExists(id);
+    goodsValidator.validateOwner(user.id(), id);
+    return goodsDeleter.delete(id);
   }
 
   public List<Goods> findGoods(User user, Long offset, Long limit, SortType sort) {

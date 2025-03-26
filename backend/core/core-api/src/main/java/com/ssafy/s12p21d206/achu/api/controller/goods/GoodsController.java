@@ -58,13 +58,14 @@ public class GoodsController {
   public ApiResponse<Void> modifyGoods(
       ApiUser apiUser, @PathVariable Long goodsId, @RequestBody ModifyGoodsRequest request) {
     ModifyGoods modifyGoods = ModifyGoodsRequest.toModifyGoods(request);
-    goodsService.modifyGoods(apiUser.toUser(), goodsId, modifyGoods);
+    goodsService.modify(apiUser.toUser(), goodsId, modifyGoods);
     return ApiResponse.success();
   }
 
   @DeleteMapping("/goods/{goodsId}")
-  public ApiResponse<Void> deleteGoods(Long userId, @PathVariable Long goodsId) {
-    return ApiResponse.success();
+  public ApiResponse<DefaultIdResponse> deleteGoods(ApiUser apiUser, @PathVariable Long goodsId) {
+    goodsService.delete(apiUser.toUser(), goodsId);
+    return ApiResponse.success(new DefaultIdResponse(goodsId));
   }
 
   @GetMapping("/categories")

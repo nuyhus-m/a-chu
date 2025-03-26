@@ -70,6 +70,15 @@ public class GoodsCoreRepository implements GoodsRepository {
   }
 
   @Override
+  public Long delete(Long id) {
+    GoodsEntity goods = goodsJpaRepository
+        .findByIdAndEntityStatus(id, EntityStatus.ACTIVE)
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+    goods.delete();
+    return goods.getId();
+  }
+
+  @Override
   public List<Goods> findGoods(User user, Long offset, Long limit, SortType sort) {
     Pageable pageable = PageRequest.of(offset.intValue(), limit.intValue(), convertSort(sort));
     List<GoodsEntity> goodsEntities =
