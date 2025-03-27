@@ -13,6 +13,7 @@ import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsUtils;
 import io.restassured.http.ContentType;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -64,5 +65,30 @@ class PhoneVerificationControllerTest extends RestDocsTest {
                 fieldWithPath("data.expiresIn")
                     .type(JsonFieldType.STRING)
                     .description("ISO 8601 표준 duration, 인증 번호 인증 가능 만료 기간"))));
+  }
+
+  @Test
+  void verifyVerification() {
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(new VerifyVerificationCodeRequest(UUID.randomUUID(), "123456"))
+        .post("/verification/verify")
+        .then()
+        .status(HttpStatus.OK)
+        .apply(document(
+            "verify-verification",
+            requestFields(
+                fieldWithPath("id")
+                    .type(JsonFieldType.STRING)
+                    .description("인증 코드 생성 시 받은 인증 코드 식별자")
+                    .attributes(RestDocsUtils.constraints("UUID")),
+                fieldWithPath("code")
+                    .type(JsonFieldType.STRING)
+                    .description("인증 코드")
+                    .attributes(RestDocsUtils.constraints("6자리 숫자"))),
+            responseFields(fieldWithPath("result")
+                .type(JsonFieldType.STRING)
+                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
   }
 }

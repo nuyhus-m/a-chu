@@ -4,19 +4,23 @@
 
 operation::request-verification[snippets='http-request,request-fields,http-response,response-fields']
 
+=== 휴대폰 인증 번호 확인
+
+operation::verify-verification[snippets='http-request,request-fields,http-response,response-fields']
+
 === 회원가입
 
 신규 User 객체를 생성하고 고유 식별자 및 속성 정보를 반환합니다.
 
 operation::append-user[snippets='http-request,request-fields,http-response,response-fields']
 
-=== 회원 정보 조회
+=== 회원 정보 조회 [미구현]
 
 지정된 식별자 기반으로 user 객체의 상세 정보를 조회합니다.
 
 operation::find-user[snippets='http-request,path-parameters,http-response,response-fields']
 
-=== 본인 회원 정보 조회
+=== 본인 회원 정보 조회 [미구현]
 
 사용자 본인의 상세 정보를 조회합니다.
 
@@ -47,13 +51,13 @@ user 객체의 비밀번호를 업데이트합니다.
 
 operation::modify-password[snippets='http-request,request-fields,http-response,response-fields']
 
-=== 프로필 변경
+=== 프로필 변경 [미구현]
 
 user 객체의 프로필을 업데이트합니다.
 
 operation::modify-profile-image[snippets='http-request,request-parts,http-response,response-fields']
 
-=== 비밀번호 변경
+=== 비밀번호 변경 [미구현]
 
 user 객체의 전화번호를 업데이트합니다.
 

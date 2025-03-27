@@ -12,7 +12,7 @@ operation::find-baby[snippets='http-request,path-parameters,http-response,respon
 
 operation::find-babies[snippets='http-request,http-response,response-fields']
 
-=== 자녀 프로필 사진 변경
+=== 자녀 프로필 사진 변경 [미구현]
 
 operation::modify-baby-profile-image[snippets='http-request,path-parameters,request-parts,http-response,response-fields']
 
