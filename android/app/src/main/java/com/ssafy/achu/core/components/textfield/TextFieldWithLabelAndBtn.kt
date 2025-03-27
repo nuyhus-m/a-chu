@@ -24,10 +24,12 @@ fun TextFieldWithLabelAndBtn(
     buttonText: String,
     errorMessage: String = "",
     onClick: () -> Unit,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    enabled: Boolean = false,
+    buttonEnabled: Boolean = true
 ) {
     Column {
-        LabelWithErrorMsg(label, errorMessage)
+        LabelWithErrorMsg(label, errorMessage, enabled)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -51,7 +53,8 @@ fun TextFieldWithLabelAndBtn(
 
             PointBlueFlexibleBtn(
                 buttonText = buttonText,
-                onClick = onClick
+                onClick = onClick,
+                buttonEnabled = buttonEnabled
             )
         }
     }

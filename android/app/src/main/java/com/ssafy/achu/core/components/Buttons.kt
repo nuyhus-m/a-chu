@@ -73,7 +73,7 @@ fun PointBlueButton(buttonText: String, enabled: Boolean = true, onClick: () -> 
 
 //글씨 크기에 맞춰 지는 파란 버튼
 @Composable
-fun PointBlueFlexibleBtn(buttonText: String, onClick: () -> Unit) {
+fun PointBlueFlexibleBtn(buttonText: String, buttonEnabled: Boolean = true, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .wrapContentWidth() // 텍스트의 너비에 맞게 크기 자동 조정
@@ -81,8 +81,11 @@ fun PointBlueFlexibleBtn(buttonText: String, onClick: () -> Unit) {
     ) {
         Box(
             modifier = Modifier
-                .background(PointBlue, shape = RoundedCornerShape(50.dp)) // 버튼 색상 및 모서리 둥글게
-                .clickable(onClick = onClick)
+                .background(
+                    color = if (buttonEnabled) PointBlue else DisabledBlue,
+                    shape = RoundedCornerShape(50.dp)
+                ) // 버튼 색상 및 모서리 둥글게
+                .clickable(enabled = buttonEnabled, onClick = onClick)
                 .height(50.dp)
                 .padding(horizontal = 24.dp), // 텍스트의 여백을 설정
             contentAlignment = Alignment.Center

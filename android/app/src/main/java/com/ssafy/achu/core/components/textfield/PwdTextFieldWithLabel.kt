@@ -14,9 +14,10 @@ fun PwdTextFieldWithLabel(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    errorMessage: String = ""
+    errorMessage: String = "",
+    enabled: Boolean = false
 ) {
-    LabelWithErrorMsg(label, errorMessage)
+    LabelWithErrorMsg(label, errorMessage, enabled)
 
     Spacer(modifier = Modifier.height(8.dp))
 
