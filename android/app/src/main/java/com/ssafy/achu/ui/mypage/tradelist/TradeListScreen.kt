@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.mypage
+package com.ssafy.achu.ui.mypage.tradelist
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

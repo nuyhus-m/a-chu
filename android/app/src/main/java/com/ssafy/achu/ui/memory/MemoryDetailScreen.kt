@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.memory
 
+import android.R.attr.contentDescription
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +27,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter.State.Empty.painter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -36,6 +39,7 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.data.model.memory.MemoryResponse
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -45,6 +49,19 @@ fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
         R.drawable.img_test_baby_doll,
         R.drawable.img_test_baby_summer,
         R.drawable.img_test_sopung
+    )
+
+    val memory = MemoryResponse(
+        content = "너무너무 귀여운 두식이의 첫돌에 입었던\n옷을 팔았다. 서운하면서도 후련하다\n이걸로 더 예쁜옷을 사줘야지",
+        createdAt = "2024.06.03",
+        id = 1,
+        imgUrls = listOf(
+            "https://loremflickr.com/600/400",
+            "https://loremflickr.com/600/400",
+            "https://loremflickr.com/600/400"
+        ),
+        title = "두식이의 첫돌",
+        updatedAt = ""
     )
 
     Box(
@@ -107,8 +124,8 @@ fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
                     .fillMaxWidth()
                     .height(350.dp)
             ) { page ->
-                Image(
-                    painter = painterResource(id = images[page]),
+                AsyncImage(
+                    model = memory.imgUrls[page],
                     contentDescription = "Memory Image",
                     modifier = Modifier.fillMaxSize(),
                     alignment = Alignment.Center,
@@ -127,14 +144,14 @@ fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "첫 돌 기념 두식이!",
+                text = memory.title,
                 style = AchuTheme.typography.semiBold20
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "2025.03.06",
+                text = memory.createdAt,
                 style = AchuTheme.typography.semiBold14PointBlue,
                 color = FontGray
 
@@ -143,7 +160,7 @@ fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "너와 함께한 시간, 정말 행복했어. 앞으로도 건강하고 씩씩하게 자라길 바라. 언제나 사랑하고 응원할게! 늘 행복하자! 너와의 추억은 소중하게 간직할게, 함께한 모든 순간들이 너무나 특별했어.",
+                text = memory.content,
                 style = AchuTheme.typography.regular18,
                 modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().padding(horizontal = 24.dp),
                 textAlign = TextAlign.Center,

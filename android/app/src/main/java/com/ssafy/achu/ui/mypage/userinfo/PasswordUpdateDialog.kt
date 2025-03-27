@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.mypage
+package com.ssafy.achu.ui.mypage.userinfo
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

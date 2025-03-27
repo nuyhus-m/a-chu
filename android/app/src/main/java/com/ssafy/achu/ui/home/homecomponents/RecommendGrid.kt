@@ -1,5 +1,6 @@
-package com.ssafy.achu.ui.home
+package com.ssafy.achu.ui.home.homecomponents
 
+import android.R.attr.contentDescription
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,17 +19,22 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter.State.Empty.painter
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontPink
@@ -37,7 +43,13 @@ import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.data.model.product.ProductResponse
 
 @Composable
-fun RecommendGrid(productResponses: List<ProductResponse>, onClick: (productId: Int) -> Unit = {}) {
+fun RecommendGrid(
+    productResponses: List<ProductResponse>,
+    onClick: (productId: Int) -> Unit = {},
+    onHeartClick: (productId: Int) -> Unit = {}
+) {
+
+    val heartClick = remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -57,15 +69,16 @@ fun RecommendGrid(productResponses: List<ProductResponse>, onClick: (productId: 
                     onClick(productResponses[0].id)
                 }
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.img_miffy_doll),
+            AsyncImage(
+                model = productResponses[0].imgUrl,
                 contentDescription = "$productResponses[0].title",
                 modifier = Modifier
                     .fillMaxSize() // 박스를 꽉 채우도록 설정
                     .align(Alignment.Center) // 이미지를 중앙에 배치
-                    .clip(RoundedCornerShape(8.dp)) // 이미지를 라운드 처리
-
-                ,
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable {
+                        onClick(productResponses[0].id)
+                    },
                 contentScale = ContentScale.Crop // 이미지를 박스를 꽉 채우도록 조정
             )
 
@@ -95,15 +108,15 @@ fun RecommendGrid(productResponses: List<ProductResponse>, onClick: (productId: 
                     Spacer(Modifier.weight(1.0f))
 
                     Image(
-                        painter = painterResource(id = R.drawable.ic_favorite_line),
+                        painter = painterResource(id = if (!productResponses[0].likedByUser) R.drawable.ic_favorite_line else R.drawable.ic_favorite),
                         contentDescription = "Arrow",
                         modifier = Modifier
                             .size(24.dp)
-                            .shadow(2.dp)
                             .clickable {
-                                onClick(productResponses[0].id)
+                                onHeartClick(productResponses[0].id)
+                                productResponses[0].likedByUser = !productResponses[0].likedByUser
                             },
-                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(LightGray)
+                        colorFilter = ColorFilter.tint(if(!productResponses[0].likedByUser)LightGray else FontPink)
                     )
 
                 }
@@ -143,13 +156,16 @@ fun RecommendGrid(productResponses: List<ProductResponse>, onClick: (productId: 
                         onClick(productResponses[1].id)
                     }
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.img_miffy_doll),
+                AsyncImage(
+                    model = productResponses[1].imgUrl,
                     contentDescription = "${productResponses[1].title}",
                     modifier = Modifier
                         .fillMaxSize() // 박스를 꽉 채우도록 설정
                         .clip(RoundedCornerShape(8.dp)) // 이미지를 라운드 처리
-                        .align(Alignment.Center),
+                        .align(Alignment.Center)
+                        .clickable {
+                            onClick(productResponses[1].id)
+                        },
                     contentScale = ContentScale.Crop
                 )
 
@@ -178,15 +194,14 @@ fun RecommendGrid(productResponses: List<ProductResponse>, onClick: (productId: 
                         Spacer(Modifier.weight(1.0f))
 
                         Image(
-                            painter = painterResource(id = R.drawable.ic_favorite_line),
+                            painter = painterResource(id = if (!productResponses[1].likedByUser) R.drawable.ic_favorite_line else R.drawable.ic_favorite),
                             contentDescription = "Arrow",
                             modifier = Modifier
                                 .size(20.dp)
-                                .shadow(2.dp)
                                 .clickable {
-                                    onClick(productResponses[1].id)
+                                    onHeartClick(productResponses[1].id)
                                 },
-                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(LightGray)
+                            colorFilter = ColorFilter.tint(if(!productResponses[1].likedByUser)LightGray else FontPink)
                         )
 
                     }
@@ -219,13 +234,16 @@ fun RecommendGrid(productResponses: List<ProductResponse>, onClick: (productId: 
                         onClick(productResponses[2].id)
                     }
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.img_miffy_doll),
+                AsyncImage(
+                    model = productResponses[2].imgUrl,
                     contentDescription = "recommend3",
                     modifier = Modifier
                         .fillMaxSize() // 박스를 꽉 채우도록 설정
                         .clip(RoundedCornerShape(8.dp)) // 이미지를 라운드 처리
-                        .align(Alignment.Center),
+                        .align(Alignment.Center)
+                        .clickable {
+                            onClick(productResponses[1].id)
+                        },
                     contentScale = ContentScale.Crop
                 )
                 Column(
@@ -253,15 +271,14 @@ fun RecommendGrid(productResponses: List<ProductResponse>, onClick: (productId: 
                         Spacer(Modifier.weight(1.0f))
 
                         Image(
-                            painter = painterResource(id = R.drawable.ic_favorite_line),
+                            painter = painterResource(id = if (!productResponses[2].likedByUser) R.drawable.ic_favorite_line else R.drawable.ic_favorite),
                             contentDescription = "Arrow",
                             modifier = Modifier
                                 .size(20.dp)
-                                .shadow(2.dp)
                                 .clickable {
-                                    onClick(productResponses[2].id)
+                                    onHeartClick(productResponses[2].id)
                                 },
-                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(LightGray)
+                            colorFilter = ColorFilter.tint(if(!productResponses[2].likedByUser)LightGray else FontPink)
                         )
 
                     }
@@ -306,7 +323,7 @@ fun preview() {
                         createdAt = "3일 전",
                         id = 1,
                         imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                        likedByUser = true,
+                        likedByUser = false,
                         likedUsersCount = 18,
                         price = 5000,
                         title = "미피 인형"
@@ -317,7 +334,7 @@ fun preview() {
                         createdAt = "3일 전",
                         id = 1,
                         imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                        likedByUser = true,
+                        likedByUser = false,
                         likedUsersCount = 18,
                         price = 5000,
                         title = "미피 인형"

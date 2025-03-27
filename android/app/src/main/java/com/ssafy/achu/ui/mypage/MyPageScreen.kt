@@ -1,3 +1,5 @@
+import android.R.attr.contentDescription
+import android.R.attr.phoneNumber
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,9 +21,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.data.model.auth.UserInfoResponse
+import kotlin.String
 
 @Composable
 fun MyPageScreen(
@@ -33,6 +38,13 @@ fun MyPageScreen(
     onNavigateToUserInfo: () -> Unit,
     onNavigateToBabyList: () -> Unit
 ) {
+
+    val user = UserInfoResponse(
+        imageUrl = "https://loremflickr.com/300/300/mom",
+        nickname = "재영맘",
+        userId = "achutest1",
+        phoneNumber = "010-1234-4568",
+    )
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -71,18 +83,33 @@ fun MyPageScreen(
                             .clip(CircleShape) // 원형 이미지 적용
                     ) {
                         Image(
-                            painter = painterResource(id = profileImg),
+                            painter = painterResource(R.drawable.img_profile_test),//로딩 이미지
                             contentDescription = "Profile",
                             modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
                             contentScale = ContentScale.Crop
                         )
+                        if (user.imageUrl.isNullOrEmpty()) {
+                            Image(
+                                painter = painterResource(R.drawable.img_profile_test),//디폴트 이미지
+                                contentDescription = "Profile",
+                                modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            AsyncImage(
+                                model = user.imageUrl,
+                                contentDescription = "Profile",
+                                modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
+                                contentScale = ContentScale.Crop
+                            )
+                        }
                     }
 
                     Row(
                         verticalAlignment = Alignment.Bottom // 하단 정렬
                     ) {
                         Text(
-                            text = "재영맘",
+                            text = user.nickname,
                             style = AchuTheme.typography.bold24.copy(
                                 fontSize = 32.sp,
                                 lineHeight = 30.sp,
@@ -159,9 +186,8 @@ fun MyPageScreen(
                 MyPageItem(
                     img = R.drawable.ic_maypage_myinfo,
                     title = "내 정보 수정",
-                    onClick = { onNavigateToUserInfo()}
+                    onClick = { onNavigateToUserInfo() }
                 )
-
 
 
             }
@@ -237,7 +263,7 @@ fun MyPageScreenPreview() {
             onNavigateToTradeList = { /* 거래내역 클릭 시 동작 */ },
             onNavigateToLikeList = { /* 찜한 상품 클릭 시 동작 */ },
             onNavigateToRecommend = { /* 추천상품 클릭 시 동작 */ },
-            onNavigateToUserInfo = { } ,
+            onNavigateToUserInfo = { },
             onNavigateToBabyList = {}
         )
     }
