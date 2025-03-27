@@ -1,7 +1,10 @@
 package com.ssafy.s12p21d206.achu.api.controller.memory;
 
+import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
+import com.ssafy.s12p21d206.achu.domain.MemoryService;
+import com.ssafy.s12p21d206.achu.domain.NewMemory;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,14 +22,22 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class MemoryController {
 
+  private final MemoryService memoryService;
+
+  public MemoryController(MemoryService memoryService) {
+    this.memoryService = memoryService;
+  }
+
   @PostMapping("/babies/{babyId}/memories")
   public ApiResponse<DefaultIdResponse> appendMemory(
-      @PathVariable String babyId,
+      ApiUser apiUser,
+      @PathVariable Long babyId,
       @RequestPart(name = "memoryImages") List<MultipartFile> memoryImages,
       @RequestPart(name = "request") AppendMemoryRequest request) {
-
-    DefaultIdResponse response = new DefaultIdResponse(1L);
-    return ApiResponse.success(response);
+    List<String> imgUrls = List.of("goods1-img-url1.jpg", "goods1-img-url2.jpg");
+    NewMemory newMemory = request.toNewMemory(imgUrls);
+    Long memoryId = memoryService.append(apiUser.toUser(), babyId, newMemory);
+    return ApiResponse.success(new DefaultIdResponse(memoryId));
   }
 
   @GetMapping("/memories/{memoryId}")
