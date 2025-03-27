@@ -3,6 +3,7 @@ package com.ssafy.s12p21d206.achu.api.controller.memory;
 import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
+import com.ssafy.s12p21d206.achu.domain.Memory;
 import com.ssafy.s12p21d206.achu.domain.MemoryService;
 import com.ssafy.s12p21d206.achu.domain.NewMemory;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
@@ -42,15 +43,10 @@ public class MemoryController {
   }
 
   @GetMapping("/memories/{memoryId}")
-  public ApiResponse<MemoryDetailResponse> findMemory(Long userId, @PathVariable Long memoryId) {
-    LocalDateTime createdAt = LocalDateTime.of(2025, 3, 12, 14, 0);
-    MemoryDetailResponse response = new MemoryDetailResponse(
-        memoryId,
-        "제목",
-        "내용",
-        List.of("https://image1.jpg", "https://image2.jpg"),
-        createdAt,
-        createdAt);
+  public ApiResponse<MemoryDetailResponse> findMemory(
+      ApiUser apiUser, @PathVariable Long memoryId) {
+    Memory memory = memoryService.findMemory(apiUser.toUser(), memoryId);
+    MemoryDetailResponse response = MemoryDetailResponse.from(memory);
     return ApiResponse.success(response);
   }
 
