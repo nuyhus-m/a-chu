@@ -37,16 +37,18 @@ public class GoodsService {
     return goodsDetail.id();
   }
 
-  public GoodsDetail modify(User user, Long id, ModifyGoods modifyGoods) {
+  public GoodsDetail modify(User user, Long id, ModifyGoods modifyGoods) { // TODO: goodsId 어떨까요
     goodsValidator.validateExists(id);
     goodsValidator.validateOwner(user.id(), id);
     goodsValidator.validateIsSelling(id);
+    // TODO: 자기 아기인지 확인
     return goodsModifier.modify(id, modifyGoods);
   }
 
   public Long delete(User user, Long id) {
     goodsValidator.validateExists(id);
     goodsValidator.validateOwner(user.id(), id);
+    //    TODO: 거래완료될땐 삭제 못하는지 물어보기 못하면 검증 추가
     return goodsDeleter.delete(id);
   }
 

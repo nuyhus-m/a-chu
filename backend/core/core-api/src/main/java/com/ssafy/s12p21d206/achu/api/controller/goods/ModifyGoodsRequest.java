@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 public record ModifyGoodsRequest(
     @NotNull @GoodsTitle String title,
     @NotNull @GoodsDescription String description,
-    @NotNull Long price,
+    @NotNull Long price, // TODO: 양수 처리 @Min
     @NotNull Long categoryId,
     @NotNull Long babyId) {
   public static ModifyGoods toModifyGoods(ModifyGoodsRequest request) {

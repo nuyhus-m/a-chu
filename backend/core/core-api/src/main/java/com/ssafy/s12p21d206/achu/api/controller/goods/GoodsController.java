@@ -43,7 +43,7 @@ public class GoodsController {
   @PostMapping("/goods")
   public ApiResponse<DefaultIdResponse> appendGoods(
       ApiUser apiUser,
-      @RequestPart("request") AppendGoodsRequest request,
+      @RequestPart("request") AppendGoodsRequest request, // TODO: @Validated 들어가야함
       @RequestPart("Images") MultipartFile[] files) {
     List<String> imgUrls = List.of("goods1-img-url1.jpg", "goods1-img-url2.jpg");
     NewGoods newGoods = request.toNewGoods(imgUrls);
@@ -59,7 +59,9 @@ public class GoodsController {
 
   @PutMapping("/goods/{goodsId}")
   public ApiResponse<Void> modifyGoods(
-      ApiUser apiUser, @PathVariable Long goodsId, @RequestBody ModifyGoodsRequest request) {
+      ApiUser apiUser,
+      @PathVariable Long goodsId,
+      @RequestBody ModifyGoodsRequest request) { // TODO: @Validated
     ModifyGoods modifyGoods = ModifyGoodsRequest.toModifyGoods(request);
     goodsService.modify(apiUser.toUser(), goodsId, modifyGoods);
     return ApiResponse.success();
@@ -113,14 +115,14 @@ public class GoodsController {
       ApiUser apiUser, @PathVariable Long goodsId) {
     GoodsDetail goodsDetail = goodsService.findGoodsDetail(goodsId);
 
-    User userId = goodsService.findUserIdByGoodsId(goodsId);
+    User userId = goodsService.findUserIdByGoodsId(goodsId); // TODO: 불필요
 
     LikeStatus likeStatus = likeService.findLikeStatus(apiUser.toUser(), goodsId);
 
     Category category = categoryService.findCategoryInfo(goodsDetail.categoryId());
     CategoryResponse categoryResponse = CategoryResponse.from(category);
 
-    Seller seller = userService.findSellerInfo(userId);
+    Seller seller = userService.findSellerInfo(userId); // TODO: GoodsDetail에서 User로 타입 변경 후 꺼내 쓰기
     UserResponse sellerResponse = UserResponse.from(seller);
 
     GoodsDetailResponse response =
@@ -176,7 +178,7 @@ public class GoodsController {
 >>>>>>> cf5db19 (feat: 물품 검색, 카테고리별 물품 검색 API 구현)
   }
 
-  @GetMapping("/trade-history")
+  @GetMapping("/trade-history") // TODO: trade-histories or trades (후자가 더 간결한듯..)
   public ApiResponse<List<TradeHistoryResponse>> findGoodsTradeHistory(
       ApiUser apiUser,
       @RequestParam TradeType tradeType,
@@ -189,9 +191,11 @@ public class GoodsController {
     return ApiResponse.success(responses);
   }
 
+  // TODO: 해당 goods에 대한 거래 완료 -> /goods/{goodsId}/trade/complete
   @PostMapping("/trade/complete")
   public ApiResponse<DefaultIdResponse> completeTrade(
       ApiUser apiUser, @RequestBody AppendTradeHistoryRequest request) {
+    // TODO: NewTradeHistory는 id 없고 TradeHistory는 id 있어야할듯..?
     TradeHistory tradeHistory = AppendTradeHistoryRequest.toTradeHistory(apiUser.toUser(), request);
     Long id = tradeHistoryService.completeTrade(apiUser.toUser(), tradeHistory);
     return ApiResponse.success(new DefaultIdResponse(id));

@@ -13,5 +13,5 @@ public record GoodsDetail(
     Long price,
     LocalDateTime createdAt,
     Long categoryId,
-    Long userId,
+    Long userId, // TODO: User 객체로 변환 그리고 DB에서 가져올 떄 new User(userId)로 생성해서 생성자로 넣기
     Long babyId) {}

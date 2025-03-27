@@ -11,6 +11,7 @@ public class GoodsAppender {
   }
 
   public GoodsDetail append(User user, NewGoods newGoods) {
+    // TODO: 검증 -> 카테고리 존재여부, 아기 존재여부, 해당 아기가 User의 아기인지 검증
     return goodsRepository.save(user, newGoods);
   }
 }
