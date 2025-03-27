@@ -9,6 +9,7 @@ import com.ssafy.s12p21d206.achu.domain.support.TradeStatus;
 import com.ssafy.s12p21d206.achu.domain.support.TradeType;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,7 +50,7 @@ public class GoodsController {
     List<Goods> goods =
         goodsService.findCategoryGoods(apiUser.toUser(), categoryId, offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
-    List<LikeStatus> likeStatuses = likeService.findLikeStatus(apiUser.toUser(), goodsIds);
+    Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
@@ -63,7 +64,7 @@ public class GoodsController {
       @RequestParam SortType sort) {
     List<Goods> goods = goodsService.findGoods(apiUser.toUser(), offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
-    List<LikeStatus> likeStatuses = likeService.findLikeStatus(apiUser.toUser(), goodsIds);
+    Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
@@ -78,8 +79,8 @@ public class GoodsController {
       @RequestParam SortType sort) {
     LocalDateTime createdAt = LocalDateTime.of(2025, 3, 12, 23, 53);
     List<GoodsResponse> response = List.of(
-        new GoodsResponse(5L, "유아 유모차", "goods5_img_url_1", 100000L, createdAt, 1L, 3L, true),
-        new GoodsResponse(7L, "유아식기", "goods7_img_url_1", 1500000L, createdAt, 0L, 10L, false));
+        new GoodsResponse(5L, "유아 유모차", "goods5_img_url_1", 100000L, createdAt, 1L, 3, true),
+        new GoodsResponse(7L, "유아식기", "goods7_img_url_1", 1500000L, createdAt, 0L, 10, false));
     return ApiResponse.success(response);
   }
 
@@ -93,8 +94,8 @@ public class GoodsController {
       @RequestParam SortType sort) {
     LocalDateTime createdAt = LocalDateTime.of(2025, 3, 13, 13, 19);
     List<GoodsResponse> response = List.of(
-        new GoodsResponse(11L, "튤립 장난감", "goods11_img_url_1", 3000L, createdAt, 1L, 3L, false),
-        new GoodsResponse(15L, "장난감 기차", "goods15_img_url_1", 10000L, createdAt, 4L, 3L, true));
+        new GoodsResponse(11L, "튤립 장난감", "goods11_img_url_1", 3000L, createdAt, 1L, 3, false),
+        new GoodsResponse(15L, "장난감 기차", "goods15_img_url_1", 10000L, createdAt, 4L, 3, true));
     return ApiResponse.success(response);
   }
 
@@ -163,16 +164,6 @@ public class GoodsController {
         new TradeHistoryResponse(6L, TradeStatus.SOLD, "유아 식기", "goods6_img_url", 5000L),
         new TradeHistoryResponse(10L, TradeStatus.SELLING, "유모차", "goods10_img_url", 10000L));
     return ApiResponse.success(response);
-  }
-
-  @PostMapping("/goods/{goodsId}/like")
-  public ApiResponse<Void> appendLikedGoods(Long userId, @PathVariable Long goodsId) {
-    return ApiResponse.success();
-  }
-
-  @DeleteMapping("/goods/{goodsId}/like")
-  public ApiResponse<Void> deleteLikedGoods(Long userId, @PathVariable Long goodsId) {
-    return ApiResponse.success();
   }
 
   @PatchMapping("/trade/{tradeId}/complete")

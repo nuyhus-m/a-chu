@@ -1,7 +1,16 @@
 package com.ssafy.s12p21d206.achu.domain;
 
-public interface LikeRepository {
-  Long countByGoodsId(Long goodsId);
+import java.util.List;
+import java.util.Map;
 
-  Boolean existsByGoodsIdAndUserId(Long goodsId, Long userId);
+public interface LikeRepository {
+  int count(Long goodsId);
+
+  boolean isLike(User user, Long goodsId);
+
+  Map<Long, LikeStatus> status(User user, List<Long> goodsIds);
+
+  void like(User user, Long goodsId);
+
+  void deleteLike(User user, Long goodsId);
 }

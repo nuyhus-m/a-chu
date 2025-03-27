@@ -5,13 +5,13 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BabyJpaRepository extends JpaRepository<BabyEntity, Long> {
-  List<BabyEntity> findByUserIdAndEntityStatus(Long userId, EntityStatus status);
+  List<BabyEntity> findByUserIdAndEntityStatus(Long userId, EntityStatus entityStatus);
 
-  Optional<BabyEntity> findByIdAndEntityStatus(Long id, EntityStatus status);
+  Optional<BabyEntity> findByIdAndEntityStatus(Long id, EntityStatus entityStatus);
 
-  boolean existsByIdAndEntityStatus(Long id, EntityStatus status);
+  boolean existsByIdAndEntityStatus(Long id, EntityStatus entityStatus);
 
-  boolean existsByIdAndUserIdAndEntityStatus(Long id, Long userId, EntityStatus status);
+  boolean existsByIdAndUserIdAndEntityStatus(Long id, Long userId, EntityStatus entityStatus);
 
-  int countByUserIdAndEntityStatus(Long id, EntityStatus status);
+  int countByUserIdAndEntityStatus(Long id, EntityStatus entityStatus);
 }

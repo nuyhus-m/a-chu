@@ -16,15 +16,13 @@ public record GoodsResponse(
     Long price,
     LocalDateTime createdAt,
     Long chatCount,
-    Long likedUsersCount,
+    int likedUsersCount,
     Boolean likedByUser) {
 
   public static List<com.ssafy.s12p21d206.achu.api.controller.goods.GoodsResponse> of(
-      List<Goods> goodsList, List<ChatStatus> chatStatuses, List<LikeStatus> likeStatuses) {
+      List<Goods> goodsList, List<ChatStatus> chatStatuses, Map<Long, LikeStatus> likeStatusMap) {
     Map<Long, ChatStatus> chatStatusMap = chatStatuses.stream()
         .collect(Collectors.toMap(ChatStatus::getGoodsId, Function.identity()));
-    Map<Long, LikeStatus> likeStatusMap = likeStatuses.stream()
-        .collect(Collectors.toMap(LikeStatus::getGoodsId, Function.identity()));
 
     return goodsList.stream()
         .map(goods -> {
@@ -38,8 +36,8 @@ public record GoodsResponse(
               goods.price(),
               goods.getCreatedAt(),
               chatStatus.getChatCount(),
-              likeStatus.getLikedUsersCount(),
-              likeStatus.getLikedByUser());
+              likeStatus.count(),
+              likeStatus.isLike());
         })
         .toList();
   }
