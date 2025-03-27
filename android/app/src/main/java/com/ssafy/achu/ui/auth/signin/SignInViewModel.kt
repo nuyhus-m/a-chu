@@ -4,8 +4,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.authRepository
+import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
+import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
+import com.ssafy.achu.core.util.Constants
+import com.ssafy.achu.core.util.getErrorMessage
 import com.ssafy.achu.data.model.auth.SignInRequest
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -17,6 +23,9 @@ class SignInViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignInUIState())
     val uiState: StateFlow<SignInUIState> = _uiState.asStateFlow()
+
+    private val _toastMessage = MutableSharedFlow<String>()
+    val toastMessage: SharedFlow<String> = _toastMessage
 
     fun updateId(idInput: String) {
         _uiState.update { currentState ->
@@ -45,21 +54,21 @@ class SignInViewModel : ViewModel() {
             authRepository.signIn(signInRequest)
                 .onSuccess { response ->
                     Log.d(TAG, "signIn: $response")
-                    if (response.result == "SUCCESS") {
+                    if (response.result == Constants.SUCCESS) {
                         _uiState.update { currentState ->
                             currentState.copy(
                                 signInSuccess = true
                             )
                         }
-                    } else {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                signInSuccess = false
-                            )
-                        }
+                        sharedPreferencesUtil.saveTokens(response.data)
                     }
                 }.onFailure {
-                    Log.d(TAG, "signIn: $it")
+                    val errorMessage = it.getErrorMessage(retrofit)
+                    Log.d(TAG, "signIn error: $errorMessage")
+                    Log.d(TAG, "signIn errorCode: ${it.message}")
+
+                    _toastMessage.emit(errorMessage)
+
                     _uiState.update { currentState ->
                         currentState.copy(
                             signInSuccess = false

@@ -1,6 +1,9 @@
 package com.ssafy.achu.ui.auth.signin
 
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,15 +18,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ssafy.achu.MainActivity
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.textfield.BasicTextField
@@ -31,6 +37,9 @@ import com.ssafy.achu.core.components.textfield.PasswordTextField
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import kotlinx.coroutines.flow.collectLatest
+
+private const val TAG = "SignInScreen"
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -40,7 +49,27 @@ fun SignInScreen(
     onNavigateToSignUp: () -> Unit
 ) {
 
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+
+    // 로그인 실패 시 Toast 메시지 띄우기
+    LaunchedEffect(Unit) {
+        viewModel.toastMessage.collectLatest { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // 로그인 성공 시 MainActivity로 이동
+    LaunchedEffect(uiState.signInSuccess) {
+        if (uiState.signInSuccess) {
+            val options = ActivityOptions.makeCustomAnimation(context, 0, 0)
+            Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }.also { intent ->
+                context.startActivity(intent, options.toBundle())
+            }
+        }
+    }
 
     Box(
         modifier = modifier
