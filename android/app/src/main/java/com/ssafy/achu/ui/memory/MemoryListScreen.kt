@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.memory
 
+import android.R.attr.onClick
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,11 +43,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.data.model.memory.MemoryResponse
+import kotlin.String
 
 @Composable
 fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: () -> Unit) {
@@ -55,18 +59,48 @@ fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: ()
     val items = listOf("두식이", "삼식이", "튼튼이")
 
     val memoryList = listOf(
-        MemoryItemDto(R.drawable.img_test_baby_doll, "첫 돌 기념", "2022.03.14"),
-        MemoryItemDto(R.drawable.img_test_baby_summer, "여름 휴가", "2022.07.20"),
-        MemoryItemDto(R.drawable.img_test_sopung, "소풍 간 날", "2023.06.30"),
-        MemoryItemDto(R.drawable.img_baby_profile, "놀이터에서", "2023.04.15"),
-
-    )
+        MemoryResponse(
+            content = "너무너무 귀여운 두식이의 첫돌에 입었던\n옷을 팔았다. 서운하면서도 후련하다\n이걸로 더 예쁜옷을 사줘야지",
+            createdAt = "2024.06.03",
+            id = 1,
+            imgUrls = listOf(
+                "https://loremflickr.com/600/400",
+                "https://loremflickr.com/600/400",
+                "https://loremflickr.com/600/400"
+            ),
+            title = "두식이의 첫돌",
+            updatedAt = ""
+        ),
+        MemoryResponse(
+            content = "너무너무 귀여운 두식이의 첫돌에 입었던\n옷을 팔았다. 서운하면서도 후련하다\n이걸로 더 예쁜옷을 사줘야지",
+            createdAt = "2024.07.18",
+            id = 1,
+            imgUrls = listOf(
+                "https://loremflickr.com/600/400",
+                "https://loremflickr.com/600/400",
+                "https://loremflickr.com/600/400"
+            ),
+            title = "놀이터에서",
+            updatedAt = "2024.07.18"
+        ),
+        MemoryResponse(
+            content = "너무너무 귀여운 두식이의 첫돌에 입었던\n옷을 팔았다. 서운하면서도 후련하다\n이걸로 더 예쁜옷을 사줘야지",
+            createdAt = "2024.08.19",
+            id = 1,
+            imgUrls = listOf(
+                "https://loremflickr.com/600/400",
+                "https://loremflickr.com/600/400",
+                "https://loremflickr.com/600/400"
+            ),
+            title = "여름휴가",
+            updatedAt = "2024.08.19"
+        ),
+        )
 
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(color = White)
-          ,
+            .background(color = White),
     ) {
         Column(
             modifier = Modifier
@@ -138,13 +172,18 @@ fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: ()
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
-                    modifier = Modifier.wrapContentWidth().background(color = White)
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .background(color = White)
                 ) {
                     items.forEach { item ->
                         DropdownMenuItem(
-                            text = { Text(text = item,
-                                style = AchuTheme.typography.semiBold16)
-                                   },
+                            text = {
+                                Text(
+                                    text = item,
+                                    style = AchuTheme.typography.semiBold16
+                                )
+                            },
                             onClick = {
                                 selectedItem = item
                                 expanded = false
@@ -168,10 +207,10 @@ fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: ()
             ) {
                 items(memoryList.size) { index ->
                     MemoryListItem(
-                        img = memoryList[index].imgRes,
+                        img = memoryList[index].imgUrls[0],
                         title = memoryList[index].title,
-                        date = memoryList[index].date,
-                        onClick = {onNavigateToMemoryDetail()}
+                        date = memoryList[index].createdAt,
+                        onClick = { onNavigateToMemoryDetail() }
                     )
                     Spacer(modifier = Modifier.height(16.dp)) // 아이템 간 간격 추가
                 }
@@ -181,18 +220,19 @@ fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: ()
 }
 
 @Composable
-fun MemoryListItem(img: Int, title: String, date: String, onClick: () -> Unit) {
+fun MemoryListItem(img: String, title: String, date: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            .clickable(onClick = onClick,)
+            .clickable(onClick = onClick)
             .shadow(4.dp, RoundedCornerShape(24.dp)) // 그림자 추가
             .background(color = Color.LightGray, shape = RoundedCornerShape(24.dp))
     ) {
         // 이미지가 박스에 꽉 차도록 설정
-        Image(
-            painter = painterResource(id = img),
+
+        AsyncImage(
+            model = img,
             contentDescription = "Memory Image",
             contentScale = ContentScale.Crop, // 이미지가 꽉 차도록 설정
             modifier = Modifier
@@ -212,7 +252,9 @@ fun MemoryListItem(img: Int, title: String, date: String, onClick: () -> Unit) {
                 text = title,
                 style = AchuTheme.typography.bold24.copy(
                     shadow = Shadow(
-                        color = Color.Black.copy(alpha = 0.5f), offset = Offset(2f, 2f), blurRadius = 4f
+                        color = Color.Black.copy(alpha = 0.5f),
+                        offset = Offset(2f, 2f),
+                        blurRadius = 4f
                     )
                 ),
                 color = Color.White,
@@ -224,7 +266,9 @@ fun MemoryListItem(img: Int, title: String, date: String, onClick: () -> Unit) {
                 text = date,
                 style = AchuTheme.typography.semiBold18White.copy(
                     shadow = Shadow(
-                        color = Color.Black.copy(alpha = 0.5f), offset = Offset(2f, 2f), blurRadius = 4f
+                        color = Color.Black.copy(alpha = 0.5f),
+                        offset = Offset(2f, 2f),
+                        blurRadius = 4f
                     )
                 ),
             )
@@ -232,12 +276,6 @@ fun MemoryListItem(img: Int, title: String, date: String, onClick: () -> Unit) {
     }
 }
 
-
-data class MemoryItemDto(
-    val imgRes: Int, // 이미지 리소스 ID
-    val title: String, // 추억 제목
-    val date: String // 날짜
-)
 
 @Preview
 @Composable

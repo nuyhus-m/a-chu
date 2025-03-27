@@ -43,9 +43,9 @@ import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.ProductResponse
-import com.ssafy.achu.ui.home.BabyDropdown
-import com.ssafy.achu.ui.home.RecommendGrid
-import com.ssafy.achu.ui.mypage.LikeItem2
+import com.ssafy.achu.ui.home.homecomponents.BabyDropdown
+import com.ssafy.achu.ui.home.homecomponents.RecommendGrid
+import com.ssafy.achu.ui.mypage.recommendlist.LikeItem2
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
