@@ -14,6 +14,7 @@ import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import io.restassured.http.ContentType;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -74,8 +75,8 @@ class GoodsControllerTest extends RestDocsTest {
             any(User.class), anyLong(), anyLong(), anyLong(), any(SortType.class)))
         .thenReturn(List.of(goods));
 
-    when(likeService.findLikeStatus(any(User.class), anyList()))
-        .thenReturn(List.of(new LikeStatus(goods.getId(), 5L, true)));
+    when(likeService.status(any(User.class), anyList()))
+        .thenReturn(Map.of(goods.getId(), new LikeStatus(5, true)));
 
     when(chatRoomService.findChatStatus(any(User.class), anyList()))
         .thenReturn(List.of(new ChatStatus(goods.getId(), 3L)));
@@ -121,8 +122,8 @@ class GoodsControllerTest extends RestDocsTest {
     when(goodsService.findGoods(any(User.class), anyLong(), anyLong(), any(SortType.class)))
         .thenReturn(List.of(goods));
 
-    when(likeService.findLikeStatus(any(User.class), anyList()))
-        .thenReturn(List.of(new LikeStatus(goods.getId(), 5L, true)));
+    when(likeService.status(any(User.class), anyList()))
+        .thenReturn(Map.of(goods.getId(), new LikeStatus(5, true)));
 
     when(chatRoomService.findChatStatus(any(User.class), anyList()))
         .thenReturn(List.of(new ChatStatus(goods.getId(), 3L)));
@@ -436,36 +437,6 @@ class GoodsControllerTest extends RestDocsTest {
                 fieldWithPath("data.[].title").type(JsonFieldType.STRING).description("물건 제목"),
                 fieldWithPath("data.[].imgUrl").type(JsonFieldType.STRING).description("물건 대표 이미지"),
                 fieldWithPath("data.[].price").type(JsonFieldType.NUMBER).description("판매 가격"))));
-  }
-
-  @Test
-  void appendLikedGoods() {
-    given()
-        .contentType(ContentType.JSON)
-        .post("/goods/{goodsId}/like", 1L)
-        .then()
-        .status(HttpStatus.OK)
-        .apply(document(
-            "append-liked-goods",
-            pathParameters(parameterWithName("goodsId").description("찜할 물건 id")),
-            responseFields(fieldWithPath("result")
-                .type(JsonFieldType.STRING)
-                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
-  }
-
-  @Test
-  void deleteLikedGoods() {
-    given()
-        .contentType(ContentType.JSON)
-        .delete("/goods/{goodsId}/like", 1L)
-        .then()
-        .status(HttpStatus.OK)
-        .apply(document(
-            "delete-liked-goods",
-            pathParameters(parameterWithName("goodsId").description("찜 취소할 물건 id")),
-            responseFields(fieldWithPath("result")
-                .type(JsonFieldType.STRING)
-                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
   }
 
   @Test

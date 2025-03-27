@@ -36,6 +36,11 @@ public class GoodsCoreRepository implements GoodsRepository {
     return goodsEntities.stream().map(GoodsEntity::toGoods).toList();
   }
 
+  @Override
+  public boolean existsById(Long goodsId) {
+    return goodsJpaRepository.existsByIdAndEntityStatus(goodsId, EntityStatus.ACTIVE);
+  }
+
   private Sort convertSort(SortType sort) {
     return switch (sort) {
       case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");

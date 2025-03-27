@@ -10,4 +10,6 @@ public interface GoodsJpaRepository extends JpaRepository<GoodsEntity, Long> {
 
   List<GoodsEntity> findAllByCategoryIdAndEntityStatus(
       Long categoryId, Pageable pageable, EntityStatus entityStatus);
+
+  boolean existsByIdAndEntityStatus(Long goodsId, EntityStatus entityStatus);
 }

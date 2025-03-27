@@ -33,16 +33,10 @@ operation::delete-goods[snippets='http-request,path-parameters,http-response,res
 === 거래 내역 조회 (구매 & 판매) [미구현]
 operation::find-goods-trade-history[snippets='http-request,query-parameters,http-response,response-fields']
 
-=== 찜 목록 조회 [미구현]
+=== 찜한 물품 목록 조회
 operation::find-liked[snippets='http-request,http-response,response-fields']
 
-=== 물건 찜 [미구현]
-operation::append-liked-goods[snippets='http-request,path-parameters,http-response,response-fields']
-
-=== 물건 찜 취소 [미구현]
-operation::delete-liked-goods[snippets='http-request,path-parameters,http-response,response-fields']
-
-=== 거래 완료 [미구현]
+=== 거래 완료
 operation::modify-trade-status[snippets='http-request,path-parameters,http-response,response-fields']
 
 

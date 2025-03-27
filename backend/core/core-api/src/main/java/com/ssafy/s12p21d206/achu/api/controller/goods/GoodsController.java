@@ -158,23 +158,13 @@ public class GoodsController {
     return ApiResponse.success(response);
   }
 
-  //  @GetMapping("/goods/liked")
-  //  public ApiResponse<List<TradeHistoryResponse>> findLikedGoods(Long userId) {
-  //    List<TradeHistoryResponse> response = List.of(
-  //        new TradeHistoryResponse(6L, TradeStatus.SOLD, "유아 식기", "goods6_img_url", 5000L),
-  //        new TradeHistoryResponse(10L, TradeStatus.SELLING, "유모차", "goods10_img_url", 10000L));
-  //    return ApiResponse.success(response);
-  //  }
-  //
-  //  @PostMapping("/goods/{goodsId}/like")
-  //  public ApiResponse<Void> appendLikedGoods(Long userId, @PathVariable Long goodsId) {
-  //    return ApiResponse.success();
-  //  }
-  //
-  //  @DeleteMapping("/goods/{goodsId}/like")
-  //  public ApiResponse<Void> deleteLikedGoods(Long userId, @PathVariable Long goodsId) {
-  //    return ApiResponse.success();
-  //  }
+  @GetMapping("/goods/liked")
+  public ApiResponse<List<TradeHistoryResponse>> findLikedGoods(Long userId) {
+    List<TradeHistoryResponse> response = List.of(
+        new TradeHistoryResponse(6L, TradeStatus.SOLD, "유아 식기", "goods6_img_url", 5000L),
+        new TradeHistoryResponse(10L, TradeStatus.SELLING, "유모차", "goods10_img_url", 10000L));
+    return ApiResponse.success(response);
+  }
 
   @PatchMapping("/trade/{tradeId}/complete")
   public ApiResponse<Void> modifyTradeStatus(Long userId, @PathVariable Long tradeId) {
