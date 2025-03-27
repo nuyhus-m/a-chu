@@ -23,7 +23,7 @@ class SharedPreferencesUtil(context: Context) {
         }
     }
 
-    fun getTokens(context: Context): TokenResponse? {
+    fun getTokens(): TokenResponse? {
         val gson = Gson()
         val json = preferences.getString("token_data", null)
         return json?.let { gson.fromJson(it, TokenResponse::class.java) }  // JSON 문자열을 객체로 변환
