@@ -71,8 +71,10 @@ public class MemoryController {
 
   @PatchMapping("/memories/{memoryId}")
   public ApiResponse<Void> modifyMemory(
-      Long userId, @PathVariable Long memoryId, @RequestBody ModifyMemoryRequest request) {
-
+      ApiUser apiUser,
+      @PathVariable Long memoryId,
+      @RequestBody @Validated ModifyMemoryRequest request) {
+    memoryService.modifyMemory(apiUser.toUser(), memoryId, request.toModifyMemory());
     return ApiResponse.success();
   }
 

@@ -56,4 +56,9 @@ public class MemoryEntity extends BaseEntity {
         getCreatedAt(),
         getUpdatedAt());
   }
+
+  public void updateText(String title, String content) {
+    this.title = title;
+    this.content = content;
+  }
 }

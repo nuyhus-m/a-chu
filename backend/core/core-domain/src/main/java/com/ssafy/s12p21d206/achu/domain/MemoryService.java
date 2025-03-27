@@ -8,10 +8,13 @@ import org.springframework.stereotype.Service;
 public class MemoryService {
   private final MemoryAppender memoryAppender;
   private final MemoryReader memoryReader;
+  private final MemoryModifier memoryModifier;
 
-  public MemoryService(MemoryAppender memoryAppender, MemoryReader memoryReader) {
+  public MemoryService(
+      MemoryAppender memoryAppender, MemoryReader memoryReader, MemoryModifier memoryModifier) {
     this.memoryAppender = memoryAppender;
     this.memoryReader = memoryReader;
+    this.memoryModifier = memoryModifier;
   }
 
   public Long append(User user, Long babyId, NewMemory newMemory) {
@@ -25,5 +28,9 @@ public class MemoryService {
 
   public List<Memory> findMemories(User user, Long babyId, Long offset, Long limit, SortType sort) {
     return memoryReader.readMemories(user, babyId, offset, limit, sort);
+  }
+
+  public Memory modifyMemory(User user, Long memoryId, ModifyMemory modifyMemory) {
+    return memoryModifier.modifyMemory(user, memoryId, modifyMemory);
   }
 }

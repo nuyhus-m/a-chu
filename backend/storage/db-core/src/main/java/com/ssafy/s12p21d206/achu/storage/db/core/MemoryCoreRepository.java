@@ -2,6 +2,7 @@ package com.ssafy.s12p21d206.achu.storage.db.core;
 
 import com.ssafy.s12p21d206.achu.domain.Memory;
 import com.ssafy.s12p21d206.achu.domain.MemoryRepository;
+import com.ssafy.s12p21d206.achu.domain.ModifyMemory;
 import com.ssafy.s12p21d206.achu.domain.NewMemory;
 import com.ssafy.s12p21d206.achu.domain.error.CoreErrorType;
 import com.ssafy.s12p21d206.achu.domain.error.CoreException;
@@ -41,6 +42,17 @@ public class MemoryCoreRepository implements MemoryRepository {
     List<MemoryEntity> memoryEntities =
         memoryJpaRepository.findByBabyIdAndEntityStatus(babyId, pageable, EntityStatus.ACTIVE);
     return memoryEntities.stream().map(MemoryEntity::toMemory).toList();
+  }
+
+  @Override
+  public Memory modifyMemory(Long memoryId, ModifyMemory modifyMemory) {
+    MemoryEntity memory = memoryJpaRepository
+        .findByIdAndEntityStatus(memoryId, EntityStatus.ACTIVE)
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+    memory.updateText(modifyMemory.title(), modifyMemory.content());
+
+    memoryJpaRepository.save(memory);
+    return memory.toMemory();
   }
 
   private Sort convertSort(SortType sort) {

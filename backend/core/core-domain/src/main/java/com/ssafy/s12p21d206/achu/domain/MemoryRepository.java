@@ -9,4 +9,6 @@ public interface MemoryRepository {
   Memory findMemory(Long memoryId);
 
   List<Memory> findMemories(Long babyId, Long offset, Long limit, SortType sort);
+
+  Memory modifyMemory(Long memoryId, ModifyMemory modifyMemory);
 }
