@@ -30,7 +30,10 @@ import com.ssafy.achu.core.theme.White
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SignUpScreen(modifier: Modifier = Modifier, viewModel: SignUpViewModel = viewModel()) {
+fun SignUpScreen(
+    modifier: Modifier = Modifier,
+    viewModel: SignUpViewModel = viewModel()
+) {
 
     val uiState by viewModel.uiState.collectAsState()
     val space = 16.dp

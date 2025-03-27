@@ -38,8 +38,8 @@ import com.ssafy.achu.core.theme.White
 fun SignInScreen(
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = viewModel(),
-    onNavigateToSignUp: () -> Unit = {},
-    onNavigateToFindAccount: () -> Unit = {}
+    onNavigateToSignUp: () -> Unit,
+    onNavigateToFindAccount: () -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -150,6 +150,9 @@ fun SignInScreen(
 @Composable
 fun SignInScreenPreview() {
     AchuTheme {
-        SignInScreen()
+        SignInScreen(
+            onNavigateToSignUp = {},
+            onNavigateToFindAccount = {}
+        )
     }
 }
