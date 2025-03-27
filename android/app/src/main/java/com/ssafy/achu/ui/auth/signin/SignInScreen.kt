@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -26,9 +25,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.R
+import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.components.textfield.PasswordTextField
-import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
@@ -38,8 +37,7 @@ import com.ssafy.achu.core.theme.White
 fun SignInScreen(
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = viewModel(),
-    onNavigateToSignUp: () -> Unit = {},
-    onNavigateToFindAccount: () -> Unit = {}
+    onNavigateToSignUp: () -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -125,18 +123,11 @@ fun SignInScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = stringResource(R.string.question_forget_account),
-                    style = AchuTheme.typography.semiBold14PointBlue,
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .clickable(onClick = onNavigateToFindAccount)
-                )
-
                 Spacer(modifier = Modifier.height(36.dp))
 
                 PointBlueButton(
                     buttonText = stringResource(R.string.login),
+                    enabled = uiState.buttonState,
                     onClick = { /* 로그인 로직 구현 */ }
                 )
             }
@@ -149,6 +140,8 @@ fun SignInScreen(
 @Composable
 fun SignInScreenPreview() {
     AchuTheme {
-        SignInScreen()
+        SignInScreen(
+            onNavigateToSignUp = {}
+        )
     }
 }

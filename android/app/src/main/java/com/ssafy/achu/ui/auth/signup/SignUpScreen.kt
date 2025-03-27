@@ -30,7 +30,10 @@ import com.ssafy.achu.core.theme.White
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SignUpScreen(modifier: Modifier = Modifier, viewModel: SignUpViewModel = viewModel()) {
+fun SignUpScreen(
+    modifier: Modifier = Modifier,
+    viewModel: SignUpViewModel = viewModel()
+) {
 
     val uiState by viewModel.uiState.collectAsState()
     val space = 16.dp
@@ -54,7 +57,10 @@ fun SignUpScreen(modifier: Modifier = Modifier, viewModel: SignUpViewModel = vie
             label = stringResource(R.string.id),
             placeholder = stringResource(R.string.enter_id),
             buttonText = stringResource(R.string.check),
-            onClick = {}
+            onClick = {},
+            errorMessage = uiState.idMessage,
+            enabled = uiState.idState,
+            buttonEnabled = uiState.idButtonState
         )
 
         Spacer(modifier = Modifier.height(space))
@@ -63,7 +69,9 @@ fun SignUpScreen(modifier: Modifier = Modifier, viewModel: SignUpViewModel = vie
         PwdTextFieldWithLabel(
             value = uiState.pwd,
             onValueChange = { viewModel.updatePwd(it) },
-            label = stringResource(R.string.password)
+            label = stringResource(R.string.password),
+            errorMessage = uiState.pwdMessage,
+            enabled = uiState.pwdState
         )
 
         Spacer(modifier = Modifier.height(space))
@@ -72,7 +80,9 @@ fun SignUpScreen(modifier: Modifier = Modifier, viewModel: SignUpViewModel = vie
         PwdTextFieldWithLabel(
             value = uiState.pwdCheck,
             onValueChange = { viewModel.updatePwdCheck(it) },
-            label = stringResource(R.string.password_check)
+            label = stringResource(R.string.password_check),
+            errorMessage = uiState.pwdCheckMessage,
+            enabled = uiState.pwdState
         )
 
         Spacer(modifier = Modifier.height(space))
@@ -84,7 +94,10 @@ fun SignUpScreen(modifier: Modifier = Modifier, viewModel: SignUpViewModel = vie
             label = stringResource(R.string.nickname),
             placeholder = stringResource(R.string.nickname_ex),
             buttonText = stringResource(R.string.check),
-            onClick = {}
+            onClick = {},
+            errorMessage = uiState.nicknameMessage,
+            enabled = uiState.nicknameState,
+            buttonEnabled = uiState.nicknameButtonState
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -97,7 +110,10 @@ fun SignUpScreen(modifier: Modifier = Modifier, viewModel: SignUpViewModel = vie
             placeholder = stringResource(R.string.phone_number_ex),
             buttonText = stringResource(R.string.auth),
             onClick = {},
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            errorMessage = uiState.phoneNumberMessage,
+            enabled = uiState.phoneNumberState,
+            buttonEnabled = uiState.phoneNumberButtonState
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -110,7 +126,8 @@ fun SignUpScreen(modifier: Modifier = Modifier, viewModel: SignUpViewModel = vie
         ) {
             PointBlueButton(
                 buttonText = stringResource(R.string.sign_up),
-                onClick = {}
+                onClick = {},
+                enabled = uiState.buttonState
             )
         }
     }
