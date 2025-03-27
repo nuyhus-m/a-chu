@@ -40,6 +40,7 @@ import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
+import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.ProductResponse
@@ -105,7 +106,6 @@ fun HomeScreen(
         modifier = modifier
             .fillMaxSize()
             .background(color = White)
-            .padding(start = 24.dp, end = 24.dp)
             .verticalScroll(scrollState)
     ) {
 
@@ -139,7 +139,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
+                .wrapContentHeight().padding(horizontal = 4.dp)
                 .clip(RoundedCornerShape(8.dp))
         ) {
             LazyRow(
@@ -147,7 +147,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(0.dp),
-                userScrollEnabled = false // 사용자 스크롤 비활성화
+                userScrollEnabled = true
             ) {
                 items(imageList.size * 2) { index -> // 2배로 늘려 무한 반복 느낌 구현
                     val actualIndex = index % imageList.size // 실제 이미지 인덱스
@@ -293,102 +293,107 @@ fun HomeScreen(
         }
 
         Spacer(modifier = Modifier.height(24.dp))
+        Column(Modifier.padding(horizontal = 24.dp)) {
 
-        Row(
-            verticalAlignment = Alignment.Bottom
-        ) {
-            Text(
-                text = "추천상품  ",
-                style = AchuTheme.typography.semiBold20,
-            )
+            Row(
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Text(
+                    text = "추천상품  ",
+                    style = AchuTheme.typography.semiBold20,
+                )
 
-            Text(
-                text = "${selectedBaby.nickname}",
-                style = AchuTheme.typography.semiBold18,
-                color = PointBlue
-            )
-            Spacer(modifier = Modifier.weight(1.0f))
-            Text(
-                text = "더보기",
-                style = AchuTheme.typography.semiBold14PointBlue.copy(
-                    textDecoration = TextDecoration.Underline
+                Text(
+                    text = "${selectedBaby.nickname}",
+                    style = AchuTheme.typography.semiBold18,
+                    color = if(selectedBaby.gender == "남")PointBlue else PointPink
+                )
+                Spacer(modifier = Modifier.weight(1.0f))
+                Text(
+                    text = "더보기",
+                    style = AchuTheme.typography.semiBold14PointBlue.copy(
+                        textDecoration = TextDecoration.Underline
 
-                ),
-                color = FontGray,
-                modifier = Modifier.clickable {
-                    onNavigateToRecommend()
-                }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        RecommendGrid(
-            listOf(
-                ProductResponse(
-                    chatCount = 11,
-                    createdAt = "3일 전",
-                    id = 1,
-                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                    likedByUser = false,
-                    likedUsersCount = 18,
-                    price = 5000,
-                    title = "미피 인형"
-                ),
-                ProductResponse(
-                    chatCount = 11,
-                    createdAt = "3일 전",
-                    id = 1,
-                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                    likedByUser = true,
-                    likedUsersCount = 18,
-                    price = 5000,
-                    title = "미피 인형"
-                ),
-                ProductResponse(
-                    chatCount = 11,
-                    createdAt = "3일 전",
-                    id = 1,
-                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                    likedByUser = true,
-                    likedUsersCount = 18,
-                    price = 5000,
-                    title = "미피 인형"
-                ),
-            )
-        )
-
-        Spacer(Modifier.height(24.dp))
-
-        Text(
-            text = "찜한 상품",
-            style = AchuTheme.typography.semiBold20
-        )
-
-        Spacer(Modifier.height(24.dp))
-
-        LazyRow(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            itemsIndexed(likeItemList) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
-                BasicLikeItem(
-                    isLiked = likeItem.like,
-                    onClickItem = { }, // 아이템 전체 클릭 시 동작
-                    onClickHeart = { }, // 하트 클릭 시 동작
-                    productName = likeItem.productName,
-                    state = likeItem.sate,
-                    price = likeItem.price,
-                    img = likeItem.img?.let { painterResource(id = likeItem.img) },
-                ) // 각 아이템을 컴포넌트로 렌더링
-                Spacer(modifier = Modifier.width(8.dp)) // 아이템 간 간격 추가
+                    ),
+                    color = FontGray,
+                    modifier = Modifier.clickable {
+                        onNavigateToRecommend()
+                    }
+                )
             }
-        }
 
-        Spacer(Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+            RecommendGrid(
+                listOf(
+                    ProductResponse(
+                        chatCount = 11,
+                        createdAt = "3일 전",
+                        id = 1,
+                        imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                        likedByUser = false,
+                        likedUsersCount = 18,
+                        price = 5000,
+                        title = "미피 인형"
+                    ),
+                    ProductResponse(
+                        chatCount = 11,
+                        createdAt = "3일 전",
+                        id = 1,
+                        imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                        likedByUser = true,
+                        likedUsersCount = 18,
+                        price = 5000,
+                        title = "미피 인형"
+                    ),
+                    ProductResponse(
+                        chatCount = 11,
+                        createdAt = "3일 전",
+                        id = 1,
+                        imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                        likedByUser = true,
+                        likedUsersCount = 18,
+                        price = 5000,
+                        title = "미피 인형"
+                    ),
+                ), onClick = {},//아이템 클릭시
+                onHeartClick = {
+
+                }//하트 클릭시
+            )
+
+            Spacer(Modifier.height(24.dp))
+
+            Text(
+                text = "찜한 상품",
+                style = AchuTheme.typography.semiBold20
+            )
+
+            Spacer(Modifier.height(24.dp))
+
+            LazyRow(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                itemsIndexed(likeItemList) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
+                    BasicLikeItem(
+                        isLiked = likeItem.like,
+                        onClickItem = { }, // 아이템 전체 클릭 시 동작
+                        onClickHeart = { }, // 하트 클릭 시 동작
+                        productName = likeItem.productName,
+                        state = likeItem.sate,
+                        price = likeItem.price,
+                        img = likeItem.img?.let { painterResource(id = likeItem.img) },
+                    ) // 각 아이템을 컴포넌트로 렌더링
+                    Spacer(modifier = Modifier.width(8.dp)) // 아이템 간 간격 추가
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+        }
 
     }
 
 }
-
 
 @Composable
 fun CategoryItem(

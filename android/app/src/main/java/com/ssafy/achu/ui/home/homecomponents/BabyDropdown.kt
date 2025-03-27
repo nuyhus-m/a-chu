@@ -67,7 +67,7 @@ fun BabyDropdown(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { expanded = true }
-            .padding(2.dp)
+            .padding(horizontal = 24.dp)
             .height(66.dp)
     ) {
         Box(
