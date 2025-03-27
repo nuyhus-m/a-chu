@@ -26,6 +26,11 @@ public class GoodsReader {
     return goodsRepository.findGoodsDetail(id);
   }
 
+  public List<GoodsDetail> readGoodsDetails(
+      List<Long> ids, Long offset, Long limit, SortType sort) {
+    return goodsRepository.findGoodsDetails(ids, offset, limit, sort);
+  }
+
   public User readUserIdByGoodsId(Long id) {
     return goodsRepository.findUserIdByGoodsId(id);
   }

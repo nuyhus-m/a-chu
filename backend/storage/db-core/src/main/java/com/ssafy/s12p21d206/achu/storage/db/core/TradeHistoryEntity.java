@@ -19,4 +19,16 @@ public class TradeHistoryEntity extends BaseEntity {
     this.sellerId = sellerId;
     this.buyerId = buyerId;
   }
+
+  public Long getGoodsId() {
+    return goodsId;
+  }
+
+  public Long getSellerId() {
+    return sellerId;
+  }
+
+  public Long getBuyerId() {
+    return buyerId;
+  }
 }

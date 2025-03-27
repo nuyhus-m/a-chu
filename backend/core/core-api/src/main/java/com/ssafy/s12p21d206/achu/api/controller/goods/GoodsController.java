@@ -183,11 +183,10 @@ public class GoodsController {
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
-
-    List<TradeHistoryResponse> response = List.of(
-        new TradeHistoryResponse(1L, TradeStatus.SELLING, "나무 장난감", "goods1_img_url", 5000L),
-        new TradeHistoryResponse(2L, TradeStatus.SOLD, "유아용 식판", "goods2_img_url", 7000L));
-    return ApiResponse.success(response);
+    List<GoodsDetail> goodsDetail =
+        tradeHistoryService.findTradeHistoryGoods(apiUser.toUser(), tradeType, offset, limit, sort);
+    List<TradeHistoryResponse> responses = TradeHistoryResponse.of(goodsDetail);
+    return ApiResponse.success(responses);
   }
 
   @PostMapping("/trade/complete")

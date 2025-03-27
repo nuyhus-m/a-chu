@@ -6,6 +6,7 @@ import com.ssafy.s12p21d206.achu.domain.error.CoreException;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import com.ssafy.s12p21d206.achu.domain.support.TradeStatus;
 import java.util.List;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -98,9 +99,19 @@ public class GoodsCoreRepository implements GoodsRepository {
 
   @Override
 
+
   public boolean existsById(Long goodsId) {
     return goodsJpaRepository.existsByIdAndEntityStatus(goodsId, EntityStatus.ACTIVE);
 
+  public List<GoodsDetail> findGoodsDetails(
+      List<Long> ids, Long offset, Long limit, SortType sort) {
+    Pageable pageable = PageRequest.of(offset.intValue(), limit.intValue(), convertSort(sort));
+    Page<GoodsEntity> goodsEntityPage =
+        goodsJpaRepository.findByIdInAndEntityStatus(ids, EntityStatus.ACTIVE, pageable);
+    return goodsEntityPage.stream().map(GoodsEntity::toGoodsDetail).toList();
+  }
+
+  @Override
   public GoodsDetail findGoodsDetail(Long id) {
     GoodsEntity goodsEntity = goodsJpaRepository
         .findByIdAndEntityStatus(id, EntityStatus.ACTIVE)

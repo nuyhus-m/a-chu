@@ -13,6 +13,8 @@ public interface GoodsRepository {
   List<Goods> searchCategoryGoods(
       User user, Long categoryId, String keyword, Long offset, Long limit, SortType sort);
 
+  List<GoodsDetail> findGoodsDetails(List<Long> ids, Long offset, Long limit, SortType sort);
+
   GoodsDetail findGoodsDetail(Long id);
 
   User findUserIdByGoodsId(Long id);
