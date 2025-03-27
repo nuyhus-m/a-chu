@@ -1,5 +1,7 @@
 package com.ssafy.s12p21d206.achu.domain;
 
+import com.ssafy.s12p21d206.achu.domain.support.SortType;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -7,7 +9,7 @@ public class MemoryService {
   private final MemoryAppender memoryAppender;
   private final MemoryReader memoryReader;
 
-  public private final MemoryService(MemoryAppender memoryAppender, MemoryReader memoryReader) {
+  public MemoryService(MemoryAppender memoryAppender, MemoryReader memoryReader) {
     this.memoryAppender = memoryAppender;
     this.memoryReader = memoryReader;
   }
@@ -19,5 +21,9 @@ public class MemoryService {
 
   public Memory findMemory(User user, Long memoryId) {
     return memoryReader.readMemory(user, memoryId);
+  }
+
+  public List<Memory> findMemories(User user, Long babyId, Long offset, Long limit, SortType sort) {
+    return memoryReader.readMemories(user, babyId, offset, limit, sort);
   }
 }

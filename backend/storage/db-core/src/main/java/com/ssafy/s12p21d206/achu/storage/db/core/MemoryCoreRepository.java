@@ -3,9 +3,13 @@ package com.ssafy.s12p21d206.achu.storage.db.core;
 import com.ssafy.s12p21d206.achu.domain.Memory;
 import com.ssafy.s12p21d206.achu.domain.MemoryRepository;
 import com.ssafy.s12p21d206.achu.domain.NewMemory;
-import com.ssafy.s12p21d206.achu.domain.User;
 import com.ssafy.s12p21d206.achu.domain.error.CoreErrorType;
 import com.ssafy.s12p21d206.achu.domain.error.CoreException;
+import com.ssafy.s12p21d206.achu.domain.support.SortType;
+import java.util.List;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -17,7 +21,7 @@ public class MemoryCoreRepository implements MemoryRepository {
   }
 
   @Override
-  public Memory save(User user, Long babyId, NewMemory newMemory) {
+  public Memory save(Long babyId, NewMemory newMemory) {
     return memoryJpaRepository
         .save(new MemoryEntity(newMemory.title(), newMemory.content(), newMemory.imgUrls(), babyId))
         .toMemory();
@@ -26,8 +30,23 @@ public class MemoryCoreRepository implements MemoryRepository {
   @Override
   public Memory findMemory(Long memoryId) {
     return memoryJpaRepository
-        .findById(memoryId)
+        .findByIdAndEntityStatus(memoryId, EntityStatus.ACTIVE)
         .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND))
         .toMemory();
+  }
+
+  @Override
+  public List<Memory> findMemories(Long babyId, Long offset, Long limit, SortType sort) {
+    Pageable pageable = PageRequest.of(offset.intValue(), limit.intValue(), convertSort(sort));
+    List<MemoryEntity> memoryEntities =
+        memoryJpaRepository.findByBabyIdAndEntityStatus(babyId, pageable, EntityStatus.ACTIVE);
+    return memoryEntities.stream().map(MemoryEntity::toMemory).toList();
+  }
+
+  private Sort convertSort(SortType sort) {
+    return switch (sort) {
+      case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
+      case OLDEST -> Sort.by(Sort.Direction.ASC, "createdAt");
+    };
   }
 }

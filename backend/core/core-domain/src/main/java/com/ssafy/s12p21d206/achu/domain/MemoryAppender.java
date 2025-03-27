@@ -15,6 +15,6 @@ public class MemoryAppender {
   public Memory append(User user, Long babyId, NewMemory newMemory) {
     babyValidator.validateExists(babyId);
     babyValidator.validateParent(user, babyId);
-    return memoryRepository.save(user, babyId, newMemory);
+    return memoryRepository.save(babyId, newMemory);
   }
 }

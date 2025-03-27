@@ -1,7 +1,12 @@
 package com.ssafy.s12p21d206.achu.domain;
 
+import com.ssafy.s12p21d206.achu.domain.support.SortType;
+import java.util.List;
+
 public interface MemoryRepository {
-  Memory save(User user, Long babyId, NewMemory newMemory);
+  Memory save(Long babyId, NewMemory newMemory);
 
   Memory findMemory(Long memoryId);
+
+  List<Memory> findMemories(Long babyId, Long offset, Long limit, SortType sort);
 }

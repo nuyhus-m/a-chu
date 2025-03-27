@@ -7,7 +7,6 @@ import com.ssafy.s12p21d206.achu.domain.Memory;
 import com.ssafy.s12p21d206.achu.domain.MemoryService;
 import com.ssafy.s12p21d206.achu.domain.NewMemory;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -52,17 +51,15 @@ public class MemoryController {
 
   @GetMapping("/babies/{babyId}/memories")
   public ApiResponse<List<MemoryResponse>> findMemories(
-      Long userId,
+      ApiUser apiUser,
       @PathVariable Long babyId,
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
-    LocalDateTime createdAt = LocalDateTime.of(2025, 3, 12, 14, 0);
-    List<MemoryResponse> response = List.of(
-        new MemoryResponse(
-            1L, "제목1", List.of("https://image1.jpg", "https://image2.jpg"), createdAt, createdAt),
-        new MemoryResponse(2L, "제목2", List.of("https://image3.jpg"), createdAt, createdAt));
-    return ApiResponse.success(response);
+    List<Memory> memories =
+        memoryService.findMemories(apiUser.toUser(), babyId, offset, limit, sort);
+    List<MemoryResponse> responses = MemoryResponse.of(memories);
+    return ApiResponse.success(responses);
   }
 
   @PatchMapping("/memories/{memoryId}/image")
