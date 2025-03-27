@@ -79,7 +79,8 @@ public class MemoryController {
   }
 
   @DeleteMapping("/memories/{memoryId}")
-  public ApiResponse<Void> deleteMemory(Long userId, @PathVariable Long memoryId) {
-    return ApiResponse.success();
+  public ApiResponse<DefaultIdResponse> deleteMemory(ApiUser apiUser, @PathVariable Long memoryId) {
+    memoryService.delete(apiUser.toUser(), memoryId);
+    return ApiResponse.success(new DefaultIdResponse(memoryId));
   }
 }

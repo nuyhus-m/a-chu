@@ -55,6 +55,15 @@ public class MemoryCoreRepository implements MemoryRepository {
     return memory.toMemory();
   }
 
+  @Override
+  public Long delete(Long memoryId) {
+    MemoryEntity memory = memoryJpaRepository
+        .findByIdAndEntityStatus(memoryId, EntityStatus.ACTIVE)
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+    memory.delete();
+    return memory.getId();
+  }
+
   private Sort convertSort(SortType sort) {
     return switch (sort) {
       case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");

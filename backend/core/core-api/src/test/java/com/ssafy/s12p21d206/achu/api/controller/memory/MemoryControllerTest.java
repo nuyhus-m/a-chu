@@ -1,6 +1,6 @@
 package com.ssafy.s12p21d206.achu.api.controller.memory;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -12,6 +12,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 
+import com.ssafy.s12p21d206.achu.domain.MemoryService;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,10 +25,12 @@ import org.springframework.restdocs.payload.JsonFieldType;
 class MemoryControllerTest extends RestDocsTest {
 
   private MemoryController controller;
+  private MemoryService memoryService;
 
   @BeforeEach
   void setup() {
-    controller = new MemoryController();
+    memoryService = mock(MemoryService.class);
+    controller = new MemoryController(memoryService);
     mockMvc = mockController(controller);
   }
 

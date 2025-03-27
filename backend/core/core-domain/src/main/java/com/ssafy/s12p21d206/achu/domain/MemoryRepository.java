@@ -11,4 +11,6 @@ public interface MemoryRepository {
   List<Memory> findMemories(Long babyId, Long offset, Long limit, SortType sort);
 
   Memory modifyMemory(Long memoryId, ModifyMemory modifyMemory);
+
+  Long delete(Long memoryId);
 }

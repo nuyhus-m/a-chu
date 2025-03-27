@@ -9,12 +9,17 @@ public class MemoryService {
   private final MemoryAppender memoryAppender;
   private final MemoryReader memoryReader;
   private final MemoryModifier memoryModifier;
+  private final MemoryDeleter memoryDeleter;
 
   public MemoryService(
-      MemoryAppender memoryAppender, MemoryReader memoryReader, MemoryModifier memoryModifier) {
+      MemoryAppender memoryAppender,
+      MemoryReader memoryReader,
+      MemoryModifier memoryModifier,
+      MemoryDeleter memoryDeleter) {
     this.memoryAppender = memoryAppender;
     this.memoryReader = memoryReader;
     this.memoryModifier = memoryModifier;
+    this.memoryDeleter = memoryDeleter;
   }
 
   public Long append(User user, Long babyId, NewMemory newMemory) {
@@ -32,5 +37,9 @@ public class MemoryService {
 
   public Memory modifyMemory(User user, Long memoryId, ModifyMemory modifyMemory) {
     return memoryModifier.modifyMemory(user, memoryId, modifyMemory);
+  }
+
+  public Long delete(User user, Long memoryId) {
+    return memoryDeleter.delete(user, memoryId);
   }
 }
