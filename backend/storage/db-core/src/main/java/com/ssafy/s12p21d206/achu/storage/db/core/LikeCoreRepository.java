@@ -3,6 +3,7 @@ package com.ssafy.s12p21d206.achu.storage.db.core;
 import com.ssafy.s12p21d206.achu.domain.LikeRepository;
 import com.ssafy.s12p21d206.achu.domain.LikeStatus;
 import com.ssafy.s12p21d206.achu.domain.User;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,5 +40,14 @@ public class LikeCoreRepository implements LikeRepository {
     return goodsIds.stream()
         .collect(Collectors.toMap(
             id -> id, id -> new LikeStatus(countMap.get(id), likedGoods.contains(id))));
+  }
+
+  @Transactional
+  @Override
+  public void like(User user, Long goodsId) {
+    LikeEntity likeEntity = likeJpaRepository
+        .findByUserIdAndGoodsId(user.id(), goodsId)
+        .orElseGet(() -> likeJpaRepository.save(new LikeEntity(user.id(), goodsId)));
+    likeEntity.active();
   }
 }

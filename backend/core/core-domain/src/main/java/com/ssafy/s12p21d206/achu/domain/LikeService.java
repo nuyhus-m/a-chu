@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 public class LikeService {
 
   private final LikeReader likeReader;
+  private final LikeProcessor likeProcessor;
 
-  public LikeService(LikeReader likeReader) {
+  public LikeService(LikeReader likeReader, LikeProcessor likeProcessor) {
     this.likeReader = likeReader;
+    this.likeProcessor = likeProcessor;
   }
 
   public LikeStatus status(User user, Long goodsId) {
@@ -25,5 +27,9 @@ public class LikeService {
    */
   public Map<Long, LikeStatus> status(User user, List<Long> goodsId) {
     return likeReader.status(user, goodsId);
+  }
+
+  public void like(User user, Long goodsId) {
+    likeProcessor.like(user, goodsId);
   }
 }

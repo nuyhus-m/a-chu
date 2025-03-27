@@ -9,4 +9,11 @@ public class LikeEntity extends BaseEntity {
   private Long userId;
 
   private Long goodsId;
+
+  protected LikeEntity() {}
+
+  public LikeEntity(Long userId, Long goodsId) {
+    this.userId = userId;
+    this.goodsId = goodsId;
+  }
 }

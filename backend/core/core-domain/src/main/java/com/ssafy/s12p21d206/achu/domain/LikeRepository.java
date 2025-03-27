@@ -9,4 +9,6 @@ public interface LikeRepository {
   boolean isLike(User user, Long goodsId);
 
   Map<Long, LikeStatus> status(User user, List<Long> goodsIds);
+
+  void like(User user, Long goodsId);
 }
