@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.mypage.userinfo
 
+import PhoneNumberTextField
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -45,7 +46,6 @@ import com.ssafy.achu.R
 import com.ssafy.achu.core.components.BasicDialog
 import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.components.BasicTopAppBar
-import com.ssafy.achu.core.components.textfield.ClearTextField
 import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.PointBlueFlexibleBtn
 import com.ssafy.achu.core.components.SmallLineBtn

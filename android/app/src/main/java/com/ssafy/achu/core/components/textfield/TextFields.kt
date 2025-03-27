@@ -78,7 +78,8 @@ fun BasicTextField(
 fun PasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    placeholder: String = stringResource(R.string.enter_password)
+    placeholder: String = stringResource(R.string.enter_password),
+    color: Color = PointBlue
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -91,7 +92,7 @@ fun PasswordTextField(
         placeholder = {
             Text(
                 text = placeholder,
-                style = AchuTheme.typography.regular16.copy(color = PointBlue)
+                style = AchuTheme.typography.regular16.copy(color = color)
             )
         },
         textStyle = AchuTheme.typography.regular16,

@@ -64,14 +64,24 @@ class UserInfoViewModel : ViewModel() {
         }
     }
 
-    fun validateAndConfirm(onSuccess: () -> Unit) {
+    fun validateAndConfirm(onConfirm: () -> Unit) {
         val state = _uiState.value
-        if (state.newPassword == state.newPasswordCheck) {
-            onSuccess()
+        val passwordRegex = "^[A-Za-z0-9!@#\$%^&*()_+\\-=\\[\\]{};':\",.<>?/`~]{8,16}$".toRegex()
+        val isValid = passwordRegex.matches(state.newPassword)
+        val isMatched = state.newPassword == state.newPasswordCheck
+
+        if (isValid && isMatched) {
             allPWDDateDelete()
+            onConfirm
         } else {
-            _uiState.update { it.copy(isPasswordMismatch = true) }
-            newPwdCheck("")
+            _uiState.update {
+                it.copy(
+                    isUnCorrectPWD = !isValid,
+                    isPasswordMismatch = !isMatched,
+                    newPassword = if (!isValid) "" else it.newPassword,  // 비밀번호가 유효하지 않다면 초기화
+                    newPasswordCheck = if (!isMatched) "" else it.newPasswordCheck  // 확인 비밀번호가 다르면 초기화
+                )
+            }
         }
     }
 

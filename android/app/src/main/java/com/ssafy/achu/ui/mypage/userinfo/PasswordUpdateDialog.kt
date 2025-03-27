@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.core.components.textfield.PasswordTextField
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.PointBlue
 
 @Composable
@@ -34,7 +35,8 @@ fun PasswordUpdateDialog(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.5f)) // 배경 어두운 오버레이 추가
-            .padding(32.dp).clickable(
+            .padding(32.dp)
+            .clickable(
                 indication = null, // 리플 효과 제거
                 interactionSource = remember { MutableInteractionSource() }
             ) { }, // 다이얼로그 주변 여백
@@ -63,8 +65,8 @@ fun PasswordUpdateDialog(
 
                 PasswordTextField(
                     value = uiState.oldPassword,
-                    onValueChange = {viewModel.oldPwd(it)},
-                    placeholder ="●●●●●"
+                    onValueChange = { viewModel.oldPwd(it) },
+                    placeholder = "●●●●●"
                 )
 
 
@@ -86,8 +88,9 @@ fun PasswordUpdateDialog(
 
                 PasswordTextField(
                     value = uiState.newPassword,
-                    onValueChange = {viewModel.newPwd(it)},
-                    placeholder ="●●●●●"
+                    onValueChange = { viewModel.newPwd(it) },
+                    placeholder = if (uiState.isUnCorrectPWD) "양식을 확인해주세요" else "●●●●●",
+                    color = if (uiState.isUnCorrectPWD) FontPink else PointBlue,
                 )
 
 
@@ -104,8 +107,9 @@ fun PasswordUpdateDialog(
 
                 PasswordTextField(
                     value = uiState.newPasswordCheck,
-                    onValueChange = {viewModel.newPwdCheck(it)},
-                    placeholder =if(uiState.isPasswordMismatch)"비밀번호 불일치" else "●●●●●",
+                    onValueChange = { viewModel.newPwdCheck(it) },
+                    placeholder = if (uiState.isPasswordMismatch) "비밀번호 불일치" else "●●●●●",
+                    color = if (uiState.isPasswordMismatch) FontPink else PointBlue,
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -113,7 +117,9 @@ fun PasswordUpdateDialog(
 
                 // 버튼들
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -123,7 +129,7 @@ fun PasswordUpdateDialog(
                             .weight(1.0f)
                             .background(Color.White, shape = RoundedCornerShape(8.dp))
                             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
-                            .clickable(){
+                            .clickable() {
                                 viewModel.allPWDDateDelete()
                                 onDismiss()
                             }
@@ -141,8 +147,10 @@ fun PasswordUpdateDialog(
                         modifier = Modifier
                             .weight(1.0f)
                             .background(PointBlue, shape = RoundedCornerShape(8.dp))
-                            .clickable{
-                                viewModel.validateAndConfirm(onConfirm)
+                            .clickable {
+                                viewModel.validateAndConfirm(
+                                    onConfirm
+                                )
                             }
                             .padding(vertical = 12.dp),
                         contentAlignment = Alignment.Center
