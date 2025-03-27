@@ -15,14 +15,21 @@ public class AuthUserEntity extends AuthBaseEntity {
   private String password;
   private String nickname;
   private String phoneNumber;
+  private String profileImageUrl;
 
   protected AuthUserEntity() {}
 
-  public AuthUserEntity(String username, String password, String nickname, String phoneNumber) {
+  public AuthUserEntity(
+      String username,
+      String password,
+      String nickname,
+      String phoneNumber,
+      String profileImageUrl) {
     this.username = username;
     this.password = password;
     this.nickname = nickname;
     this.phoneNumber = phoneNumber;
+    this.profileImageUrl = profileImageUrl;
   }
 
   public static AuthUserEntity from(NewAuthUser newAuthUser) {
@@ -30,7 +37,8 @@ public class AuthUserEntity extends AuthBaseEntity {
         newAuthUser.username(),
         newAuthUser.password(),
         newAuthUser.nickname(),
-        newAuthUser.phone().number());
+        newAuthUser.phone().number(),
+        null);
   }
 
   public AuthUser toAuthUser() {
@@ -40,6 +48,7 @@ public class AuthUserEntity extends AuthBaseEntity {
         this.password,
         this.nickname,
         new Phone(this.phoneNumber),
+        this.profileImageUrl,
         new AuthDefaultDateTime(this.getCreatedAt(), this.getUpdatedAt()));
   }
 
@@ -49,5 +58,9 @@ public class AuthUserEntity extends AuthBaseEntity {
 
   public void changePassword(String password) {
     this.password = password;
+  }
+
+  public void changePhoneNumber(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
   }
 }

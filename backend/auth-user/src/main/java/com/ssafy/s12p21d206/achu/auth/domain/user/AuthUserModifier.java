@@ -1,5 +1,9 @@
 package com.ssafy.s12p21d206.achu.auth.domain.user;
 
+import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationCodeVerifier;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.VerificationPurpose;
+import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -8,6 +12,7 @@ public class AuthUserModifier {
 
   private final AuthUserReader authUserReader;
   private final AuthUserValidator authUserValidator;
+  private final VerificationCodeVerifier verificationCodeVerifier;
 
   private final AuthUserRepository authUserRepository;
 
@@ -16,10 +21,12 @@ public class AuthUserModifier {
   public AuthUserModifier(
       AuthUserReader authUserReader,
       AuthUserValidator authUserValidator,
+      VerificationCodeVerifier verificationCodeVerifier,
       AuthUserRepository authUserRepository,
       PasswordEncoder passwordEncoder) {
     this.authUserReader = authUserReader;
     this.authUserValidator = authUserValidator;
+    this.verificationCodeVerifier = verificationCodeVerifier;
     this.authUserRepository = authUserRepository;
     this.passwordEncoder = passwordEncoder;
   }
@@ -35,5 +42,21 @@ public class AuthUserModifier {
 
     String encodedPassword = passwordEncoder.encode(newPassword);
     return authUserRepository.modifyPassword(userId, encodedPassword);
+  }
+
+  public AuthUser modifyPhoneNumber(Long userId, Phone phone, UUID verificationCodeId) {
+    verificationCodeVerifier.validateVerificationCodeVerified(
+        phone, verificationCodeId, VerificationPurpose.CHANGE_PHONE_NUMBER);
+
+    return authUserRepository.modifyPhoneNumber(userId, phone);
+  }
+
+  public AuthUser resetPassword(String username, String newPassword, UUID verificationCodeId) {
+    AuthUser authUser = authUserReader.findAuthUserByUsername(username);
+    verificationCodeVerifier.validateVerificationCodeVerified(
+        authUser.phone(), verificationCodeId, VerificationPurpose.RESET_PASSWORD);
+
+    String encodedPassword = passwordEncoder.encode(newPassword);
+    return authUserRepository.modifyPassword(authUser.id(), encodedPassword);
   }
 }

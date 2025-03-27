@@ -5,6 +5,7 @@ import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreException;
 import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUser;
 import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUserRepository;
 import com.ssafy.s12p21d206.achu.auth.domain.user.NewAuthUser;
+import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
@@ -67,6 +68,19 @@ public class AuthUserCoreRepository implements AuthUserRepository {
         .orElseThrow(() -> new AuthCoreException(AuthCoreErrorType.USER_NOT_FOUND));
 
     authUserEntity.changePassword(encodedPassword);
+
+    authUserJpaRepository.save(authUserEntity);
+
+    return authUserEntity.toAuthUser();
+  }
+
+  @Override
+  public AuthUser modifyPhoneNumber(Long userId, Phone phone) {
+    AuthUserEntity authUserEntity = authUserJpaRepository
+        .findById(userId)
+        .orElseThrow(() -> new AuthCoreException(AuthCoreErrorType.USER_NOT_FOUND));
+
+    authUserEntity.changePhoneNumber(phone.number());
 
     authUserJpaRepository.save(authUserEntity);
 

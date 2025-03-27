@@ -18,4 +18,10 @@ public class AuthUserReader {
         .findById(userId)
         .orElseThrow(() -> new AuthCoreException(AuthCoreErrorType.USER_NOT_FOUND));
   }
+
+  public AuthUser findAuthUserByUsername(String username) {
+    return authUserRepository
+        .findByUsername(username)
+        .orElseThrow(() -> new AuthCoreException(AuthCoreErrorType.USER_NOT_FOUND));
+  }
 }

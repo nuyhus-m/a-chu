@@ -9,7 +9,6 @@ import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUserService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,15 +40,17 @@ public class AuthUserController {
     return AuthApiResponse.success();
   }
 
-  @GetMapping("/users/{userId}")
-  public AuthApiResponse<AuthUserResponse> findUser(@PathVariable Long userId) {
-    AuthUserResponse response = new AuthUserResponse(userId, "닉네임", "프로필이미지");
-    return AuthApiResponse.success(response);
+  @PatchMapping("/users/password/reset")
+  public AuthApiResponse<Void> resetPassword(@RequestBody @Validated ResetPasswordRequest request) {
+    authUserService.resetPassword(
+        request.username(), request.newPassword(), request.verificationCodeId());
+    return AuthApiResponse.success();
   }
 
   @GetMapping("/users/me")
-  public AuthApiResponse<AuthUserResponse> findMe(Long userId) {
-    AuthUserResponse response = new AuthUserResponse(1L, "닉네임", "프로필이미지");
+  public AuthApiResponse<AuthUserResponse> findMe(AuthApiUser authApiUser) {
+    AuthUser authUser = authUserService.findUser(authApiUser.id());
+    AuthUserResponse response = AuthUserResponse.from(authUser);
     return AuthApiResponse.success(response);
   }
 
@@ -82,9 +83,11 @@ public class AuthUserController {
     return AuthApiResponse.success();
   }
 
-  @PatchMapping("/users/change-phone")
+  @PatchMapping("/users/phone")
   public AuthApiResponse<Void> modifyPhoneNumber(
       AuthApiUser authApiUser, @RequestBody ModifyPhoneRequest request) {
+    authUserService.modifyPhoneNumber(
+        authApiUser.id(), request.toPhone(), request.verificationCodeId());
     return AuthApiResponse.success();
   }
 }
