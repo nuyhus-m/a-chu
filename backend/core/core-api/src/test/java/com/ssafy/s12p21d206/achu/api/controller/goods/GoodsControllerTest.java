@@ -177,6 +177,15 @@ class GoodsControllerTest extends RestDocsTest {
 
   @Test
   void searchGoods() {
+    when(goodsService.searchGoods(
+            any(User.class), anyString(), anyLong(), anyLong(), any(SortType.class)))
+        .thenReturn(List.of(goods));
+
+    when(likeService.findLikeStatuses(any(User.class), anyList()))
+        .thenReturn(List.of(new LikeStatus(goods.getId(), 5L, true)));
+
+    when(chatRoomService.findChatStatus(any(User.class), anyList()))
+        .thenReturn(List.of(new ChatStatus(goods.getId(), 3L)));
     given()
         .contentType(ContentType.JSON)
         .queryParam("keyword", "유")
@@ -219,6 +228,15 @@ class GoodsControllerTest extends RestDocsTest {
 
   @Test
   void searchCategoryGoods() {
+    when(goodsService.searchCategoryGoods(
+            any(User.class), anyLong(), anyString(), anyLong(), anyLong(), any(SortType.class)))
+        .thenReturn(List.of(goods));
+
+    when(likeService.findLikeStatuses(any(User.class), anyList()))
+        .thenReturn(List.of(new LikeStatus(goods.getId(), 5L, true)));
+
+    when(chatRoomService.findChatStatus(any(User.class), anyList()))
+        .thenReturn(List.of(new ChatStatus(goods.getId(), 3L)));
     given()
         .contentType(ContentType.JSON)
         .queryParam("keyword", "장난감")
@@ -426,6 +444,19 @@ class GoodsControllerTest extends RestDocsTest {
 
   @Test
   void findGoodsTradeHistory() {
+    when(tradeHistoryService.findTradeHistoryGoods(
+            any(User.class), any(TradeType.class), anyLong(), anyLong(), any(SortType.class)))
+        .thenReturn(List.of(new GoodsDetail(
+            1L,
+            "제목",
+            "설명",
+            List.of("goods1-image1.jpg", "goods1-image2.jpg"),
+            TradeStatus.SELLING,
+            5000L,
+            LocalDateTime.now().minusDays(1),
+            1L,
+            1L,
+            1L)));
     given()
         .contentType(ContentType.JSON)
         .queryParam("tradeType", TradeType.SALE)
