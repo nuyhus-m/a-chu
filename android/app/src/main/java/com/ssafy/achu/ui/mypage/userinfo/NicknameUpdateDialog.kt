@@ -14,12 +14,15 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
@@ -28,8 +31,11 @@ import com.ssafy.achu.core.theme.White
 fun NicknameUpdateDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
-    color: Color
+    color: Color,
+    viewModel: UserInfoViewModel = viewModel(),
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -64,8 +70,8 @@ fun NicknameUpdateDialog(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = uiState.newNickname,
+                    onValueChange = {viewModel.updateNickname(it)},
                     modifier = Modifier
                         .fillMaxWidth().padding(horizontal = 16.dp)
                         .height(50.dp),
@@ -88,7 +94,7 @@ fun NicknameUpdateDialog(
                     // 🔹 trailingIcon에 버튼 추가
                     trailingIcon = {
                         Button(
-                            onClick = { /* 버튼 클릭 로직 */ },
+                            onClick = { /* 버튼 클릭 로직 닉네임 중복확인 */ },
                             modifier = Modifier.padding(4.dp).size(60.dp),
                             contentPadding = PaddingValues(0.dp),
                             colors = ButtonDefaults.buttonColors(

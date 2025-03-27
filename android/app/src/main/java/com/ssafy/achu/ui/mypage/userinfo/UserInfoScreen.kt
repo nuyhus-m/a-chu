@@ -1,6 +1,9 @@
 package com.ssafy.achu.ui.mypage.userinfo
 
 import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,6 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,11 +33,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.BasicDialog
@@ -51,18 +57,38 @@ import com.ssafy.achu.data.model.auth.UserInfoResponse
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun UserInfoScreen() {
+fun UserInfoScreen(
+    viewModel: UserInfoViewModel = viewModel(),
+) {
 
     var showNickNameUpdateDialog by remember { mutableStateOf(false) }
     var showPasswordUpdateDialog by remember { mutableStateOf(false) }
-    var LogoutDialog by remember { mutableStateOf(false) }
-    var DeleteUserDialog by remember { mutableStateOf(false) }
+    var logoutDialog by remember { mutableStateOf(false) }
+    var deleteUserDialog by remember { mutableStateOf(false) }
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
 
     val user = UserInfoResponse(
         imageUrl = "https://loremflickr.com/300/300/mom",
         nickname = "재영맘",
         userId = "achutest1",
         phoneNumber = "010-1234-4568",
+    )
+    var img by remember { mutableStateOf(user
+
+
+        .imageUrl) }
+    
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            if (uri != null) { // 이미지가 선택되었을 때만 처리
+               img = uri.toString()
+                Toast.makeText(context, "프로필 수정완료", Toast.LENGTH_SHORT).show()
+            }
+        }
     )
 
     Box(
@@ -104,15 +130,18 @@ fun UserInfoScreen() {
 
                     if (!user.imageUrl.isNullOrEmpty()) {
                         AsyncImage(
-                            model = user.imageUrl,
+                            model = img,
                             contentDescription = "Profile",
                             modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
-                            contentScale = ContentScale.Crop)
+                            contentScale = ContentScale.Crop
+                        )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-                SmallLineBtn("프로필 수정하기", PointBlue, onClick = {})
+                SmallLineBtn("프로필 수정하기", PointBlue, onClick = {
+                    launcher.launch("image/*")
+                })
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -153,6 +182,7 @@ fun UserInfoScreen() {
                     placeholder = "아이디",
                     placeholderColor = FontBlack,
                     borderColor = PointBlue,
+                    readOnly = true
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -167,15 +197,18 @@ fun UserInfoScreen() {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Row {
-                    ClearTextField(
-                        value = user.phoneNumber,
-                        onValueChange = {},
+                    PhoneNumberTextField(
+                        value = uiState.phoneNumber,
+                        placeholder = user.phoneNumber,
+                        onValueChange = {viewModel.updatePhoneNumber(it)},
                         pointColor = PointBlue,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    PointBlueFlexibleBtn("인증", onClick = {})
+                    PointBlueFlexibleBtn("인증", onClick = {
+
+                    })
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -198,7 +231,7 @@ fun UserInfoScreen() {
                             textDecoration = TextDecoration.Underline
                         ),
                         modifier = Modifier.clickable {
-                            LogoutDialog = true
+                            logoutDialog = true
                         }
                     )
 
@@ -210,7 +243,7 @@ fun UserInfoScreen() {
                             textDecoration = TextDecoration.Underline
                         ),
                         modifier = Modifier.clickable {
-                            DeleteUserDialog = true
+                            deleteUserDialog = true
                         }
 
                     )
@@ -230,31 +263,33 @@ fun UserInfoScreen() {
     }
     if (showPasswordUpdateDialog) {
         PasswordUpdateDialog(
-            onDismiss = { showPasswordUpdateDialog = false },
+            onDismiss = {
+
+                showPasswordUpdateDialog = false
+            },
             onConfirm = { showPasswordUpdateDialog = false }
         )
     }
 
-    if (LogoutDialog) {
+    if (logoutDialog) {
         BasicDialog(
             text = "로그아웃 하시겠습니까?",
-            onDismiss = { LogoutDialog = false },
-            onConfirm = { LogoutDialog = false }
+            onDismiss = { logoutDialog = false },
+            onConfirm = { logoutDialog = false }
         )
     }
 
-    if (DeleteUserDialog) {
+    if (deleteUserDialog) {
         BasicDialog(
             img = painterResource(id = R.drawable.img_crying_face),
             "A - Chu",
             "와 함께한",
             text = "모든 추억이 삭제됩니다.\n정말 탈퇴하시겠습니까?",
-            onDismiss = { DeleteUserDialog = false },
-            onConfirm = { DeleteUserDialog = false }
+            onDismiss = { deleteUserDialog = false },
+            onConfirm = { deleteUserDialog = false }
         )
     }
 }
-
 
 
 @RequiresApi(Build.VERSION_CODES.O)

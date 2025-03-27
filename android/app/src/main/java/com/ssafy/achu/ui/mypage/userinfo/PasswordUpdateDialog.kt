@@ -8,12 +8,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.core.components.textfield.PasswordTextField
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.PointBlue
@@ -21,8 +24,12 @@ import com.ssafy.achu.core.theme.PointBlue
 @Composable
 fun PasswordUpdateDialog(
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
+    onConfirm: () -> Unit,
+    viewModel: UserInfoViewModel = viewModel(),
+
+    ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -55,8 +62,8 @@ fun PasswordUpdateDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 PasswordTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = uiState.oldPassword,
+                    onValueChange = {viewModel.oldPwd(it)},
                     placeholder ="●●●●●"
                 )
 
@@ -71,15 +78,15 @@ fun PasswordUpdateDialog(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "*영문,숫자,특수문자 포함 8~20자리",
+                    text = "*영문,숫자,특수문자 포함 8~16자리",
                     style = AchuTheme.typography.semiBold14PointBlue,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 PasswordTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = uiState.newPassword,
+                    onValueChange = {viewModel.newPwd(it)},
                     placeholder ="●●●●●"
                 )
 
@@ -96,16 +103,12 @@ fun PasswordUpdateDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 PasswordTextField(
-                    value = "",
-                    onValueChange = {},
-                    placeholder ="●●●●●"
+                    value = uiState.newPasswordCheck,
+                    onValueChange = {viewModel.newPwdCheck(it)},
+                    placeholder =if(uiState.isPasswordMismatch)"비밀번호 불일치" else "●●●●●",
                 )
 
-
                 Spacer(modifier = Modifier.height(24.dp))
-
-
-
 
 
                 // 버튼들
@@ -120,7 +123,10 @@ fun PasswordUpdateDialog(
                             .weight(1.0f)
                             .background(Color.White, shape = RoundedCornerShape(8.dp))
                             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
-                            .clickable(onClick = onDismiss)
+                            .clickable(){
+                                viewModel.allPWDDateDelete()
+                                onDismiss()
+                            }
                             .padding(vertical = 12.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -135,7 +141,9 @@ fun PasswordUpdateDialog(
                         modifier = Modifier
                             .weight(1.0f)
                             .background(PointBlue, shape = RoundedCornerShape(8.dp))
-                            .clickable(onClick = onConfirm)
+                            .clickable{
+                                viewModel.validateAndConfirm(onConfirm)
+                            }
                             .padding(vertical = 12.dp),
                         contentAlignment = Alignment.Center
                     ) {
