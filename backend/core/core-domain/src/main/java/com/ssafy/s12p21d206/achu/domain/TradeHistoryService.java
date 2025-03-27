@@ -14,18 +14,21 @@ public class TradeHistoryService {
   private final GoodsReader goodsReader;
   private final GoodsValidator goodsValidator;
   private final UserValidator userValidator;
+  private final PageValidator pageValidator;
 
   public TradeHistoryService(
       TradeHistoryAppender tradeHistoryAppender,
       TradeHistoryReader tradeHistoryReader,
       GoodsReader goodsReader,
       GoodsValidator goodsValidator,
-      UserValidator userValidator) {
+      UserValidator userValidator,
+      PageValidator pageValidator) {
     this.tradeHistoryAppender = tradeHistoryAppender;
     this.tradeHistoryReader = tradeHistoryReader;
     this.goodsReader = goodsReader;
     this.goodsValidator = goodsValidator;
     this.userValidator = userValidator;
+    this.pageValidator = pageValidator;
   }
 
   public Long completeTrade(User user, TradeHistory tradeHistory) {
@@ -41,15 +44,13 @@ public class TradeHistoryService {
 
   public List<GoodsDetail> findTradeHistoryGoods(
       User user, TradeType tradeType, Long offset, Long limit, SortType sort) {
+    pageValidator.validatePageParams(offset, limit);
     List<Long> goodsIds =
         switch (tradeType) {
           case PURCHASE -> tradeHistoryReader.findPurchaseHistories(user);
           case SALE -> tradeHistoryReader.findSaleHistories(user);
           default -> throw new CoreException(CoreErrorType.INVALID_TRADE_TYPE);
         };
-    //    다시 정리해보자. 로그인한 userId로 PURCHASE면 buyerId들어가 있는 테이블들 찾아서 goodsId 리스트 가져와.
-    //    그리고 goodsId 리스트들로 Entity들로
-    //    좋아 근데 이때 예외처리 할 거 없나...?
     return goodsReader.readGoodsDetails(goodsIds, offset, limit, sort);
   }
 }

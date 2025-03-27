@@ -13,6 +13,7 @@ public class GoodsService {
   private final GoodsValidator goodsValidator;
   private final GoodsDeleter goodsDeleter;
   private final GoodsSearch goodsSearch;
+  private final PageValidator pageValidator;
 
   public GoodsService(
       GoodsReader goodsReader,
@@ -20,13 +21,15 @@ public class GoodsService {
       GoodsModifier goodsModifier,
       GoodsValidator goodsValidator,
       GoodsDeleter goodsDeleter,
-      GoodsSearch goodsSearch) {
+      GoodsSearch goodsSearch,
+      PageValidator pageValidator) {
     this.goodsReader = goodsReader;
     this.goodsAppender = goodsAppender;
     this.goodsModifier = goodsModifier;
     this.goodsValidator = goodsValidator;
     this.goodsDeleter = goodsDeleter;
     this.goodsSearch = goodsSearch;
+    this.pageValidator = pageValidator;
   }
 
   public Long append(User user, NewGoods newGoods) {
@@ -48,11 +51,13 @@ public class GoodsService {
   }
 
   public List<Goods> findGoods(User user, Long offset, Long limit, SortType sort) {
+    pageValidator.validatePageParams(offset, limit);
     return goodsReader.readGoods(user, offset, limit, sort);
   }
 
   public List<Goods> findCategoryGoods(
       User user, Long categoryId, Long offset, Long limit, SortType sort) {
+    pageValidator.validatePageParams(offset, limit);
     return goodsReader.readCategoryGoods(user, categoryId, offset, limit, sort);
   }
 
@@ -66,11 +71,13 @@ public class GoodsService {
 
   public List<Goods> searchGoods(
       User user, String keyword, Long offset, Long limit, SortType sort) {
+    pageValidator.validatePageParams(offset, limit);
     return goodsSearch.searchGoods(user, keyword, offset, limit, sort);
   }
 
   public List<Goods> searchCategoryGoods(
       User user, Long categoryId, String keyword, Long offset, Long limit, SortType sort) {
+    pageValidator.validatePageParams(offset, limit);
     return goodsSearch.searchCategoryGoods(user, categoryId, keyword, offset, limit, sort);
   }
 }
