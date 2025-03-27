@@ -11,19 +11,20 @@ import com.ssafy.achu.data.repository.ProductRepository
 import com.ssafy.achu.data.repository.UserRepository
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
 
-private const val TAG = "ApplicationClass_싸피"
+private const val TAG = "ApplicationClass"
 
 class ApplicationClass : Application() {
     companion object {
         // ipconfig를 통해 ip확인하기
         // 핸드폰으로 접속은 같은 인터넷으로 연결 되어있어야함 (유,무선)
-        const val SERVER_URL = "docs.a-chu.dukcode.org"
+        const val SERVER_URL = "https://api.a-chu.dukcode.org"
         lateinit var sharedPreferencesUtil: SharedPreferencesUtil
         lateinit var retrofit: Retrofit
 
@@ -72,7 +73,7 @@ class ApplicationClass : Application() {
             .readTimeout(5000, TimeUnit.MILLISECONDS)
             .connectTimeout(5000, TimeUnit.MILLISECONDS)
             // 로그캣에 okhttp.OkHttpClient로 검색하면 http 통신 내용을 보여줍니다.
-//            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .build()
 
         // 앱이 처음 생성되는 순간, retrofit 인스턴스를 생성
