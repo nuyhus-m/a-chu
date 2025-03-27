@@ -128,7 +128,7 @@ fun SignInScreen(
                 PointBlueButton(
                     buttonText = stringResource(R.string.login),
                     enabled = uiState.buttonState,
-                    onClick = { /* 로그인 로직 구현 */ }
+                    onClick = { viewModel.signIn() }
                 )
             }
         }
