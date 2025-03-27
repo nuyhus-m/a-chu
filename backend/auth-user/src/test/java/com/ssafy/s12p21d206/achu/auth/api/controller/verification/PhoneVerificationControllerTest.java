@@ -56,7 +56,8 @@ class PhoneVerificationControllerTest extends RestDocsTest {
                     .type(JsonFieldType.STRING)
                     .description("인증 목적")
                     .attributes(
-                        RestDocsUtils.constraints("SIGN_UP(회원가입), CHANGE_PASSWORD(비밀번호 변경)"))),
+                        RestDocsUtils.constraints(
+                            "SIGN_UP(회원가입), CHANGE_PASSWORD(비밀번호 변경), RESET_PASSWORD(비밀번호 초기화), CHANGE_PHONE_NUMBER(전화번호 변경)"))),
             responseFields(
                 fieldWithPath("result")
                     .type(JsonFieldType.STRING)

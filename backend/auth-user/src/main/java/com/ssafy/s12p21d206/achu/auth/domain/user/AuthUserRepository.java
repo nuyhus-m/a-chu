@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.auth.domain.user;
 
+import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
 import java.util.Optional;
 
 public interface AuthUserRepository {
@@ -17,4 +18,6 @@ public interface AuthUserRepository {
   Optional<AuthUser> findById(Long userId);
 
   AuthUser modifyPassword(Long userId, String encodedPassword);
+
+  AuthUser modifyPhoneNumber(Long userId, Phone phone);
 }

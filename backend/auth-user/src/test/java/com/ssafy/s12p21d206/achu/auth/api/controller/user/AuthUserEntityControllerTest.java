@@ -45,6 +45,7 @@ class AuthUserEntityControllerTest extends RestDocsTest {
             "password!",
             "nick",
             new Phone("01012341234"),
+            null,
             new AuthDefaultDateTime(LocalDateTime.now(), LocalDateTime.now())));
 
     given()
@@ -60,19 +61,20 @@ class AuthUserEntityControllerTest extends RestDocsTest {
                 fieldWithPath("username")
                     .type(JsonFieldType.STRING)
                     .description("생성할 user 아이디")
-                    .attributes(RestDocsUtils.constraints("20자 이하")),
+                    .attributes(RestDocsUtils.constraints("유저 아이디는 영어 대소문자, 숫자 포함 4~16자리여야 합니다.")),
                 fieldWithPath("password")
                     .type(JsonFieldType.STRING)
                     .description("생성할 user 비밀번호")
-                    .attributes(RestDocsUtils.constraints("60자 이하")),
+                    .attributes(RestDocsUtils.constraints(
+                        "비밀번호는 영어 대소문자, 숫자, 특수문자(!@#$%^&*()_+-=~) 포함 8~16자리여야 합니다.")),
                 fieldWithPath("nickname")
                     .type(JsonFieldType.STRING)
                     .description("생성할 user 닉네임")
-                    .attributes(RestDocsUtils.constraints("36자 이하")),
+                    .attributes(RestDocsUtils.constraints("닉네임은 한글, 영어, 숫자 포함 2~6자리여야 합니다")),
                 fieldWithPath("phoneNumber")
                     .type(JsonFieldType.STRING)
                     .description("생성할 user 전화번호")
-                    .attributes(RestDocsUtils.constraints("15자 이하")),
+                    .attributes(RestDocsUtils.constraints("휴대폰 번호는 10 ~ 11자리의 숫자여야 합니다.")),
                 fieldWithPath("verificationCodeId")
                     .type(JsonFieldType.STRING)
                     .description("인증 코드 식별자")),
@@ -84,28 +86,19 @@ class AuthUserEntityControllerTest extends RestDocsTest {
   }
 
   @Test
-  void findUser() {
-    given()
-        .contentType(ContentType.JSON)
-        .get("/users/{userId}", 1L)
-        .then()
-        .status(HttpStatus.OK)
-        .apply(document(
-            "find-user",
-            pathParameters(parameterWithName("userId").description("조회하고자 하는 user id")),
-            responseFields(
-                fieldWithPath("result")
-                    .type(JsonFieldType.STRING)
-                    .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
-                fieldWithPath("data.userId").type(JsonFieldType.NUMBER).description("user id"),
-                fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("user 닉네임"),
-                fieldWithPath("data.imageUrl")
-                    .type(JsonFieldType.STRING)
-                    .description("user 프로필"))));
-  }
-
-  @Test
   void findMe() {
+
+    AuthUser authUser = new AuthUser(
+        1L,
+        "username",
+        "password",
+        "닉네임",
+        new Phone("01012341234"),
+        "http://profile.image.url",
+        new AuthDefaultDateTime(LocalDateTime.now(), LocalDateTime.now()));
+
+    when(authUserService.findUser(any())).thenReturn(authUser);
+
     given()
         .contentType(ContentType.JSON)
         .get("/users/me")
@@ -117,11 +110,15 @@ class AuthUserEntityControllerTest extends RestDocsTest {
                 fieldWithPath("result")
                     .type(JsonFieldType.STRING)
                     .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
-                fieldWithPath("data.userId").type(JsonFieldType.NUMBER).description("user id"),
+                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("user id"),
+                fieldWithPath("data.username").type(JsonFieldType.STRING).description("user 유저네임"),
                 fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("user 닉네임"),
-                fieldWithPath("data.imageUrl")
+                fieldWithPath("data.phoneNumber")
                     .type(JsonFieldType.STRING)
-                    .description("user 프로필"))));
+                    .description("user 전화번호"),
+                fieldWithPath("data.profileImageUrl")
+                    .type(JsonFieldType.STRING)
+                    .description("user 프로필 이미지 URL"))));
   }
 
   @Test
@@ -229,20 +226,48 @@ class AuthUserEntityControllerTest extends RestDocsTest {
   void modifyPhoneNumber() {
     given()
         .contentType(ContentType.JSON)
-        .body(new ModifyPhoneRequest("새 전화번호", "전화번호 인증코드"))
-        .patch("/users/change-phone")
+        .body(new ModifyPhoneRequest(UUID.randomUUID(), "01012341234"))
+        .patch("/users/phone")
         .then()
         .status(HttpStatus.OK)
         .apply(document(
             "modify-phone-number",
             requestFields(
+                fieldWithPath("verificationCodeId")
+                    .type(JsonFieldType.STRING)
+                    .description("인증 코드 식별자"),
                 fieldWithPath("phoneNumber")
                     .type(JsonFieldType.STRING)
                     .description("변경할 전화번호")
-                    .attributes(RestDocsUtils.constraints("15자 이하")),
-                fieldWithPath("phoneVerificationCode")
+                    .attributes(RestDocsUtils.constraints("10 - 11자의 숫자"))),
+            responseFields(fieldWithPath("result")
+                .type(JsonFieldType.STRING)
+                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
+  }
+
+  @Test
+  void resetPhoneNumber() {
+    given()
+        .contentType(ContentType.JSON)
+        .body(new ResetPasswordRequest("username", "newPassword", UUID.randomUUID()))
+        .patch("/users/password/reset")
+        .then()
+        .status(HttpStatus.OK)
+        .apply(document(
+            "reset-password",
+            requestFields(
+                fieldWithPath("username")
                     .type(JsonFieldType.STRING)
-                    .description("전화번호 인증 코드")),
+                    .description("비밀번호 초기화할 사용자 유저네임")
+                    .attributes(RestDocsUtils.constraints("유저 아이디는 영어 대소문자, 숫자 포함 4~16자리여야 합니다.")),
+                fieldWithPath("newPassword")
+                    .type(JsonFieldType.STRING)
+                    .description("변경할 비밀번호")
+                    .attributes(RestDocsUtils.constraints(
+                        "비밀번호는 영어 대소문자, 숫자, 특수문자(!@#$%^&*()_+-=~) 포함 8~16자리여야 합니다.")),
+                fieldWithPath("verificationCodeId")
+                    .type(JsonFieldType.STRING)
+                    .description("인증 코드 식별자")),
             responseFields(fieldWithPath("result")
                 .type(JsonFieldType.STRING)
                 .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));

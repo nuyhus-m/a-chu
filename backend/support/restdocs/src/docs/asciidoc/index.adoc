@@ -122,6 +122,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI...
 * 닉네임 중복 검사: GET /users/nickname/is-unique
 * 인증 코드 발급: POST /verification/request
 * 인증 코드 확인: POST /verification/verify
+* 비밀번호 초기화: PATCH /users/password/reset
 
 
 :snippets: +{project-root}+/build/generated-snippets/user-auth

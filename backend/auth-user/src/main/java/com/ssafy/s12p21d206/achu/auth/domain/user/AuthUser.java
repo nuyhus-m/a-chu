@@ -12,6 +12,7 @@ public record AuthUser(
     String password,
     String nickname,
     Phone phone,
+    String profileImageUrl,
     AuthDefaultDateTime defaultDateTime) {
 
   public void validatePassword(PasswordEncoder passwordEncoder, String password) {

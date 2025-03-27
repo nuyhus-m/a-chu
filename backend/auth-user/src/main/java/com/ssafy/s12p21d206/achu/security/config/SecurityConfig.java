@@ -63,6 +63,8 @@ public class SecurityConfig {
         .permitAll()
         .requestMatchers(HttpMethod.POST, "/verification/verify")
         .permitAll()
+        .requestMatchers(HttpMethod.PATCH, "/users/password/reset")
+        .permitAll()
         .anyRequest()
         .authenticated());
 
