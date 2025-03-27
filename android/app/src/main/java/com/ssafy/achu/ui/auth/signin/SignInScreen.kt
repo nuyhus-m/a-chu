@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -38,8 +37,7 @@ import com.ssafy.achu.core.theme.White
 fun SignInScreen(
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = viewModel(),
-    onNavigateToSignUp: () -> Unit,
-    onNavigateToFindAccount: () -> Unit
+    onNavigateToSignUp: () -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -125,14 +123,6 @@ fun SignInScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = stringResource(R.string.question_forget_account),
-                    style = AchuTheme.typography.semiBold14PointBlue,
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .clickable(onClick = onNavigateToFindAccount)
-                )
-
                 Spacer(modifier = Modifier.height(36.dp))
 
                 PointBlueButton(
@@ -151,8 +141,7 @@ fun SignInScreen(
 fun SignInScreenPreview() {
     AchuTheme {
         SignInScreen(
-            onNavigateToSignUp = {},
-            onNavigateToFindAccount = {}
+            onNavigateToSignUp = {}
         )
     }
 }

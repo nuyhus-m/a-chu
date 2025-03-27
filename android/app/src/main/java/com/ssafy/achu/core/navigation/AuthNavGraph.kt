@@ -27,8 +27,7 @@ fun AuthNavGraph(
     ) {
         composable(route = SIGN_IN) {
             SignInScreen(
-                onNavigateToSignUp = { navController.navigate(SIGN_UP) },
-                onNavigateToFindAccount = { navController.navigate(FIND_ACCOUNT) }
+                onNavigateToSignUp = { navController.navigate(SIGN_UP) }
             )
         }
 
