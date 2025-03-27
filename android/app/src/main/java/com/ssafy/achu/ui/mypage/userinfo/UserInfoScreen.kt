@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.BasicDialog
 import com.ssafy.achu.core.components.textfield.BasicTextField
@@ -46,6 +47,7 @@ import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.data.model.auth.UserInfoResponse
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -55,6 +57,13 @@ fun UserInfoScreen() {
     var showPasswordUpdateDialog by remember { mutableStateOf(false) }
     var LogoutDialog by remember { mutableStateOf(false) }
     var DeleteUserDialog by remember { mutableStateOf(false) }
+
+    val user = UserInfoResponse(
+        imageUrl = "https://loremflickr.com/300/300/mom",
+        nickname = "재영맘",
+        userId = "achutest1",
+        phoneNumber = "010-1234-4568",
+    )
 
     Box(
         modifier = Modifier
@@ -92,6 +101,14 @@ fun UserInfoScreen() {
                         modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
                         contentScale = ContentScale.Crop
                     )
+
+                    if (!user.imageUrl.isNullOrEmpty()) {
+                        AsyncImage(
+                            model = user.imageUrl,
+                            contentDescription = "Profile",
+                            modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
+                            contentScale = ContentScale.Crop)
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -102,7 +119,7 @@ fun UserInfoScreen() {
                 Row(verticalAlignment = Alignment.Bottom) {
                     Spacer(modifier = Modifier.width(20.dp))
                     Text(
-                        text = "재영맘", style = AchuTheme.typography.bold24,
+                        text = user.nickname, style = AchuTheme.typography.bold24,
                         fontSize = 28.sp
                     )
                     Text(text = "님", style = AchuTheme.typography.bold24)
@@ -131,7 +148,7 @@ fun UserInfoScreen() {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 BasicTextField(
-                    value = "aa846811",
+                    value = user.userId,
                     onValueChange = {},
                     placeholder = "아이디",
                     placeholderColor = FontBlack,
@@ -151,7 +168,7 @@ fun UserInfoScreen() {
 
                 Row {
                     ClearTextField(
-                        value = "010-3443-8468",
+                        value = user.phoneNumber,
                         onValueChange = {},
                         pointColor = PointBlue,
                         modifier = Modifier.weight(1f)
