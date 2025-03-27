@@ -35,7 +35,7 @@ interface UserService {
     suspend fun getMyInfo(): ApiResult<UserInfoResponse>
 
     @GET("/users/username/is-unique")
-    suspend fun checkUsernameUnique(@Query("username") username: String): ApiResult<UniqueCheckResponse>
+    suspend fun checkIdUnique(@Query("username") username: String): ApiResult<UniqueCheckResponse>
 
     @GET("/users/nickname/is-unique")
     suspend fun checkNicknameUnique(@Query("nickname") nickname: String): ApiResult<UniqueCheckResponse>

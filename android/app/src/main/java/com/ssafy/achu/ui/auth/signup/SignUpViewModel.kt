@@ -1,10 +1,19 @@
 package com.ssafy.achu.ui.auth.signup
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
+import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
+import com.ssafy.achu.core.util.Constants
+import com.ssafy.achu.core.util.getErrorMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+private const val TAG = "SignUpViewModel"
 
 class SignUpViewModel : ViewModel() {
 
@@ -116,6 +125,58 @@ class SignUpViewModel : ViewModel() {
             )
         }
         updateButtonState()
+    }
+
+    fun checkIdUnique() {
+        viewModelScope.launch {
+            userRepository.checkIdUnique(uiState.value.id)
+                .onSuccess { response ->
+                    if (response.result == Constants.SUCCESS) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                idState = response.data.isUnique,
+                                idButtonState = false,
+                                idMessage =
+                                    if (response.data.isUnique) {
+                                        "* 사용 가능한 아이디입니다."
+                                    } else {
+                                        "* 이미 사용중인 아이디입니다."
+                                    }
+                            )
+                        }
+                    }
+                }.onFailure {
+                    val errorMessage = it.getErrorMessage(retrofit)
+                    Log.d(TAG, "checkIdUnique error: $errorMessage")
+                    Log.d(TAG, "checkIdUnique errorCode: ${it.message}")
+                }
+        }
+    }
+
+    fun checkNicknameUnique() {
+        viewModelScope.launch {
+            userRepository.checkNicknameUnique(uiState.value.nickname)
+                .onSuccess { response ->
+                    if (response.result == Constants.SUCCESS) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                nicknameState = response.data.isUnique,
+                                nicknameButtonState = false,
+                                nicknameMessage =
+                                    if (response.data.isUnique) {
+                                        "* 사용 가능한 닉네임입니다."
+                                    } else {
+                                        "* 이미 사용중인 닉네임입니다."
+                                    }
+                            )
+                        }
+                    }
+                }.onFailure {
+                    val errorMessage = it.getErrorMessage(retrofit)
+                    Log.d(TAG, "checkNicknameUnique error: $errorMessage")
+                    Log.d(TAG, "checkNicknameUnique errorCode: ${it.message}")
+                }
+        }
     }
 
     private fun updateButtonState() {

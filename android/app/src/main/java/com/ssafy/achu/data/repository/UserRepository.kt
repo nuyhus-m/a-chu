@@ -41,9 +41,9 @@ class UserRepository {
         }
     }
 
-    suspend fun checkUsernameUnique(username: String): Result<ApiResult<UniqueCheckResponse>> {
+    suspend fun checkIdUnique(username: String): Result<ApiResult<UniqueCheckResponse>> {
         return kotlin.runCatching {
-            userService.checkUsernameUnique(username)
+            userService.checkIdUnique(username)
         }
     }
 

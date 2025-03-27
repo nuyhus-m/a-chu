@@ -57,7 +57,7 @@ fun SignUpScreen(
             label = stringResource(R.string.id),
             placeholder = stringResource(R.string.enter_id),
             buttonText = stringResource(R.string.check),
-            onClick = {},
+            onClick = { viewModel.checkIdUnique() },
             errorMessage = uiState.idMessage,
             enabled = uiState.idState,
             buttonEnabled = uiState.idButtonState
@@ -94,7 +94,7 @@ fun SignUpScreen(
             label = stringResource(R.string.nickname),
             placeholder = stringResource(R.string.nickname_ex),
             buttonText = stringResource(R.string.check),
-            onClick = {},
+            onClick = { viewModel.checkNicknameUnique() },
             errorMessage = uiState.nicknameMessage,
             enabled = uiState.nicknameState,
             buttonEnabled = uiState.nicknameButtonState
