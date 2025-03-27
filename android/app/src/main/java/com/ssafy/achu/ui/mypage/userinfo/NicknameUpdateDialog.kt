@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.mypage
+package com.ssafy.achu.ui.mypage.userinfo
 
 import android.R.attr.radius
 import androidx.compose.foundation.background
@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ssafy.achu.core.theme.AchuTheme
-import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 

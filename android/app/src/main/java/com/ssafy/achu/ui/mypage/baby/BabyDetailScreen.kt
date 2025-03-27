@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.mypage
+package com.ssafy.achu.ui.mypage.baby
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -46,11 +46,10 @@ import com.ssafy.achu.core.components.PointPinkLineBtn
 import com.ssafy.achu.core.components.SmallLineBtn
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
-import com.ssafy.achu.core.theme.FontPink
-import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.data.model.baby.BabyResponse
+import com.ssafy.achu.ui.mypage.userinfo.NicknameUpdateDialog
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

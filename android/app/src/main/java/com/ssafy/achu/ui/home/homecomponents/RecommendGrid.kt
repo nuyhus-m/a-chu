@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.home
+package com.ssafy.achu.ui.home.homecomponents
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -103,7 +104,7 @@ fun RecommendGrid(productResponses: List<ProductResponse>, onClick: (productId: 
                             .clickable {
                                 onClick(productResponses[0].id)
                             },
-                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(LightGray)
+                        colorFilter = ColorFilter.tint(LightGray)
                     )
 
                 }
@@ -186,7 +187,7 @@ fun RecommendGrid(productResponses: List<ProductResponse>, onClick: (productId: 
                                 .clickable {
                                     onClick(productResponses[1].id)
                                 },
-                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(LightGray)
+                            colorFilter = ColorFilter.tint(LightGray)
                         )
 
                     }
@@ -261,7 +262,7 @@ fun RecommendGrid(productResponses: List<ProductResponse>, onClick: (productId: 
                                 .clickable {
                                     onClick(productResponses[2].id)
                                 },
-                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(LightGray)
+                            colorFilter = ColorFilter.tint(LightGray)
                         )
 
                     }

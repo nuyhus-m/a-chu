@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.mypage
+package com.ssafy.achu.ui.mypage.userinfo
 
 import android.os.Build
 import androidx.annotation.RequiresApi

@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.mypage
+package com.ssafy.achu.ui.mypage.likelist
 
 import LargeLikeItem
 import androidx.compose.foundation.background
@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
