@@ -13,13 +13,20 @@ class SignInViewModel : ViewModel() {
 
     fun updateId(idInput: String) {
         _uiState.update { currentState ->
-            currentState.copy(id = idInput)
+            currentState.copy(
+                id = idInput,
+                buttonState = idInput.isNotEmpty() && currentState.pwd.isNotEmpty()
+            )
         }
     }
 
     fun updatePwd(pwdInput: String) {
         _uiState.update { currentState ->
-            currentState.copy(pwd = pwdInput)
+            currentState.copy(
+                pwd = pwdInput,
+                buttonState = currentState.id.isNotEmpty() && pwdInput.isNotEmpty()
+            )
         }
     }
+
 }

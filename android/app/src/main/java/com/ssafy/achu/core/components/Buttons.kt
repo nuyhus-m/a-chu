@@ -30,13 +30,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.DisabledBlue
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PointBlueButton(buttonText: String, onClick: () -> Unit) {
+fun PointBlueButton(buttonText: String, enabled: Boolean = true, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,8 +55,9 @@ fun PointBlueButton(buttonText: String, onClick: () -> Unit) {
                 )
                 .height(50.dp)
                 .clip(RoundedCornerShape(30.dp))
-                .background(PointBlue)
+                .background(if (enabled) PointBlue else DisabledBlue)
                 .clickable(
+                    enabled = enabled,
                     onClick = onClick
                 ),
             contentAlignment = Alignment.Center
@@ -82,7 +84,7 @@ fun PointBlueFlexibleBtn(buttonText: String, onClick: () -> Unit) {
                 .background(PointBlue, shape = RoundedCornerShape(50.dp)) // 버튼 색상 및 모서리 둥글게
                 .clickable(onClick = onClick)
                 .height(50.dp)
-                .padding( horizontal = 24.dp), // 텍스트의 여백을 설정
+                .padding(horizontal = 24.dp), // 텍스트의 여백을 설정
             contentAlignment = Alignment.Center
         ) {
             Text(

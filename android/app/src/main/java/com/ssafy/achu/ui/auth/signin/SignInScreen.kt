@@ -26,9 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.R
+import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.components.textfield.PasswordTextField
-import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
@@ -137,6 +137,7 @@ fun SignInScreen(
 
                 PointBlueButton(
                     buttonText = stringResource(R.string.login),
+                    enabled = uiState.buttonState,
                     onClick = { /* 로그인 로직 구현 */ }
                 )
             }
