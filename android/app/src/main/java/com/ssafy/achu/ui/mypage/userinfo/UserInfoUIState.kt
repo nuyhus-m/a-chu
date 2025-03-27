@@ -11,5 +11,7 @@ data class UserInfoUIState (
     val isPasswordMismatch: Boolean = false,
     val User : UserInfoResponse? = null,
     val isPhoneNumberValid: Boolean = true,
-    val isUnCorrectPWD: Boolean = false
+    val isUnCorrectPWD: Boolean = false,
+    val isUniqueNickname: Boolean = false,
+    val isCorrectNickname: Boolean = true,
 )

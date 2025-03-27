@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 
@@ -40,7 +41,8 @@ fun NicknameUpdateDialog(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.5f)) // 배경 어두운 오버레이 추가
-            .padding(32.dp).clickable(
+            .padding(32.dp)
+            .clickable(
                 indication = null, // 리플 효과 제거
                 interactionSource = remember { MutableInteractionSource() }
             ) { }, // 다이얼로그 주변 여백
@@ -67,18 +69,26 @@ fun NicknameUpdateDialog(
                     style = AchuTheme.typography.medium18,
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "*영문,한글 2-6자",
+                    style = AchuTheme.typography.regular16.copy(color = color)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
                     value = uiState.newNickname,
-                    onValueChange = {viewModel.updateNickname(it)},
+                    onValueChange = { viewModel.updateNickname(it) },
                     modifier = Modifier
-                        .fillMaxWidth().padding(horizontal = 16.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
                         .height(50.dp),
                     placeholder = {
                         Text(
-                            text = "닉네임 입력",
-                            style = AchuTheme.typography.regular16.copy(color = color)
+                            text = if(uiState.isCorrectNickname)"닉네임 입력" else "닉네임 양식확인",
+                            style = AchuTheme.typography.regular16.copy(color = if(uiState.isCorrectNickname) color else FontPink)
                         )
                     },
                     textStyle = AchuTheme.typography.regular16,
@@ -94,15 +104,18 @@ fun NicknameUpdateDialog(
                     // 🔹 trailingIcon에 버튼 추가
                     trailingIcon = {
                         Button(
-                            onClick = { /* 버튼 클릭 로직 닉네임 중복확인 */ },
-                            modifier = Modifier.padding(4.dp).size(60.dp),
+                            onClick = { viewModel.confirmNickname(onConfirm)},
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .size(60.dp),
                             contentPadding = PaddingValues(0.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = color, // 버튼 배경색 (원하는 색상으로 변경)
                                 contentColor = Color.White   // 텍스트 색상 (원하는 색상으로 변경)
                             )
                         ) {
-                            Text(text = "확인",
+                            Text(
+                                text = if (uiState.isUniqueNickname) "완료" else "확인",
                                 style = AchuTheme.typography.semiBold14PointBlue,
                                 color = White
                             )
@@ -170,7 +183,8 @@ fun NicknameDialogPreview() {
         NicknameUpdateDialog(
             onDismiss = { /* 취소 클릭 시 동작 */ },
             onConfirm = { /* 확인 클릭 시 동작 */ },
-            PointPink
-        )
+            color = PointPink,
+
+            )
     }
 }

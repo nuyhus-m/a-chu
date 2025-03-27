@@ -85,6 +85,28 @@ class UserInfoViewModel : ViewModel() {
         }
     }
 
+     fun confirmNickname(onConfirm: () -> Unit) {
+         val state = _uiState.value
+         val nicknameRegex = "^[가-힣A-Za-z]{2,6}$".toRegex()
+         val isValid = nicknameRegex.matches(state.newNickname)
+         val isUnique = false
+
+         if (isValid && isUnique) {
+             allPWDDateDelete()
+             onConfirm
+         } else {
+             _uiState.update {
+                 it.copy(
+                     isUniqueNickname = isUnique,
+                     isCorrectNickname = isValid,
+                     newNickname = if (!isValid && !isUnique) "" else it.newNickname,  // 비밀번호가 유효하지 않다면 초기화
+
+                 )
+             }
+         }
+
+     }
+
 
 //
 //    fun changePWD() {
