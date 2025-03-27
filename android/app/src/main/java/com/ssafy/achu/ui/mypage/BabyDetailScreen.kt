@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.components.BasicTopAppBar
@@ -45,18 +46,33 @@ import com.ssafy.achu.core.components.PointPinkLineBtn
 import com.ssafy.achu.core.components.SmallLineBtn
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
+import com.ssafy.achu.core.theme.FontPink
+import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.data.model.baby.BabyResponse
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BabyDetailScreen() {
 
+    val baby = BabyResponse(
+        imgUrl = "https://loremflickr.com/300/300/baby",
+        nickname = "두식이",
+        id = 1,
+        birth = "2019-05-04",
+        gender = "남"
+    )
+
+
     val type = "남"//뷰모델에서 관리해야지
     var selectedGender by remember { mutableStateOf(if (type == "등록") null else "남") }
-    val titleText = if (type == "등록") "아이 정보 관리" else "두식이 정보"
+    val titleText = if (type == "등록") "아이 정보 관리" else "${baby.nickname} 정보"
     val profileBtnText = if (type == "등록") "프로필 사진 등록하기" else "프로필 사진 수정하기"
-    val nicknameText = if (type == "등록") "닉네임" else "두식이"
+    val nicknameText = if (type == "등록") "닉네임" else "${baby.nickname}"
+
+    var showNickNameUpdateDialog by remember { mutableStateOf(false) }
+
 
 
     Box(
@@ -113,13 +129,35 @@ fun BabyDetailScreen() {
                                 .background(color = Color.LightGray),
                             contentAlignment = Alignment.Center // 내부 컨텐츠 중앙 정렬
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.img_baby_profile),
-                                contentDescription = "Profile",
-                                modifier = Modifier.size(142.dp).clip(CircleShape)
-                                , // Box 크기에 맞추기
-                                contentScale = ContentScale.Crop
-                            )
+
+                            val imageUrl = baby.imgUrl
+
+                            // URL이 비어 있으면 기본 이미지 리소스를 사용하고, 그렇지 않으면 네트워크 이미지를 로드합니다.
+                            if (imageUrl.isNullOrEmpty()) {
+                                // 기본 이미지를 painter로 설정
+                                Image(
+                                    painter = painterResource(id = R.drawable.img_baby_profile),
+                                    contentDescription = "Profile",
+                                    modifier = Modifier
+                                        .size(142.dp)
+                                        .clip(CircleShape), // Box 크기에 맞추기
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                // URL을 통해 이미지를 로드
+                                AsyncImage(
+                                    model = baby.imgUrl,
+                                    contentDescription = "Profile",
+                                    modifier = Modifier
+                                        .size(142.dp)
+                                        .clip(CircleShape), // Box 크기에 맞추기
+                                    contentScale = ContentScale.Crop,
+                                    error = painterResource(R.drawable.img_baby_profile)
+                                )
+
+                            }
+
+
                         }
                     }
 
@@ -146,7 +184,7 @@ fun BabyDetailScreen() {
                             .height(20.dp)
                             .width(20.dp)
                             .clickable {
-                                //클릭시 다이얼로그 띄우기
+                                showNickNameUpdateDialog = true
                             },
                         colorFilter = ColorFilter.tint(PointPink) // 색을 빨간색으로 변경
 
@@ -174,10 +212,11 @@ fun BabyDetailScreen() {
                     )
                 } else {
                     ClearTextField(
-                        value = "2019.05.04",
+                        value = baby.birth,
                         onValueChange = {},
                         pointColor = PointPink,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = R.drawable.ic_calendar
                     )
                 }
 
@@ -225,6 +264,14 @@ fun BabyDetailScreen() {
             }
 
         }
+    }
+
+    if (showNickNameUpdateDialog) {
+        NicknameUpdateDialog(
+            onDismiss = { showNickNameUpdateDialog = false },
+            onConfirm = { showNickNameUpdateDialog = false },
+            PointPink
+        )
     }
 }
 

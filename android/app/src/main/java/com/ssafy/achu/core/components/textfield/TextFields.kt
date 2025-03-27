@@ -2,6 +2,7 @@ package com.ssafy.achu.core.components.textfield
 
 import android.R.attr.singleLine
 import android.R.attr.textStyle
+import android.graphics.drawable.Icon
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -116,6 +117,7 @@ fun ClearTextField(
     onValueChange: (String) -> Unit,
     pointColor: Color = PointBlue,
     modifier: Modifier = Modifier // modifier를 외부에서 설정할 수 있도록 추가
+    , icon: Int = R.drawable.ic_write
 ) {
     OutlinedTextField(
         value = value,
@@ -133,7 +135,7 @@ fun ClearTextField(
         trailingIcon = {
             IconButton(onClick = { onValueChange("") }) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_write),
+                    painter = painterResource(icon),
                     tint = pointColor,
                     contentDescription = "Clear text"
                 )

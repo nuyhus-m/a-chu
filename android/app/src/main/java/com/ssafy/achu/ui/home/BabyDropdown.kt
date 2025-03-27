@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
@@ -38,14 +39,14 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.ui.mypage.BabyInfo
+import com.ssafy.achu.data.model.baby.BabyResponse
 import kotlin.collections.forEach
 
 @Composable
 fun BabyDropdown(
-    babyList: MutableList<BabyInfo>,
-    selectedBaby: BabyInfo,
-    onBabySelected: (BabyInfo) -> Unit
+    babyList: List<BabyResponse>,
+    selectedBaby: BabyResponse,
+    onBabySelected: (BabyResponse) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -74,15 +75,34 @@ fun BabyDropdown(
                 .clip(CircleShape)
                 .border(1.dp, birthTextColor, CircleShape)
         ) {
-            Image(
-                painter = painterResource(id = selectedBaby.profileImg!!),
-                contentDescription = "Profile",
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(CircleShape)
-                    .align(Alignment.Center),
-                contentScale = ContentScale.Crop
-            )
+
+            val imageUrl = selectedBaby.imgUrl
+            // URL이 비어 있으면 기본 이미지 리소스를 사용하고, 그렇지 않으면 네트워크 이미지를 로드합니다.
+            if (imageUrl.isNullOrEmpty()) {
+                // 기본 이미지를 painter로 설정
+                Image(
+                    painter = painterResource(id = R.drawable.img_baby_profile),
+                    contentDescription = "Profile",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                        .align(Alignment.Center),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                // URL을 통해 이미지를 로드
+                AsyncImage(
+                    model = selectedBaby.imgUrl,
+                    contentDescription = "Profile",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                        .align(Alignment.Center),
+                    contentScale = ContentScale.Crop,
+                    error = painterResource(R.drawable.img_baby_profile)
+                )
+
+            }
         }
 
         Spacer(modifier = Modifier.size(16.dp))
@@ -102,7 +122,7 @@ fun BabyDropdown(
                 )
 
                 Text(
-                    text = selectedBaby.babyNickname,
+                    text = selectedBaby.nickname,
                     style = AchuTheme.typography.semiBold20,
                     color = NicknameTextColor
                 )
@@ -126,7 +146,7 @@ fun BabyDropdown(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = baby.babyNickname,
+                                text = baby.nickname,
                                 style = AchuTheme.typography.semiBold16
                             )
                         },
