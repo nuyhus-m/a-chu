@@ -16,4 +16,9 @@ public class LikeProcessor {
     goodsValidator.validateExists(goodsId);
     likeRepository.like(user, goodsId);
   }
+
+  public void deleteLike(User user, Long goodsId) {
+    goodsValidator.validateExists(goodsId);
+    likeRepository.deleteLike(user, goodsId);
+  }
 }

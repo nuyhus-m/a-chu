@@ -6,6 +6,7 @@ import com.ssafy.s12p21d206.achu.domain.User;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
@@ -49,5 +50,20 @@ public class LikeCoreRepository implements LikeRepository {
         .findByUserIdAndGoodsId(user.id(), goodsId)
         .orElseGet(() -> likeJpaRepository.save(new LikeEntity(user.id(), goodsId)));
     likeEntity.active();
+  }
+
+  @Transactional
+  @Override
+  public void deleteLike(User user, Long goodsId) {
+    Optional<LikeEntity> likeEntityOptional =
+        likeJpaRepository.findByUserIdAndGoodsId(user.id(), goodsId);
+
+    // likeEntityOptional.ifPresent(BaseEntity::delete);
+    if (likeEntityOptional.isEmpty()) {
+      return;
+    }
+
+    LikeEntity likeEntity = likeEntityOptional.get();
+    likeEntity.delete();
   }
 }

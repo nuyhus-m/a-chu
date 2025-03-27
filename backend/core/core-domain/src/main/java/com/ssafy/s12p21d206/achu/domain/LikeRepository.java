@@ -11,4 +11,6 @@ public interface LikeRepository {
   Map<Long, LikeStatus> status(User user, List<Long> goodsIds);
 
   void like(User user, Long goodsId);
+
+  void deleteLike(User user, Long goodsId);
 }

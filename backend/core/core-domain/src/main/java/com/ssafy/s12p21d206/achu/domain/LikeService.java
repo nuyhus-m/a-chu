@@ -32,4 +32,8 @@ public class LikeService {
   public void like(User user, Long goodsId) {
     likeProcessor.like(user, goodsId);
   }
+
+  public void deleteLike(User user, Long goodsId) {
+    likeProcessor.deleteLike(user, goodsId);
+  }
 }
