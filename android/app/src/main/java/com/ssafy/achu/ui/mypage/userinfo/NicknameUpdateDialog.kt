@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.mypage.userinfo
 
+import android.R.attr.onClick
 import android.R.attr.radius
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -87,8 +88,8 @@ fun NicknameUpdateDialog(
                         .height(50.dp),
                     placeholder = {
                         Text(
-                            text = if(uiState.isCorrectNickname)"닉네임 입력" else "닉네임 양식확인",
-                            style = AchuTheme.typography.regular16.copy(color = if(uiState.isCorrectNickname) color else FontPink)
+                            text = if (!uiState.isCorrectNickname) "닉네임 양식확인" else if (!uiState.isUniqueNickname) "사용중인 닉네임" else "새 닉네임 입력",
+                            style = AchuTheme.typography.regular16.copy(color = if (uiState.isCorrectNickname && uiState.isUniqueNickname) color else FontPink)
                         )
                     },
                     textStyle = AchuTheme.typography.regular16,
@@ -104,7 +105,7 @@ fun NicknameUpdateDialog(
                     // 🔹 trailingIcon에 버튼 추가
                     trailingIcon = {
                         Button(
-                            onClick = { viewModel.confirmNickname(onConfirm)},
+                            onClick = { viewModel.confirmNickname() },
                             modifier = Modifier
                                 .padding(4.dp)
                                 .size(60.dp),
@@ -157,7 +158,10 @@ fun NicknameUpdateDialog(
                         modifier = Modifier
                             .weight(1.0f)
                             .background(color, shape = RoundedCornerShape(8.dp))
-                            .clickable(onClick = onConfirm)
+                            .clickable(
+                                enabled = if (uiState.isCorrectNickname && uiState.isUniqueNickname) true else false,
+                                onClick = onConfirm
+                            )
                             .padding(vertical = 12.dp),
                         contentAlignment = Alignment.Center
                     ) {

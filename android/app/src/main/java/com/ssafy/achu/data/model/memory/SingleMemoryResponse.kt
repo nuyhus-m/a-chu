@@ -1,10 +1,10 @@
 package com.ssafy.achu.data.model.memory
 
-data class MemoryResponse(
+data class SingleMemoryResponse(
     val content: String,
     val createdAt: String,
     val id: Int,
-    val imgUrl:String,
+    val imgUrls: List<String>,
     val title: String,
     val updatedAt: String
 )

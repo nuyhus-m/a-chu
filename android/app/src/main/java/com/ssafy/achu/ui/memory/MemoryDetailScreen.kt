@@ -40,6 +40,7 @@ import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.data.model.memory.MemoryResponse
+import com.ssafy.achu.data.model.memory.SingleMemoryResponse
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -51,7 +52,8 @@ fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
         R.drawable.img_test_sopung
     )
 
-    val memory = MemoryResponse(
+    val memory = SingleMemoryResponse(
+
         content = "너무너무 귀여운 두식이의 첫돌에 입었던\n옷을 팔았다. 서운하면서도 후련하다\n이걸로 더 예쁜옷을 사줘야지",
         createdAt = "2024.06.03",
         id = 1,

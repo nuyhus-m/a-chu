@@ -63,11 +63,8 @@ fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: ()
             content = "너무너무 귀여운 두식이의 첫돌에 입었던\n옷을 팔았다. 서운하면서도 후련하다\n이걸로 더 예쁜옷을 사줘야지",
             createdAt = "2024.06.03",
             id = 1,
-            imgUrls = listOf(
+            imgUrl =
                 "https://loremflickr.com/600/400",
-                "https://loremflickr.com/600/400",
-                "https://loremflickr.com/600/400"
-            ),
             title = "두식이의 첫돌",
             updatedAt = ""
         ),
@@ -75,11 +72,8 @@ fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: ()
             content = "너무너무 귀여운 두식이의 첫돌에 입었던\n옷을 팔았다. 서운하면서도 후련하다\n이걸로 더 예쁜옷을 사줘야지",
             createdAt = "2024.07.18",
             id = 1,
-            imgUrls = listOf(
+            imgUrl =
                 "https://loremflickr.com/600/400",
-                "https://loremflickr.com/600/400",
-                "https://loremflickr.com/600/400"
-            ),
             title = "놀이터에서",
             updatedAt = "2024.07.18"
         ),
@@ -87,11 +81,8 @@ fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: ()
             content = "너무너무 귀여운 두식이의 첫돌에 입었던\n옷을 팔았다. 서운하면서도 후련하다\n이걸로 더 예쁜옷을 사줘야지",
             createdAt = "2024.08.19",
             id = 1,
-            imgUrls = listOf(
+            imgUrl =
                 "https://loremflickr.com/600/400",
-                "https://loremflickr.com/600/400",
-                "https://loremflickr.com/600/400"
-            ),
             title = "여름휴가",
             updatedAt = "2024.08.19"
         ),
@@ -207,7 +198,7 @@ fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: ()
             ) {
                 items(memoryList.size) { index ->
                     MemoryListItem(
-                        img = memoryList[index].imgUrls[0],
+                        img = memoryList[index].imgUrl,
                         title = memoryList[index].title,
                         date = memoryList[index].createdAt,
                         onClick = { onNavigateToMemoryDetail() }

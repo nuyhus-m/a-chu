@@ -16,6 +16,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.KeyboardType
 import com.ssafy.achu.R
+import com.ssafy.achu.core.theme.AchuTheme
 
 @Composable
 fun PhoneNumberTextField(
@@ -55,7 +56,8 @@ fun PhoneNumberTextField(
         shape = RoundedCornerShape(30.dp),
         placeholder = {
             Text(
-                text = placeholderChange
+                text = placeholderChange,
+                style = AchuTheme.typography.regular16,
             )
         },
         visualTransformation = PhoneNumberVisualTransformation(),

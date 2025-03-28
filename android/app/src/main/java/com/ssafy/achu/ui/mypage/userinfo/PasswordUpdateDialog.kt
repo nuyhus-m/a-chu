@@ -66,8 +66,10 @@ fun PasswordUpdateDialog(
                 PasswordTextField(
                     value = uiState.oldPassword,
                     onValueChange = { viewModel.oldPwd(it) },
-                    placeholder = "●●●●●"
-                )
+                    placeholder = if (uiState.isCorrectOldPWD) "●●●●●" else "비밀번호가 틀렸습니다.",
+                    color = if (!uiState.isCorrectOldPWD) FontPink else PointBlue,
+
+                    )
 
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -89,8 +91,8 @@ fun PasswordUpdateDialog(
                 PasswordTextField(
                     value = uiState.newPassword,
                     onValueChange = { viewModel.newPwd(it) },
-                    placeholder = if (uiState.isUnCorrectPWD) "양식을 확인해주세요" else "●●●●●",
-                    color = if (uiState.isUnCorrectPWD) FontPink else PointBlue,
+                    placeholder = if (uiState.isCorrectPWD) "●●●●●" else "양식을 확인해주세요",
+                    color = if (!uiState.isCorrectPWD) FontPink else PointBlue,
                 )
 
 
@@ -108,8 +110,8 @@ fun PasswordUpdateDialog(
                 PasswordTextField(
                     value = uiState.newPasswordCheck,
                     onValueChange = { viewModel.newPwdCheck(it) },
-                    placeholder = if (uiState.isPasswordMismatch) "비밀번호 불일치" else "●●●●●",
-                    color = if (uiState.isPasswordMismatch) FontPink else PointBlue,
+                    placeholder = if (!uiState.isPasswordMatch) "비밀번호 불일치" else "●●●●●",
+                    color = if (!uiState.isPasswordMatch) FontPink else PointBlue,
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))

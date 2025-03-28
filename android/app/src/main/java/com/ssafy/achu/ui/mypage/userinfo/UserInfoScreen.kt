@@ -1,7 +1,10 @@
 package com.ssafy.achu.ui.mypage.userinfo
 
 import PhoneNumberTextField
+import android.content.Context
+import android.net.Uri
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -54,6 +57,14 @@ import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.data.model.auth.UserInfoResponse
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+
+private const val TAG = "UserInfoScreen 안주현"
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -61,12 +72,10 @@ fun UserInfoScreen(
     viewModel: UserInfoViewModel = viewModel(),
 ) {
 
-    var showNickNameUpdateDialog by remember { mutableStateOf(false) }
-    var showPasswordUpdateDialog by remember { mutableStateOf(false) }
-    var logoutDialog by remember { mutableStateOf(false) }
-    var deleteUserDialog by remember { mutableStateOf(false) }
+
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    viewModel.getUserinfo()
 
 
     val user = UserInfoResponse(
@@ -75,21 +84,43 @@ fun UserInfoScreen(
         userId = "achutest1",
         phoneNumber = "010-1234-4568",
     )
-    var img by remember { mutableStateOf(user
 
 
-        .imageUrl) }
-    
+    var img by remember {
+        mutableStateOf(
+            user.imageUrl
+        )
+    }
+
+
+    fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
+        val contentResolver = context.contentResolver
+        val inputStream: InputStream? = contentResolver.openInputStream(uri)
+
+        inputStream?.let { input ->
+            val file = File(context.cacheDir, "upload_image.jpg") // 임시 파일 생성
+            val outputStream = FileOutputStream(file)
+            input.copyTo(outputStream)
+            outputStream.close()
+            input.close()
+
+            val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), file)
+            return MultipartBody.Part.createFormData("profileImage", file.name, requestFile)
+        }
+        return null
+    }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
             if (uri != null) { // 이미지가 선택되었을 때만 처리
-               img = uri.toString()
+                img = uri.toString()
+                viewModel.changeProfile(uriToMultipart(context, uri)!!)
                 Toast.makeText(context, "프로필 수정완료", Toast.LENGTH_SHORT).show()
             }
         }
     )
+
 
     Box(
         modifier = Modifier
@@ -160,7 +191,7 @@ fun UserInfoScreen(
                             .height(20.dp)
                             .width(20.dp)
                             .clickable {
-                                showNickNameUpdateDialog = true
+                                viewModel.updateShowNickNameUpdateDialog(true)
                             },
                     )
                 }
@@ -200,7 +231,7 @@ fun UserInfoScreen(
                     PhoneNumberTextField(
                         value = uiState.phoneNumber,
                         placeholder = user.phoneNumber,
-                        onValueChange = {viewModel.updatePhoneNumber(it)},
+                        onValueChange = { viewModel.updatePhoneNumber(it) },
                         pointColor = PointBlue,
                         modifier = Modifier.weight(1f),
                     )
@@ -214,11 +245,13 @@ fun UserInfoScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 PointBlueButton("비밀번호 수정", onClick = {
-                    showPasswordUpdateDialog = true
+                    viewModel.updateShowPasswordUpdateDialog(true)
                 })
 
                 Spacer(modifier = Modifier.height(48.dp))
 
+                //이거 로그아웃은 프론트 에서 그냥 토큰 날리면 되지않나?
+                //회원탈퇴는 아직 안나옴
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -231,7 +264,7 @@ fun UserInfoScreen(
                             textDecoration = TextDecoration.Underline
                         ),
                         modifier = Modifier.clickable {
-                            logoutDialog = true
+                            viewModel.updateLogoutDialog(true)
                         }
                     )
 
@@ -243,7 +276,7 @@ fun UserInfoScreen(
                             textDecoration = TextDecoration.Underline
                         ),
                         modifier = Modifier.clickable {
-                            deleteUserDialog = true
+                            viewModel.updateDeleteUserDialog(true)
                         }
 
                     )
@@ -254,39 +287,44 @@ fun UserInfoScreen(
         }
     }
 
-    if (showNickNameUpdateDialog) {
+    if (uiState.showNickNameUpdateDialog) {
         NicknameUpdateDialog(
-            onDismiss = { showNickNameUpdateDialog = false },
-            onConfirm = { showNickNameUpdateDialog = false },
-            PointBlue
-        )
-    }
-    if (showPasswordUpdateDialog) {
-        PasswordUpdateDialog(
             onDismiss = {
-
-                showPasswordUpdateDialog = false
+                viewModel.updateShowNickNameUpdateDialog(false)
             },
-            onConfirm = { showPasswordUpdateDialog = false }
+            onConfirm = {
+                viewModel.changeNickname()
+                viewModel.updateShowNickNameUpdateDialog(false)
+            },
+            PointBlue, viewModel = viewModel
+        )
+    }
+    if (uiState.showPasswordUpdateDialog) {
+        PasswordUpdateDialog(
+            onDismiss = { viewModel.updateShowPasswordUpdateDialog(false) },
+            onConfirm = {
+                viewModel.updateShowPasswordUpdateDialog(false)
+                Toast.makeText(context, "비밀번호 수정완료", Toast.LENGTH_SHORT).show()
+            }, viewModel = viewModel
         )
     }
 
-    if (logoutDialog) {
+    if (uiState.logoutDialog) {
         BasicDialog(
             text = "로그아웃 하시겠습니까?",
-            onDismiss = { logoutDialog = false },
-            onConfirm = { logoutDialog = false }
+            onDismiss = { viewModel.updateLogoutDialog(false) },
+            onConfirm = {  viewModel.updateLogoutDialog(false) }
         )
     }
 
-    if (deleteUserDialog) {
+    if (uiState.deleteUserDialog) {
         BasicDialog(
             img = painterResource(id = R.drawable.img_crying_face),
             "A - Chu",
             "와 함께한",
             text = "모든 추억이 삭제됩니다.\n정말 탈퇴하시겠습니까?",
-            onDismiss = { deleteUserDialog = false },
-            onConfirm = { deleteUserDialog = false }
+            onDismiss = { viewModel.updateDeleteUserDialog(false) },
+            onConfirm = { viewModel.updateDeleteUserDialog(false)  }
         )
     }
 }

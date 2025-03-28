@@ -4,6 +4,7 @@ import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.IdResponse
 import com.ssafy.achu.data.model.memory.MemoryRequest
 import com.ssafy.achu.data.model.memory.MemoryResponse
+import com.ssafy.achu.data.model.memory.SingleMemoryResponse
 import okhttp3.MultipartBody
 import retrofit2.http.*
 
@@ -20,7 +21,7 @@ interface MemoryService {
 
     // 특정 추억 조회
     @GET("/memories/{memoryId}")
-    suspend fun getMemory(@Path("memoryId") memoryId: Int): ApiResult<MemoryResponse>
+    suspend fun getMemory(@Path("memoryId") memoryId: Int): ApiResult<SingleMemoryResponse>
 
     // 특정 자녀의 추억 목록 조회
     @GET("/babies/{babyId}/memories")

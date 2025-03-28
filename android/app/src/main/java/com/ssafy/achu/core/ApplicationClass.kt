@@ -1,6 +1,7 @@
 package com.ssafy.achu.core
 
 import android.app.Application
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.ssafy.achu.data.database.SharedPreferencesUtil
@@ -23,7 +24,7 @@ class ApplicationClass : Application() {
     companion object {
         // ipconfig를 통해 ip확인하기
         // 핸드폰으로 접속은 같은 인터넷으로 연결 되어있어야함 (유,무선)
-        const val SERVER_URL = "docs.a-chu.dukcode.org"
+        const val SERVER_URL = "https://docs.a-chu.dukcode.org"
         lateinit var sharedPreferencesUtil: SharedPreferencesUtil
         lateinit var retrofit: Retrofit
 
@@ -62,7 +63,7 @@ class ApplicationClass : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
+        Log.d(TAG, "onCreate: 초기화")
         //shared preference 초기화
         sharedPreferencesUtil = SharedPreferencesUtil(applicationContext)
 
@@ -89,6 +90,8 @@ class ApplicationClass : Application() {
         productRepository = ProductRepository()
         memoryRepository = MemoryRepository()
         babyRepository = BabyRepository()
+
+
     }
 
     //GSon은 엄격한 json type을 요구하는데, 느슨하게 하기 위한 설정. success, fail이 json이 아니라 단순 문자열로 리턴될 경우 처리..

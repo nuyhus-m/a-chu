@@ -4,6 +4,7 @@ import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.IdResponse
 import com.ssafy.achu.data.model.memory.MemoryRequest
 import com.ssafy.achu.data.model.memory.MemoryResponse
+import com.ssafy.achu.data.model.memory.SingleMemoryResponse
 import com.ssafy.achu.data.network.RetrofitUtil
 import okhttp3.MultipartBody
 
@@ -23,7 +24,7 @@ class MemoryRepository {
     }
 
     //  특정 추억 조회
-    suspend fun getMemory(memoryId: Int): Result<ApiResult<MemoryResponse>> {
+    suspend fun getMemory(memoryId: Int): Result<ApiResult<SingleMemoryResponse>> {
         return runCatching {
             memoryService.getMemory(memoryId)
         }
