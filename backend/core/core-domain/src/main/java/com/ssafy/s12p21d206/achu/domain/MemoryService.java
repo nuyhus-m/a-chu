@@ -11,7 +11,7 @@ public class MemoryService {
   }
 
   public Long append(User user, Long babyId, NewMemory newMemory) {
-    Memory memory = memoryAppender.save(user, babyId, newMemory);
+    Memory memory = memoryAppender.append(user, babyId, newMemory);
     return memory.memoryId();
   }
 }

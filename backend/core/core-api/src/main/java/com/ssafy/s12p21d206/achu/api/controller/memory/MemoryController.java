@@ -8,6 +8,7 @@ import com.ssafy.s12p21d206.achu.domain.NewMemory;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -32,8 +33,8 @@ public class MemoryController {
   public ApiResponse<DefaultIdResponse> appendMemory(
       ApiUser apiUser,
       @PathVariable Long babyId,
-      @RequestPart(name = "memoryImages") List<MultipartFile> memoryImages,
-      @RequestPart(name = "request") AppendMemoryRequest request) {
+      @RequestPart(name = "images") List<MultipartFile> memoryImages,
+      @RequestPart(name = "request") @Validated AppendMemoryRequest request) {
     List<String> imgUrls = List.of("goods1-img-url1.jpg", "goods1-img-url2.jpg");
     NewMemory newMemory = request.toNewMemory(imgUrls);
     Long memoryId = memoryService.append(apiUser.toUser(), babyId, newMemory);

@@ -12,13 +12,9 @@ public class MemoryAppender {
     this.babyValidator = babyValidator;
   }
 
-  public Memory save(User user, Long babyId, NewMemory newMemory) {
-    //        여기서 검증하기
+  public Memory append(User user, Long babyId, NewMemory newMemory) {
     babyValidator.validateExists(babyId);
     babyValidator.validateParent(user, babyId);
-    //        존재하는 아기 pk 인지
-    //        아기가 내 아기인지
-    //        이거 말고 할 거 있나..? 없는듯.
     return memoryRepository.save(user, babyId, newMemory);
   }
 }

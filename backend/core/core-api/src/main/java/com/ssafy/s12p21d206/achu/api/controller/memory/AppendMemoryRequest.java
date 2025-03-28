@@ -1,9 +1,13 @@
 package com.ssafy.s12p21d206.achu.api.controller.memory;
 
+import com.ssafy.s12p21d206.achu.api.validation.MemoryContent;
+import com.ssafy.s12p21d206.achu.api.validation.MemoryTitle;
 import com.ssafy.s12p21d206.achu.domain.NewMemory;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
-public record AppendMemoryRequest(String title, String content) {
+public record AppendMemoryRequest(
+    @NotNull @MemoryTitle String title, @NotNull @MemoryContent String content) {
   public NewMemory toNewMemory(List<String> imgUrls) {
     return new NewMemory(this.title(), this.content(), imgUrls);
   }

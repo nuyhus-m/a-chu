@@ -16,7 +16,6 @@ public class MemoryCoreRepository implements MemoryRepository {
 
   @Override
   public Memory save(User user, Long babyId, NewMemory newMemory) {
-    ;
     return memoryJpaRepository
         .save(new MemoryEntity(newMemory.title(), newMemory.content(), newMemory.imgUrls(), babyId))
         .toMemory();
