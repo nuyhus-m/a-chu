@@ -17,7 +17,7 @@ public record MemoryDetailResponse(
         memory.title(),
         memory.content(),
         memory.imgUrls(),
-        memory.createdAt(),
-        memory.updatedAt());
+        memory.defaultDateTime().createdAt(),
+        memory.defaultDateTime().updatedAt());
   }
 }

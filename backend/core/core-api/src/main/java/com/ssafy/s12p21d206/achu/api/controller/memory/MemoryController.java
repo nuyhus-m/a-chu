@@ -37,8 +37,8 @@ public class MemoryController {
       @RequestPart(name = "request") @Validated AppendMemoryRequest request) {
     List<String> imgUrls = List.of("goods1-img-url1.jpg", "goods1-img-url2.jpg");
     NewMemory newMemory = request.toNewMemory(imgUrls);
-    Long memoryId = memoryService.append(apiUser.toUser(), babyId, newMemory);
-    return ApiResponse.success(new DefaultIdResponse(memoryId));
+    Memory memory = memoryService.append(apiUser.toUser(), babyId, newMemory);
+    return ApiResponse.success(new DefaultIdResponse(memory.memoryId()));
   }
 
   @GetMapping("/memories/{memoryId}")

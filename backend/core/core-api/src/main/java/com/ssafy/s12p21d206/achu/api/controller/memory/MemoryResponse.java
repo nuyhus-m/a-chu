@@ -12,8 +12,8 @@ public record MemoryResponse(
             memory.memoryId(),
             memory.title(),
             memory.imgUrls().get(0),
-            memory.createdAt(),
-            memory.updatedAt()))
+            memory.defaultDateTime().createdAt(),
+            memory.defaultDateTime().updatedAt()))
         .toList();
   }
 }

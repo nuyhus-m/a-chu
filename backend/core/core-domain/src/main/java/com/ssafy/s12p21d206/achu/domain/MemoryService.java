@@ -22,9 +22,8 @@ public class MemoryService {
     this.memoryDeleter = memoryDeleter;
   }
 
-  public Long append(User user, Long babyId, NewMemory newMemory) {
-    Memory memory = memoryAppender.append(user, babyId, newMemory);
-    return memory.memoryId();
+  public Memory append(User user, Long babyId, NewMemory newMemory) {
+    return memoryAppender.append(user, babyId, newMemory);
   }
 
   public Memory findMemory(User user, Long memoryId) {

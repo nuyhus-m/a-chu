@@ -1,6 +1,7 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
 import com.ssafy.s12p21d206.achu.domain.Memory;
+import com.ssafy.s12p21d206.achu.domain.support.DefaultDateTime;
 import com.ssafy.s12p21d206.achu.storage.db.core.converter.ImgUrlListJsonConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -30,31 +31,14 @@ public class MemoryEntity extends BaseEntity {
     this.babyId = babyId;
   }
 
-  public String getTitle() {
-    return title;
-  }
-
-  public String getContent() {
-    return content;
-  }
-
-  public List<String> getImgUrls() {
-    return imgUrls;
-  }
-
-  public Long getBabyId() {
-    return babyId;
-  }
-
   public Memory toMemory() {
     return new Memory(
         getId(),
-        getTitle(),
-        getContent(),
-        getImgUrls(),
-        getBabyId(),
-        getCreatedAt(),
-        getUpdatedAt());
+        this.title,
+        this.content,
+        this.imgUrls,
+        this.babyId,
+        new DefaultDateTime(getCreatedAt(), getUpdatedAt()));
   }
 
   public void updateText(String title, String content) {
