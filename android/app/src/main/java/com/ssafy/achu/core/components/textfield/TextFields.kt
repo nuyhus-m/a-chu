@@ -40,7 +40,8 @@ fun BasicTextField(
     placeholderColor: Color,
     borderColor: Color,
     radius: Int = 30,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     OutlinedTextField(
         value = value,
@@ -62,7 +63,8 @@ fun BasicTextField(
             unfocusedBorderColor = borderColor,
             cursorColor = Color.Black
         ),
-        keyboardOptions = keyboardOptions
+        keyboardOptions = keyboardOptions,
+        visualTransformation = visualTransformation
     )
 }
 

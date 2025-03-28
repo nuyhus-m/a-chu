@@ -7,7 +7,7 @@ import com.ssafy.achu.core.ApplicationClass.Companion.authRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
 import com.ssafy.achu.core.util.Constants
-import com.ssafy.achu.core.util.getErrorMessage
+import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.auth.SignInRequest
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,6 +46,11 @@ class SignInViewModel : ViewModel() {
     }
 
     fun signIn() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                buttonState = false
+            )
+        }
         viewModelScope.launch {
             val signInRequest = SignInRequest(
                 username = uiState.value.id,
@@ -63,15 +68,16 @@ class SignInViewModel : ViewModel() {
                         sharedPreferencesUtil.saveTokens(response.data)
                     }
                 }.onFailure {
-                    val errorMessage = it.getErrorMessage(retrofit)
-                    Log.d(TAG, "signIn error: $errorMessage")
-                    Log.d(TAG, "signIn errorCode: ${it.message}")
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "signIn errorResponse: $errorResponse")
+                    Log.d(TAG, "signIn error: ${it.message}")
 
-                    _toastMessage.emit(errorMessage)
+                    _toastMessage.emit(errorResponse.message)
 
                     _uiState.update { currentState ->
                         currentState.copy(
-                            signInSuccess = false
+                            signInSuccess = false,
+                            buttonState = currentState.id.isNotEmpty() && currentState.pwd.isNotEmpty()
                         )
                     }
                 }

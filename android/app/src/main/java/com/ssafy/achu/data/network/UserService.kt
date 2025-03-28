@@ -4,6 +4,7 @@ import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.IdResponse
 import com.ssafy.achu.data.model.auth.ChangePasswordRequest
 import com.ssafy.achu.data.model.auth.ChangePhoneNumberRequest
+import com.ssafy.achu.data.model.auth.CheckPhoneAuthRequest
 import com.ssafy.achu.data.model.auth.NickNameRequest
 import com.ssafy.achu.data.model.auth.PhoneAuthRequest
 import com.ssafy.achu.data.model.auth.PhoneAuthResponse
@@ -23,7 +24,10 @@ import retrofit2.http.Query
 interface UserService {
 
     @POST("/verification/request")
-    suspend fun getPhoneAuth(@Body phoneAuthRequest: PhoneAuthRequest): ApiResult<PhoneAuthResponse>
+    suspend fun sendPhoneAuthRequest(@Body phoneAuthRequest: PhoneAuthRequest): ApiResult<PhoneAuthResponse>
+
+    @POST("/verification/verify")
+    suspend fun checkPhoneAuth(@Body checkPhoneAuthRequest: CheckPhoneAuthRequest): ApiResult<Unit>
 
     @POST("/users")
     suspend fun signUp(@Body signUpRequest: SignUpRequest): ApiResult<IdResponse>

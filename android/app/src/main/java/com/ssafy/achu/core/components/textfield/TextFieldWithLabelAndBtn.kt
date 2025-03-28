@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.ssafy.achu.core.components.LabelWithErrorMsg
 import com.ssafy.achu.core.components.PointBlueFlexibleBtn
@@ -26,7 +27,8 @@ fun TextFieldWithLabelAndBtn(
     onClick: () -> Unit,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     enabled: Boolean = false,
-    buttonEnabled: Boolean = true
+    buttonEnabled: Boolean = true,
+    visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     Column {
         LabelWithErrorMsg(label, errorMessage, enabled)
@@ -45,7 +47,8 @@ fun TextFieldWithLabelAndBtn(
                     placeholder = placeholder,
                     placeholderColor = PointBlue,
                     borderColor = PointBlue,
-                    keyboardOptions = keyboardOptions
+                    keyboardOptions = keyboardOptions,
+                    visualTransformation = visualTransformation
                 )
             }
 
