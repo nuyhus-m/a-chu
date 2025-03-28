@@ -65,6 +65,9 @@ class SignInViewModel : ViewModel() {
                                 signInSuccess = true
                             )
                         }
+                        val issuedAt = System.currentTimeMillis() / 1000
+                        sharedPreferencesUtil.saveAccessTokenIssuedAt(issuedAt)
+                        sharedPreferencesUtil.saveRefreshTokenIssuedAt(issuedAt)
                         sharedPreferencesUtil.saveTokens(response.data)
                     }
                 }.onFailure {

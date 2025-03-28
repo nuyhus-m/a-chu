@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.google.gson.Gson
+import com.ssafy.achu.data.model.auth.AccessTokenResponse
 import com.ssafy.achu.data.model.auth.TokenResponse
 
 class SharedPreferencesUtil(context: Context) {
@@ -14,6 +15,26 @@ class SharedPreferencesUtil(context: Context) {
 
     private var preferences: SharedPreferences =
         context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+
+    fun saveAccessTokenIssuedAt(timestamp: Long) {
+        preferences.edit {
+            putLong("access_issued_at", timestamp)
+        }
+    }
+
+    fun getAccessTokenIssuedAt(): Long {
+        return preferences.getLong("access_issued_at", 0)
+    }
+
+    fun saveRefreshTokenIssuedAt(timestamp: Long) {
+        preferences.edit {
+            putLong("refresh_issued_at", timestamp)
+        }
+    }
+
+    fun getRefreshTokenIssuedAt(): Long {
+        return preferences.getLong("refresh_issued_at", 0)
+    }
 
     fun saveTokens(tokenResponse: TokenResponse) {
         preferences.edit {
@@ -28,4 +49,19 @@ class SharedPreferencesUtil(context: Context) {
         val json = preferences.getString("token_data", null)
         return json?.let { gson.fromJson(it, TokenResponse::class.java) }  // JSON 문자열을 객체로 변환
     }
+
+    fun updateAccessToken(accessTokenResponse: AccessTokenResponse) {
+        val tokenResponse = getTokens()
+
+        if (tokenResponse != null) {
+            val updatedTokenResponse = tokenResponse.copy(
+                tokenType = accessTokenResponse.tokenType,
+                accessToken = accessTokenResponse.accessToken,
+                accessTokenExpiresIn = accessTokenResponse.accessTokenExpiresIn
+            )
+
+            saveTokens(updatedTokenResponse)
+        }
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.ssafy.achu.core
+package com.ssafy.achu.core.util
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping

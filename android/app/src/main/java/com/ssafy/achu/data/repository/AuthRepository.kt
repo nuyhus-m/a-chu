@@ -17,15 +17,15 @@ class AuthRepository {
         }
     }
 
-    suspend fun getAccessToken(refreshToken: RefreshToken): Result<ApiResult<AccessTokenResponse>> {
+    suspend fun refreshAccessToken(refreshToken: RefreshToken): Result<ApiResult<AccessTokenResponse>> {
         return kotlin.runCatching {
-            authService.getAccessToken(refreshToken)
+            authService.refreshAccessToken(refreshToken)
         }
     }
 
-    suspend fun updateAccessToken(refreshToken: RefreshToken): Result<ApiResult<TokenResponse>> {
+    suspend fun renewTokens(refreshToken: RefreshToken): Result<ApiResult<TokenResponse>> {
         return kotlin.runCatching {
-            authService.updateAccessToken(refreshToken)
+            authService.renewTokens(refreshToken)
         }
     }
 }
