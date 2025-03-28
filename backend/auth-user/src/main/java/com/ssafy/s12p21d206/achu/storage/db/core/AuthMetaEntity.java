@@ -16,7 +16,7 @@ public abstract class AuthMetaEntity {
   private AuthEntityStatus entityStatus = AuthEntityStatus.ACTIVE;
 
   @CreationTimestamp
-  private LocalDateTime createdAt = LocalDateTime.MIN;
+  private LocalDateTime createdAt;
 
   @UpdateTimestamp
   private LocalDateTime updatedAt;

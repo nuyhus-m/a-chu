@@ -23,7 +23,7 @@ public abstract class BaseEntity {
   private EntityStatus entityStatus = EntityStatus.ACTIVE;
 
   @CreationTimestamp
-  private LocalDateTime createdAt = LocalDateTime.MIN;
+  private LocalDateTime createdAt;
 
   @UpdateTimestamp
   private LocalDateTime updatedAt;
