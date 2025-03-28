@@ -7,11 +7,14 @@ import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreErrorKind;
 import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice(basePackageClasses = AuthApiControllerAdvice.class)
 public class AuthApiControllerAdvice {
 
