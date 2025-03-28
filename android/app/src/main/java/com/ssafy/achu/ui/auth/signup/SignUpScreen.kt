@@ -22,19 +22,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.R
+import com.ssafy.achu.core.PhoneNumberVisualTransformation
 import com.ssafy.achu.core.components.PointBlueButton
+import com.ssafy.achu.core.components.dialog.PhoneVerificationDialog
 import com.ssafy.achu.core.components.textfield.PwdTextFieldWithLabel
 import com.ssafy.achu.core.components.textfield.TextFieldWithLabelAndBtn
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatPhoneNumber
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SignUpScreen(
     modifier: Modifier = Modifier,
-    viewModel: SignUpViewModel = viewModel()
+    viewModel: SignUpViewModel = viewModel(),
+    onBackCLick: () -> Unit
 ) {
-
     val uiState by viewModel.uiState.collectAsState()
     val space = 16.dp
 
@@ -57,7 +61,7 @@ fun SignUpScreen(
             label = stringResource(R.string.id),
             placeholder = stringResource(R.string.enter_id),
             buttonText = stringResource(R.string.check),
-            onClick = {},
+            onClick = { viewModel.checkIdUnique() },
             errorMessage = uiState.idMessage,
             enabled = uiState.idState,
             buttonEnabled = uiState.idButtonState
@@ -94,7 +98,7 @@ fun SignUpScreen(
             label = stringResource(R.string.nickname),
             placeholder = stringResource(R.string.nickname_ex),
             buttonText = stringResource(R.string.check),
-            onClick = {},
+            onClick = { viewModel.checkNicknameUnique() },
             errorMessage = uiState.nicknameMessage,
             enabled = uiState.nicknameState,
             buttonEnabled = uiState.nicknameButtonState
@@ -109,11 +113,12 @@ fun SignUpScreen(
             label = stringResource(R.string.phone_number),
             placeholder = stringResource(R.string.phone_number_ex),
             buttonText = stringResource(R.string.auth),
-            onClick = {},
+            onClick = { viewModel.sendPhoneAuth() },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             errorMessage = uiState.phoneNumberMessage,
             enabled = uiState.phoneNumberState,
-            buttonEnabled = uiState.phoneNumberButtonState
+            buttonEnabled = uiState.phoneNumberButtonState,
+            visualTransformation = PhoneNumberVisualTransformation()
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -126,10 +131,25 @@ fun SignUpScreen(
         ) {
             PointBlueButton(
                 buttonText = stringResource(R.string.sign_up),
-                onClick = {},
+                onClick = { viewModel.signUp() },
                 enabled = uiState.buttonState
             )
         }
+    }
+
+    if (uiState.showDialog) {
+        PhoneVerificationDialog(
+            value = uiState.authCode,
+            onValueChange = { viewModel.updateAuthCode(it) },
+            phoneNumber = formatPhoneNumber(uiState.phoneNumber),
+            color = PointBlue,
+            onDismiss = { viewModel.dismissDialog() },
+            onConfirm = { viewModel.checkPhoneAuth() }
+        )
+    }
+
+    if (uiState.signUpSuccess) {
+        onBackCLick()
     }
 }
 
@@ -138,6 +158,8 @@ fun SignUpScreen(
 @Composable
 fun SignUpScreenPreview() {
     AchuTheme {
-        SignUpScreen()
+        SignUpScreen(
+            onBackCLick = {}
+        )
     }
 }

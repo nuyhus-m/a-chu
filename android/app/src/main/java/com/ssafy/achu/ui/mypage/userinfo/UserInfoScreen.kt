@@ -46,12 +46,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
-import com.ssafy.achu.core.components.BasicDialog
-import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.PointBlueFlexibleBtn
 import com.ssafy.achu.core.components.SmallLineBtn
+import com.ssafy.achu.core.components.dialog.BasicDialog
+import com.ssafy.achu.core.components.textfield.BasicTextField
+import com.ssafy.achu.core.components.textfield.ClearTextField
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.PointBlue

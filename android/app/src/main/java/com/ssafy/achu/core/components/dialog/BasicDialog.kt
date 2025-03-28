@@ -1,4 +1,4 @@
-package com.ssafy.achu.core.components
+package com.ssafy.achu.core.components.dialog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

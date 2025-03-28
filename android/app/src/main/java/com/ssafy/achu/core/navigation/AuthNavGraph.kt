@@ -32,7 +32,9 @@ fun AuthNavGraph(
         }
 
         composable(route = SIGN_UP) {
-            SignUpScreen()
+            SignUpScreen(
+                onBackCLick = { navController.popBackStack() }
+            )
         }
 
         composable(route = FIND_ACCOUNT) {

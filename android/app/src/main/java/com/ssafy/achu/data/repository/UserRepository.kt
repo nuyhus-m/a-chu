@@ -4,6 +4,7 @@ import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.IdResponse
 import com.ssafy.achu.data.model.auth.ChangePasswordRequest
 import com.ssafy.achu.data.model.auth.ChangePhoneNumberRequest
+import com.ssafy.achu.data.model.auth.CheckPhoneAuthRequest
 import com.ssafy.achu.data.model.auth.NickNameRequest
 import com.ssafy.achu.data.model.auth.PhoneAuthRequest
 import com.ssafy.achu.data.model.auth.PhoneAuthResponse
@@ -17,9 +18,15 @@ class UserRepository {
 
     private val userService = RetrofitUtil.userService
 
-    suspend fun getPhoneAuth(phoneAuthRequest: PhoneAuthRequest): Result<ApiResult<PhoneAuthResponse>> {
+    suspend fun sendPhoneAuthRequest(phoneAuthRequest: PhoneAuthRequest): Result<ApiResult<PhoneAuthResponse>> {
         return kotlin.runCatching {
-            userService.getPhoneAuth(phoneAuthRequest)
+            userService.sendPhoneAuthRequest(phoneAuthRequest)
+        }
+    }
+
+    suspend fun checkPhoneAuth(checkPhoneAuthRequest: CheckPhoneAuthRequest): Result<ApiResult<Unit>> {
+        return kotlin.runCatching {
+            userService.checkPhoneAuth(checkPhoneAuthRequest)
         }
     }
 
@@ -41,9 +48,9 @@ class UserRepository {
         }
     }
 
-    suspend fun checkUsernameUnique(username: String): Result<ApiResult<UniqueCheckResponse>> {
+    suspend fun checkIdUnique(username: String): Result<ApiResult<UniqueCheckResponse>> {
         return kotlin.runCatching {
-            userService.checkUsernameUnique(username)
+            userService.checkIdUnique(username)
         }
     }
 
