@@ -29,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ssafy.achu.MainActivity
+import com.ssafy.achu.ui.MainActivity
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.textfield.BasicTextField

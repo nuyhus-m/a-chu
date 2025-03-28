@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.R
-import com.ssafy.achu.core.PhoneNumberVisualTransformation
+import com.ssafy.achu.core.util.PhoneNumberVisualTransformation
 import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.dialog.PhoneVerificationDialog
 import com.ssafy.achu.core.components.textfield.PwdTextFieldWithLabel

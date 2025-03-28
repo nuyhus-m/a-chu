@@ -1,4 +1,4 @@
-package com.ssafy.achu
+package com.ssafy.achu.ui
 
 import android.annotation.SuppressLint
 import android.app.ActivityOptions
@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.White
 
