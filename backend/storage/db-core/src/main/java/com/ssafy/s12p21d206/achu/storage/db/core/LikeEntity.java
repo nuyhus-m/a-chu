@@ -3,7 +3,7 @@ package com.ssafy.s12p21d206.achu.storage.db.core;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
-@Table(name = "like")
+@Table(name = "`like`")
 @Entity
 public class LikeEntity extends BaseEntity {
   private Long userId;
