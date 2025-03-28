@@ -1,10 +1,14 @@
 package com.ssafy.s12p21d206.achu.api.controller.memory;
 
+import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
+import com.ssafy.s12p21d206.achu.domain.Memory;
+import com.ssafy.s12p21d206.achu.domain.MemoryService;
+import com.ssafy.s12p21d206.achu.domain.NewMemory;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
-import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,42 +23,43 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class MemoryController {
 
+  private final MemoryService memoryService;
+
+  public MemoryController(MemoryService memoryService) {
+    this.memoryService = memoryService;
+  }
+
   @PostMapping("/babies/{babyId}/memories")
   public ApiResponse<DefaultIdResponse> appendMemory(
-      @PathVariable String babyId,
-      @RequestPart(name = "memoryImages") List<MultipartFile> memoryImages,
-      @RequestPart(name = "request") AppendMemoryRequest request) {
-
-    DefaultIdResponse response = new DefaultIdResponse(1L);
-    return ApiResponse.success(response);
+      ApiUser apiUser,
+      @PathVariable Long babyId,
+      @RequestPart(name = "images") List<MultipartFile> memoryImages,
+      @RequestPart(name = "request") @Validated AppendMemoryRequest request) {
+    List<String> imgUrls = List.of("goods1-img-url1.jpg", "goods1-img-url2.jpg");
+    NewMemory newMemory = request.toNewMemory(imgUrls);
+    Memory memory = memoryService.append(apiUser.toUser(), babyId, newMemory);
+    return ApiResponse.success(new DefaultIdResponse(memory.memoryId()));
   }
 
   @GetMapping("/memories/{memoryId}")
-  public ApiResponse<MemoryDetailResponse> findMemory(Long userId, @PathVariable Long memoryId) {
-    LocalDateTime createdAt = LocalDateTime.of(2025, 3, 12, 14, 0);
-    MemoryDetailResponse response = new MemoryDetailResponse(
-        memoryId,
-        "제목",
-        "내용",
-        List.of("https://image1.jpg", "https://image2.jpg"),
-        createdAt,
-        createdAt);
+  public ApiResponse<MemoryDetailResponse> findMemory(
+      ApiUser apiUser, @PathVariable Long memoryId) {
+    Memory memory = memoryService.findMemory(apiUser.toUser(), memoryId);
+    MemoryDetailResponse response = MemoryDetailResponse.from(memory);
     return ApiResponse.success(response);
   }
 
   @GetMapping("/babies/{babyId}/memories")
   public ApiResponse<List<MemoryResponse>> findMemories(
-      Long userId,
+      ApiUser apiUser,
       @PathVariable Long babyId,
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
-    LocalDateTime createdAt = LocalDateTime.of(2025, 3, 12, 14, 0);
-    List<MemoryResponse> response = List.of(
-        new MemoryResponse(
-            1L, "제목1", List.of("https://image1.jpg", "https://image2.jpg"), createdAt, createdAt),
-        new MemoryResponse(2L, "제목2", List.of("https://image3.jpg"), createdAt, createdAt));
-    return ApiResponse.success(response);
+    List<Memory> memories =
+        memoryService.findMemories(apiUser.toUser(), babyId, offset, limit, sort);
+    List<MemoryResponse> responses = MemoryResponse.of(memories);
+    return ApiResponse.success(responses);
   }
 
   @PatchMapping("/memories/{memoryId}/image")
@@ -66,13 +71,16 @@ public class MemoryController {
 
   @PatchMapping("/memories/{memoryId}")
   public ApiResponse<Void> modifyMemory(
-      Long userId, @PathVariable Long memoryId, @RequestBody ModifyMemoryRequest request) {
-
+      ApiUser apiUser,
+      @PathVariable Long memoryId,
+      @RequestBody @Validated ModifyMemoryRequest request) {
+    memoryService.modifyMemory(apiUser.toUser(), memoryId, request.toModifyMemory());
     return ApiResponse.success();
   }
 
   @DeleteMapping("/memories/{memoryId}")
-  public ApiResponse<Void> deleteMemory(Long userId, @PathVariable Long memoryId) {
-    return ApiResponse.success();
+  public ApiResponse<DefaultIdResponse> deleteMemory(ApiUser apiUser, @PathVariable Long memoryId) {
+    memoryService.delete(apiUser.toUser(), memoryId);
+    return ApiResponse.success(new DefaultIdResponse(memoryId));
   }
 }
