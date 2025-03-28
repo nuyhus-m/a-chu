@@ -17,6 +17,5 @@ public class GoodsValidator {
     if (!goodsRepository.existsById(goodsId)) {
       throw new CoreException(CoreErrorType.DATA_NOT_FOUND);
     }
-    ;
   }
 }
