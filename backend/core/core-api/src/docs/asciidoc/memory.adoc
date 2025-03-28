@@ -1,14 +1,14 @@
 == 추억 관련 API
 
-=== 추억 생성 [미구현]
+=== 추억 생성
 
 operation::append-memory[snippets='http-request,path-parameters,request-parts,request-part-request-fields,http-response,response-fields']
 
-=== 추억 조회 [미구현]
+=== 추억 조회
 
 operation::find-memory[snippets='http-request,path-parameters,http-response,response-fields']
 
-=== 추억 목록 조회 [미구현]
+=== 추억 목록 조회
 
 operation::find-memories[snippets='http-request,path-parameters,http-response,response-fields']
 
@@ -16,10 +16,10 @@ operation::find-memories[snippets='http-request,path-parameters,http-response,re
 
 operation::modify-memory-image[snippets='http-request,request-parts,path-parameters,http-response,response-fields']
 
-=== 추억 정보 변경 [미구현]
+=== 추억 정보 변경
 
 operation::modify-memory[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
 
-=== 추억 삭제 [미구현]
+=== 추억 삭제
 
 operation::delete-memory[snippets='http-request,path-parameters,http-response,response-fields']
