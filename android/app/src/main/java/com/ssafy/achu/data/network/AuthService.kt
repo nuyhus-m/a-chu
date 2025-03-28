@@ -14,9 +14,9 @@ interface AuthService {
     suspend fun signIn(@Body signInRequest: SignInRequest): ApiResult<TokenResponse>
 
     @POST("/auth/token/reissue")
-    suspend fun getAccessToken(@Body refreshToken: RefreshToken): ApiResult<AccessTokenResponse>
+    suspend fun refreshAccessToken(@Body refreshToken: RefreshToken): ApiResult<AccessTokenResponse>
 
     @POST("/auth/token/renew")
-    suspend fun updateAccessToken(@Body refreshToken: RefreshToken): ApiResult<TokenResponse>
+    suspend fun renewTokens(@Body refreshToken: RefreshToken): ApiResult<TokenResponse>
 
 }
