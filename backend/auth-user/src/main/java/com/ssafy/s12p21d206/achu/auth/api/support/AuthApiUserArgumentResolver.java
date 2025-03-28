@@ -1,6 +1,5 @@
 package com.ssafy.s12p21d206.achu.auth.api.support;
 
-import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
 import com.ssafy.s12p21d206.achu.auth.api.controller.AuthApiUser;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
@@ -26,6 +25,6 @@ public class AuthApiUserArgumentResolver implements HandlerMethodArgumentResolve
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
     Long id = (Long) authentication.getPrincipal();
-    return new ApiUser(id);
+    return new AuthApiUser(id);
   }
 }
