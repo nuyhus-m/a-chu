@@ -3,7 +3,6 @@ package com.ssafy.s12p21d206.achu.auth.api.support;
 import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
 import com.ssafy.s12p21d206.achu.auth.api.controller.AuthApiUser;
 import org.springframework.core.MethodParameter;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -26,9 +25,7 @@ public class AuthApiUserArgumentResolver implements HandlerMethodArgumentResolve
       WebDataBinderFactory binderFactory) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    UsernamePasswordAuthenticationToken token =
-        (UsernamePasswordAuthenticationToken) authentication.getPrincipal();
-
-    return new ApiUser((Long) token.getPrincipal());
+    Long id = (Long) authentication.getPrincipal();
+    return new ApiUser(id);
   }
 }
