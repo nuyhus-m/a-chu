@@ -10,7 +10,9 @@ import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.auth.CheckPhoneAuthRequest
 import com.ssafy.achu.data.model.auth.PhoneAuthRequest
 import com.ssafy.achu.data.model.auth.SignUpRequest
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -22,6 +24,9 @@ class SignUpViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignUpUIState())
     val uiState: StateFlow<SignUpUIState> = _uiState.asStateFlow()
+
+    private val _toastMessage = MutableSharedFlow<String>()
+    val toastMessage: SharedFlow<String> = _toastMessage
 
     private var _phoneAuthId: String = ""
     private val phoneAuthId: String
@@ -159,6 +164,7 @@ class SignUpViewModel : ViewModel() {
                             )
                         }
                     }
+                    updateButtonState()
                 }.onFailure {
                     val errorMessage = it.getErrorResponse(retrofit)
                     Log.d(TAG, "checkIdUnique error: $errorMessage")
@@ -189,6 +195,7 @@ class SignUpViewModel : ViewModel() {
                             )
                         }
                     }
+                    updateButtonState()
                 }.onFailure {
                     val errorResponse = it.getErrorResponse(retrofit)
                     Log.d(TAG, "checkNicknameUnique errorResponse: $errorResponse")
@@ -275,6 +282,7 @@ class SignUpViewModel : ViewModel() {
                         }
                         dismissDialog()
                     }
+                    updateButtonState()
                 }.onFailure {
                     val errorResponse = it.getErrorResponse(retrofit)
                     Log.d(TAG, "confirmDialog errorResponse: $errorResponse")
@@ -343,6 +351,7 @@ class SignUpViewModel : ViewModel() {
                     Log.d(TAG, "signUp errorResponse: $errorResponse")
                     Log.d(TAG, "signUp error: ${it.message}")
                     updateButtonState()
+                    _toastMessage.emit("회원가입에 실패했습니다. 다시 시도해주세요.")
                 }
         }
     }

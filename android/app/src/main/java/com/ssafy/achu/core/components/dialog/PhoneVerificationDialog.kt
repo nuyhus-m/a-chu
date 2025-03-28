@@ -143,7 +143,7 @@ fun PhoneVerificationDialog(
                             modifier = Modifier.fillMaxWidth()
                         )
                     },
-                    textStyle = AchuTheme.typography.regular16,
+                    textStyle = AchuTheme.typography.regular16.copy(textAlign = TextAlign.Center),
                     singleLine = true,
                     shape = RoundedCornerShape(30.dp),
                     colors = OutlinedTextFieldDefaults.colors(
