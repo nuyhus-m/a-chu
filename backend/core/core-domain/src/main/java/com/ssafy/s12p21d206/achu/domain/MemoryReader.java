@@ -7,14 +7,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class MemoryReader {
   private final MemoryRepository memoryRepository;
+  private final MemoryValidator memoryValidator;
   private final BabyValidator babyValidator;
 
-  public MemoryReader(MemoryRepository memoryRepository, BabyValidator babyValidator) {
+  public MemoryReader(
+      MemoryRepository memoryRepository,
+      MemoryValidator memoryValidator,
+      BabyValidator babyValidator) {
     this.memoryRepository = memoryRepository;
+    this.memoryValidator = memoryValidator;
     this.babyValidator = babyValidator;
   }
 
   public Memory readMemory(User user, Long memoryId) {
+    memoryValidator.validateExists(memoryId);
     Memory memory = memoryRepository.findMemory(memoryId);
     babyValidator.validateParent(user, memory.babyId());
     return memory;

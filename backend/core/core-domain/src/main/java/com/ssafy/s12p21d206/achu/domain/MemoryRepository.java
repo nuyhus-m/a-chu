@@ -13,4 +13,6 @@ public interface MemoryRepository {
   Memory modifyMemory(Long memoryId, ModifyMemory modifyMemory);
 
   Long delete(Long memoryId);
+
+  boolean existsById(Long memoryId);
 }
