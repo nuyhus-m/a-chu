@@ -19,6 +19,7 @@ import com.ssafy.s12p21d206.achu.domain.Memory;
 import com.ssafy.s12p21d206.achu.domain.MemoryService;
 import com.ssafy.s12p21d206.achu.domain.NewMemory;
 import com.ssafy.s12p21d206.achu.domain.User;
+import com.ssafy.s12p21d206.achu.domain.support.DefaultDateTime;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import io.restassured.http.ContentType;
@@ -45,7 +46,14 @@ class MemoryControllerTest extends RestDocsTest {
 
   @Test
   void appendMemory() {
-    when(memoryService.append(any(User.class), anyLong(), any(NewMemory.class))).thenReturn(1L);
+    when(memoryService.append(any(User.class), anyLong(), any(NewMemory.class)))
+        .thenReturn(new Memory(
+            1L,
+            "제목",
+            "내용",
+            List.of("https://example.com/img1.jpg"),
+            1L,
+            new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now())));
     given()
         .contentType(ContentType.MULTIPART)
         .multiPart("images", "test1.jpg", new byte[0], "image/jpeg") // 파일 파트
@@ -80,8 +88,7 @@ class MemoryControllerTest extends RestDocsTest {
             "내용",
             List.of("https://example.com/img1.jpg"),
             1L,
-            LocalDateTime.now().minusDays(1),
-            LocalDateTime.now()));
+            new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now())));
     given()
         .contentType(ContentType.JSON)
         .get("memories/{memoryId}", 1L)
@@ -112,20 +119,18 @@ class MemoryControllerTest extends RestDocsTest {
         .thenReturn(List.of(
             new Memory(
                 1L,
-                "첫 번째 추억",
-                "내용 1",
+                "제목",
+                "내용",
                 List.of("https://example.com/img1.jpg"),
-                100L,
-                LocalDateTime.now().minusDays(2),
-                LocalDateTime.now().minusDays(1)),
+                1L,
+                new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now())),
             new Memory(
-                2L,
-                "두 번째 추억",
-                "내용 2",
+                1L,
+                "제목2",
+                "내용2",
                 List.of("https://example.com/img2.jpg"),
-                100L,
-                LocalDateTime.now().minusDays(1),
-                LocalDateTime.now())));
+                1L,
+                new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now()))));
     given()
         .contentType(ContentType.JSON)
         .queryParam("offset", 0)
