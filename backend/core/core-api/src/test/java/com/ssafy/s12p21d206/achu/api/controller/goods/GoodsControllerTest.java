@@ -8,9 +8,10 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 
 import com.ssafy.s12p21d206.achu.domain.*;
+import com.ssafy.s12p21d206.achu.domain.TradeStatus;
+import com.ssafy.s12p21d206.achu.domain.TradeType;
+import com.ssafy.s12p21d206.achu.domain.support.DefaultDateTime;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
-import com.ssafy.s12p21d206.achu.domain.support.TradeStatus;
-import com.ssafy.s12p21d206.achu.domain.support.TradeType;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import io.restassured.http.ContentType;
 import java.time.LocalDateTime;
@@ -33,7 +34,7 @@ class GoodsControllerTest extends RestDocsTest {
   private LikeService likeService;
   private ChatRoomService chatRoomService;
   private UserService userService;
-  private TradeHistoryService tradeHistoryService;
+  private TradeService tradeService;
 
   @BeforeEach
   void setup() {
@@ -42,21 +43,23 @@ class GoodsControllerTest extends RestDocsTest {
     likeService = mock(LikeService.class);
     chatRoomService = mock(ChatRoomService.class);
     userService = mock(UserService.class);
-    tradeHistoryService = mock(TradeHistoryService.class);
+    tradeService = mock(TradeService.class);
     controller = new GoodsController(
-        categoryService,
-        goodsService,
-        likeService,
-        chatRoomService,
-        userService,
-        tradeHistoryService);
+        categoryService, goodsService, likeService, chatRoomService, userService, tradeService);
     mockMvc = mockController(controller);
   }
 
   Goods goods = new Goods(
-      1L, "장난감 자동차", "https://example.com/img1.jpg", 10000L, LocalDateTime.now().minusDays(1)
-      // 필드가 더 있다면 채워야 함
-      );
+      1L,
+      "장난감 자동차",
+      "설명",
+      List.of("https://example.com/img1.jpg"),
+      TradeStatus.SELLING,
+      10000L,
+      new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now().minusDays(1)),
+      1L,
+      new User(1L),
+      2L);
 
   @Test
   void findCategories() {
@@ -91,7 +94,7 @@ class GoodsControllerTest extends RestDocsTest {
 
 
     when(chatRoomService.findChatStatus(any(User.class), anyList()))
-        .thenReturn(List.of(new ChatStatus(goods.getId(), 3L)));
+        .thenReturn(List.of(new ChatStatus(goods.id(), 3L)));
     given()
         .contentType(ContentType.JSON)
         .queryParam("offset", 0)
@@ -137,8 +140,9 @@ class GoodsControllerTest extends RestDocsTest {
     when(likeService.status(any(User.class), anyList()))
         .thenReturn(Map.of(goods.getId(), new LikeStatus(5, true)));
 
+
     when(chatRoomService.findChatStatus(any(User.class), anyList()))
-        .thenReturn(List.of(new ChatStatus(goods.getId(), 3L)));
+        .thenReturn(List.of(new ChatStatus(goods.id(), 3L)));
     given()
         .contentType(ContentType.JSON)
         .queryParam("offset", 0)
@@ -182,10 +186,10 @@ class GoodsControllerTest extends RestDocsTest {
         .thenReturn(List.of(goods));
 
     when(likeService.findLikeStatuses(any(User.class), anyList()))
-        .thenReturn(List.of(new LikeStatus(goods.getId(), 5L, true)));
+        .thenReturn(List.of(new LikeStatus(goods.id(), 5L, true)));
 
     when(chatRoomService.findChatStatus(any(User.class), anyList()))
-        .thenReturn(List.of(new ChatStatus(goods.getId(), 3L)));
+        .thenReturn(List.of(new ChatStatus(goods.id(), 3L)));
     given()
         .contentType(ContentType.JSON)
         .queryParam("keyword", "유")
@@ -233,10 +237,10 @@ class GoodsControllerTest extends RestDocsTest {
         .thenReturn(List.of(goods));
 
     when(likeService.findLikeStatuses(any(User.class), anyList()))
-        .thenReturn(List.of(new LikeStatus(goods.getId(), 5L, true)));
+        .thenReturn(List.of(new LikeStatus(goods.id(), 5L, true)));
 
     when(chatRoomService.findChatStatus(any(User.class), anyList()))
-        .thenReturn(List.of(new ChatStatus(goods.getId(), 3L)));
+        .thenReturn(List.of(new ChatStatus(goods.id(), 3L)));
     given()
         .contentType(ContentType.JSON)
         .queryParam("keyword", "장난감")
@@ -281,24 +285,12 @@ class GoodsControllerTest extends RestDocsTest {
   @Test
   void findGoodsDetail() {
     when(goodsService.findGoodsDetail(anyLong()))
-        .thenReturn(new GoodsDetail(
-            1L,
-            "제목",
-            "설명",
-            List.of("goods1-image1.jpg", "goods1-image2.jpg"),
-            TradeStatus.SELLING,
-            5000L,
-            LocalDateTime.now().minusDays(1),
-            1L,
-            1L,
-            1L));
-    when(goodsService.findUserIdByGoodsId(anyLong())).thenReturn(new User(1L));
-    when(categoryService.findCategoryInfo(anyLong())).thenReturn(new Category(1L, "카테고리명"));
-
+        .thenReturn(new GoodsDetail(goods, new Category(1L, "카테고리명1")));
     when(likeService.findLikeStatus(any(User.class), anyLong()))
         .thenReturn(new LikeStatus(1L, 5L, true));
 
-    when(userService.findSellerInfo(any(User.class))).thenReturn(new Seller(1L, "닉네임", "img.jpg"));
+    when(userService.findSellerInfo(any(User.class)))
+        .thenReturn(new UserDetail(1L, "닉네임", "img.jpg"));
     given()
         .contentType(ContentType.JSON)
         .get("/goods/{goodsId}", 2L)
@@ -347,12 +339,14 @@ class GoodsControllerTest extends RestDocsTest {
 
   @Test
   void appendGoods() {
+    when(goodsService.append(any(User.class), any(NewGoods.class)))
+        .thenReturn(new GoodsDetail(goods, new Category(1L, "카테고리명1")));
     given()
         .contentType(MediaType.MULTIPART_FORM_DATA)
         .multiPart(
             "request", new AppendGoodsRequest("제목1", "설명1", 5000L, 1L, 1L), "application/json")
-        .multiPart("Images", "goods1-image1.jpg", new byte[0], "image/jpeg")
-        .multiPart("Images", "goods1-image2.jpg", new byte[0], "image/jpeg")
+        .multiPart("images", "goods1-image1.jpg", new byte[0], "image/jpeg")
+        .multiPart("images", "goods1-image2.jpg", new byte[0], "image/jpeg")
         .post("/goods")
         .then()
         .status(HttpStatus.OK)
@@ -360,7 +354,7 @@ class GoodsControllerTest extends RestDocsTest {
             "append-goods",
             requestParts(
                 partWithName("request").description("등록할 상품 정보(JSON)"),
-                partWithName("Images").description("첨부 이미지 파일들 (최소 1장 ~ 최대 5장)")),
+                partWithName("images").description("첨부 이미지 파일들 (최소 1장 ~ 최대 5장)")),
             requestPartFields(
                 "request",
                 fieldWithPath("title").type(JsonFieldType.STRING).description("생성할 물건 제목"),
@@ -385,14 +379,14 @@ class GoodsControllerTest extends RestDocsTest {
   void modifyGoodsImages() {
     given()
         .contentType(MediaType.MULTIPART_FORM_DATA)
-        .multiPart("Images", "modify-test.jpg", new byte[0], "image/jpeg")
+        .multiPart("images", "modify-test.jpg", new byte[0], "image/jpeg")
         .patch("/goods/{goodsId}/images", 1L)
         .then()
         .status(HttpStatus.OK)
         .apply(document(
             "modify-goods-images",
             pathParameters(parameterWithName("goodsId").description("이미지 수정할 물건 id")),
-            requestParts(partWithName("Images").description("수정할 물건 이미지 파일들 (최소 1장 ~ 최대 5장)")),
+            requestParts(partWithName("images").description("수정할 물건 이미지 파일들 (최소 1장 ~ 최대 5장)")),
             responseFields(fieldWithPath("result")
                 .type(JsonFieldType.STRING)
                 .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
@@ -443,31 +437,21 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-  void findGoodsTradeHistory() {
-    when(tradeHistoryService.findTradeHistoryGoods(
+  void findTradedGoods() {
+    when(tradeService.findTradedGoods(
             any(User.class), any(TradeType.class), anyLong(), anyLong(), any(SortType.class)))
-        .thenReturn(List.of(new GoodsDetail(
-            1L,
-            "제목",
-            "설명",
-            List.of("goods1-image1.jpg", "goods1-image2.jpg"),
-            TradeStatus.SELLING,
-            5000L,
-            LocalDateTime.now().minusDays(1),
-            1L,
-            1L,
-            1L)));
+        .thenReturn(List.of(goods));
     given()
         .contentType(ContentType.JSON)
         .queryParam("tradeType", TradeType.SALE)
         .queryParam("offset", 0)
         .queryParam("limit", 20)
         .queryParam("sort", "LATEST")
-        .get("/trade-history")
+        .get("/trades")
         .then()
         .status(HttpStatus.OK)
         .apply(document(
-            "find-goods-trade-history",
+            "find-goods-trade",
             queryParameters(
                 parameterWithName("tradeType").description("거래 조회 유형 (PURCHASE or SALE)"),
                 parameterWithName("offset").description("결과 목록의 시작 인덱스를 나타냅니다. (예: 0)"),
@@ -543,20 +527,24 @@ class GoodsControllerTest extends RestDocsTest {
 
   @Test
   void completeTrade() {
+<<<<<<< HEAD
     when(tradeHistoryService.completeTrade(any(User.class), any(TradeHistory.class)))
         .thenReturn(1L);
 >>>>>>> 6f8f9c2 (test: TradeHistoryService mock 추가)
+=======
+    when(tradeService.completeTrade(any(User.class), anyLong(), any(NewTrade.class)))
+        .thenReturn(new Trade(1L, 2L, 3L, 7L));
+>>>>>>> 06bd710 (test: tradeService 의존성 mock 추가)
     given()
         .contentType(ContentType.JSON)
-        .body(new AppendTradeHistoryRequest(1L, 1L))
-        .post("/trade/complete")
+        .body(new AppendTradeRequest(1L))
+        .post("/goods/{goodsId}/trade/complete", 1L)
         .then()
         .status(HttpStatus.OK)
         .apply(document(
-            "complete-trade-history",
-            requestFields(
-                fieldWithPath("goodsId").description("거래할 물품 id"),
-                fieldWithPath("buyerId").description("구매자 id")),
+            "complete-trade",
+            requestFields(fieldWithPath("buyerId").description("구매자 id")),
+            pathParameters(parameterWithName("goodsId").description("거래 완료할 물건 id")),
             responseFields(
                 fieldWithPath("result")
                     .type(JsonFieldType.STRING)
