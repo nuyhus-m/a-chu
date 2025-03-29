@@ -5,13 +5,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class GoodsAppender {
   private final GoodsRepository goodsRepository;
+  private final CategoryValidator categoryValidator;
+  private final BabyValidator babyValidator;
 
-  public GoodsAppender(GoodsRepository goodsRepository) {
+  public GoodsAppender(
+      GoodsRepository goodsRepository,
+      CategoryValidator categoryValidator,
+      BabyValidator babyValidator) {
     this.goodsRepository = goodsRepository;
+    this.categoryValidator = categoryValidator;
+    this.babyValidator = babyValidator;
   }
 
   public GoodsDetail append(User user, NewGoods newGoods) {
-    // TODO: 검증 -> 카테고리 존재여부, 아기 존재여부, 해당 아기가 User의 아기인지 검증
+    babyValidator.validateExists(newGoods.babyId());
+    babyValidator.validateParent(user, newGoods.babyId());
+    categoryValidator.validateExists(newGoods.categoryId());
     return goodsRepository.save(user, newGoods);
   }
 }

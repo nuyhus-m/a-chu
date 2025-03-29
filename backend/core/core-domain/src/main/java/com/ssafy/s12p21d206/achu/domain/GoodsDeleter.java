@@ -5,12 +5,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class GoodsDeleter {
   private final GoodsRepository goodsRepository;
+  private final GoodsValidator goodsValidator;
 
-  public GoodsDeleter(GoodsRepository goodsRepository) {
+  public GoodsDeleter(GoodsRepository goodsRepository, GoodsValidator goodsValidator) {
     this.goodsRepository = goodsRepository;
+    this.goodsValidator = goodsValidator;
   }
 
-  public Long delete(Long id) {
-    return goodsRepository.delete(id);
+  public Long delete(User user, Long goodsId) {
+    goodsValidator.validateExists(goodsId);
+    goodsValidator.validateOwner(user.id(), goodsId);
+    goodsValidator.validateIsSelling(goodsId);
+    return goodsRepository.delete(goodsId);
   }
 }

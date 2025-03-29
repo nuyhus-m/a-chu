@@ -37,9 +37,9 @@ public class TradeService {
     return tradeAppender.completeTrade(user, goodsId, newTrade);
   }
 
-  public List<GoodsDetail> findTradedGoods(
+  public List<Goods> findTradedGoods(
       User user, TradeType tradeType, Long offset, Long limit, SortType sort) {
     List<Long> goodsIds = tradeReader.findTradedGoodsIds(user, tradeType, offset, limit, sort);
-    return goodsReader.readGoodsDetails(goodsIds);
+    return goodsReader.readGoodsByIds(goodsIds);
   }
 }

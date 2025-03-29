@@ -7,11 +7,11 @@ public record CategoryResponse(Long id, String name) {
 
   public static List<CategoryResponse> of(List<Category> categories) {
     return categories.stream()
-        .map(category -> new CategoryResponse(category.getId(), category.getName()))
+        .map(category -> new CategoryResponse(category.id(), category.name()))
         .toList();
   }
 
   public static CategoryResponse from(Category category) {
-    return new CategoryResponse(category.getId(), category.getName());
+    return new CategoryResponse(category.id(), category.name());
   }
 }

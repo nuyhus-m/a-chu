@@ -10,76 +10,54 @@ public class GoodsService {
   private final GoodsReader goodsReader;
   private final GoodsAppender goodsAppender;
   private final GoodsModifier goodsModifier;
-  private final GoodsValidator goodsValidator;
   private final GoodsDeleter goodsDeleter;
   private final GoodsSearch goodsSearch;
-  private final PageValidator pageValidator;
 
   public GoodsService(
       GoodsReader goodsReader,
       GoodsAppender goodsAppender,
       GoodsModifier goodsModifier,
-      GoodsValidator goodsValidator,
       GoodsDeleter goodsDeleter,
-      GoodsSearch goodsSearch,
-      PageValidator pageValidator) {
+      GoodsSearch goodsSearch) {
     this.goodsReader = goodsReader;
     this.goodsAppender = goodsAppender;
     this.goodsModifier = goodsModifier;
-    this.goodsValidator = goodsValidator;
     this.goodsDeleter = goodsDeleter;
     this.goodsSearch = goodsSearch;
-    this.pageValidator = pageValidator;
   }
 
-  public Long append(User user, NewGoods newGoods) {
-    GoodsDetail goodsDetail = goodsAppender.append(user, newGoods);
-    return goodsDetail.id();
+  public GoodsDetail append(User user, NewGoods newGoods) {
+    return goodsAppender.append(user, newGoods);
   }
 
-  public GoodsDetail modify(User user, Long id, ModifyGoods modifyGoods) { // TODO: goodsId 어떨까요
-    goodsValidator.validateExists(id);
-    goodsValidator.validateOwner(user.id(), id);
-    goodsValidator.validateIsSelling(id);
-    // TODO: 자기 아기인지 확인
-    return goodsModifier.modify(id, modifyGoods);
+  public GoodsDetail modify(User user, Long goodsId, ModifyGoods modifyGoods) {
+    return goodsModifier.modify(user, goodsId, modifyGoods);
   }
 
-  public Long delete(User user, Long id) {
-    goodsValidator.validateExists(id);
-    goodsValidator.validateOwner(user.id(), id);
-    //    TODO: 거래완료될땐 삭제 못하는지 물어보기 못하면 검증 추가
-    return goodsDeleter.delete(id);
+  public Long delete(User user, Long goodsId) {
+    return goodsDeleter.delete(user, goodsId);
   }
 
   public List<Goods> findGoods(User user, Long offset, Long limit, SortType sort) {
-    pageValidator.validatePageParams(offset, limit);
     return goodsReader.readGoods(user, offset, limit, sort);
   }
 
   public List<Goods> findCategoryGoods(
       User user, Long categoryId, Long offset, Long limit, SortType sort) {
-    pageValidator.validatePageParams(offset, limit);
     return goodsReader.readCategoryGoods(user, categoryId, offset, limit, sort);
   }
 
-  public GoodsDetail findGoodsDetail(Long id) {
-    return goodsReader.readGoodsDetail(id);
-  }
-
-  public User findUserIdByGoodsId(Long id) {
-    return goodsReader.readUserIdByGoodsId(id);
+  public GoodsDetail findGoodsDetail(Long goodsId) {
+    return goodsReader.readGoodsDetail(goodsId);
   }
 
   public List<Goods> searchGoods(
       User user, String keyword, Long offset, Long limit, SortType sort) {
-    pageValidator.validatePageParams(offset, limit);
     return goodsSearch.searchGoods(user, keyword, offset, limit, sort);
   }
 
   public List<Goods> searchCategoryGoods(
       User user, Long categoryId, String keyword, Long offset, Long limit, SortType sort) {
-    pageValidator.validatePageParams(offset, limit);
     return goodsSearch.searchCategoryGoods(user, categoryId, keyword, offset, limit, sort);
   }
 }

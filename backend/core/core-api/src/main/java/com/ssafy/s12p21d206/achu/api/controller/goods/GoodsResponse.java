@@ -26,15 +26,15 @@ public record GoodsResponse(
 
     return goodsList.stream()
         .map(goods -> {
-          ChatStatus chatStatus = chatStatusMap.get(goods.getId());
-          LikeStatus likeStatus = likeStatusMap.get(goods.getId());
+          ChatStatus chatStatus = chatStatusMap.get(goods.id());
+          LikeStatus likeStatus = likeStatusMap.get(goods.id());
 
           return new GoodsResponse(
               goods.id(),
               goods.title(),
-              goods.imgUrl(),
+              goods.imgUrls().get(0),
               goods.price(),
-              goods.getCreatedAt(),
+              goods.defaultDateTime().createdAt(),
               chatStatus.getChatCount(),
               likeStatus.count(),
               likeStatus.isLike());

@@ -26,7 +26,7 @@ public class GoodsValidator {
   }
 
   public void validateIsSelling(Long goodsId) {
-    if (!goodsRepository.isSelling(goodsId)) { // TODO: 메서드명이 조금..? isSelling(id);
+    if (!goodsRepository.isSelling(goodsId)) {
       throw new CoreException(CoreErrorType.GOODS_ALREADY_SOLD);
     }
   }

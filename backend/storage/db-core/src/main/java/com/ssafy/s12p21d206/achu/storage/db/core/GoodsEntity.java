@@ -1,9 +1,7 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
-import com.ssafy.s12p21d206.achu.domain.Goods;
-import com.ssafy.s12p21d206.achu.domain.GoodsDetail;
-import com.ssafy.s12p21d206.achu.domain.TradeStatus;
-import com.ssafy.s12p21d206.achu.domain.User;
+import com.ssafy.s12p21d206.achu.domain.*;
+import com.ssafy.s12p21d206.achu.domain.support.DefaultDateTime;
 import com.ssafy.s12p21d206.achu.storage.db.core.converter.ImgUrlListJsonConverter;
 import jakarta.persistence.*;
 import java.util.List;
@@ -53,25 +51,45 @@ public class GoodsEntity extends BaseEntity {
     this.babyId = babyId;
   }
 
-  public Goods toGoods() {
-    return new Goods(getId(), this.title, this.imgUrls.get(0), this.price, getCreatedAt());
+  public Long getCategoryId() {
+    return categoryId;
   }
 
-  public GoodsDetail toGoodsDetail() {
-    return new GoodsDetail(
+  public Goods toGoods() {
+    return new Goods(
         getId(),
         this.title,
         this.description,
         this.imgUrls,
         this.tradeStatus,
         this.price,
-        getCreatedAt(),
+        new DefaultDateTime(getCreatedAt(), getUpdatedAt()),
         this.categoryId,
-        this.userId,
+        new User(this.userId),
         this.babyId);
   }
 
-  public User toUserId() {
-    return new User(userId);
+  public GoodsDetail toGoodsDetail(Category category) {
+    return new GoodsDetail(
+        new Goods(
+            getId(),
+            this.title,
+            this.description,
+            this.imgUrls,
+            this.tradeStatus,
+            this.price,
+            new DefaultDateTime(getCreatedAt(), getUpdatedAt()),
+            this.categoryId,
+            new User(this.userId),
+            this.babyId),
+        category);
+  }
+
+  public void updateText(ModifyGoods modifyGoods) {
+    this.title = modifyGoods.title();
+    this.description = modifyGoods.description();
+    this.price = modifyGoods.price();
+    this.categoryId = modifyGoods.categoryId();
+    this.babyId = modifyGoods.babyId();
   }
 }

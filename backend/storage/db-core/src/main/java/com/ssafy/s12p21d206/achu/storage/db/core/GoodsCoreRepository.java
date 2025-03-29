@@ -7,6 +7,7 @@ import com.ssafy.s12p21d206.achu.domain.error.CoreException;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.PageRequest;
@@ -18,13 +19,19 @@ import org.springframework.stereotype.Repository;
 public class GoodsCoreRepository implements GoodsRepository {
 
   private final GoodsJpaRepository goodsJpaRepository;
+  private final CategoryJpaRepository categoryJpaRepository;
 
-  public GoodsCoreRepository(GoodsJpaRepository goodsJpaRepository) {
+  public GoodsCoreRepository(
+      GoodsJpaRepository goodsJpaRepository, CategoryJpaRepository categoryJpaRepository) {
     this.goodsJpaRepository = goodsJpaRepository;
+    this.categoryJpaRepository = categoryJpaRepository;
   }
 
   @Override
   public GoodsDetail save(User user, NewGoods newGoods) {
+    CategoryEntity categoryEntity = categoryJpaRepository
+        .findById(newGoods.categoryId())
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
     return goodsJpaRepository
         .save(new GoodsEntity(
             newGoods.title(),
@@ -35,26 +42,20 @@ public class GoodsCoreRepository implements GoodsRepository {
             newGoods.categoryId(),
             user.id(),
             newGoods.babyId()))
-        .toGoodsDetail();
+        .toGoodsDetail(categoryEntity.toCategory());
   }
 
   @Override
   public GoodsDetail modifyGoods(Long id, ModifyGoods modifyGoods) {
-    GoodsEntity previousGoods = goodsJpaRepository
+    GoodsEntity goods = goodsJpaRepository
         .findByIdAndEntityStatus(id, EntityStatus.ACTIVE)
         .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
-
-    return goodsJpaRepository
-        .save(new GoodsEntity(
-            modifyGoods.title(),
-            modifyGoods.description(),
-            previousGoods.getImgUrls(),
-            TradeStatus.SELLING,
-            modifyGoods.price(),
-            modifyGoods.categoryId(),
-            previousGoods.getUserId(),
-            modifyGoods.babyId()))
-        .toGoodsDetail();
+    CategoryEntity categoryEntity = categoryJpaRepository
+        .findById(modifyGoods.categoryId())
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+    goods.updateText(modifyGoods);
+    goodsJpaRepository.save(goods);
+    return goods.toGoodsDetail(categoryEntity.toCategory());
   }
 
   @Override
@@ -104,13 +105,19 @@ public class GoodsCoreRepository implements GoodsRepository {
     return goodsJpaRepository.existsByIdAndEntityStatus(goodsId, EntityStatus.ACTIVE);
 
 
-  public List<GoodsDetail> findGoodsDetails(List<Long> ids) {
+
+  public List<Goods> findGoodsByIds(List<Long> ids) {
+
     List<GoodsEntity> goodsEntities =
         goodsJpaRepository.findByIdInAndEntityStatus(ids, EntityStatus.ACTIVE);
     Map<Long, GoodsEntity> entityMap =
         goodsEntities.stream().collect(Collectors.toMap(GoodsEntity::getId, Function.identity()));
 
-    return ids.stream().map(entityMap::get).map(GoodsEntity::toGoodsDetail).toList();
+    return ids.stream()
+        .map(entityMap::get)
+        .filter(Objects::nonNull)
+        .map(GoodsEntity::toGoods)
+        .toList();
 
   }
 
@@ -119,7 +126,10 @@ public class GoodsCoreRepository implements GoodsRepository {
     GoodsEntity goodsEntity = goodsJpaRepository
         .findByIdAndEntityStatus(id, EntityStatus.ACTIVE)
         .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
-    return goodsEntity.toGoodsDetail();
+    CategoryEntity categoryEntity = categoryJpaRepository
+        .findById(goodsEntity.getCategoryId())
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+    return goodsEntity.toGoodsDetail(categoryEntity.toCategory());
   }
 
   @Override
@@ -148,7 +158,7 @@ public class GoodsCoreRepository implements GoodsRepository {
     GoodsEntity goodsEntity = goodsJpaRepository
         .findById(id)
         .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
-    return goodsEntity.toUserId();
+    return goodsEntity.toGoods().user();
   }
 
   private Sort convertSort(SortType sort) {

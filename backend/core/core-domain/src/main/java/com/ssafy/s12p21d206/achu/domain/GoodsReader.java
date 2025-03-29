@@ -26,11 +26,7 @@ public class GoodsReader {
     return goodsRepository.findGoodsDetail(id);
   }
 
-  public List<GoodsDetail> readGoodsDetails(List<Long> ids) {
-    return goodsRepository.findGoodsDetails(ids);
-  }
-
-  public User readUserIdByGoodsId(Long id) {
-    return goodsRepository.findUserIdByGoodsId(id);
+  public List<Goods> readGoodsByIds(List<Long> ids) {
+    return goodsRepository.findGoodsByIds(ids);
   }
 }

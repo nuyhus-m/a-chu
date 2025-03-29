@@ -48,16 +48,16 @@ public class GoodsController {
   public ApiResponse<DefaultIdResponse> appendGoods(
       ApiUser apiUser,
       @RequestPart("request") @Validated AppendGoodsRequest request,
-      @RequestPart("Images") MultipartFile[] files) {
+      @RequestPart("images") MultipartFile[] files) {
     List<String> imgUrls = List.of("goods1-img-url1.jpg", "goods1-img-url2.jpg");
     NewGoods newGoods = request.toNewGoods(imgUrls);
-    Long id = goodsService.append(apiUser.toUser(), newGoods);
-    return ApiResponse.success(new DefaultIdResponse(id));
+    GoodsDetail goodsDetail = goodsService.append(apiUser.toUser(), newGoods);
+    return ApiResponse.success(new DefaultIdResponse(goodsDetail.goods().id()));
   }
 
   @PatchMapping("/goods/{goodsId}/images")
   public ApiResponse<Void> modifyGoodsImages(
-      Long userId, @PathVariable Long goodsId, @RequestParam("Images") MultipartFile[] files) {
+      Long userId, @PathVariable Long goodsId, @RequestParam("images") MultipartFile[] files) {
     return ApiResponse.success();
   }
 
@@ -93,8 +93,10 @@ public class GoodsController {
       @RequestParam SortType sort) {
     List<Goods> goods =
         goodsService.findCategoryGoods(apiUser.toUser(), categoryId, offset, limit, sort);
+
     List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
     Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
+
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
@@ -107,8 +109,10 @@ public class GoodsController {
       @RequestParam Long limit,
       @RequestParam SortType sort) {
     List<Goods> goods = goodsService.findGoods(apiUser.toUser(), offset, limit, sort);
+
     List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
     Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
+
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
@@ -119,15 +123,10 @@ public class GoodsController {
       ApiUser apiUser, @PathVariable Long goodsId) {
     GoodsDetail goodsDetail = goodsService.findGoodsDetail(goodsId);
 
-    User userId = goodsService.findUserIdByGoodsId(goodsId); // TODO: 불필요
-
+    CategoryResponse categoryResponse = CategoryResponse.from(goodsDetail.category());
     LikeStatus likeStatus = likeService.findLikeStatus(apiUser.toUser(), goodsId);
 
-    Category category = categoryService.findCategoryInfo(goodsDetail.categoryId());
-    CategoryResponse categoryResponse = CategoryResponse.from(category);
-
-    UserDetail userDetail =
-        userService.findSellerInfo(userId); // TODO: GoodsDetail에서 User로 타입 변경 후 꺼내 쓰기
+    UserDetail userDetail = userService.findSellerInfo(goodsDetail.goods().user());
     UserResponse sellerResponse = UserResponse.from(userDetail);
 
     GoodsDetailResponse response =
@@ -144,7 +143,7 @@ public class GoodsController {
       @RequestParam SortType sort) {
 
     List<Goods> goods = goodsService.searchGoods(apiUser.toUser(), keyword, offset, limit, sort);
-    List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
+    List<Long> goodsIds = goods.stream().map(Goods::id).toList();
     List<LikeStatus> likeStatuses = likeService.findLikeStatuses(apiUser.toUser(), goodsIds);
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
@@ -163,7 +162,7 @@ public class GoodsController {
 
     List<Goods> goods = goodsService.searchCategoryGoods(
         apiUser.toUser(), categoryId, keyword, offset, limit, sort);
-    List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
+    List<Long> goodsIds = goods.stream().map(Goods::id).toList();
     List<LikeStatus> likeStatuses = likeService.findLikeStatuses(apiUser.toUser(), goodsIds);
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
@@ -178,9 +177,9 @@ public class GoodsController {
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
-    List<GoodsDetail> goodsDetail =
+    List<Goods> goods =
         tradeService.findTradedGoods(apiUser.toUser(), tradeType, offset, limit, sort);
-    List<TradeResponse> responses = TradeResponse.of(goodsDetail);
+    List<TradeResponse> responses = TradeResponse.of(goods);
     return ApiResponse.success(responses);
   }
 
