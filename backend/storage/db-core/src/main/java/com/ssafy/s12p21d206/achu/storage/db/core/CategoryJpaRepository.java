@@ -4,5 +4,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CategoryJpaRepository extends JpaRepository<CategoryEntity, Long> {
-  Optional<CategoryEntity> findByIdAndEntityStatus(Long goodsId, EntityStatus entityStatus);
+  Optional<CategoryEntity> findByIdAndEntityStatus(Long id, EntityStatus entityStatus);
+
+  boolean existsByIdAndEntityStatus(Long id, EntityStatus entityStatus);
 }

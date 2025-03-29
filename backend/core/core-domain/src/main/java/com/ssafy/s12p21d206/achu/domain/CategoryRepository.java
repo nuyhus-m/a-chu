@@ -6,5 +6,7 @@ public interface CategoryRepository {
 
   List<Category> findCategories();
 
-  Category findCategoryInfo(Long id);
+  Category findCategoryInfo(Long categoryId);
+
+  boolean existsById(Long categoryId);
 }

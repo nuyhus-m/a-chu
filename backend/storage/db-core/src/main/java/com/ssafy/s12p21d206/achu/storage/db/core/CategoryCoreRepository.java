@@ -28,4 +28,9 @@ public class CategoryCoreRepository implements CategoryRepository {
         .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 카테고리 입니다."));
     return categoryEntity.toCategory();
   }
+
+  @Override
+  public boolean existsById(Long categoryId) {
+    return categoryJpaRepository.existsByIdAndEntityStatus(categoryId, EntityStatus.ACTIVE);
+  }
 }
