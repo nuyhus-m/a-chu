@@ -3,6 +3,7 @@ package com.ssafy.achu.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,7 +38,19 @@ class ActivityViewModel : ViewModel() {
     }
 
 
-
+    fun getBabyList() {
+        viewModelScope.launch {
+            babyRepository.getBabyList().onSuccess {
+                _uiState.update {
+                    it.copy(
+                        babyList = it.babyList
+                    )
+                }
+            }.onFailure {
+                Log.d(TAG, "getBabyList: ${it.message}")
+            }
+        }
+    }
 
 
 }

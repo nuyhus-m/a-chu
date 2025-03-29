@@ -1,6 +1,11 @@
 package com.ssafy.achu.ui.mypage.baby
 
+import android.content.Context
+import android.net.Uri
 import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,10 +38,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.textfield.BasicTextField
@@ -50,27 +58,74 @@ import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.ui.mypage.userinfo.NicknameUpdateDialog
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun BabyDetailScreen() {
+fun BabyDetailScreen(
+    babyViewModel: BabyViewModel = viewModel()
+) {
+    val babyUiState by babyViewModel.babyUiState.collectAsState()
 
-    val baby = BabyResponse(
-        imgUrl = "https://loremflickr.com/300/300/baby",
-        nickname = "두식이",
-        id = 1,
-        birth = "2019-05-04",
-        gender = "남"
-    )
-
-
-    val type = "남"//뷰모델에서 관리해야지
-    var selectedGender by remember { mutableStateOf(if (type == "등록") null else "남") }
-    val titleText = if (type == "등록") "아이 정보 관리" else "${baby.nickname} 정보"
+    val type = if (babyUiState.selectedBaby == null) "등록" else "수정"
+    var selectedGender by remember { mutableStateOf(if (type == "등록") null else babyUiState.selectedBaby!!.gender) }
+    val titleText = if (type == "등록") "아이 정보 관리" else "${babyUiState.selectedBaby!!.nickname} 정보"
     val profileBtnText = if (type == "등록") "프로필 사진 등록하기" else "프로필 사진 수정하기"
-    val nicknameText = if (type == "등록") "닉네임" else "${baby.nickname}"
+    val nicknameText =
+        if (type == "등록" && babyUiState.babyNickname == "") "닉네임"
+        else if (babyUiState.babyNickname != "") babyUiState.babyNickname
+        else babyUiState.selectedBaby!!.nickname
+
+    var imgUrl by remember { mutableStateOf("") }
+    if (type != "등록") {
+        imgUrl = babyUiState.selectedBaby?.imgUrl ?: ""
+    }
+
+    var multipartFile: MultipartBody.Part? = null
 
     var showNickNameUpdateDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+
+    fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
+        val contentResolver = context.contentResolver
+        val inputStream: InputStream? = contentResolver.openInputStream(uri)
+
+        inputStream?.let { input ->
+            val file = File(context.cacheDir, "upload_image.jpg") // 임시 파일 생성
+            val outputStream = FileOutputStream(file)
+            input.copyTo(outputStream)
+            outputStream.close()
+            input.close()
+
+            val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), file)
+            return MultipartBody.Part.createFormData("profileImage", file.name, requestFile)
+        }
+        return null
+    }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            if (uri != null) {
+                imgUrl = uri.toString()
+                multipartFile = uriToMultipart(context, uri)
+                if (multipartFile != null) {
+                    if (type != "등록") {
+                        babyViewModel.updateBabyProfile(multipartFile!!)
+                    }
+                } else {
+                    Toast.makeText(context, "이미지 변환 실패", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    )
+
 
 
 
@@ -104,7 +159,7 @@ fun BabyDetailScreen() {
                         .clip(CircleShape), // 원형 이미지 적용
                     contentAlignment = Alignment.Center // 내부 컨텐츠 중앙 정렬
                 ) {
-                    if (type == "등록") {
+                    if (type == "등록" && imgUrl.isEmpty()) {
                         Box(
                             modifier = Modifier
                                 .size(150.dp)
@@ -129,10 +184,9 @@ fun BabyDetailScreen() {
                             contentAlignment = Alignment.Center // 내부 컨텐츠 중앙 정렬
                         ) {
 
-                            val imageUrl = baby.imgUrl
 
                             // URL이 비어 있으면 기본 이미지 리소스를 사용하고, 그렇지 않으면 네트워크 이미지를 로드합니다.
-                            if (imageUrl.isNullOrEmpty()) {
+                            if (imgUrl.isNullOrEmpty()) {
                                 // 기본 이미지를 painter로 설정
                                 Image(
                                     painter = painterResource(id = R.drawable.img_baby_profile),
@@ -145,7 +199,7 @@ fun BabyDetailScreen() {
                             } else {
                                 // URL을 통해 이미지를 로드
                                 AsyncImage(
-                                    model = baby.imgUrl,
+                                    model = imgUrl,
                                     contentDescription = "Profile",
                                     modifier = Modifier
                                         .size(142.dp)
@@ -165,7 +219,9 @@ fun BabyDetailScreen() {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                SmallLineBtn(profileBtnText, PointPink, onClick = {})
+                SmallLineBtn(profileBtnText, PointPink, onClick = {
+                    launcher.launch("image/*")
+                })
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -202,16 +258,16 @@ fun BabyDetailScreen() {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 if (type == "등록") {
-                    BasicTextField(
-                        value = "",
+                    ClearTextField(
+                        value = babyUiState.babyBirth.joinToString("-"),
                         onValueChange = {},
-                        placeholder = "자녀의 생년월일을 입력해주세요",
-                        placeholderColor = FontGray,
-                        borderColor = PointPink,
+                        pointColor = PointPink,
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = R.drawable.ic_calendar
                     )
                 } else {
                     ClearTextField(
-                        value = baby.birth,
+                        value = babyUiState.selectedBaby!!.birth,
                         onValueChange = {},
                         pointColor = PointPink,
                         modifier = Modifier.fillMaxWidth(),
@@ -238,24 +294,28 @@ fun BabyDetailScreen() {
                 ) {
                     PointPinkLineBtn(
                         buttonText = "남자",
-                        isSelected = selectedGender == "남"
+                        isSelected = selectedGender == "MALE"
                     ) {
-                        selectedGender = if (selectedGender == "여") null else "남"
+                        selectedGender = if (selectedGender == "FEMALE") null else "MALE"
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
 
                     PointPinkLineBtn(
                         buttonText = "여자",
-                        isSelected = selectedGender == "여"
+                        isSelected = selectedGender == "FEMALE"
                     ) {
-                        selectedGender = if (selectedGender == "여여") null else "여"
+                        selectedGender = if (selectedGender == "MALE") null else "FEMALE"
                     }
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
                 if (type == "등록") {
-                    PointPinkBtn("등록하기", onClick = {})
+                    PointPinkBtn("등록하기", onClick = {
+                        babyViewModel.registerBaby(
+                            profileImage = multipartFile
+                        )
+                    })
                 }
                 Spacer(modifier = Modifier.height(60.dp))
 
@@ -266,11 +326,29 @@ fun BabyDetailScreen() {
     }
 
     if (showNickNameUpdateDialog) {
-        NicknameUpdateDialog(
-            onDismiss = { showNickNameUpdateDialog = false },
-            onConfirm = { showNickNameUpdateDialog = false },
-            PointPink
-        )
+        if (type == "등록") {
+            BabyNicknameDialog(
+                onDismiss = { showNickNameUpdateDialog = false },
+                onConfirm = {
+                    if (babyUiState.isCorrectNickname) {
+                        showNickNameUpdateDialog = false
+                    }
+                },
+                PointPink,
+                type = "등록"
+            )
+        } else {
+            BabyNicknameDialog(
+                onDismiss = { showNickNameUpdateDialog = false },
+                onConfirm = {
+                    babyViewModel.updateBabyNickname(
+                        babyUiState.babyNickname
+                    )
+                    showNickNameUpdateDialog = false
+                },
+                PointPink
+            )
+        }
     }
 }
 

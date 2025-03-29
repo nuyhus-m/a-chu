@@ -23,7 +23,7 @@ interface BabyService {
     @Multipart
     @POST("/babies")
     suspend fun registerBaby(
-        @Part profileImage: MultipartBody.Part,
+        @Part profileImage: MultipartBody.Part?,
         @Part("request") request: BabyRequest
     ): ApiResult<IdResponse>
 

@@ -66,7 +66,6 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
 
 
-
     val likeItemList = remember {
         mutableListOf(
             LikeItem2(R.drawable.img_miffy_doll, false, "판매중", "토끼 인형", "3,000원"),
@@ -77,7 +76,9 @@ fun HomeScreen(
         )
     }
 
-    var babyList = listOf(
+    viewModel.getBabyList()
+
+    val babyList = listOf(
         BabyResponse(
             imgUrl = "https://loremflickr.com/300/300/baby",
             nickname = "두식이",
@@ -94,8 +95,7 @@ fun HomeScreen(
         ),
     )
 
-
-    var selectedBaby by remember { mutableStateOf(babyList[0]) }
+    var selectedBaby = uiState.selectedBaby
 
     val imageList = listOf(
         R.drawable.img_banner1,
@@ -117,16 +117,43 @@ fun HomeScreen(
     ) {
 
         Spacer(Modifier.height(24.dp))
-        if (uiState.user != null) {
-            BabyDropdown(
-                babyList = babyList,
-                selectedBaby = selectedBaby,
-                onBabySelected = { selectedBaby = it },
-                user = uiState.user!!
-            )
-        } else {
-            // 로딩 상태 또는 에러 메시지 표시
-            Text(text = "사용자 정보를 불러오는 중...")
+        if (uiState.user != null && uiState.babyList.size != 0) {
+            selectedBaby?.let {
+                BabyDropdown(
+                    babyList = uiState.babyList,
+                    selectedBaby = it,
+                    onBabySelected = { selectedBaby = it },
+                    user = uiState.user!!
+                )
+            }
+        } else if (uiState.user == null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "사용자 정보를 불러오는 중...",
+                    style = AchuTheme.typography.semiBold16,
+                    color = PointBlue,
+                    modifier = Modifier.height(66.dp)
+                )
+            }
+        } else if (uiState.babyList.size == 0) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "아기를 등록해주세요!",
+                    style = AchuTheme.typography.semiBold16,
+                    color = PointBlue,
+                    modifier = Modifier.height(66.dp)
+                )
+            }
         }
 
         Spacer(Modifier.height(16.dp))
@@ -152,7 +179,8 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight().padding(horizontal = 4.dp)
+                .wrapContentHeight()
+                .padding(horizontal = 4.dp)
                 .clip(RoundedCornerShape(8.dp))
         ) {
             LazyRow(
@@ -315,12 +343,13 @@ fun HomeScreen(
                     text = "추천상품  ",
                     style = AchuTheme.typography.semiBold20,
                 )
-
-                Text(
-                    text = "${selectedBaby.nickname}",
-                    style = AchuTheme.typography.semiBold18,
-                    color = if(selectedBaby.gender == "남")PointBlue else PointPink
-                )
+                if (selectedBaby != null) {
+                    Text(
+                        text = selectedBaby!!.nickname,
+                        style = AchuTheme.typography.semiBold18,
+                        color = if (selectedBaby!!.gender == "남") PointBlue else PointPink
+                    )
+                }
                 Spacer(modifier = Modifier.weight(1.0f))
                 Text(
                     text = "더보기",

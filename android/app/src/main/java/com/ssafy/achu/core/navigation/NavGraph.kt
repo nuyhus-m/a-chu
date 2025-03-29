@@ -96,7 +96,9 @@ fun NavGraph(
             TradeListScreen()
         }
         composable(MY_LIKE_LIST) {
-            LikeItemListScreen()
+            LikeItemListScreen(
+                viewModel = activityViewModel,
+            )
         }
         composable(MY_RECOMMEND_LIST) {
             RecommendItemScreen()
@@ -110,6 +112,7 @@ fun NavGraph(
         // 마이페이지 - 아기정보관리 화면들
         composable(MY_BABY_LIST) {
             BabyListScreen(
+                viewModel = activityViewModel,
                 onNavigateToBabyDetail = { navController.navigate(route = MY_BABY_DETAIL) }
             )
         }
