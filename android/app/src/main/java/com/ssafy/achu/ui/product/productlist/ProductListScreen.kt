@@ -98,7 +98,8 @@ fun ProductListScreen(
             // 카테고리 버튼 리스트
             CategoryButtonList(
                 items = uiState.categories,
-                onButtonClick = { id -> viewModel.updateSelectedCategoryId(id) }
+                onButtonClick = { id -> viewModel.updateSelectedCategoryId(id) },
+                initialSelectedIndex = uiState.selectedCategoryId
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -163,7 +164,7 @@ fun CategoryButtonList(
     items: List<CategoryResponse>,
     onButtonClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    initialSelectedIndex: Int = 0
+    initialSelectedIndex: Int
 ) {
     var selectedIndex by remember { mutableIntStateOf(initialSelectedIndex) }
 

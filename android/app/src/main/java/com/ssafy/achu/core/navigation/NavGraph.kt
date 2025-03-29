@@ -6,7 +6,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,7 +22,6 @@ import com.ssafy.achu.ui.mypage.tradelist.TradeListScreen
 import com.ssafy.achu.ui.mypage.userinfo.UserInfoScreen
 import com.ssafy.achu.ui.product.ProductDetailScreen
 import com.ssafy.achu.ui.product.productlist.ProductListScreen
-import com.ssafy.achu.ui.product.productlist.ProductListViewModel
 import com.ssafy.achu.ui.product.uploadproduct.UploadProductScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -43,14 +41,18 @@ fun NavGraph(
                 onNavigateToLikeList = { navController.navigate(route = Route.LikeList) },
                 onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) },
                 onNavigateToBabyList = { navController.navigate(route = Route.BabyList) },
-                onNavigateToProductList = { navController.navigate(route = BottomNavRoute.ProductList) }
+                onNavigateToProductList = {
+                    navController.navigate(
+                        route = BottomNavRoute.ProductList(
+                            categoryId = 0
+                        )
+                    )
+                }
             )
         }
         composable<BottomNavRoute.ProductList> {
-            val viewModel: ProductListViewModel = viewModel()
             ProductListScreen(
                 modifier = modifier,
-                viewModel = viewModel,
                 onNavigateToUploadProduct = { navController.navigate(route = Route.UploadProduct) },
                 onNavigateToProductDetail = { navController.navigate(route = Route.ProductDetail) }
             )

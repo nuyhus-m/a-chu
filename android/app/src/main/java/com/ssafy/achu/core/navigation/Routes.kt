@@ -45,7 +45,7 @@ sealed interface BottomNavRoute : Route {
     data object Home : BottomNavRoute
 
     @Serializable
-    data object ProductList : BottomNavRoute
+    data class ProductList(val categoryId: Int) : BottomNavRoute
 
     @Serializable
     data object MemoryList : BottomNavRoute

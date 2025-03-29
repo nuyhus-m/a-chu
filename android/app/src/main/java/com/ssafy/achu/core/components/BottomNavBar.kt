@@ -45,6 +45,8 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 
+private const val TAG = "BottomNavBar"
+
 @Composable
 fun BottomNavBar(navController: NavHostController) {
     val currentBackStack by navController.currentBackStackEntryAsState()
@@ -56,7 +58,7 @@ fun BottomNavBar(navController: NavHostController) {
     }
 
     AnimatedVisibility(
-        visible = bottomNavScreens.map { it.route::class.qualifiedName }.contains(currentRoute),
+        visible = bottomNavScreens.map { it.routeName }.contains(currentRoute),
         enter = fadeIn(),
         exit = fadeOut()
     ) {
@@ -75,7 +77,7 @@ fun BottomNavBar(navController: NavHostController) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 bottomNavScreens.forEach { screen ->
-                    val selected = currentRoute == screen.route::class.qualifiedName
+                    val selected = currentRoute == screen.routeName
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,

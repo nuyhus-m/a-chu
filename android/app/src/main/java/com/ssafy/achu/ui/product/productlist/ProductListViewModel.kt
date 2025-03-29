@@ -1,10 +1,13 @@
 package com.ssafy.achu.ui.product.productlist
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
+import com.ssafy.achu.core.navigation.BottomNavRoute
 import com.ssafy.achu.core.util.Constants.LATEST
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
@@ -17,13 +20,18 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "ProductListViewModel"
 
-class ProductListViewModel : ViewModel() {
+class ProductListViewModel(
+    savedStateHandle: SavedStateHandle,
+) : ViewModel() {
+
+    private val productList = savedStateHandle.toRoute<BottomNavRoute.ProductList>()
 
     private val _uiState = MutableStateFlow(ProductListUIState())
     val uiState: StateFlow<ProductListUIState> = _uiState.asStateFlow()
 
     init {
         getCategoryList()
+        updateSelectedCategoryId(productList.categoryId)
     }
 
     fun updateQuery(query: String) {
