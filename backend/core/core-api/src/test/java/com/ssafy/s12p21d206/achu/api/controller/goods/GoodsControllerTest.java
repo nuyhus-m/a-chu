@@ -90,8 +90,7 @@ class GoodsControllerTest extends RestDocsTest {
         .thenReturn(List.of(goods));
 
     when(likeService.status(any(User.class), anyList()))
-        .thenReturn(Map.of(goods.getId(), new LikeStatus(5, true)));
-
+        .thenReturn(Map.of(goods.id(), new LikeStatus(5, true)));
 
     when(chatRoomService.findChatStatus(any(User.class), anyList()))
         .thenReturn(List.of(new ChatStatus(goods.id(), 3L)));
@@ -138,8 +137,7 @@ class GoodsControllerTest extends RestDocsTest {
         .thenReturn(List.of(goods));
 
     when(likeService.status(any(User.class), anyList()))
-        .thenReturn(Map.of(goods.getId(), new LikeStatus(5, true)));
-
+        .thenReturn(Map.of(goods.id(), new LikeStatus(5, true)));
 
     when(chatRoomService.findChatStatus(any(User.class), anyList()))
         .thenReturn(List.of(new ChatStatus(goods.id(), 3L)));
@@ -185,8 +183,8 @@ class GoodsControllerTest extends RestDocsTest {
             any(User.class), anyString(), anyLong(), anyLong(), any(SortType.class)))
         .thenReturn(List.of(goods));
 
-    when(likeService.findLikeStatuses(any(User.class), anyList()))
-        .thenReturn(List.of(new LikeStatus(goods.id(), 5L, true)));
+    when(likeService.status(any(User.class), anyList()))
+        .thenReturn(Map.of(goods.id(), new LikeStatus(5, true)));
 
     when(chatRoomService.findChatStatus(any(User.class), anyList()))
         .thenReturn(List.of(new ChatStatus(goods.id(), 3L)));
@@ -235,9 +233,8 @@ class GoodsControllerTest extends RestDocsTest {
     when(goodsService.searchCategoryGoods(
             any(User.class), anyLong(), anyString(), anyLong(), anyLong(), any(SortType.class)))
         .thenReturn(List.of(goods));
-
-    when(likeService.findLikeStatuses(any(User.class), anyList()))
-        .thenReturn(List.of(new LikeStatus(goods.id(), 5L, true)));
+    when(likeService.status(any(User.class), anyList()))
+        .thenReturn(Map.of(goods.id(), new LikeStatus(5, true)));
 
     when(chatRoomService.findChatStatus(any(User.class), anyList()))
         .thenReturn(List.of(new ChatStatus(goods.id(), 3L)));
@@ -286,8 +283,7 @@ class GoodsControllerTest extends RestDocsTest {
   void findGoodsDetail() {
     when(goodsService.findGoodsDetail(anyLong()))
         .thenReturn(new GoodsDetail(goods, new Category(1L, "카테고리명1")));
-    when(likeService.findLikeStatus(any(User.class), anyLong()))
-        .thenReturn(new LikeStatus(1L, 5L, true));
+    when(likeService.status(any(User.class), anyLong())).thenReturn(new LikeStatus(1, true));
 
     when(userService.findSellerInfo(any(User.class)))
         .thenReturn(new UserDetail(1L, "닉네임", "img.jpg"));
@@ -493,48 +489,10 @@ class GoodsControllerTest extends RestDocsTest {
   }
 
   @Test
-<<<<<<< HEAD
-  void modifyTradeStatus() {
-=======
-  void appendLikedGoods() {
-    given()
-        .contentType(ContentType.JSON)
-        .post("/goods/{goodsId}/like", 1L)
-        .then()
-        .status(HttpStatus.OK)
-        .apply(document(
-            "append-liked-goods",
-            pathParameters(parameterWithName("goodsId").description("찜할 물건 id")),
-            responseFields(fieldWithPath("result")
-                .type(JsonFieldType.STRING)
-                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
-  }
-
-  @Test
-  void deleteLikedGoods() {
-    given()
-        .contentType(ContentType.JSON)
-        .delete("/goods/{goodsId}/like", 1L)
-        .then()
-        .status(HttpStatus.OK)
-        .apply(document(
-            "delete-liked-goods",
-            pathParameters(parameterWithName("goodsId").description("찜 취소할 물건 id")),
-            responseFields(fieldWithPath("result")
-                .type(JsonFieldType.STRING)
-                .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));
-  }
-
-  @Test
   void completeTrade() {
-<<<<<<< HEAD
-    when(tradeHistoryService.completeTrade(any(User.class), any(TradeHistory.class)))
-        .thenReturn(1L);
->>>>>>> 6f8f9c2 (test: TradeHistoryService mock 추가)
-=======
     when(tradeService.completeTrade(any(User.class), anyLong(), any(NewTrade.class)))
         .thenReturn(new Trade(1L, 2L, 3L, 7L));
->>>>>>> 06bd710 (test: tradeService 의존성 mock 추가)
+
     given()
         .contentType(ContentType.JSON)
         .body(new AppendTradeRequest(1L))

@@ -8,11 +8,8 @@ import com.ssafy.s12p21d206.achu.domain.TradeStatus;
 import com.ssafy.s12p21d206.achu.domain.TradeType;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import java.util.List;
-<<<<<<< HEAD
 import java.util.Map;
-=======
 import org.springframework.validation.annotation.Validated;
->>>>>>> 22504f9 (fix: price 양수 검증, tradeHistory->Trade 모든 변수명 수정, Seller->UserDetail 클래스명 수정, 거래내역 조회 JPA  쿼리로 수정)
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -94,7 +91,7 @@ public class GoodsController {
     List<Goods> goods =
         goodsService.findCategoryGoods(apiUser.toUser(), categoryId, offset, limit, sort);
 
-    List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
+    List<Long> goodsIds = goods.stream().map(Goods::id).toList();
     Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
 
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
@@ -110,7 +107,7 @@ public class GoodsController {
       @RequestParam SortType sort) {
     List<Goods> goods = goodsService.findGoods(apiUser.toUser(), offset, limit, sort);
 
-    List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
+    List<Long> goodsIds = goods.stream().map(Goods::id).toList();
     Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
 
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
@@ -123,10 +120,11 @@ public class GoodsController {
       ApiUser apiUser, @PathVariable Long goodsId) {
     GoodsDetail goodsDetail = goodsService.findGoodsDetail(goodsId);
 
-    CategoryResponse categoryResponse = CategoryResponse.from(goodsDetail.category());
-    LikeStatus likeStatus = likeService.findLikeStatus(apiUser.toUser(), goodsId);
+    LikeStatus likeStatus = likeService.status(apiUser.toUser(), goodsId);
 
     UserDetail userDetail = userService.findSellerInfo(goodsDetail.goods().user());
+
+    CategoryResponse categoryResponse = CategoryResponse.from(goodsDetail.category());
     UserResponse sellerResponse = UserResponse.from(userDetail);
 
     GoodsDetailResponse response =
@@ -144,11 +142,10 @@ public class GoodsController {
 
     List<Goods> goods = goodsService.searchGoods(apiUser.toUser(), keyword, offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::id).toList();
-    List<LikeStatus> likeStatuses = likeService.findLikeStatuses(apiUser.toUser(), goodsIds);
+    Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
-
   }
 
   @GetMapping("/categories/{categoryId}/goods/search")
@@ -163,11 +160,10 @@ public class GoodsController {
     List<Goods> goods = goodsService.searchCategoryGoods(
         apiUser.toUser(), categoryId, keyword, offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::id).toList();
-    List<LikeStatus> likeStatuses = likeService.findLikeStatuses(apiUser.toUser(), goodsIds);
+    Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
-
   }
 
   @GetMapping("/trades")
@@ -196,11 +192,5 @@ public class GoodsController {
         new TradeResponse(6L, TradeStatus.SOLD, "유아 식기", "goods6_img_url", 5000L),
         new TradeResponse(10L, TradeStatus.SELLING, "유모차", "goods10_img_url", 10000L));
     return ApiResponse.success(response);
-  }
-
-  @PatchMapping("/trade/{tradeId}/complete")
-  public ApiResponse<Void> modifyTradeStatus(Long userId, @PathVariable Long tradeId) {
-
-    return ApiResponse.success();
   }
 }

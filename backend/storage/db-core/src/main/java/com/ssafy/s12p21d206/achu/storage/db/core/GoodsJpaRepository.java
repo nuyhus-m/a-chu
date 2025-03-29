@@ -13,16 +13,13 @@ public interface GoodsJpaRepository extends JpaRepository<GoodsEntity, Long> {
   List<GoodsEntity> findByCategoryIdAndTradeStatusAndEntityStatus(
       Long categoryId, Pageable pageable, TradeStatus tradeStatus, EntityStatus entityStatus);
 
-
   boolean existsByIdAndEntityStatus(Long goodsId, EntityStatus entityStatus);
 
   Optional<GoodsEntity> findByIdAndEntityStatus(Long id, EntityStatus entityStatus);
 
-  Boolean existsByIdAndEntityStatus(Long id, EntityStatus entityStatus);
+  boolean existsByIdAndUserIdAndEntityStatus(Long id, Long userId, EntityStatus entityStatus);
 
-  Boolean existsByIdAndUserIdAndEntityStatus(Long id, Long userId, EntityStatus entityStatus);
-
-  Boolean existsByIdAndTradeStatus(Long id, TradeStatus tradeStatus);
+  boolean existsByIdAndTradeStatus(Long id, TradeStatus tradeStatus);
 
   List<GoodsEntity> findByTitleContainingAndTradeStatusAndEntityStatus(
       String keyword, Pageable pageable, TradeStatus tradeStatus, EntityStatus entityStatus);
