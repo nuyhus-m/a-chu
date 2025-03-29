@@ -40,6 +40,7 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.data.model.auth.UserInfoResponse
 import com.ssafy.achu.data.model.baby.BabyResponse
 import kotlin.collections.forEach
 
@@ -47,7 +48,8 @@ import kotlin.collections.forEach
 fun BabyDropdown(
     babyList: List<BabyResponse>,
     selectedBaby: BabyResponse,
-    onBabySelected: (BabyResponse) -> Unit
+    onBabySelected: (BabyResponse) -> Unit,
+    user: UserInfoResponse
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -118,7 +120,7 @@ fun BabyDropdown(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "재영맘의 ",
+                    text = "${user.nickname}의 ",
                     style = AchuTheme.typography.semiBold18
                 )
 

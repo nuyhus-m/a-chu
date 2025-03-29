@@ -23,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,7 @@ import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.ProductResponse
+import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.home.homecomponents.BabyDropdown
 import com.ssafy.achu.ui.home.homecomponents.RecommendGrid
 import com.ssafy.achu.ui.mypage.recommendlist.LikeItem2
@@ -57,8 +59,13 @@ fun HomeScreen(
     onNavigateToLikeList: () -> Unit,
     onNavigateToRecommend: () -> Unit,
     onNavigateToBabyList: () -> Unit,
-    onNavigateToProductList: () -> Unit
+    onNavigateToProductList: () -> Unit,
+    viewModel: ActivityViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
+
+    val uiState by viewModel.uiState.collectAsState()
+
+
 
     val likeItemList = remember {
         mutableListOf(
@@ -110,11 +117,17 @@ fun HomeScreen(
     ) {
 
         Spacer(Modifier.height(24.dp))
-        BabyDropdown(
-            babyList = babyList,
-            selectedBaby = selectedBaby,
-            onBabySelected = { selectedBaby = it }
-        )
+        if (uiState.user != null) {
+            BabyDropdown(
+                babyList = babyList,
+                selectedBaby = selectedBaby,
+                onBabySelected = { selectedBaby = it },
+                user = uiState.user!!
+            )
+        } else {
+            // 로딩 상태 또는 에러 메시지 표시
+            Text(text = "사용자 정보를 불러오는 중...")
+        }
 
         Spacer(Modifier.height(16.dp))
 

@@ -1,8 +1,9 @@
 package com.ssafy.achu.data.model.auth
 
 data class UserInfoResponse(
-    var imageUrl: String,
+    val id: Int,
+    val username: String,
     val nickname: String,
-    val userId: String,
+    var profileImageUrl: String,
     val phoneNumber: String,
 )
