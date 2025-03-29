@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.ssafy.achu.core.navigation.BottomNavScreen.Companion.HOME
-import com.ssafy.achu.core.navigation.bottomNavBarScreens
+import com.ssafy.achu.core.navigation.BottomNavRoute
+import com.ssafy.achu.core.navigation.bottomNavScreens
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
@@ -51,12 +51,12 @@ fun BottomNavBar(navController: NavHostController) {
     // 현재 화면 루트
     val currentRoute by remember {
         derivedStateOf {
-            currentBackStack?.destination?.route ?: HOME
+            currentBackStack?.destination?.route ?: BottomNavRoute.Home::class.qualifiedName
         }
     }
 
     AnimatedVisibility(
-        visible = bottomNavBarScreens.map { it.route }.contains(currentRoute),
+        visible = bottomNavScreens.map { it.route::class.qualifiedName }.contains(currentRoute),
         enter = fadeIn(),
         exit = fadeOut()
     ) {
@@ -74,8 +74,8 @@ fun BottomNavBar(navController: NavHostController) {
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                bottomNavBarScreens.forEach { screen ->
-                    val selected = currentRoute == screen.route
+                bottomNavScreens.forEach { screen ->
+                    val selected = currentRoute == screen.route::class.qualifiedName
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -135,7 +135,7 @@ fun CustomBottomNavBarPreview() {
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                bottomNavBarScreens.forEach { screen ->
+                bottomNavScreens.forEach { screen ->
                     val selected = false
 
                     Column(

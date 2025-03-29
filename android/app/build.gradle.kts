@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 android {
@@ -84,7 +85,9 @@ dependencies {
     // https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor
     implementation(libs.logging.interceptor)
 
-    //이미지 처리
+    // 이미지 처리
     implementation (libs.androidx.activity.compose.v160)
 
+    // kotlinx-serialization
+    implementation(libs.kotlinx.serialization.json)
 }
