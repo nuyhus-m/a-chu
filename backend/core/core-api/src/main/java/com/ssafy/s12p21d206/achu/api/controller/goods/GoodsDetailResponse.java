@@ -2,7 +2,7 @@ package com.ssafy.s12p21d206.achu.api.controller.goods;
 
 import com.ssafy.s12p21d206.achu.domain.GoodsDetail;
 import com.ssafy.s12p21d206.achu.domain.LikeStatus;
-import com.ssafy.s12p21d206.achu.domain.support.TradeStatus;
+import com.ssafy.s12p21d206.achu.domain.TradeStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 

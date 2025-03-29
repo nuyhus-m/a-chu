@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-  public Seller findSellerInfo(User user) {
+  public UserDetail findSellerInfo(User user) {
     /*
      *
      * 주어진 User에 대해 아래 정보를 조회하여 Seller 객체로 반환해야 합니다:

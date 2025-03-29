@@ -1,12 +1,14 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
 import com.ssafy.s12p21d206.achu.domain.*;
+import com.ssafy.s12p21d206.achu.domain.TradeStatus;
 import com.ssafy.s12p21d206.achu.domain.error.CoreErrorType;
 import com.ssafy.s12p21d206.achu.domain.error.CoreException;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
-import com.ssafy.s12p21d206.achu.domain.support.TradeStatus;
 import java.util.List;
-import org.springframework.data.domain.Page;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -56,17 +58,17 @@ public class GoodsCoreRepository implements GoodsRepository {
   }
 
   @Override
-  public boolean existsByIdAndEntityStatus(Long id) {
+  public boolean existsById(Long id) {
     return goodsJpaRepository.existsByIdAndEntityStatus(id, EntityStatus.ACTIVE);
   }
 
   @Override
-  public boolean existsByIdAndUserIdAndEntityStatus(Long id, Long userId) {
+  public boolean existsByIdAndUserId(Long id, Long userId) {
     return goodsJpaRepository.existsByIdAndUserIdAndEntityStatus(id, userId, EntityStatus.ACTIVE);
   }
 
   @Override
-  public boolean existByIdAndTradeStatus(Long id) {
+  public boolean isSelling(Long id) {
     return goodsJpaRepository.existsByIdAndTradeStatus(id, TradeStatus.SELLING);
   }
 
@@ -98,17 +100,18 @@ public class GoodsCoreRepository implements GoodsRepository {
   }
 
   @Override
-
-
   public boolean existsById(Long goodsId) {
     return goodsJpaRepository.existsByIdAndEntityStatus(goodsId, EntityStatus.ACTIVE);
 
-  public List<GoodsDetail> findGoodsDetails(
-      List<Long> ids, Long offset, Long limit, SortType sort) {
-    Pageable pageable = PageRequest.of(offset.intValue(), limit.intValue(), convertSort(sort));
-    Page<GoodsEntity> goodsEntityPage =
-        goodsJpaRepository.findByIdInAndEntityStatus(ids, EntityStatus.ACTIVE, pageable);
-    return goodsEntityPage.stream().map(GoodsEntity::toGoodsDetail).toList();
+
+  public List<GoodsDetail> findGoodsDetails(List<Long> ids) {
+    List<GoodsEntity> goodsEntities =
+        goodsJpaRepository.findByIdInAndEntityStatus(ids, EntityStatus.ACTIVE);
+    Map<Long, GoodsEntity> entityMap =
+        goodsEntities.stream().collect(Collectors.toMap(GoodsEntity::getId, Function.identity()));
+
+    return ids.stream().map(entityMap::get).map(GoodsEntity::toGoodsDetail).toList();
+
   }
 
   @Override

@@ -4,11 +4,15 @@ import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
 import com.ssafy.s12p21d206.achu.domain.*;
+import com.ssafy.s12p21d206.achu.domain.TradeStatus;
+import com.ssafy.s12p21d206.achu.domain.TradeType;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
-import com.ssafy.s12p21d206.achu.domain.support.TradeStatus;
-import com.ssafy.s12p21d206.achu.domain.support.TradeType;
 import java.util.List;
+<<<<<<< HEAD
 import java.util.Map;
+=======
+import org.springframework.validation.annotation.Validated;
+>>>>>>> 22504f9 (fix: price 양수 검증, tradeHistory->Trade 모든 변수명 수정, Seller->UserDetail 클래스명 수정, 거래내역 조회 JPA  쿼리로 수정)
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +27,7 @@ public class GoodsController {
 
   private final UserService userService;
 
-  private final TradeHistoryService tradeHistoryService;
+  private final TradeService tradeService;
 
   public GoodsController(
       CategoryService categoryService,
@@ -31,19 +35,19 @@ public class GoodsController {
       LikeService likeService,
       ChatRoomService chatRoomService,
       UserService userService,
-      TradeHistoryService tradeHistoryService) {
+      TradeService tradeService) {
     this.categoryService = categoryService;
     this.goodsService = goodsService;
     this.likeService = likeService;
     this.chatRoomService = chatRoomService;
     this.userService = userService;
-    this.tradeHistoryService = tradeHistoryService;
+    this.tradeService = tradeService;
   }
 
   @PostMapping("/goods")
   public ApiResponse<DefaultIdResponse> appendGoods(
       ApiUser apiUser,
-      @RequestPart("request") AppendGoodsRequest request, // TODO: @Validated 들어가야함
+      @RequestPart("request") @Validated AppendGoodsRequest request,
       @RequestPart("Images") MultipartFile[] files) {
     List<String> imgUrls = List.of("goods1-img-url1.jpg", "goods1-img-url2.jpg");
     NewGoods newGoods = request.toNewGoods(imgUrls);
@@ -61,7 +65,7 @@ public class GoodsController {
   public ApiResponse<Void> modifyGoods(
       ApiUser apiUser,
       @PathVariable Long goodsId,
-      @RequestBody ModifyGoodsRequest request) { // TODO: @Validated
+      @RequestBody @Validated ModifyGoodsRequest request) {
     ModifyGoods modifyGoods = ModifyGoodsRequest.toModifyGoods(request);
     goodsService.modify(apiUser.toUser(), goodsId, modifyGoods);
     return ApiResponse.success();
@@ -122,8 +126,9 @@ public class GoodsController {
     Category category = categoryService.findCategoryInfo(goodsDetail.categoryId());
     CategoryResponse categoryResponse = CategoryResponse.from(category);
 
-    Seller seller = userService.findSellerInfo(userId); // TODO: GoodsDetail에서 User로 타입 변경 후 꺼내 쓰기
-    UserResponse sellerResponse = UserResponse.from(seller);
+    UserDetail userDetail =
+        userService.findSellerInfo(userId); // TODO: GoodsDetail에서 User로 타입 변경 후 꺼내 쓰기
+    UserResponse sellerResponse = UserResponse.from(userDetail);
 
     GoodsDetailResponse response =
         GoodsDetailResponse.of(goodsDetail, likeStatus, categoryResponse, sellerResponse);
@@ -137,20 +142,14 @@ public class GoodsController {
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
-<<<<<<< HEAD
-    LocalDateTime createdAt = LocalDateTime.of(2025, 3, 12, 23, 53);
-    List<GoodsResponse> response = List.of(
-        new GoodsResponse(5L, "유아 유모차", "goods5_img_url_1", 100000L, createdAt, 1L, 3, true),
-        new GoodsResponse(7L, "유아식기", "goods7_img_url_1", 1500000L, createdAt, 0L, 10, false));
-    return ApiResponse.success(response);
-=======
+
     List<Goods> goods = goodsService.searchGoods(apiUser.toUser(), keyword, offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
     List<LikeStatus> likeStatuses = likeService.findLikeStatuses(apiUser.toUser(), goodsIds);
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
->>>>>>> cf5db19 (feat: 물품 검색, 카테고리별 물품 검색 API 구현)
+
   }
 
   @GetMapping("/categories/{categoryId}/goods/search")
@@ -161,13 +160,7 @@ public class GoodsController {
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
-<<<<<<< HEAD
-    LocalDateTime createdAt = LocalDateTime.of(2025, 3, 13, 13, 19);
-    List<GoodsResponse> response = List.of(
-        new GoodsResponse(11L, "튤립 장난감", "goods11_img_url_1", 3000L, createdAt, 1L, 3, false),
-        new GoodsResponse(15L, "장난감 기차", "goods15_img_url_1", 10000L, createdAt, 4L, 3, true));
-    return ApiResponse.success(response);
-=======
+
     List<Goods> goods = goodsService.searchCategoryGoods(
         apiUser.toUser(), categoryId, keyword, offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::getId).toList();
@@ -175,52 +168,40 @@ public class GoodsController {
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
->>>>>>> cf5db19 (feat: 물품 검색, 카테고리별 물품 검색 API 구현)
+
   }
 
-  @GetMapping("/trade-history") // TODO: trade-histories or trades (후자가 더 간결한듯..)
-  public ApiResponse<List<TradeHistoryResponse>> findGoodsTradeHistory(
+  @GetMapping("/trades")
+  public ApiResponse<List<TradeResponse>> findTradedGoods(
       ApiUser apiUser,
       @RequestParam TradeType tradeType,
       @RequestParam Long offset,
       @RequestParam Long limit,
       @RequestParam SortType sort) {
     List<GoodsDetail> goodsDetail =
-        tradeHistoryService.findTradeHistoryGoods(apiUser.toUser(), tradeType, offset, limit, sort);
-    List<TradeHistoryResponse> responses = TradeHistoryResponse.of(goodsDetail);
+        tradeService.findTradedGoods(apiUser.toUser(), tradeType, offset, limit, sort);
+    List<TradeResponse> responses = TradeResponse.of(goodsDetail);
     return ApiResponse.success(responses);
   }
 
-  // TODO: 해당 goods에 대한 거래 완료 -> /goods/{goodsId}/trade/complete
-  @PostMapping("/trade/complete")
+  @PostMapping("/goods/{goodsId}/trade/complete")
   public ApiResponse<DefaultIdResponse> completeTrade(
-      ApiUser apiUser, @RequestBody AppendTradeHistoryRequest request) {
-    // TODO: NewTradeHistory는 id 없고 TradeHistory는 id 있어야할듯..?
-    TradeHistory tradeHistory = AppendTradeHistoryRequest.toTradeHistory(apiUser.toUser(), request);
-    Long id = tradeHistoryService.completeTrade(apiUser.toUser(), tradeHistory);
-    return ApiResponse.success(new DefaultIdResponse(id));
+      ApiUser apiUser, @PathVariable Long goodsId, @RequestBody AppendTradeRequest request) {
+    Trade trade = tradeService.completeTrade(apiUser.toUser(), goodsId, request.toNewTrade());
+    return ApiResponse.success(new DefaultIdResponse(trade.id()));
   }
 
   @GetMapping("/goods/liked")
-  public ApiResponse<List<TradeHistoryResponse>> findLikedGoods(Long userId) {
-    List<TradeHistoryResponse> response = List.of(
-        new TradeHistoryResponse(6L, TradeStatus.SOLD, "유아 식기", "goods6_img_url", 5000L),
-        new TradeHistoryResponse(10L, TradeStatus.SELLING, "유모차", "goods10_img_url", 10000L));
+  public ApiResponse<List<TradeResponse>> findLikedGoods(Long userId) {
+    List<TradeResponse> response = List.of(
+        new TradeResponse(6L, TradeStatus.SOLD, "유아 식기", "goods6_img_url", 5000L),
+        new TradeResponse(10L, TradeStatus.SELLING, "유모차", "goods10_img_url", 10000L));
     return ApiResponse.success(response);
   }
 
-<<<<<<< HEAD
   @PatchMapping("/trade/{tradeId}/complete")
   public ApiResponse<Void> modifyTradeStatus(Long userId, @PathVariable Long tradeId) {
-=======
-  @PostMapping("/goods/{goodsId}/like")
-  public ApiResponse<Void> appendLikedGoods(Long userId, @PathVariable Long goodsId) {
-    return ApiResponse.success();
-  }
 
-  @DeleteMapping("/goods/{goodsId}/like")
-  public ApiResponse<Void> deleteLikedGoods(Long userId, @PathVariable Long goodsId) {
->>>>>>> a3d63b9 (feat: 물품 거래 완료 API 구현)
     return ApiResponse.success();
   }
 }

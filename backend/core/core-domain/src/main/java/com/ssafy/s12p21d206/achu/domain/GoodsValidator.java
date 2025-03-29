@@ -13,20 +13,20 @@ public class GoodsValidator {
     this.goodsRepository = goodsRepository;
   }
 
-  public void validateExists(Long id) {
-    if (!goodsRepository.existsByIdAndEntityStatus(id)) {
+  public void validateExists(Long goodsId) {
+    if (!goodsRepository.existsById(goodsId)) {
       throw new CoreException(CoreErrorType.DATA_NOT_FOUND);
     }
   }
 
-  public void validateOwner(Long id, Long userId) {
-    if (!goodsRepository.existsByIdAndUserIdAndEntityStatus(id, userId)) {
+  public void validateOwner(Long goodsId, Long userId) {
+    if (!goodsRepository.existsByIdAndUserId(goodsId, userId)) {
       throw new CoreException(CoreErrorType.CANNOT_ACCESS_GOODS);
     }
   }
 
-  public void validateIsSelling(Long id) {
-    if (!goodsRepository.existByIdAndTradeStatus(id)) { // TODO: 메서드명이 조금..? isSelling(id);
+  public void validateIsSelling(Long goodsId) {
+    if (!goodsRepository.isSelling(goodsId)) { // TODO: 메서드명이 조금..? isSelling(id);
       throw new CoreException(CoreErrorType.GOODS_ALREADY_SOLD);
     }
   }

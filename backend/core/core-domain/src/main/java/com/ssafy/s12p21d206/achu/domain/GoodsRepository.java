@@ -13,23 +13,23 @@ public interface GoodsRepository {
   List<Goods> searchCategoryGoods(
       User user, Long categoryId, String keyword, Long offset, Long limit, SortType sort);
 
-  List<GoodsDetail> findGoodsDetails(List<Long> ids, Long offset, Long limit, SortType sort);
+  List<GoodsDetail> findGoodsDetails(List<Long> goodsIds);
 
-  GoodsDetail findGoodsDetail(Long id);
+  GoodsDetail findGoodsDetail(Long goodsId);
 
-  User findUserIdByGoodsId(Long id);
+  User findUserIdByGoodsId(Long goodsId);
 
   GoodsDetail save(User user, NewGoods newGoods);
 
-  GoodsDetail modifyGoods(Long id, ModifyGoods modifyGoods);
+  GoodsDetail modifyGoods(Long goodsId, ModifyGoods modifyGoods);
 
   // TODO: 메서드명 EntityStatus 들어가 있는데 이거 뗴야하는게 맞을듯? -> 도메인에서는 당연히 메서드 시그니처를 보고 안지워진것만 가저올거라고 예상하기 떄문에
   // 그리고 파라미터로 받지도 않고 있음
-  boolean existsByIdAndEntityStatus(Long id);
+  boolean existsById(Long goodsId);
 
-  boolean existsByIdAndUserIdAndEntityStatus(Long id, Long userId);
+  boolean existsByIdAndUserId(Long goodsId, Long userId);
 
-  boolean existByIdAndTradeStatus(Long id);
+  boolean isSelling(Long goodsId);
 
-  Long delete(Long id);
+  Long delete(Long goodsId);
 }

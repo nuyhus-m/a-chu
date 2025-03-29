@@ -1,9 +1,8 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
-import com.ssafy.s12p21d206.achu.domain.support.TradeStatus;
+import com.ssafy.s12p21d206.achu.domain.TradeStatus;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -35,6 +34,5 @@ public interface GoodsJpaRepository extends JpaRepository<GoodsEntity, Long> {
       TradeStatus tradeStatus,
       EntityStatus entityStatus);
 
-  Page<GoodsEntity> findByIdInAndEntityStatus(
-      List<Long> ids, EntityStatus entityStatus, Pageable pageable);
+  List<GoodsEntity> findByIdInAndEntityStatus(List<Long> ids, EntityStatus entityStatus);
 }
