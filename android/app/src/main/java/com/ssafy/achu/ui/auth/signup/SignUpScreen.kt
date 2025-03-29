@@ -25,7 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.R
-import com.ssafy.achu.core.util.PhoneNumberVisualTransformation
 import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.dialog.PhoneVerificationDialog
 import com.ssafy.achu.core.components.textfield.PwdTextFieldWithLabel
@@ -33,6 +32,7 @@ import com.ssafy.achu.core.components.textfield.TextFieldWithLabelAndBtn
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.PhoneNumberVisualTransformation
 import com.ssafy.achu.core.util.formatPhoneNumber
 import kotlinx.coroutines.flow.collectLatest
 
@@ -41,7 +41,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun SignUpScreen(
     modifier: Modifier = Modifier,
     viewModel: SignUpViewModel = viewModel(),
-    onBackCLick: () -> Unit
+    onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
@@ -161,7 +161,7 @@ fun SignUpScreen(
     }
 
     if (uiState.signUpSuccess) {
-        onBackCLick()
+        onBackClick()
     }
 }
 
@@ -171,7 +171,7 @@ fun SignUpScreen(
 fun SignUpScreenPreview() {
     AchuTheme {
         SignUpScreen(
-            onBackCLick = {}
+            onBackClick = {}
         )
     }
 }
