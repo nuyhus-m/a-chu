@@ -10,13 +10,12 @@ data class UserInfoUIState(
     val isCorrectPWD: Boolean = true,
     val isCorrectOldPWD: Boolean = true,
 
-    val User: UserInfoResponse? = null,
     val isPhoneNumberValid: Boolean = true,
     val phoneNumber: String = "",
 
 
     val newNickname: String = "",
-    val isUniqueNickname: Boolean = true,
+    val isUniqueNickname: String = "",
     val isCorrectNickname: Boolean = true,
 
 

@@ -4,7 +4,6 @@ import PhoneNumberTextField
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -52,12 +51,11 @@ import com.ssafy.achu.core.components.PointBlueFlexibleBtn
 import com.ssafy.achu.core.components.SmallLineBtn
 import com.ssafy.achu.core.components.dialog.BasicDialog
 import com.ssafy.achu.core.components.textfield.BasicTextField
-import com.ssafy.achu.core.components.textfield.ClearTextField
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.data.model.auth.UserInfoResponse
+import com.ssafy.achu.ui.ActivityViewModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -70,26 +68,20 @@ private const val TAG = "UserInfoScreen 안주현"
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun UserInfoScreen(
-    viewModel: UserInfoViewModel = viewModel(),
+    viewModel: ActivityViewModel,
+    userInfoViewModel: UserInfoViewModel = viewModel(),
 ) {
 
-
+    val userInfoUiState by userInfoViewModel.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    viewModel.getUserinfo()
 
-
-    val user = UserInfoResponse(
-        imageUrl = "https://loremflickr.com/300/300/mom",
-        nickname = "재영맘",
-        userId = "achutest1",
-        phoneNumber = "010-1234-4568",
-    )
+    val user = uiState.user!!
 
 
     var img by remember {
         mutableStateOf(
-            user.imageUrl
+            user.profileImageUrl
         )
     }
 
@@ -116,8 +108,9 @@ fun UserInfoScreen(
         onResult = { uri ->
             if (uri != null) { // 이미지가 선택되었을 때만 처리
                 img = uri.toString()
-                viewModel.changeProfile(uriToMultipart(context, uri)!!)
+                userInfoViewModel.changeProfile(uriToMultipart(context, uri)!!)
                 Toast.makeText(context, "프로필 수정완료", Toast.LENGTH_SHORT).show()
+                viewModel.getUserinfo()
             }
         }
     )
@@ -160,7 +153,7 @@ fun UserInfoScreen(
                         contentScale = ContentScale.Crop
                     )
 
-                    if (!user.imageUrl.isNullOrEmpty()) {
+                    if (!user.profileImageUrl.isNullOrEmpty()) {
                         AsyncImage(
                             model = img,
                             contentDescription = "Profile",
@@ -192,7 +185,7 @@ fun UserInfoScreen(
                             .height(20.dp)
                             .width(20.dp)
                             .clickable {
-                                viewModel.updateShowNickNameUpdateDialog(true)
+                                userInfoViewModel.updateShowNickNameUpdateDialog(true)
                             },
                     )
                 }
@@ -209,7 +202,7 @@ fun UserInfoScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 BasicTextField(
-                    value = user.userId,
+                    value = user.username,
                     onValueChange = {},
                     placeholder = "아이디",
                     placeholderColor = FontBlack,
@@ -230,9 +223,9 @@ fun UserInfoScreen(
 
                 Row {
                     PhoneNumberTextField(
-                        value = uiState.phoneNumber,
+                        value = userInfoUiState.phoneNumber,
                         placeholder = user.phoneNumber,
-                        onValueChange = { viewModel.updatePhoneNumber(it) },
+                        onValueChange = { userInfoViewModel.updatePhoneNumber(it) },
                         pointColor = PointBlue,
                         modifier = Modifier.weight(1f),
                     )
@@ -246,7 +239,7 @@ fun UserInfoScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 PointBlueButton("비밀번호 수정", onClick = {
-                    viewModel.updateShowPasswordUpdateDialog(true)
+                    userInfoViewModel.updateShowPasswordUpdateDialog(true)
                 })
 
                 Spacer(modifier = Modifier.height(48.dp))
@@ -265,7 +258,7 @@ fun UserInfoScreen(
                             textDecoration = TextDecoration.Underline
                         ),
                         modifier = Modifier.clickable {
-                            viewModel.updateLogoutDialog(true)
+                            userInfoViewModel.updateLogoutDialog(true)
                         }
                     )
 
@@ -277,7 +270,7 @@ fun UserInfoScreen(
                             textDecoration = TextDecoration.Underline
                         ),
                         modifier = Modifier.clickable {
-                            viewModel.updateDeleteUserDialog(true)
+                            userInfoViewModel.updateDeleteUserDialog(true)
                         }
 
                     )
@@ -288,44 +281,46 @@ fun UserInfoScreen(
         }
     }
 
-    if (uiState.showNickNameUpdateDialog) {
+    if (userInfoUiState.showNickNameUpdateDialog) {
         NicknameUpdateDialog(
             onDismiss = {
-                viewModel.updateShowNickNameUpdateDialog(false)
+                userInfoViewModel.updateShowNickNameUpdateDialog(false)
             },
             onConfirm = {
-                viewModel.changeNickname()
-                viewModel.updateShowNickNameUpdateDialog(false)
+                userInfoViewModel.changeNickname()
+                userInfoViewModel.updateShowNickNameUpdateDialog(false)
+                Toast.makeText(context, "닉네임 수정완료", Toast.LENGTH_SHORT).show()
+                viewModel.getUserinfo()
             },
-            PointBlue, viewModel = viewModel
+            PointBlue, viewModel = userInfoViewModel
         )
     }
-    if (uiState.showPasswordUpdateDialog) {
+    if (userInfoUiState.showPasswordUpdateDialog) {
         PasswordUpdateDialog(
-            onDismiss = { viewModel.updateShowPasswordUpdateDialog(false) },
+            onDismiss = { userInfoViewModel.updateShowPasswordUpdateDialog(false) },
             onConfirm = {
-                viewModel.updateShowPasswordUpdateDialog(false)
+                userInfoViewModel.updateShowPasswordUpdateDialog(false)
                 Toast.makeText(context, "비밀번호 수정완료", Toast.LENGTH_SHORT).show()
-            }, viewModel = viewModel
+            }, viewModel = userInfoViewModel
         )
     }
 
-    if (uiState.logoutDialog) {
+    if (userInfoUiState.logoutDialog) {
         BasicDialog(
             text = "로그아웃 하시겠습니까?",
-            onDismiss = { viewModel.updateLogoutDialog(false) },
-            onConfirm = {  viewModel.updateLogoutDialog(false) }
+            onDismiss = { userInfoViewModel.updateLogoutDialog(false) },
+            onConfirm = {  userInfoViewModel.updateLogoutDialog(false) }
         )
     }
 
-    if (uiState.deleteUserDialog) {
+    if (userInfoUiState.deleteUserDialog) {
         BasicDialog(
             img = painterResource(id = R.drawable.img_crying_face),
             "A - Chu",
             "와 함께한",
             text = "모든 추억이 삭제됩니다.\n정말 탈퇴하시겠습니까?",
-            onDismiss = { viewModel.updateDeleteUserDialog(false) },
-            onConfirm = { viewModel.updateDeleteUserDialog(false)  }
+            onDismiss = { userInfoViewModel.updateDeleteUserDialog(false) },
+            onConfirm = { userInfoViewModel.updateDeleteUserDialog(false)  }
         )
     }
 }
@@ -336,6 +331,8 @@ fun UserInfoScreen(
 @Composable
 fun UserInfoScreenPreview() {
     AchuTheme {
-        UserInfoScreen()
+        UserInfoScreen(
+            viewModel = viewModel()
+        )
     }
 }

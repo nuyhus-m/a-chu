@@ -54,7 +54,7 @@ interface UserService {
     @PATCH("/users/change-phone")
     suspend fun changePhoneNumber(@Body changePhoneNumberRequest: ChangePhoneNumberRequest): ApiResult<Unit>
 
-    @PATCH("/users/change-password")
+    @PATCH("/users/password")
     suspend fun changePassword(@Body changePasswordRequest: ChangePasswordRequest): ApiResult<Unit>
 
 }

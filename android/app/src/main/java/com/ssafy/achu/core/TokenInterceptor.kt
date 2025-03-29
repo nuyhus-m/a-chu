@@ -1,5 +1,6 @@
 package com.ssafy.achu.core
 
+import android.util.Log
 import okhttp3.Interceptor
 
 private const val TAG = "TokenInterceptor"
@@ -7,6 +8,8 @@ private const val TAG = "TokenInterceptor"
 class TokenInterceptor(private val accessToken: String) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
         val originalRequest = chain.request()
+
+        Log.d(TAG, "Request: ${originalRequest.url} | Method: ${originalRequest.method}")
 
         // 헤더를 추가할지 결정하는 로직
         val newRequest = if (shouldAddToken(originalRequest)) {

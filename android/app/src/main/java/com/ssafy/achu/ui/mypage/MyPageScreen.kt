@@ -1,13 +1,15 @@
-import android.R.attr.contentDescription
-import android.R.attr.phoneNumber
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,11 +23,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.data.model.auth.UserInfoResponse
+import com.ssafy.achu.ui.ActivityViewModel
+import com.ssafy.achu.ui.mypage.userinfo.UserInfoViewModel
 import kotlin.String
 
 @Composable
@@ -36,15 +40,19 @@ fun MyPageScreen(
     onNavigateToLikeList: () -> Unit,
     onNavigateToRecommend: () -> Unit,
     onNavigateToUserInfo: () -> Unit,
-    onNavigateToBabyList: () -> Unit
+    onNavigateToBabyList: () -> Unit,
+    viewModel: ActivityViewModel = viewModel(),
 ) {
+    val uiState by viewModel.uiState.collectAsState()
 
-    val user = UserInfoResponse(
-        imageUrl = "https://loremflickr.com/300/300/mom",
-        nickname = "재영맘",
-        userId = "achutest1",
-        phoneNumber = "010-1234-4568",
-    )
+
+
+
+    val user = uiState.user
+    if (user == null) {
+        CircularProgressIndicator()
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -88,7 +96,7 @@ fun MyPageScreen(
                             modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
                             contentScale = ContentScale.Crop
                         )
-                        if (user.imageUrl.isNullOrEmpty()) {
+                        if (user?.profileImageUrl.isNullOrEmpty()) {
                             Image(
                                 painter = painterResource(R.drawable.img_profile_test),//디폴트 이미지
                                 contentDescription = "Profile",
@@ -97,7 +105,7 @@ fun MyPageScreen(
                             )
                         } else {
                             AsyncImage(
-                                model = user.imageUrl,
+                                model = user?.profileImageUrl,
                                 contentDescription = "Profile",
                                 modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
                                 contentScale = ContentScale.Crop
@@ -108,22 +116,24 @@ fun MyPageScreen(
                     Row(
                         verticalAlignment = Alignment.Bottom // 하단 정렬
                     ) {
-                        Text(
-                            text = user.nickname,
-                            style = AchuTheme.typography.bold24.copy(
-                                fontSize = 32.sp,
-                                lineHeight = 30.sp,
-                                shadow = Shadow(
-                                    color = Color.Gray, // 그림자 색상
-                                    offset = Offset(2f, 2f), // 그림자 위치 (x, y)
-                                    blurRadius = 8f // 그림자 흐림 정도
-                                )
-                            ),
-                            color = White,
-                            modifier = Modifier
-                                .padding(start = 32.dp)
-                                .alignByBaseline()
-                        )
+                        user?.nickname?.let {
+                            Text(
+                                text = it,
+                                style = AchuTheme.typography.bold24.copy(
+                                    fontSize = 32.sp,
+                                    lineHeight = 30.sp,
+                                    shadow = Shadow(
+                                        color = Color.Gray, // 그림자 색상
+                                        offset = Offset(2f, 2f), // 그림자 위치 (x, y)
+                                        blurRadius = 8f // 그림자 흐림 정도
+                                    )
+                                ),
+                                color = White,
+                                modifier = Modifier
+                                    .padding(start = 24.dp)
+                                    .alignByBaseline()
+                            )
+                        }
 
                         Text(
                             text = "님",
@@ -264,7 +274,8 @@ fun MyPageScreenPreview() {
             onNavigateToLikeList = { /* 찜한 상품 클릭 시 동작 */ },
             onNavigateToRecommend = { /* 추천상품 클릭 시 동작 */ },
             onNavigateToUserInfo = { },
-            onNavigateToBabyList = {}
+            onNavigateToBabyList = {},
+            viewModel = ActivityViewModel()
         )
     }
 }

@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.FontBlue
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
@@ -88,8 +89,8 @@ fun NicknameUpdateDialog(
                         .height(50.dp),
                     placeholder = {
                         Text(
-                            text = if (!uiState.isCorrectNickname) "닉네임 양식확인" else if (!uiState.isUniqueNickname) "사용중인 닉네임" else "새 닉네임 입력",
-                            style = AchuTheme.typography.regular16.copy(color = if (uiState.isCorrectNickname && uiState.isUniqueNickname) color else FontPink)
+                            text = if (!uiState.isCorrectNickname) "닉네임 양식확인" else if (uiState.isUniqueNickname =="중복") "사용중인 닉네임" else "새 닉네임 입력",
+                            style = AchuTheme.typography.regular16.copy(color = if (!uiState.isCorrectNickname || uiState.isUniqueNickname =="중복") FontPink else color)
                         )
                     },
                     textStyle = AchuTheme.typography.regular16,
@@ -111,12 +112,12 @@ fun NicknameUpdateDialog(
                                 .size(60.dp),
                             contentPadding = PaddingValues(0.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = color, // 버튼 배경색 (원하는 색상으로 변경)
+                                containerColor = if (uiState.isUniqueNickname =="완료") FontBlue else color, // 버튼 배경색 (원하는 색상으로 변경)
                                 contentColor = Color.White   // 텍스트 색상 (원하는 색상으로 변경)
                             )
                         ) {
                             Text(
-                                text = if (uiState.isUniqueNickname) "완료" else "확인",
+                                text = if (uiState.isUniqueNickname =="완료"&& uiState.isCorrectNickname) "완료" else "확인",
                                 style = AchuTheme.typography.semiBold14PointBlue,
                                 color = White
                             )
@@ -159,7 +160,7 @@ fun NicknameUpdateDialog(
                             .weight(1.0f)
                             .background(color, shape = RoundedCornerShape(8.dp))
                             .clickable(
-                                enabled = if (uiState.isCorrectNickname && uiState.isUniqueNickname) true else false,
+                                enabled = if (uiState.isCorrectNickname && uiState.isUniqueNickname =="완료") true else false,
                                 onClick = onConfirm
                             )
                             .padding(vertical = 12.dp),

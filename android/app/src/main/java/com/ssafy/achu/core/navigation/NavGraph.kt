@@ -21,6 +21,7 @@ import com.ssafy.achu.core.navigation.MyPage.MY_PRODUCT_DETAIL
 import com.ssafy.achu.core.navigation.MyPage.MY_RECOMMEND_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_TRADE_LIST
 import com.ssafy.achu.core.navigation.MyPage.MY_UPLOAD_PRODUCT
+import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.chat.chatdetail.ChatScreen
 import com.ssafy.achu.ui.chat.chatlist.ChatListScreen
 import com.ssafy.achu.ui.memory.MemoryDetailScreen
@@ -41,7 +42,8 @@ import com.ssafy.achu.ui.product.uploadproduct.UploadProductScreen
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    modifier: Modifier
+    modifier: Modifier,
+    activityViewModel: ActivityViewModel
 ) {
     NavHost(
         navController = navController,
@@ -51,6 +53,7 @@ fun NavGraph(
         composable(route = BottomNavScreen.Home.route) {
             HomeScreen(
                 modifier = modifier,
+                viewModel = activityViewModel,
                 onNavigateToLikeList = { navController.navigate(route = MY_LIKE_LIST) },
                 onNavigateToRecommend = { navController.navigate(route = MY_RECOMMEND_LIST) },
                 onNavigateToBabyList = { navController.navigate(route = MY_BABY_LIST) },
@@ -80,6 +83,7 @@ fun NavGraph(
         composable(route = BottomNavScreen.MyPage.route) {
             MyPageScreen(
                 modifier = modifier,
+                viewModel = activityViewModel,
                 onNavigateToTradeList = { navController.navigate(route = MY_TRADE_LIST) },
                 onNavigateToLikeList = { navController.navigate(route = MY_LIKE_LIST) },
                 onNavigateToRecommend = { navController.navigate(route = MY_RECOMMEND_LIST) },
@@ -98,7 +102,9 @@ fun NavGraph(
             RecommendItemScreen()
         }
         composable(MY_INFO) {
-            UserInfoScreen()
+            UserInfoScreen(
+                viewModel = activityViewModel,
+            )
         }
 
         // 마이페이지 - 아기정보관리 화면들

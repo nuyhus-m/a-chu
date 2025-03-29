@@ -173,7 +173,6 @@ class UserInfoViewModel : ViewModel() {
                 .onSuccess {
                     if (it.result == "SUCCESS") {
                         Log.d(TAG, "changeNickname: ${it}")
-                        getUserinfo()
                     }
                 }.onFailure {
                     Log.d(TAG, "changeNickname: ${it.message}")
@@ -194,7 +193,7 @@ class UserInfoViewModel : ViewModel() {
                         Log.d(TAG, "confirmUniqueNickname: ${it}")
                         _uiState.update {
                             it.copy(
-                                isUniqueNickname = true,
+                                isUniqueNickname = "완료",
                             )
                         }
 
@@ -204,7 +203,7 @@ class UserInfoViewModel : ViewModel() {
                     Log.d(TAG, "confirmUniqueNickname: ${it.message}")
                     _uiState.update {
                         it.copy(
-                            isUniqueNickname = false,
+                            isUniqueNickname = "중복",
                             newNickname = ""
                         )
                     }
@@ -246,30 +245,12 @@ class UserInfoViewModel : ViewModel() {
                 .onSuccess {
                     if (it.result == "SUCCESS") {
                         Log.d(TAG, "changePhoneNumber: ${it}")
-                        getUserinfo()
                     }
                 }.onFailure {
                     Log.d(TAG, "changePhoneNumber: ${it.message}")
                     mismatchOldPWD()
                 }
 
-        }
-    }
-
-    fun getUserinfo() {
-        viewModelScope.launch {
-            userRepository.getMyInfo()
-                .onSuccess {
-                    if (it.result == "SUCCESS") {
-                        val userData = it.data
-                        _uiState.update {
-                            it.copy(
-                                User = userData
-                            )
-                        }
-                        Log.d(TAG, "getUserinfo: ${it}")
-                    }
-                }.onFailure { Log.d(TAG, "getUserinfo: ${it.message}") }
         }
     }
 
