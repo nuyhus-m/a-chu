@@ -27,6 +27,7 @@ import com.ssafy.achu.ui.chat.chatlist.ChatListScreen
 import com.ssafy.achu.ui.memory.MemoryDetailScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
 import com.ssafy.achu.ui.memory.MemoryUploadScreen
+import com.ssafy.achu.ui.memory.MemoryViewModel
 import com.ssafy.achu.ui.mypage.baby.BabyDetailScreen
 import com.ssafy.achu.ui.mypage.baby.BabyListScreen
 import com.ssafy.achu.ui.mypage.likelist.LikeItemListScreen
@@ -43,12 +44,15 @@ import com.ssafy.achu.ui.product.uploadproduct.UploadProductScreen
 fun NavGraph(
     navController: NavHostController,
     modifier: Modifier,
-    activityViewModel: ActivityViewModel
+    activityViewModel: ActivityViewModel,
+    memoryViewModel: MemoryViewModel = viewModel()
 ) {
     NavHost(
         navController = navController,
         startDestination = BottomNavScreen.Home.route
     ) {
+
+
         // 바텀바 화면들
         composable(route = BottomNavScreen.Home.route) {
             HomeScreen(
@@ -71,8 +75,11 @@ fun NavGraph(
         }
         composable(route = BottomNavScreen.MemoryList.route) {
             MemoryListScreen(
+                viewModel = activityViewModel,
                 modifier = modifier,
-                onNavigateToMemoryDetail = { navController.navigate(route = MY_MEMORY_DETAIL) })
+                onNavigateToMemoryDetail = { navController.navigate(route = MY_MEMORY_DETAIL)},
+                memoryViewModel = memoryViewModel
+            )
         }
         composable(route = BottomNavScreen.ChatList.route) {
             ChatListScreen(
@@ -122,11 +129,15 @@ fun NavGraph(
 
         // 추억 관련 화면들
         composable(MY_MEMORY_UPLOAD) {
-            MemoryUploadScreen()
+            MemoryUploadScreen(
+                onNavigateToMemoryDetail = { navController.navigate(route = MY_MEMORY_DETAIL) },
+                memoryViewModel = memoryViewModel
+            )
         }
         composable(MY_MEMORY_DETAIL) {
             MemoryDetailScreen(
-                onNavigateToMemoryUpload = { navController.navigate(route = MY_MEMORY_UPLOAD) }
+                onNavigateToMemoryUpload = { navController.navigate(route = MY_MEMORY_UPLOAD) },
+                memoryViewModel
             )
         }
 

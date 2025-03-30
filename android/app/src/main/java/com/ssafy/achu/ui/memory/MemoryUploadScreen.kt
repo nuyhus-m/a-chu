@@ -1,6 +1,6 @@
 package com.ssafy.achu.ui.memory
 
-import android.R.attr.textStyle
+import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.widget.Toast
@@ -13,7 +13,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,40 +22,34 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
-import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -64,23 +57,31 @@ import com.google.accompanist.pager.rememberPagerState
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.CenterTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
+import com.ssafy.achu.core.navigation.MyPage
 import com.ssafy.achu.core.theme.AchuTheme
-import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun MemoryUploadScreen() {
+fun MemoryUploadScreen(
+    memoryViewModel: MemoryViewModel,
+    onNavigateToMemoryDetail: () -> Unit
+) {
+    val memoryUIState: MemoryUIState by memoryViewModel.uiState.collectAsState()
     val pagerState = rememberPagerState()
-    var titleText by remember { mutableStateOf("") }
-    var contentText by remember { mutableStateOf("") }
     val maxTitleLength = 15
     val maxContentLength = 100
-    var images by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    var images by remember(memoryUIState.selectedMemory.imgUrls) {
+        mutableStateOf(memoryUIState.selectedMemory.imgUrls.map { Uri.parse(it) })
+    }
 
     val context = LocalContext.current
 
@@ -95,6 +96,16 @@ fun MemoryUploadScreen() {
             }
         }
     )
+
+    fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
+        val file = File(context.cacheDir, "upload_${System.currentTimeMillis()}.jpg")
+        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+        file.outputStream().use { output -> inputStream.copyTo(output) }
+
+        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+        return MultipartBody.Part.createFormData("file", file.name, requestFile)
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -105,7 +116,7 @@ fun MemoryUploadScreen() {
             modifier = Modifier.fillMaxWidth()
         ) {
             CenterTopAppBar(
-                title = "추억 업로드",
+                title = if (memoryUIState.selectedMemory.title == "")"추억 업로드" else "추억 수정",
                 onBackClick = {}
             )
             if (images.size != 0) {
@@ -234,7 +245,7 @@ fun MemoryUploadScreen() {
                     }
                 }
 
-                
+                Spacer(modifier = Modifier.height(24.dp))
             }
 
             Column(
@@ -243,12 +254,10 @@ fun MemoryUploadScreen() {
                     .padding(horizontal = 24.dp)
             ) {
 
-                Spacer(modifier = Modifier.height(24.dp))
-
 
                 OutlinedTextField(
-                    value = titleText,
-                    onValueChange = { if (it.length <= maxTitleLength) titleText = it },
+                    value = if (memoryUIState.selectedMemory.title == "") memoryUIState.memoryTitle else memoryUIState.selectedMemory!!.title,
+                    onValueChange = { if (it.length <= maxTitleLength) memoryViewModel.memoryTitleUpdate(it)},
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("타이틀을 입력해주세요", color = FontGray) },
                     textStyle = AchuTheme.typography.regular16,
@@ -260,7 +269,7 @@ fun MemoryUploadScreen() {
                     ),
                     trailingIcon = {
                         Text(
-                            text = "${titleText.length}/$maxTitleLength",
+                            text = "${memoryUIState.memoryTitle.length}/$maxTitleLength",
                             color = FontGray,
                             style = AchuTheme.typography.regular14,
                             modifier = Modifier.padding(end = 16.dp)
@@ -278,8 +287,8 @@ fun MemoryUploadScreen() {
                         .weight(1.0f)
                 ) {
                     OutlinedTextField(
-                        value = contentText,
-                        onValueChange = { if (it.length <= maxContentLength) contentText = it },
+                        value = if (memoryUIState.selectedMemory.content == "") memoryUIState.memoryContent else memoryUIState.selectedMemory!!.content,
+                        onValueChange = { if (it.length <= maxContentLength) memoryViewModel.memoryContentUpdate(it)},
                         modifier = Modifier
                             .fillMaxSize()
                             .align(Alignment.TopStart), // 텍스트 필드 정렬
@@ -296,7 +305,7 @@ fun MemoryUploadScreen() {
                 }
 
                 Text(
-                    text = "${contentText.length}/$maxContentLength",
+                    text = "${memoryUIState.memoryContent.length}/$maxContentLength",
                     color = PointPink,
                     style = AchuTheme.typography.regular14,
                     textAlign = TextAlign.End,
@@ -312,8 +321,19 @@ fun MemoryUploadScreen() {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 PointPinkBtn(
-                    buttonText = "작성 완료",
-                    onClick = {}
+                    buttonText = if(memoryUIState.selectedMemory.title == "")"작성 완료" else "수정완료",
+                    onClick = {
+                        val multipartFiles = images.mapNotNull { uri -> uriToMultipart(context, uri) }
+                        memoryViewModel.memoryImageUpdate(multipartFiles)
+                        if (memoryUIState.selectedMemory.title == "") {
+                            memoryViewModel.uploadMemory()
+                            onNavigateToMemoryDetail()
+                        } else {
+                            memoryViewModel.changeMemory()
+                            memoryViewModel.updateImage()
+                            onNavigateToMemoryDetail()
+                        }
+                    }
                 )
                 Spacer(modifier = Modifier.height(40.dp))
 
@@ -329,7 +349,8 @@ fun MemoryUploadScreen() {
 @Composable
 fun MemoryUploadScreenPreview() {
     AchuTheme {
-        MemoryUploadScreen()
+        MemoryUploadScreen(onNavigateToMemoryDetail = {  },
+            memoryViewModel = viewModel())
     }
 }
 

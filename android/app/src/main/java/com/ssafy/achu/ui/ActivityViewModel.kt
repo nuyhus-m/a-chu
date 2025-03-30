@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
+import com.ssafy.achu.data.model.baby.BabyResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +18,14 @@ private const val TAG = "ActivityViewModel_안주현"
 class ActivityViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ActivityUIState())
     val uiState: StateFlow<ActivityUIState> = _uiState.asStateFlow()
+
+    fun updateSelectedBaby(baby: BabyResponse) {
+        _uiState.update {
+            it.copy(
+                selectedBaby = baby
+            )
+        }
+    }
 
     fun getUserinfo() {
         viewModelScope.launch {

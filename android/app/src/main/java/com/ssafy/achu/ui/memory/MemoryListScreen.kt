@@ -1,6 +1,5 @@
 package com.ssafy.achu.ui.memory
 
-import android.R.attr.onClick
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -26,6 +24,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,170 +39,225 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
+import com.ssafy.achu.core.theme.FontBlue
+import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
+import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.data.model.memory.MemoryResponse
+import com.ssafy.achu.ui.ActivityUIState
+import com.ssafy.achu.ui.ActivityViewModel
 import kotlin.String
 
 @Composable
-fun MemoryListScreen(modifier: Modifier = Modifier, onNavigateToMemoryDetail: () -> Unit) {
+fun MemoryListScreen(
+    modifier: Modifier = Modifier,
+    onNavigateToMemoryDetail: () -> Unit,
+    viewModel: ActivityViewModel,
+    memoryViewModel: MemoryViewModel
+) {
+
+    val uiState: ActivityUIState by viewModel.uiState.collectAsState()
+    val memoryUIState: MemoryUIState by memoryViewModel.uiState.collectAsState()
+
     var expanded by remember { mutableStateOf(false) }
-    var selectedItem by remember { mutableStateOf("두식이") }
-    val items = listOf("두식이", "삼식이", "튼튼이")
+    var selectedItem by remember { mutableStateOf(uiState.selectedBaby?.nickname) }
 
-    val memoryList = listOf(
-        MemoryResponse(
-            content = "너무너무 귀여운 두식이의 첫돌에 입었던\n옷을 팔았다. 서운하면서도 후련하다\n이걸로 더 예쁜옷을 사줘야지",
-            createdAt = "2024.06.03",
-            id = 1,
-            imgUrl =
-                "https://loremflickr.com/600/400",
-            title = "두식이의 첫돌",
-            updatedAt = ""
-        ),
-        MemoryResponse(
-            content = "너무너무 귀여운 두식이의 첫돌에 입었던\n옷을 팔았다. 서운하면서도 후련하다\n이걸로 더 예쁜옷을 사줘야지",
-            createdAt = "2024.07.18",
-            id = 1,
-            imgUrl =
-                "https://loremflickr.com/600/400",
-            title = "놀이터에서",
-            updatedAt = "2024.07.18"
-        ),
-        MemoryResponse(
-            content = "너무너무 귀여운 두식이의 첫돌에 입었던\n옷을 팔았다. 서운하면서도 후련하다\n이걸로 더 예쁜옷을 사줘야지",
-            createdAt = "2024.08.19",
-            id = 1,
-            imgUrl =
-                "https://loremflickr.com/600/400",
-            title = "여름휴가",
-            updatedAt = "2024.08.19"
-        ),
-        )
-
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(color = White),
-    ) {
+    if (uiState.babyList.isNullOrEmpty()) {
         Column(
-            modifier = Modifier
-                .padding(top = 40.dp)
+            Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(color = White),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Box(
+
+            Image(
+                painter = painterResource(id = R.drawable.img_crying_face),
+                contentDescription = "Profile",
                 modifier = Modifier
                     .size(90.dp)
-                    .shadow(elevation = 4.dp, shape = CircleShape)
-                    .border(1.5.dp, PointBlue, CircleShape)
-                    .background(color = Color.LightGray),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.img_baby_profile),
-                    contentDescription = "Profile",
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            }
+            )
 
-            Box(
+            Spacer(Modifier.height(24.dp))
+            Text(
+                text = "등록된 아이가 없습니다.\n우리 아이 정보를 등록하고 추억을 기록하세요! ",
+                style = AchuTheme.typography.semiBold18,
+                color = FontGray,
+                textAlign = TextAlign.Center,
+                lineHeight = 30.sp
+            )
+
+        }
+    } else {
+
+        memoryViewModel.getMemoryList(uiState.selectedBaby!!.id)
+
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(color = White),
+        ) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentSize(Alignment.Center)
+                    .padding(top = 40.dp)
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-                Row(
+                Box(
                     modifier = Modifier
-                        .wrapContentWidth()
-                        .clickable { expanded = true }
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically  // 세로 중앙 정렬
-
+                        .size(90.dp)
+                        .shadow(elevation = 4.dp, shape = CircleShape)
+                        .border(1.5.dp, PointBlue, CircleShape)
+                        .background(color = Color.LightGray),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Spacer(modifier = Modifier.padding(start = 32.dp))
-                    Text(
-                        text = selectedItem,
-                        style = AchuTheme.typography.semiBold20,
-                        modifier = Modifier.alignByBaseline()  // 베이스라인 정렬
-
-                    )
-
-                    Text(
-                        text = "의 추억",
-                        style = AchuTheme.typography.semiBold16,
-                        modifier = Modifier.alignByBaseline()  // 베이스라인 정렬
-
-                    )
-
                     Image(
-                        painter = painterResource(id = R.drawable.ic_arrow_drop_down),
-                        contentDescription = "Arrow",
+                        painter = painterResource(id = R.drawable.img_baby_profile),
+                        contentDescription = "Profile",
                         modifier = Modifier
-                            .size(28.dp)
-                            .alignByBaseline(),
-                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(FontBlack)
+                            .size(80.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
                     )
-                }
-
-
-                // 드롭다운 메뉴는 Box 안에서 정의
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .background(color = White)
-                ) {
-                    items.forEach { item ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = item,
-                                    style = AchuTheme.typography.semiBold16
-                                )
-                            },
-                            onClick = {
-                                selectedItem = item
-                                expanded = false
-                                //클릭되면 바꿔라이
-                            }
+                    if (uiState.selectedBaby?.imgUrl.isNullOrEmpty()) {
+                        AsyncImage(
+                            model = uiState.selectedBaby?.imgUrl,
+                            contentDescription = "Profile",
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
                         )
                     }
                 }
-            }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentSize(Alignment.Center)
+                ) {
 
-            Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .clickable { expanded = true }
+                            .padding(top = 16.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically  // 세로 중앙 정렬
 
-            Text(
-                text = "2019.05.04일생",
-                style = AchuTheme.typography.semiBold16,
-                color = PointBlue
-            )
+                    ) {
+                        Spacer(modifier = Modifier.padding(start = 32.dp))
+                        Text(
+                            text = selectedItem!!,
+                            style = AchuTheme.typography.semiBold20,
+                            modifier = Modifier.alignByBaseline()  // 베이스라인 정렬
 
-            LazyColumn(
-                modifier = Modifier.padding(top = 24.dp)
-            ) {
-                items(memoryList.size) { index ->
-                    MemoryListItem(
-                        img = memoryList[index].imgUrl,
-                        title = memoryList[index].title,
-                        date = memoryList[index].createdAt,
-                        onClick = { onNavigateToMemoryDetail() }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp)) // 아이템 간 간격 추가
+                        )
+
+                        Text(
+                            text = "의 추억",
+                            style = AchuTheme.typography.semiBold16,
+                            modifier = Modifier.alignByBaseline()  // 베이스라인 정렬
+
+                        )
+
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_arrow_drop_down),
+                            contentDescription = "Arrow",
+                            modifier = Modifier
+                                .size(28.dp)
+                                .alignByBaseline(),
+                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(FontBlack)
+                        )
+                    }
+
+
+                    // 드롭다운 메뉴는 Box 안에서 정의
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .background(color = White)
+                    ) {
+                        uiState.babyList.forEach { baby ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = baby.nickname,
+                                        style = AchuTheme.typography.semiBold16
+                                    )
+                                },
+                                onClick = {
+                                    selectedItem = baby.nickname
+                                    viewModel.updateSelectedBaby(
+                                        baby
+                                    )
+                                    expanded = false
+                                    //클릭되면 바꿔라이
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "${uiState.selectedBaby?.birth}일생",
+                    style = AchuTheme.typography.semiBold16,
+                    color = PointBlue
+                )
+                if (memoryUIState.memoryList.isEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.img_smiling_face),
+                            contentDescription = "Profile",
+                            modifier = Modifier
+                                .size(80.dp)
+                        )
+
+                        Spacer(Modifier.height(24.dp))
+                        Text(
+                            text = "${selectedItem}의 추억 없습니다.\nA-Chu에서 거래하고 추억을 기록하세요! ",
+                            style = AchuTheme.typography.semiBold18,
+                            color = FontGray,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 30.sp
+                        )
+                    }
+                } else {
+
+                    LazyColumn(
+                        modifier = Modifier.padding(top = 24.dp)
+                    ) {
+                        items(memoryUIState.memoryList.size) { index ->
+                            MemoryListItem(
+                                img = memoryUIState.memoryList[index].imgUrl,
+                                title = memoryUIState.memoryList[index].title,
+                                date = memoryUIState.memoryList[index].content,
+                                onClick = {
+                                    memoryViewModel.getMemory(memoryUIState.memoryList[index].id)
+                                    onNavigateToMemoryDetail()
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(16.dp)) // 아이템 간 간격 추가
+                        }
+                    }
                 }
             }
         }
@@ -273,7 +327,10 @@ fun MemoryListItem(img: String, title: String, date: String, onClick: () -> Unit
 fun MemoryListScreenPreview() {
 
     AchuTheme {
-        MemoryListScreen {}
+        MemoryListScreen(
+            onNavigateToMemoryDetail = {}, viewModel = viewModel(),
+            memoryViewModel = viewModel()
+        )
 //        MemoryListItem(
 //            img = R.drawable.img_baby_profile,
 //            title = "정말 귀여운 원피스",
