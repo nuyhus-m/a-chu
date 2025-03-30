@@ -39,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
@@ -88,9 +89,12 @@ fun BabyListScreen(onNavigateToBabyDetail: () -> Unit, viewModel: ActivityViewMo
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.weight(1f))
             } else {
-                Column (Modifier.weight(1f).fillMaxWidth()){
-                    Spacer(modifier = Modifier.weight(1f))
+                Column (Modifier.weight(1f).fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center){
+
                     Image(
                         painter = painterResource(R.drawable.img_smiling_face),
                         contentDescription = "smile",
@@ -101,15 +105,16 @@ fun BabyListScreen(onNavigateToBabyDetail: () -> Unit, viewModel: ActivityViewMo
                     Spacer(Modifier.height(24.dp))
                 Text(
                     text = "등록된 아이가 없습니다.\n아이별 추천, 추억기록을 위해 \n 아이를 등록해보세요!",
-                    style = AchuTheme.typography.semiBold20,
+                    style = AchuTheme.typography.semiBold18,
                     color = FontGray,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    lineHeight = 30.sp,
+                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 60.dp),
                     textAlign = TextAlign.Center
                 )
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+
 
             // 아이 정보 추가 버튼
             Box(modifier = Modifier.padding(horizontal = 24.dp)) {

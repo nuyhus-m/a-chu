@@ -1,5 +1,6 @@
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -8,16 +9,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -37,8 +41,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
@@ -78,22 +84,6 @@ fun HomeScreen(
 
     viewModel.getBabyList()
 
-    val babyList = listOf(
-        BabyResponse(
-            imgUrl = "https://loremflickr.com/300/300/baby",
-            nickname = "두식이",
-            id = 1,
-            birth = "첫째(2019.05.04)",
-            gender = "남"
-        ),
-        BabyResponse(
-            imgUrl = "",
-            nickname = "삼식이",
-            id = 2,
-            birth = "둘째(2020.07.14)",
-            gender = "여"
-        ),
-    )
 
     var selectedBaby = uiState.selectedBaby
 
@@ -140,19 +130,65 @@ fun HomeScreen(
                     modifier = Modifier.height(66.dp)
                 )
             }
-        } else if (uiState.babyList.size == 0) {
-            Box(
+        } else if (uiState.babyList.isEmpty()) {
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "아기를 등록해주세요!",
-                    style = AchuTheme.typography.semiBold16,
-                    color = PointBlue,
-                    modifier = Modifier.height(66.dp)
-                )
+                    .height(66.dp).padding(horizontal = 24.dp),
+                verticalAlignment = Alignment.CenterVertically
+
+                ) {
+                Box(
+                    modifier = Modifier
+                        .size(66.dp)
+                        .clip(CircleShape)
+                        .border(1.dp, PointBlue, CircleShape)
+                ) {
+
+                    val imageUrl = uiState.user!!.profileImageUrl
+                    // URL이 비어 있으면 기본 이미지 리소스를 사용하고, 그렇지 않으면 네트워크 이미지를 로드합니다.
+                    if (imageUrl.isNullOrEmpty()) {
+                        // 기본 이미지를 painter로 설정
+                        Image(
+                            painter = painterResource(id = R.drawable.img_profile_test),
+                            contentDescription = "Profile",
+                            modifier = Modifier
+                                .size(60.dp)
+                                .clip(CircleShape)
+                                .align(Alignment.Center),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        // URL을 통해 이미지를 로드
+                        AsyncImage(
+                            model = selectedBaby!!.imgUrl,
+                            contentDescription = "Profile",
+                            modifier = Modifier
+                                .size(60.dp)
+                                .clip(CircleShape)
+                                .align(Alignment.Center),
+                            contentScale = ContentScale.Crop,
+                            error = painterResource(R.drawable.img_baby_profile)
+                        )
+
+                    }
+                }
+                Spacer(Modifier.width(16.dp))
+                Column (Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.Center){
+                    Text(
+                        text = "${uiState.user!!.nickname}님 안녕하세요!",
+                        style = AchuTheme.typography.semiBold18,
+                        color = FontBlack,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    Text(
+                        text = "등록된 아이가 없습니다.",
+                        style = AchuTheme.typography.semiBold16,
+                        color = PointBlue,
+                    )
+                }
+
             }
         }
 

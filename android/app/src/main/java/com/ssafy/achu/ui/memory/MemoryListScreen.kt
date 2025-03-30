@@ -90,7 +90,7 @@ fun MemoryListScreen(
 
             Spacer(Modifier.height(24.dp))
             Text(
-                text = "등록된 아이가 없습니다.\n우리 아이 정보를 등록하고 추억을 기록하세요! ",
+                text = "등록된 아이가 없습니다.\n우리 아이 정보를 등록하고\n추억을 기록하세요! ",
                 style = AchuTheme.typography.semiBold18,
                 color = FontGray,
                 textAlign = TextAlign.Center,
