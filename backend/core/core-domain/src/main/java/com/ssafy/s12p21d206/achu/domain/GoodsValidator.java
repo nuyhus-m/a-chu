@@ -30,5 +30,4 @@ public class GoodsValidator {
       throw new CoreException(CoreErrorType.GOODS_ALREADY_SOLD);
     }
   }
-
 }
