@@ -1,8 +1,10 @@
 package com.ssafy.achu.ui.mypage.baby
 
+import android.app.DatePickerDialog
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -64,7 +66,9 @@ import okhttp3.RequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import java.util.Calendar
 
+private const val TAG = "BabyDetailScreen_안주현"
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BabyDetailScreen(
@@ -90,6 +94,26 @@ fun BabyDetailScreen(
 
     var showNickNameUpdateDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    var dateList: List<Int>
+
+    fun showDatePicker() {
+        Log.d(TAG, "showDatePicker: 실행합니다")
+        val calendar = Calendar.getInstance()
+        val datePickerDialog = DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                dateList = listOf(year, month + 1, dayOfMonth)
+                babyViewModel.updateBabyBirth(dateList)
+                if (babyUiState.selectedBaby != null){
+                babyViewModel.changeBabyBirth()
+            }
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        datePickerDialog.show()
+    }
 
 
     fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
@@ -262,16 +286,28 @@ fun BabyDetailScreen(
                         value = babyUiState.babyBirth.joinToString("-"),
                         onValueChange = {},
                         pointColor = PointPink,
-                        modifier = Modifier.fillMaxWidth(),
-                        icon = R.drawable.ic_calendar
+                        modifier = Modifier
+                            .fillMaxWidth()
+                          ,
+                        icon = R.drawable.ic_calendar,
+                        onIconClick = {
+                            Log.d(TAG, "BabyDetailScreen: 클릭은된다")
+                            showDatePicker()
+                        }
                     )
                 } else {
                     ClearTextField(
                         value = babyUiState.selectedBaby!!.birth,
                         onValueChange = {},
                         pointColor = PointPink,
-                        modifier = Modifier.fillMaxWidth(),
-                        icon = R.drawable.ic_calendar
+                        modifier = Modifier
+                            .fillMaxWidth()
+                        ,
+                        icon = R.drawable.ic_calendar,
+                        onIconClick = {
+                            Log.d(TAG, "BabyDetailScreen: 클릭하냐고")
+                            showDatePicker()
+                        }
                     )
                 }
 
@@ -297,6 +333,10 @@ fun BabyDetailScreen(
                         isSelected = selectedGender == "MALE"
                     ) {
                         selectedGender = if (selectedGender == "FEMALE") null else "MALE"
+                        babyViewModel.updateBabyGender("MALE")
+                        if (type != "등록") {
+                            babyViewModel.changeBabyGender()
+                        }
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -306,6 +346,10 @@ fun BabyDetailScreen(
                         isSelected = selectedGender == "FEMALE"
                     ) {
                         selectedGender = if (selectedGender == "MALE") null else "FEMALE"
+                        babyViewModel.updateBabyGender("FEMALE")
+                        if (type != "등록") {
+                            babyViewModel.changeBabyGender()
+                        }
                     }
                 }
 
@@ -315,6 +359,10 @@ fun BabyDetailScreen(
                         babyViewModel.registerBaby(
                             profileImage = multipartFile
                         )
+                    })
+                }else{
+                    PointPinkBtn("아이삭제", onClick = {
+                        babyViewModel.deleteBaby(babyUiState.selectedBaby!!.id)
                     })
                 }
                 Spacer(modifier = Modifier.height(60.dp))
@@ -335,7 +383,8 @@ fun BabyDetailScreen(
                     }
                 },
                 PointPink,
-                type = "등록"
+                type = "등록",
+                viewModel = babyViewModel
             )
         } else {
             BabyNicknameDialog(
@@ -346,7 +395,9 @@ fun BabyDetailScreen(
                     )
                     showNickNameUpdateDialog = false
                 },
-                PointPink
+                PointPink,
+                type = "수정",
+                viewModel = babyViewModel
             )
         }
     }

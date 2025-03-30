@@ -37,7 +37,7 @@ fun BabyNicknameDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     color: Color,
-    viewModel: BabyViewModel = viewModel(),
+    viewModel: BabyViewModel,
     type: String = ""
 ) {
     val uiState by viewModel.babyUiState.collectAsState()
@@ -146,8 +146,7 @@ fun BabyNicknameDialog(
                             .background(color, shape = RoundedCornerShape(8.dp))
                             .clickable(
                                 onClick = {
-                                    viewModel.confirmNickname()
-                                    if (uiState.isCorrectNickname){
+                                    if(viewModel.confirmNickname()){
                                     onConfirm()
                                     }
                                 }
@@ -178,6 +177,8 @@ fun NicknameDialogPreview() {
             onDismiss = { /* 취소 클릭 시 동작 */ },
             onConfirm = { /* 확인 클릭 시 동작 */ },
             color = PointPink,
+            viewModel = viewModel(),
+            type = ""
 
             )
     }

@@ -85,8 +85,7 @@ fun PasswordTextField(
             .height(50.dp),
         placeholder = {
             Text(
-                text = placeholder,
-                style = AchuTheme.typography.regular16.copy(color = color)
+                text = placeholder, style = AchuTheme.typography.regular16.copy(color = color)
             )
         },
         textStyle = AchuTheme.typography.regular16,
@@ -102,9 +101,7 @@ fun PasswordTextField(
                 Icon(
                     painter = if (passwordVisible) painterResource(R.drawable.ic_eye) else painterResource(
                         R.drawable.ic_eye_off
-                    ),
-                    tint = PointBlue,
-                    contentDescription = "Toggle password visibility"
+                    ), tint = PointBlue, contentDescription = "Toggle password visibility"
                 )
             }
         },
@@ -117,17 +114,15 @@ fun PasswordTextField(
 // 연필 아이콘 TextField
 @Composable
 fun ClearTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
+    value: String, onValueChange: (String) -> Unit,
     pointColor: Color = PointBlue,
-    modifier: Modifier = Modifier // modifier를 외부에서 설정할 수 있도록 추가
-    , icon: Int = R.drawable.ic_write
+    modifier: Modifier = Modifier
+    , icon: Int = R.drawable.ic_write,
+    onIconClick: () -> Unit
 ) {
-    OutlinedTextField(
-        value = value,
+    OutlinedTextField(value = value,
         onValueChange = onValueChange,
-        modifier = modifier
-            .height(50.dp),
+        modifier = modifier.height(50.dp),
         textStyle = AchuTheme.typography.regular16,
         singleLine = true,
         shape = RoundedCornerShape(30.dp),
@@ -137,15 +132,14 @@ fun ClearTextField(
             cursorColor = Color.Black
         ),
         trailingIcon = {
-            IconButton(onClick = { onValueChange("") }) {
+            IconButton(onClick = { onIconClick()}) {
                 Icon(
                     painter = painterResource(icon),
                     tint = pointColor,
                     contentDescription = "Clear text"
                 )
             }
-        }
-    )
+        })
 }
 
 @Preview(showBackground = true)
@@ -167,10 +161,7 @@ fun BasicTextFieldPreview() {
 @Composable
 fun PasswordTextFieldPreview() {
     AchuTheme {
-        PasswordTextField(
-            value = "",
-            onValueChange = {}
-        )
+        PasswordTextField(value = "", onValueChange = {})
     }
 }
 
@@ -179,9 +170,7 @@ fun PasswordTextFieldPreview() {
 fun ClearTextFieldPreview() {
     AchuTheme {
         ClearTextField(
-            value = "",
-            onValueChange = {},
-            pointColor = PointPink
+            value = "", onValueChange = {}, pointColor = PointPink,onIconClick = {}
         )
     }
 }

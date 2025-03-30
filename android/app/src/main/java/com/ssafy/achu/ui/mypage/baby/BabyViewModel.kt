@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
+import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
+import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.baby.BabyBirthRequest
 import com.ssafy.achu.data.model.baby.BabyGenderRequest
 import com.ssafy.achu.data.model.baby.BabyNicknameRequest
@@ -27,6 +29,7 @@ class BabyViewModel : ViewModel() {
             babyNickname = babyNicknameInput
         )
     }
+
 
 
     fun getBaby(babyId: Int) {
@@ -52,8 +55,10 @@ class BabyViewModel : ViewModel() {
                 )
             ).onSuccess {
                 Log.d(TAG, "registerBaby: ${it.data}")
+                getBaby(it.data.id)
             }.onFailure {
-                Log.d(TAG, "registerBaby: ${it.message}")
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "registerBaby: ${errorResponse}")
             }
         }
     }
@@ -82,7 +87,7 @@ class BabyViewModel : ViewModel() {
                     birth = babyUiState.value.babyBirth,
                 )
             ).onSuccess {
-
+                getBaby(babyUiState.value.selectedBaby!!.id)
                 Log.d(TAG, "changeBabyBirth: ${it}")
             }.onFailure {
 
@@ -125,7 +130,7 @@ class BabyViewModel : ViewModel() {
     }
 
 
-    fun confirmNickname() {
+    fun confirmNickname(): Boolean {
         val state = _babyUiState.value
         val nicknameRegex = "^[가-힣A-Za-z]{2,6}$".toRegex()
         val isValid = nicknameRegex.matches(state.babyNickname)
@@ -135,17 +140,31 @@ class BabyViewModel : ViewModel() {
             it.copy(
                 isCorrectNickname = isValid,
                 babyNickname = if (!isValid) "" else it.babyNickname,
-
-                )
+            )
         }
-
-
+        return isValid
     }
 
     fun updateCorrectNickname(boolean: Boolean) {
         _babyUiState.update {
             it.copy(
                 isCorrectNickname = boolean
+            )
+        }
+    }
+
+    fun updateBabyBirth(dateList: List<Int>) {
+        _babyUiState.update {
+            it.copy(
+                babyBirth = dateList
+            )
+        }
+    }
+
+    fun updateBabyGender(string: String) {
+        _babyUiState.update {
+            it.copy(
+                babyGender = string
             )
         }
     }

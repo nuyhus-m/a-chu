@@ -30,6 +30,7 @@ import com.ssafy.achu.ui.memory.MemoryUploadScreen
 import com.ssafy.achu.ui.memory.MemoryViewModel
 import com.ssafy.achu.ui.mypage.baby.BabyDetailScreen
 import com.ssafy.achu.ui.mypage.baby.BabyListScreen
+import com.ssafy.achu.ui.mypage.baby.BabyViewModel
 import com.ssafy.achu.ui.mypage.likelist.LikeItemListScreen
 import com.ssafy.achu.ui.mypage.recommendlist.RecommendItemScreen
 import com.ssafy.achu.ui.mypage.tradelist.TradeListScreen
@@ -45,7 +46,7 @@ fun NavGraph(
     navController: NavHostController,
     modifier: Modifier,
     activityViewModel: ActivityViewModel,
-    memoryViewModel: MemoryViewModel = viewModel()
+    memoryViewModel: MemoryViewModel = viewModel(),
 ) {
     NavHost(
         navController = navController,
