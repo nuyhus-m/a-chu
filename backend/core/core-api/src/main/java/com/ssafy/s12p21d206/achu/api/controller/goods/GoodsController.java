@@ -90,10 +90,8 @@ public class GoodsController {
       @RequestParam SortType sort) {
     List<Goods> goods =
         goodsService.findCategoryGoods(apiUser.toUser(), categoryId, offset, limit, sort);
-
     List<Long> goodsIds = goods.stream().map(Goods::id).toList();
     Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
-
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
@@ -106,10 +104,8 @@ public class GoodsController {
       @RequestParam Long limit,
       @RequestParam SortType sort) {
     List<Goods> goods = goodsService.findGoods(apiUser.toUser(), offset, limit, sort);
-
     List<Long> goodsIds = goods.stream().map(Goods::id).toList();
     Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
-
     List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);

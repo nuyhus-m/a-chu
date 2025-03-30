@@ -147,14 +147,6 @@ public class GoodsCoreRepository implements GoodsRepository {
   }
 
   @Override
-  public User findUserIdByGoodsId(Long id) {
-    GoodsEntity goodsEntity = goodsJpaRepository
-        .findById(id)
-        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
-    return goodsEntity.toGoods().user();
-  }
-
-  @Override
   public boolean existsByIdAndUserId(Long id, Long userId) {
     return goodsJpaRepository.existsByIdAndUserIdAndEntityStatus(id, userId, EntityStatus.ACTIVE);
   }

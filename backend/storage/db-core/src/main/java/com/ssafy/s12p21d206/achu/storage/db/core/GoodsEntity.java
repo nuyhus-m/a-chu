@@ -92,4 +92,8 @@ public class GoodsEntity extends BaseEntity {
     this.categoryId = modifyGoods.categoryId();
     this.babyId = modifyGoods.babyId();
   }
+
+  public void sold() {
+    this.tradeStatus = TradeStatus.SOLD;
+  }
 }

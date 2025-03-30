@@ -15,8 +15,4 @@ public class CategoryReader {
   public List<Category> readCategories() {
     return categoryRepository.findCategories();
   }
-
-  public Category readCategoryInfo(Long id) {
-    return categoryRepository.findCategoryInfo(id);
-  }
 }
