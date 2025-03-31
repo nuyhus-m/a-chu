@@ -57,8 +57,9 @@ public class BabyController {
 
   @PatchMapping("/babies/{babyId}/profile-image")
   public ApiResponse<Void> modifyProfileImage(
-      Long userId, @PathVariable Long babyId, @RequestParam MultipartFile profileImage) {
-
+      ApiUser apiUser, @PathVariable Long babyId, @RequestParam MultipartFile profileImage) {
+    File imageFile = FileConverter.convert(profileImage);
+    babyImageFacade.modifyImageUrl(apiUser.toUser(), babyId, imageFile);
     return ApiResponse.success();
   }
 
