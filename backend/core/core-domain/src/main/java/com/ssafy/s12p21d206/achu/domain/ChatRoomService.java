@@ -16,6 +16,6 @@ public class ChatRoomService {
      * 결과는 goodsId를 기준으로 ChatStatus 객체로 만들어 반환해야 합니다:
      *   new ChatStatus(goodsId, chatCount)
      */
-    throw new UnsupportedOperationException("아직 구현되지 않았습니다.");
+    return List.of();
   }
 }
