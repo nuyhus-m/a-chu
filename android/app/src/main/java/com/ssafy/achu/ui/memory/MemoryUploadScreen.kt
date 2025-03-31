@@ -57,7 +57,6 @@ import com.google.accompanist.pager.rememberPagerState
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.CenterTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
-import com.ssafy.achu.core.navigation.MyPage
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointPink
@@ -72,10 +71,11 @@ import java.io.File
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MemoryUploadScreen(
-    memoryViewModel: MemoryViewModel,
-    onNavigateToMemoryDetail: () -> Unit
+    memoryViewModel: MemoryEditViewModel = viewModel(),
+    onNavigateToMemoryDetail: () -> Unit,
+    memoryId: Int
 ) {
-    val memoryUIState: MemoryUIState by memoryViewModel.uiState.collectAsState()
+    val memoryUIState: MemoryEditUIState by memoryViewModel.uiState.collectAsState()
     val pagerState = rememberPagerState()
     val maxTitleLength = 15
     val maxContentLength = 100
@@ -349,8 +349,10 @@ fun MemoryUploadScreen(
 @Composable
 fun MemoryUploadScreenPreview() {
     AchuTheme {
-        MemoryUploadScreen(onNavigateToMemoryDetail = {  },
-            memoryViewModel = viewModel())
+        MemoryUploadScreen(
+            onNavigateToMemoryDetail = {  },
+            memoryId =  0
+        )
     }
 }
 

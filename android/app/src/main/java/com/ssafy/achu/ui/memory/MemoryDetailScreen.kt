@@ -41,17 +41,15 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.data.model.memory.SingleMemoryResponse
-import com.ssafy.achu.ui.ActivityUIState
-import com.ssafy.achu.ui.ActivityViewModel
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MemoryDetailScreen(
     onNavigateToMemoryUpload: () -> Unit,
-    memoryViewModel: MemoryViewModel,
+    memoryViewModel: MemoryDetailViewModel = viewModel(),
+    memoryId: Int,
 ) {
-    val memoryUIState: MemoryUIState by memoryViewModel.uiState.collectAsState()
+    val memoryUIState: MemoryDetailUIState by memoryViewModel.uiState.collectAsState()
 
     val pagerState = rememberPagerState()
     val images = listOf(
@@ -140,9 +138,6 @@ fun MemoryDetailScreen(
 
 
 
-
-            Spacer(modifier = Modifier.height(24.dp))
-
             Text(
                 text = memoryUIState.selectedMemory.title,
                 style = AchuTheme.typography.semiBold20
@@ -199,7 +194,6 @@ fun PageIndicator(totalPages: Int, currentPage: Int) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth().height(24.dp)
-            .padding(top = 16.dp) // 여백 조정
     ) {
         // 각 점을 인디케이터로 표현
         repeat(totalPages) { index ->
@@ -208,7 +202,7 @@ fun PageIndicator(totalPages: Int, currentPage: Int) {
             val color = if (index == currentPage) PointBlue else LightGray
             Box(
                 modifier = Modifier
-                    .size(10.dp) // 점 크기 증가
+                    .size(8.dp)
                     .background(color = color, shape = CircleShape)
             )
         }
@@ -224,7 +218,7 @@ fun PageIndicator(totalPages: Int, currentPage: Int) {
 fun MemoryDetailScreenPreview() {
     AchuTheme { MemoryDetailScreen(
         onNavigateToMemoryUpload = {},
-        memoryViewModel = viewModel()
+        memoryId = 0
     )
     }
 }

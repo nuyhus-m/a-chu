@@ -61,9 +61,9 @@ import kotlin.String
 @Composable
 fun MemoryListScreen(
     modifier: Modifier = Modifier,
-    onNavigateToMemoryDetail: () -> Unit,
+    onNavigateToMemoryDetail: (memoryID:Int) -> Unit,
     viewModel: ActivityViewModel,
-    memoryViewModel: MemoryViewModel
+    memoryViewModel: MemoryViewModel  = viewModel()
 ) {
 
     val uiState: ActivityUIState by viewModel.uiState.collectAsState()
@@ -254,10 +254,9 @@ fun MemoryListScreen(
                             MemoryListItem(
                                 img = memoryUIState.memoryList[index].imgUrl,
                                 title = memoryUIState.memoryList[index].title,
-                                date = memoryUIState.memoryList[index].content,
+                                date = memoryUIState.memoryList[index].createdAt,
                                 onClick = {
-                                    memoryViewModel.getMemory(memoryUIState.memoryList[index].id)
-                                    onNavigateToMemoryDetail()
+                                    onNavigateToMemoryDetail(memoryUIState.memoryList[index].id)
                                 }
                             )
                             Spacer(modifier = Modifier.height(16.dp)) // 아이템 간 간격 추가

@@ -6,7 +6,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,7 +15,6 @@ import com.ssafy.achu.ui.chat.chatlist.ChatListScreen
 import com.ssafy.achu.ui.memory.MemoryDetailScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
 import com.ssafy.achu.ui.memory.MemoryUploadScreen
-import com.ssafy.achu.ui.memory.MemoryViewModel
 import com.ssafy.achu.ui.mypage.baby.BabyDetailScreen
 import com.ssafy.achu.ui.mypage.baby.BabyListScreen
 import com.ssafy.achu.ui.mypage.likelist.LikeItemListScreen
@@ -33,7 +31,6 @@ fun NavGraph(
     navController: NavHostController,
     modifier: Modifier,
     activityViewModel: ActivityViewModel,
-    memoryViewModel: MemoryViewModel = viewModel(),
 ) {
     NavHost(
         navController = navController,
@@ -69,8 +66,12 @@ fun NavGraph(
             MemoryListScreen(
                 viewModel = activityViewModel,
                 modifier = modifier,
-                memoryViewModel = memoryViewModel,
-                onNavigateToMemoryDetail = { navController.navigate(route = Route.MemoryDetail) })
+                onNavigateToMemoryDetail = { id ->
+                    navController.navigate(
+                        route = Route.MemoryDetail(memoryId = id)
+                    )
+                }
+            )
         }
         composable<BottomNavRoute.ChatList> {
             ChatListScreen(
@@ -112,30 +113,36 @@ fun NavGraph(
         composable<Route.BabyList> {
             BabyListScreen(
                 viewModel = activityViewModel,
-                onNavigateToBabyDetail = { navController.navigate(route = Route.BabyDetail) }
+                onNavigateToBabyDetail = { id ->
+                    navController.navigate(
+                        route = Route.BabyDetail(babyId = id)
+                    )
+
+                }
             )
         }
 
-        // 추억 관련 화면들
         composable<Route.BabyDetail> {
             BabyDetailScreen(
                 viewModel = activityViewModel,
+                babyId = it.arguments?.getInt("babyId") ?: 0
             )
         }
 
         // 추억 관련 화면들
         composable<Route.MemoryUpload> {
             MemoryUploadScreen(
-                memoryViewModel = memoryViewModel,
                 onNavigateToMemoryDetail = { navController.navigate(route = Route.MemoryDetail) },
+                memoryId = it.arguments?.getInt("memoryId") ?: 0
             )
         }
 
         composable<Route.MemoryDetail> {
             MemoryDetailScreen(
-                memoryViewModel = memoryViewModel,
                 onNavigateToMemoryUpload =
-                    { navController.navigate(route = Route.MemoryUpload) }
+                    { navController.navigate(route = Route.MemoryUpload) },
+                memoryId = it.arguments?.getInt("memoryId") ?: 0
+
             )
         }
 

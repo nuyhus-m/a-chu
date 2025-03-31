@@ -47,6 +47,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.BasicTopAppBar
@@ -75,15 +77,17 @@ private const val TAG = "BabyDetailScreen_안주현"
 @Composable
 fun BabyDetailScreen(
     babyViewModel: BabyViewModel = viewModel(),
-    viewModel: ActivityViewModel
+    viewModel: ActivityViewModel,
+    babyId: Int
 ) {
+
     val babyUiState by babyViewModel.babyUiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     var pointColor:Color = PointPink
 
 
-    if (uiState.selectedBaby != null) {
-        babyViewModel.getBaby(uiState.selectedBaby!!.id)
+    if (babyId != 0) {
+        babyViewModel.getBaby(babyId)
     }
 
 
@@ -459,7 +463,8 @@ fun BabyDetailScreen(
 @Composable
 fun BabyDetailScreenPreview() {
     AchuTheme {
-        BabyDetailScreen(viewModel = viewModel())
+        BabyDetailScreen(viewModel = viewModel(),
+            babyId = 0)
     }
 
 }

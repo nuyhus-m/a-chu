@@ -54,8 +54,10 @@ import com.ssafy.achu.ui.mypage.recommendlist.BabyListItem
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun BabyListScreen(onNavigateToBabyDetail: () -> Unit,
-                   viewModel: ActivityViewModel) {
+fun BabyListScreen(
+    onNavigateToBabyDetail: (Int) -> Unit,
+    viewModel: ActivityViewModel
+) {
 
     val uiState by viewModel.uiState.collectAsState()
 
@@ -90,8 +92,7 @@ fun BabyListScreen(onNavigateToBabyDetail: () -> Unit,
                     ) {
                         items(uiState.babyList.size) { index ->
                             BabyListItem(babyInfo = uiState.babyList[index], onClick = {
-                                onNavigateToBabyDetail()
-                                viewModel.updateSelectedBaby(uiState.babyList[index])
+                                onNavigateToBabyDetail(uiState.babyList[index].id)
                             })
                             Spacer(modifier = Modifier.height(8.dp))
                         }
@@ -134,7 +135,7 @@ fun BabyListScreen(onNavigateToBabyDetail: () -> Unit,
                 .padding(bottom = 40.dp) // 버튼과 화면 하단 사이의 여백 추가
         ) {
             PointPinkBtn("아이 정보 추가 하기", onClick = {
-                onNavigateToBabyDetail()
+                onNavigateToBabyDetail(0)
             })
         }
     }

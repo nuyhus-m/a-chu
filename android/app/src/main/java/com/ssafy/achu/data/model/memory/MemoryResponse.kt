@@ -1,7 +1,6 @@
 package com.ssafy.achu.data.model.memory
 
 data class MemoryResponse(
-    val content: String,
     val createdAt: String,
     val id: Int,
     val imgUrl:String,
