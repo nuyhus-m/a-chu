@@ -11,7 +11,7 @@ public record MemoryResponse(
         .map(memory -> new MemoryResponse(
             memory.memoryId(),
             memory.title(),
-            memory.imgUrls().get(0),
+            memory.imageUrlsWithThumbnail().thumbnailImageUrl(),
             memory.defaultDateTime().createdAt(),
             memory.defaultDateTime().updatedAt()))
         .toList();

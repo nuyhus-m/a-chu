@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
+import com.ssafy.s12p21d206.achu.domain.ImageUrlsWithThumbnail;
 import com.ssafy.s12p21d206.achu.domain.Memory;
 import com.ssafy.s12p21d206.achu.domain.MemoryRepository;
 import com.ssafy.s12p21d206.achu.domain.ModifyMemory;
@@ -22,9 +23,15 @@ public class MemoryCoreRepository implements MemoryRepository {
   }
 
   @Override
-  public Memory save(Long babyId, NewMemory newMemory) {
+  public Memory save(
+      Long babyId, NewMemory newMemory, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
     return memoryJpaRepository
-        .save(new MemoryEntity(newMemory.title(), newMemory.content(), newMemory.imgUrls(), babyId))
+        .save(new MemoryEntity(
+            newMemory.title(),
+            newMemory.content(),
+            imageUrlsWithThumbnail.thumbnailImageUrl(),
+            imageUrlsWithThumbnail.imageUrls(),
+            babyId))
         .toMemory();
   }
 
@@ -69,5 +76,16 @@ public class MemoryCoreRepository implements MemoryRepository {
   @Override
   public boolean existsById(Long memoryId) {
     return memoryJpaRepository.existsByIdAndEntityStatus(memoryId, EntityStatus.ACTIVE);
+  }
+
+  @Override
+  public Memory modifyImages(Long memoryId, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
+    MemoryEntity memory = memoryJpaRepository
+        .findByIdAndEntityStatus(memoryId, EntityStatus.ACTIVE)
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+    memory.updateImages(imageUrlsWithThumbnail);
+
+    memoryJpaRepository.save(memory);
+    return memory.toMemory();
   }
 }

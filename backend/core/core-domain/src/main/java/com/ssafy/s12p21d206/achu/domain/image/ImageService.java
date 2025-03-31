@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.domain.image;
 
+import com.ssafy.s12p21d206.achu.domain.ImageUrlsWithThumbnail;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -39,5 +40,12 @@ public class ImageService {
 
   public List<String> uploadImages(List<File> files) {
     return uploadImages(files, ImageCompressionOption.ORIGINAL);
+  }
+
+  public ImageUrlsWithThumbnail uploadImageUrlsWithThumbnail(List<File> imageFiles) {
+    String thumbnailImageUrl =
+        uploadImage(imageFiles.get(0), ImageCompressionOption.THUMBNAIL_IMAGE);
+    List<String> imageUrls = uploadImages(imageFiles);
+    return new ImageUrlsWithThumbnail(thumbnailImageUrl, imageUrls);
   }
 }

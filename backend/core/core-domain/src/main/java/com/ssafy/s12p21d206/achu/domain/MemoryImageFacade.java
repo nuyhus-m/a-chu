@@ -6,25 +6,25 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GoodsImageFacade {
+public class MemoryImageFacade {
 
-  private final GoodsService goodsService;
+  private final MemoryService memoryService;
   private final ImageService imageService;
 
-  public GoodsImageFacade(GoodsService goodsService, ImageService imageService) {
-    this.goodsService = goodsService;
+  public MemoryImageFacade(MemoryService memoryService, ImageService imageService) {
+    this.memoryService = memoryService;
     this.imageService = imageService;
   }
 
-  public GoodsDetail append(User user, NewGoods newGoods, List<File> imageFiles) {
+  public Memory append(User user, Long babyId, NewMemory newMemory, List<File> imageFiles) {
     ImageUrlsWithThumbnail imageUrlsWithThumbnail =
         imageService.uploadImageUrlsWithThumbnail(imageFiles);
-    return goodsService.append(user, newGoods, imageUrlsWithThumbnail);
+    return memoryService.append(user, babyId, newMemory, imageUrlsWithThumbnail);
   }
 
-  public Goods modifyImages(User user, Long goodsId, List<File> imageFiles) {
+  public Memory modifyImages(User user, Long memoryId, List<File> imageFiles) {
     ImageUrlsWithThumbnail imageUrlsWithThumbnail =
         imageService.uploadImageUrlsWithThumbnail(imageFiles);
-    return goodsService.modifyImages(user, goodsId, imageUrlsWithThumbnail);
+    return memoryService.modifyImages(user, memoryId, imageUrlsWithThumbnail);
   }
 }

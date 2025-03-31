@@ -12,9 +12,10 @@ public class MemoryAppender {
     this.babyValidator = babyValidator;
   }
 
-  public Memory append(User user, Long babyId, NewMemory newMemory) {
+  public Memory append(
+      User user, Long babyId, NewMemory newMemory, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
     babyValidator.validateExists(babyId);
     babyValidator.validateParent(user, babyId);
-    return memoryRepository.save(babyId, newMemory);
+    return memoryRepository.save(babyId, newMemory, imageUrlsWithThumbnail);
   }
 }

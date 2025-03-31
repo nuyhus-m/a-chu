@@ -15,10 +15,13 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 
+import com.ssafy.s12p21d206.achu.domain.ImageUrlsWithThumbnail;
 import com.ssafy.s12p21d206.achu.domain.Memory;
+import com.ssafy.s12p21d206.achu.domain.MemoryImageFacade;
 import com.ssafy.s12p21d206.achu.domain.MemoryService;
 import com.ssafy.s12p21d206.achu.domain.NewMemory;
 import com.ssafy.s12p21d206.achu.domain.User;
+import com.ssafy.s12p21d206.achu.domain.image.ImageService;
 import com.ssafy.s12p21d206.achu.domain.support.DefaultDateTime;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
@@ -36,22 +39,27 @@ class MemoryControllerTest extends RestDocsTest {
 
   private MemoryController controller;
   private MemoryService memoryService;
+  private ImageService imageService;
+  private MemoryImageFacade memoryImageFacade;
 
   @BeforeEach
   void setup() {
     memoryService = mock(MemoryService.class);
-    controller = new MemoryController(memoryService);
+    imageService = mock(ImageService.class);
+    memoryImageFacade = new MemoryImageFacade(memoryService, imageService);
+    controller = new MemoryController(memoryService, memoryImageFacade);
     mockMvc = mockController(controller);
   }
 
   @Test
   void appendMemory() {
-    when(memoryService.append(any(User.class), anyLong(), any(NewMemory.class)))
+    when(memoryService.append(any(User.class), anyLong(), any(NewMemory.class), any()))
         .thenReturn(new Memory(
             1L,
             "제목",
             "내용",
-            List.of("https://example.com/img1.jpg"),
+            new ImageUrlsWithThumbnail(
+                "https://dummy.thumbmail.image", List.of("https://example.com/img1.jpg")),
             1L,
             new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now())));
     given()
@@ -86,7 +94,8 @@ class MemoryControllerTest extends RestDocsTest {
             1L,
             "제목",
             "내용",
-            List.of("https://example.com/img1.jpg"),
+            new ImageUrlsWithThumbnail(
+                "https://dummy.thumbmail.image", List.of("https://example.com/img1.jpg")),
             1L,
             new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now())));
     given()
@@ -121,14 +130,16 @@ class MemoryControllerTest extends RestDocsTest {
                 1L,
                 "제목",
                 "내용",
-                List.of("https://example.com/img1.jpg"),
+                new ImageUrlsWithThumbnail(
+                    "https://dummy.thumbmail.image", List.of("https://example.com/img1.jpg")),
                 1L,
                 new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now())),
             new Memory(
                 1L,
                 "제목2",
                 "내용2",
-                List.of("https://example.com/img2.jpg"),
+                new ImageUrlsWithThumbnail(
+                    "https://dummy.thumbmail.image", List.of("https://example.com/img1.jpg")),
                 1L,
                 new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now()))));
     given()

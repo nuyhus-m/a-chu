@@ -12,7 +12,7 @@ operation::find-memory[snippets='http-request,path-parameters,http-response,resp
 
 operation::find-memories[snippets='http-request,path-parameters,http-response,response-fields']
 
-=== 추억 사진 변경 [미구현]
+=== 추억 사진 변경
 
 operation::modify-memory-image[snippets='http-request,request-parts,path-parameters,http-response,response-fields']
 

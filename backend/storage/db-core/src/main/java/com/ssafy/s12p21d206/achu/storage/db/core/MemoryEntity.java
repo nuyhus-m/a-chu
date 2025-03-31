@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
+import com.ssafy.s12p21d206.achu.domain.ImageUrlsWithThumbnail;
 import com.ssafy.s12p21d206.achu.domain.Memory;
 import com.ssafy.s12p21d206.achu.domain.support.DefaultDateTime;
 import com.ssafy.s12p21d206.achu.storage.db.core.converter.ImgUrlListJsonConverter;
@@ -16,6 +17,8 @@ public class MemoryEntity extends BaseEntity {
 
   private String content;
 
+  private String thumbnailImageUrl;
+
   @Convert(converter = ImgUrlListJsonConverter.class)
   @Column(name = "imgUrls", columnDefinition = "json")
   private List<String> imgUrls;
@@ -24,9 +27,11 @@ public class MemoryEntity extends BaseEntity {
 
   protected MemoryEntity() {}
 
-  public MemoryEntity(String title, String content, List<String> imgUrls, Long babyId) {
+  public MemoryEntity(
+      String title, String content, String thumbnailImageUrl, List<String> imgUrls, Long babyId) {
     this.title = title;
     this.content = content;
+    this.thumbnailImageUrl = thumbnailImageUrl;
     this.imgUrls = imgUrls;
     this.babyId = babyId;
   }
@@ -36,7 +41,7 @@ public class MemoryEntity extends BaseEntity {
         getId(),
         this.title,
         this.content,
-        this.imgUrls,
+        new ImageUrlsWithThumbnail(this.thumbnailImageUrl, this.imgUrls),
         this.babyId,
         new DefaultDateTime(getCreatedAt(), getUpdatedAt()));
   }
@@ -44,5 +49,10 @@ public class MemoryEntity extends BaseEntity {
   public void updateText(String title, String content) {
     this.title = title;
     this.content = content;
+  }
+
+  public void updateImages(ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
+    this.thumbnailImageUrl = imageUrlsWithThumbnail.thumbnailImageUrl();
+    this.imgUrls = imageUrlsWithThumbnail.imageUrls();
   }
 }

@@ -24,4 +24,12 @@ public class MemoryModifier {
     babyValidator.validateParent(user, memory.babyId());
     return memoryRepository.modifyMemory(memoryId, modifyMemory);
   }
+
+  public Memory modifyImages(
+      User user, Long memoryId, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
+    memoryValidator.validateExists(memoryId);
+    Memory memory = memoryRepository.findMemory(memoryId);
+    babyValidator.validateParent(user, memory.babyId());
+    return memoryRepository.modifyImages(memoryId, imageUrlsWithThumbnail);
+  }
 }
