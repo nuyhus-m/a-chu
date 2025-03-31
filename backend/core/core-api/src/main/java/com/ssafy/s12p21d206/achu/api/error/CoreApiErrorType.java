@@ -68,7 +68,9 @@ public enum CoreApiErrorType {
       CoreApiErrorCode.AE1011,
       "요청 필드가 누락되거나 유효하지 않습니다.",
       CoreApiErrorLevel.WARN,
-      HttpStatus.BAD_REQUEST);
+      HttpStatus.BAD_REQUEST),
+  INVALID_FILE(
+      CoreApiErrorCode.AE1012, "파일이 올바르지 않습니다.", CoreApiErrorLevel.WARN, HttpStatus.BAD_REQUEST);
 
   private final CoreApiErrorCode code;
   private final String message;

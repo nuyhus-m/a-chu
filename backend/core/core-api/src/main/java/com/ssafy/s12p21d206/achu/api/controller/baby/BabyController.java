@@ -1,12 +1,16 @@
 package com.ssafy.s12p21d206.achu.api.controller.baby;
 
 import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
+import com.ssafy.s12p21d206.achu.api.controller.support.FileConverter;
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
 import com.ssafy.s12p21d206.achu.domain.Baby;
+import com.ssafy.s12p21d206.achu.domain.BabyImageFacade;
 import com.ssafy.s12p21d206.achu.domain.BabyService;
 import com.ssafy.s12p21d206.achu.domain.NewBaby;
+import com.ssafy.s12p21d206.achu.domain.image.File;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,9 +19,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class BabyController {
 
   private final BabyService babyService;
+  private final BabyImageFacade babyImageFacade;
 
-  public BabyController(BabyService babyService) {
+  public BabyController(BabyService babyService, BabyImageFacade babyImageFacade) {
     this.babyService = babyService;
+    this.babyImageFacade = babyImageFacade;
   }
 
   @PostMapping("/babies")
@@ -25,9 +31,15 @@ public class BabyController {
       ApiUser apiUser,
       @RequestPart(name = "profileImage", required = false) MultipartFile profileImage,
       @RequestPart @Validated AppendBabyRequest request) {
-    String imageUrl = "https://dummy-image-url.com/image.png";
-    NewBaby newBaby = request.toNewBaby(imageUrl);
-    Long id = babyService.append(apiUser.toUser(), newBaby);
+    NewBaby newBaby = request.toNewBaby();
+
+    if (Objects.isNull(profileImage)) {
+      Long id = babyImageFacade.append(apiUser.toUser(), newBaby);
+      return ApiResponse.success(new DefaultIdResponse(id));
+    }
+
+    File imageFile = FileConverter.convert(profileImage);
+    Long id = babyImageFacade.append(apiUser.toUser(), imageFile, newBaby);
     return ApiResponse.success(new DefaultIdResponse(id));
   }
 

@@ -14,8 +14,10 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 
 import com.ssafy.s12p21d206.achu.domain.Baby;
+import com.ssafy.s12p21d206.achu.domain.BabyImageFacade;
 import com.ssafy.s12p21d206.achu.domain.BabyService;
 import com.ssafy.s12p21d206.achu.domain.Sex;
+import com.ssafy.s12p21d206.achu.domain.image.ImageService;
 import com.ssafy.s12p21d206.achu.domain.support.DefaultDateTime;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
 import io.restassured.http.ContentType;
@@ -34,17 +36,22 @@ class BabyControllerTest extends RestDocsTest {
 
   private BabyController controller;
   private BabyService babyService;
+  private ImageService imageService;
+  private BabyImageFacade babyImageFacade;
 
   @BeforeEach
   void setup() {
     babyService = mock(BabyService.class);
-    controller = new BabyController(babyService);
+    imageService = mock(ImageService.class);
+    babyImageFacade = new BabyImageFacade(babyService, imageService);
+    controller = new BabyController(babyService, babyImageFacade);
     mockMvc = mockController(controller);
   }
 
   @Test
   void appendBaby() {
-    when(babyService.append(any(), any())).thenReturn(1L);
+    when(babyService.append(any(), any(), any())).thenReturn(1L);
+    when(imageService.uploadImage(any())).thenReturn("http://dummy.image.url");
 
     given()
         .contentType(ContentType.MULTIPART)

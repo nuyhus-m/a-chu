@@ -13,4 +13,5 @@ public enum CoreApiErrorCode {
   AE1009,
   AE1010,
   AE1011,
+  AE1012,
 }
