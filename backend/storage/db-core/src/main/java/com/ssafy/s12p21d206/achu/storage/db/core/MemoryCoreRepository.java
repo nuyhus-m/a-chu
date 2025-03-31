@@ -62,6 +62,7 @@ public class MemoryCoreRepository implements MemoryRepository {
         .findByIdAndEntityStatus(memoryId, EntityStatus.ACTIVE)
         .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
     memory.delete();
+    memoryJpaRepository.save(memory);
     return memory.getId();
   }
 

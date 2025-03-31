@@ -17,6 +17,6 @@ public class UserService {
      * 결과는 Seller 레코드로 생성하여 반환해야 합니다:
      *   new Seller(id, nickname, imgUrl)
      */
-    throw new UnsupportedOperationException("아직 구현되지 않았습니다.");
+    return new UserDetail(user.id(), "임시 판매자", "profile-img-placeholder.jpg");
   }
 }

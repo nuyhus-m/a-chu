@@ -69,6 +69,7 @@ public class GoodsCoreRepository implements GoodsRepository {
         .findByIdAndEntityStatus(id, EntityStatus.ACTIVE)
         .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
     goods.delete();
+    goodsJpaRepository.save(goods);
     return goods.getId();
   }
 
