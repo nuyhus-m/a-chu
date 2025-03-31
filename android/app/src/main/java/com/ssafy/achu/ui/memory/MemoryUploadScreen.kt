@@ -57,7 +57,6 @@ import com.google.accompanist.pager.rememberPagerState
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.CenterTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
-import com.ssafy.achu.core.navigation.MyPage
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointPink
