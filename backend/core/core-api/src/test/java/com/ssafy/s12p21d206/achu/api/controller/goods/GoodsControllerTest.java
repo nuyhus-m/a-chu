@@ -33,7 +33,6 @@ class GoodsControllerTest extends RestDocsTest {
   private GoodsService goodsService;
 
   private LikeService likeService;
-  private ChatRoomService chatRoomService;
   private UserService userService;
   private TradeService tradeService;
 
@@ -46,7 +45,6 @@ class GoodsControllerTest extends RestDocsTest {
     categoryService = mock(CategoryService.class);
     goodsService = mock(GoodsService.class);
     likeService = mock(LikeService.class);
-    chatRoomService = mock(ChatRoomService.class);
     userService = mock(UserService.class);
     tradeService = mock(TradeService.class);
 
@@ -54,13 +52,7 @@ class GoodsControllerTest extends RestDocsTest {
     goodsImageFacade = new GoodsImageFacade(goodsService, imageService);
 
     controller = new GoodsController(
-        goodsImageFacade,
-        categoryService,
-        goodsService,
-        likeService,
-        chatRoomService,
-        userService,
-        tradeService);
+        goodsImageFacade, categoryService, goodsService, likeService, userService, tradeService);
     mockMvc = mockController(controller);
   }
 
@@ -108,8 +100,6 @@ class GoodsControllerTest extends RestDocsTest {
     when(likeService.status(any(User.class), anyList()))
         .thenReturn(Map.of(goods.id(), new LikeStatus(5, true)));
 
-    when(chatRoomService.findChatStatus(any(User.class), anyList()))
-        .thenReturn(List.of(new ChatStatus(goods.id(), 3L)));
     given()
         .contentType(ContentType.JSON)
         .queryParam("offset", 0)
@@ -155,8 +145,6 @@ class GoodsControllerTest extends RestDocsTest {
     when(likeService.status(any(User.class), anyList()))
         .thenReturn(Map.of(goods.id(), new LikeStatus(5, true)));
 
-    when(chatRoomService.findChatStatus(any(User.class), anyList()))
-        .thenReturn(List.of(new ChatStatus(goods.id(), 3L)));
     given()
         .contentType(ContentType.JSON)
         .queryParam("offset", 0)
@@ -202,8 +190,6 @@ class GoodsControllerTest extends RestDocsTest {
     when(likeService.status(any(User.class), anyList()))
         .thenReturn(Map.of(goods.id(), new LikeStatus(5, true)));
 
-    when(chatRoomService.findChatStatus(any(User.class), anyList()))
-        .thenReturn(List.of(new ChatStatus(goods.id(), 3L)));
     given()
         .contentType(ContentType.JSON)
         .queryParam("keyword", "유")
@@ -252,8 +238,6 @@ class GoodsControllerTest extends RestDocsTest {
     when(likeService.status(any(User.class), anyList()))
         .thenReturn(Map.of(goods.id(), new LikeStatus(5, true)));
 
-    when(chatRoomService.findChatStatus(any(User.class), anyList()))
-        .thenReturn(List.of(new ChatStatus(goods.id(), 3L)));
     given()
         .contentType(ContentType.JSON)
         .queryParam("keyword", "장난감")

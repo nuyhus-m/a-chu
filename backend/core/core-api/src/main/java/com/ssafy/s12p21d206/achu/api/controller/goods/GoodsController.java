@@ -24,7 +24,6 @@ public class GoodsController {
   private final GoodsService goodsService;
 
   private final LikeService likeService;
-  private final ChatRoomService chatRoomService;
 
   private final UserService userService;
 
@@ -35,14 +34,12 @@ public class GoodsController {
       CategoryService categoryService,
       GoodsService goodsService,
       LikeService likeService,
-      ChatRoomService chatRoomService,
       UserService userService,
       TradeService tradeService) {
     this.goodsImageFacade = goodsImageFacade;
     this.categoryService = categoryService;
     this.goodsService = goodsService;
     this.likeService = likeService;
-    this.chatRoomService = chatRoomService;
     this.userService = userService;
     this.tradeService = tradeService;
   }
@@ -102,7 +99,7 @@ public class GoodsController {
         goodsService.findCategoryGoods(apiUser.toUser(), categoryId, offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::id).toList();
     Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
-    List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
+    List<ChatStatus> chatStatuses = List.of();
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
   }
@@ -116,7 +113,7 @@ public class GoodsController {
     List<Goods> goods = goodsService.findGoods(apiUser.toUser(), offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::id).toList();
     Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
-    List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
+    List<ChatStatus> chatStatuses = List.of();
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
   }
@@ -149,7 +146,7 @@ public class GoodsController {
     List<Goods> goods = goodsService.searchGoods(apiUser.toUser(), keyword, offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::id).toList();
     Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
-    List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
+    List<ChatStatus> chatStatuses = List.of();
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
   }
@@ -167,7 +164,7 @@ public class GoodsController {
         apiUser.toUser(), categoryId, keyword, offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::id).toList();
     Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
-    List<ChatStatus> chatStatuses = chatRoomService.findChatStatus(apiUser.toUser(), goodsIds);
+    List<ChatStatus> chatStatuses = List.of();
     List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
     return ApiResponse.success(responses);
   }
