@@ -1,6 +1,5 @@
 package com.ssafy.achu.ui.memory
 
-import android.R.attr.contentDescription
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +18,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -27,24 +28,31 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
-import coil3.compose.AsyncImagePainter.State.Empty.painter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.ssafy.achu.R
+import com.ssafy.achu.core.components.dialog.BasicDialog
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.data.model.memory.MemoryResponse
 import com.ssafy.achu.data.model.memory.SingleMemoryResponse
+import com.ssafy.achu.ui.ActivityUIState
+import com.ssafy.achu.ui.ActivityViewModel
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
+fun MemoryDetailScreen(
+    onNavigateToMemoryUpload: () -> Unit,
+    memoryViewModel: MemoryViewModel,
+) {
+    val memoryUIState: MemoryUIState by memoryViewModel.uiState.collectAsState()
+
     val pagerState = rememberPagerState()
     val images = listOf(
         R.drawable.img_test_baby_doll,
@@ -52,19 +60,6 @@ fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
         R.drawable.img_test_sopung
     )
 
-    val memory = SingleMemoryResponse(
-
-        content = "너무너무 귀여운 두식이의 첫돌에 입었던\n옷을 팔았다. 서운하면서도 후련하다\n이걸로 더 예쁜옷을 사줘야지",
-        createdAt = "2024.06.03",
-        id = 1,
-        imgUrls = listOf(
-            "https://loremflickr.com/600/400",
-            "https://loremflickr.com/600/400",
-            "https://loremflickr.com/600/400"
-        ),
-        title = "두식이의 첫돌",
-        updatedAt = ""
-    )
 
     Box(
         modifier = Modifier
@@ -86,7 +81,7 @@ fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
                     modifier = Modifier
                         .size(30.dp)
                         .alignByBaseline()
-                        .clickable{},
+                        .clickable {},
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(FontBlack)
                 )
 
@@ -99,6 +94,7 @@ fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
                         .alignByBaseline()
                         .clickable {
                             onNavigateToMemoryUpload()
+
                         },
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(PointBlue)
                 )
@@ -111,7 +107,9 @@ fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
                     modifier = Modifier
                         .size(32.dp)
                         .alignByBaseline()
-                        .clickable {  },
+                        .clickable {
+                            memoryViewModel.showDeleteDialog(true)
+                        },
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(PointBlue)
                 )
             }
@@ -127,7 +125,7 @@ fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
                     .height(350.dp)
             ) { page ->
                 AsyncImage(
-                    model = memory.imgUrls[page],
+                    model = memoryUIState.selectedMemory.imgUrls,
                     contentDescription = "Memory Image",
                     modifier = Modifier.fillMaxSize(),
                     alignment = Alignment.Center,
@@ -146,14 +144,14 @@ fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = memory.title,
+                text = memoryUIState.selectedMemory.title,
                 style = AchuTheme.typography.semiBold20
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = memory.createdAt,
+                text = memoryUIState.selectedMemory.createdAt,
                 style = AchuTheme.typography.semiBold14PointBlue,
                 color = FontGray
 
@@ -162,17 +160,36 @@ fun MemoryDetailScreen(onNavigateToMemoryUpload: () -> Unit) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = memory.content,
+                text = memoryUIState.selectedMemory.content,
                 style = AchuTheme.typography.regular18,
-                modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().padding(horizontal = 24.dp),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
                 textAlign = TextAlign.Center,
                 lineHeight = 28.sp,
 
-            )
+                )
 
 
         }
     }
+
+if (memoryUIState.showDeleteDialog){
+    BasicDialog(
+        img = painterResource(id = R.drawable.img_crying_face),
+        "A - Chu",
+        "의",
+        text = "추억을 삭제하시겠습니까?",
+        onDismiss = {
+            memoryViewModel.showDeleteDialog(false)
+        },
+        onConfirm = {
+            memoryViewModel.deleteMemory()
+            memoryViewModel.showDeleteDialog(false)
+        }
+    )
+}
 }
 
 @Composable
@@ -181,7 +198,7 @@ fun PageIndicator(totalPages: Int, currentPage: Int) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth().height(24.dp)
             .padding(top = 16.dp) // 여백 조정
     ) {
         // 각 점을 인디케이터로 표현
@@ -198,8 +215,16 @@ fun PageIndicator(totalPages: Int, currentPage: Int) {
     }
 }
 
+
+
+
+
 @Preview
 @Composable
 fun MemoryDetailScreenPreview() {
-    AchuTheme { MemoryDetailScreen {} }
+    AchuTheme { MemoryDetailScreen(
+        onNavigateToMemoryUpload = {},
+        memoryViewModel = viewModel()
+    )
+    }
 }

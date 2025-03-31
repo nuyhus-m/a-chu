@@ -49,9 +49,7 @@ fun MyPageScreen(
 
 
     val user = uiState.user
-    if (user == null) {
-        CircularProgressIndicator()
-    }
+
 
     Box(
         modifier = modifier
@@ -96,6 +94,9 @@ fun MyPageScreen(
                             modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
                             contentScale = ContentScale.Crop
                         )
+                        if (user == null) {
+                            CircularProgressIndicator()
+                        }
                         if (user?.profileImageUrl.isNullOrEmpty()) {
                             Image(
                                 painter = painterResource(R.drawable.img_profile_test),//디폴트 이미지

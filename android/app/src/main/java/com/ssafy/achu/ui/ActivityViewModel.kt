@@ -3,7 +3,9 @@ package com.ssafy.achu.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
+import com.ssafy.achu.data.model.baby.BabyResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +19,14 @@ class ActivityViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ActivityUIState())
     val uiState: StateFlow<ActivityUIState> = _uiState.asStateFlow()
 
+    fun updateSelectedBaby(baby: BabyResponse) {
+        _uiState.update {
+            it.copy(
+                selectedBaby = baby
+            )
+        }
+    }
+
     fun getUserinfo() {
         viewModelScope.launch {
             userRepository.getMyInfo()
@@ -29,6 +39,7 @@ class ActivityViewModel : ViewModel() {
                             )
                         }
                         Log.d(TAG, "getUserinfo: ${it}")
+                        getBabyList()
                     }
                 }.onFailure {
                     Log.d(TAG, "getUserinfo: ${it.message}")
@@ -36,6 +47,22 @@ class ActivityViewModel : ViewModel() {
         }
     }
 
+
+    fun getBabyList() {
+        viewModelScope.launch {
+            babyRepository.getBabyList().onSuccess {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        babyList = it.data,
+                    )
+                }
+                Log.d(TAG, "getBabyList: ${it}")
+                Log.d(TAG, "getBabyList: ${uiState.value.babyList}")
+            }.onFailure {
+                Log.d(TAG, "getBabyList: ${it.message}")
+            }
+        }
+    }
 
 
 

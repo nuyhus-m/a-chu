@@ -25,10 +25,11 @@ import com.ssafy.achu.R
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.ui.ActivityViewModel
 
 
 @Composable
-fun LikeItemListScreen() {
+fun LikeItemListScreen(viewModel: ActivityViewModel) {
 
     var likeItemList = remember {
         mutableListOf(
@@ -116,6 +117,6 @@ data class LikeItem(
 @Composable
 fun LikeItemListScreenPreview() {
     AchuTheme {
-        LikeItemListScreen()
+        LikeItemListScreen(ActivityViewModel())
     }
 }

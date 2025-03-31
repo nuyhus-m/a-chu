@@ -24,6 +24,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,10 +33,13 @@ import com.ssafy.achu.R
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
@@ -44,11 +49,15 @@ import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.data.model.baby.BabyResponse
+import com.ssafy.achu.ui.ActivityViewModel
+import com.ssafy.achu.ui.mypage.recommendlist.BabyListItem
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun BabyListScreen(onNavigateToBabyDetail: () -> Unit) {
+fun BabyListScreen(onNavigateToBabyDetail: () -> Unit,
+                   viewModel: ActivityViewModel) {
 
+    val uiState by viewModel.uiState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -56,73 +65,90 @@ fun BabyListScreen(onNavigateToBabyDetail: () -> Unit) {
             .background(color = White)
             .navigationBarsPadding()
     ) {
-        Column {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
             BasicTopAppBar(
                 title = "아이 정보 관리",
                 onBackClick = {
-
+                    // Add logic for back button click if needed
                 }
             )
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize() // 전체 화면을 차지하도록 설정
-                    .padding(horizontal = 24.dp)
-            ) {
-                // LazyColumn에 BabyListItem 추가
-                LazyColumn {
-                    items(babyList.size) { index ->
-                        BabyListItem(babyInfo = babyList[index], onClick = {
-                            onNavigateToBabyDetail()
-                        })
-                        Spacer(modifier = Modifier.height(8.dp))
+            // 아이 리스트가 있을 때와 없을 때 구분
+            if (uiState.babyList.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 24.dp, end = 24.dp, bottom = 114.dp)
+                ) {
+                    // LazyColumn에 BabyListItem 추가
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f) // LazyColumn이 차지할 공간
+                    ) {
+                        items(uiState.babyList.size) { index ->
+                            BabyListItem(babyInfo = uiState.babyList[index], onClick = {
+                                onNavigateToBabyDetail()
+                                viewModel.updateSelectedBaby(uiState.babyList[index])
+                            })
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
                     }
                 }
-
-                // Spacer를 사용하여 버튼을 하단으로 밀기
-                Spacer(modifier = Modifier.weight(1f)) // 이 Spacer가 나머지 공간을 차지하도록 함
-
-                // 아이 정보 추가 버튼
-                PointPinkBtn("아이 정보 추가 하기", onClick = {
-                    onNavigateToBabyDetail()
-                })
-                Spacer(modifier = Modifier.height(40.dp))
+            } else {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.img_smiling_face),
+                        contentDescription = "smile",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                    Spacer(Modifier.height(24.dp))
+                    Text(
+                        text = "등록된 아이가 없습니다.\n아이별 추천, 추억기록을 위해 \n 아이를 등록해보세요!",
+                        style = AchuTheme.typography.semiBold18,
+                        color = FontGray,
+                        lineHeight = 30.sp,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(bottom = 60.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
+        }
 
+        // 아이 정보 추가 버튼을 화면 하단에 고정
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter) // 화면 하단에 고정
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 40.dp) // 버튼과 화면 하단 사이의 여백 추가
+        ) {
+            PointPinkBtn("아이 정보 추가 하기", onClick = {
+                onNavigateToBabyDetail()
+            })
         }
     }
-
-
 }
-
-
-val babyList = listOf(
-    BabyResponse(
-        imgUrl = "https://loremflickr.com/300/300/baby",
-        nickname = "두식이",
-        id = 1,
-        birth = "첫째(2019.05.04)",
-        gender = "남"
-    ),
-    BabyResponse(
-        imgUrl = "",
-        nickname = "삼식이",
-        id = 2,
-        birth = "둘째(2020.07.14)",
-        gender = "여"
-    ),
-)
 
 
 @Composable
 fun BabyListItem(babyInfo: BabyResponse, onClick: () -> Unit) {
     val birthTextColor = when (babyInfo.gender) {
-        "남" -> {
+        "MALE" -> {
             PointBlue
         }
 
-        "여" -> {
-            // 여성의 경우 텍스트 색상 (예: 분홍색)
+        "FEMALE" -> {
             PointPink
         }
 
@@ -245,7 +271,8 @@ fun BabyListScreenPreview() {
 
     AchuTheme {
         BabyListScreen(
-            onNavigateToBabyDetail = {}
+            onNavigateToBabyDetail = {},
+            viewModel = ActivityViewModel()
         )
 //        BabyListItem(BabyInfo2(
 //                profileImg = R.drawable.img_baby_profile,

@@ -54,14 +54,14 @@ fun BabyDropdown(
     var expanded by remember { mutableStateOf(false) }
 
     val birthTextColor = when (selectedBaby.gender) {
-        "남" -> PointBlue
-        "여" -> PointPink
+        "MALE" -> PointBlue
+        "FEMALE" -> PointPink
         else -> FontGray
     }
 
     val NicknameTextColor = when (selectedBaby.gender) {
-        "남" -> FontBlue
-        "여" -> PointPink
+        "MALE" -> FontBlue
+        "FEMALE" -> PointPink
         else -> FontGray
     }
 

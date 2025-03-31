@@ -1,5 +1,6 @@
 package com.ssafy.achu.core.components.textfield
 
+import android.R.attr.singleLine
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
@@ -85,8 +87,7 @@ fun PasswordTextField(
             .height(50.dp),
         placeholder = {
             Text(
-                text = placeholder,
-                style = AchuTheme.typography.regular16.copy(color = color)
+                text = placeholder, style = AchuTheme.typography.regular16.copy(color = color)
             )
         },
         textStyle = AchuTheme.typography.regular16,
@@ -102,9 +103,7 @@ fun PasswordTextField(
                 Icon(
                     painter = if (passwordVisible) painterResource(R.drawable.ic_eye) else painterResource(
                         R.drawable.ic_eye_off
-                    ),
-                    tint = PointBlue,
-                    contentDescription = "Toggle password visibility"
+                    ), tint = PointBlue, contentDescription = "Toggle password visibility"
                 )
             }
         },
@@ -117,18 +116,22 @@ fun PasswordTextField(
 // 연필 아이콘 TextField
 @Composable
 fun ClearTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
+    value: String, onValueChange: (String) -> Unit,
     pointColor: Color = PointBlue,
-    modifier: Modifier = Modifier // modifier를 외부에서 설정할 수 있도록 추가
-    , icon: Int = R.drawable.ic_write
+    modifier: Modifier = Modifier
+    , icon: Int = R.drawable.ic_write,
+    placeholder: String = "생년월일을 선택하세요.",
+    onIconClick: () -> Unit
 ) {
-    OutlinedTextField(
-        value = value,
+    OutlinedTextField(value = value,
         onValueChange = onValueChange,
-        modifier = modifier
-            .height(50.dp),
+        modifier = modifier.height(50.dp),
         textStyle = AchuTheme.typography.regular16,
+        placeholder = {
+            Text(
+                text = placeholder, style = AchuTheme.typography.regular16.copy(color = LightGray)
+            )
+        },
         singleLine = true,
         shape = RoundedCornerShape(30.dp),
         colors = OutlinedTextFieldDefaults.colors(
@@ -137,15 +140,14 @@ fun ClearTextField(
             cursorColor = Color.Black
         ),
         trailingIcon = {
-            IconButton(onClick = { onValueChange("") }) {
+            IconButton(onClick = { onIconClick()}) {
                 Icon(
                     painter = painterResource(icon),
                     tint = pointColor,
                     contentDescription = "Clear text"
                 )
             }
-        }
-    )
+        })
 }
 
 @Preview(showBackground = true)
@@ -167,10 +169,7 @@ fun BasicTextFieldPreview() {
 @Composable
 fun PasswordTextFieldPreview() {
     AchuTheme {
-        PasswordTextField(
-            value = "",
-            onValueChange = {}
-        )
+        PasswordTextField(value = "", onValueChange = {})
     }
 }
 
@@ -179,9 +178,7 @@ fun PasswordTextFieldPreview() {
 fun ClearTextFieldPreview() {
     AchuTheme {
         ClearTextField(
-            value = "",
-            onValueChange = {},
-            pointColor = PointPink
+            value = "", onValueChange = {}, pointColor = PointPink,onIconClick = {}
         )
     }
 }

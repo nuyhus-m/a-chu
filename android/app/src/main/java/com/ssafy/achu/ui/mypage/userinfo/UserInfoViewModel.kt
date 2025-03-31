@@ -3,7 +3,9 @@ package com.ssafy.achu.ui.mypage.userinfo
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
+import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.auth.ChangePasswordRequest
 import com.ssafy.achu.data.model.auth.ChangePhoneNumberRequest
 import com.ssafy.achu.data.model.auth.NickNameRequest
@@ -260,7 +262,8 @@ class UserInfoViewModel : ViewModel() {
                 profileImage = img
             ).onSuccess {
             }.onFailure {
-                Log.d(TAG, "changeProfile:${it} ")
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "changeProfile: ${errorResponse}")
             }
         }
     }

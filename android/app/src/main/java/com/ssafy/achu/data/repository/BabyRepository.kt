@@ -16,7 +16,7 @@ class BabyRepository {
 
 
     // 자녀 등록
-    suspend fun registerBaby(profileImage: MultipartBody.Part, request: BabyRequest): Result<ApiResult<IdResponse>> {
+    suspend fun registerBaby(profileImage: MultipartBody.Part?, request: BabyRequest): Result<ApiResult<IdResponse>> {
         return runCatching {
             babyService.registerBaby(profileImage, request)
         }
@@ -29,7 +29,7 @@ class BabyRepository {
         }
     }
 
-    // 자녀 목록 조회(유저아이디 받아야겠지..?)
+    // 자녀 목록 조회
     suspend fun getBabyList(): Result<ApiResult<List<BabyResponse>>> {
         return runCatching {
             babyService.getBabyList()
