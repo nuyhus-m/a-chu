@@ -22,7 +22,10 @@ public class ImgUrlListJsonConverter implements AttributeConverter<List<String>,
   @Override
   public List<String> convertToEntityAttribute(String dbData) {
     try {
-      return objectMapper.readValue(dbData, new TypeReference<>() {});
+      if (dbData != null && dbData.startsWith("\"[") && dbData.endsWith("]\"")) {
+        dbData = objectMapper.readValue(dbData, String.class);
+      }
+      return objectMapper.readValue(dbData, new TypeReference<List<String>>() {});
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to convert JSON to list", e);
     }
