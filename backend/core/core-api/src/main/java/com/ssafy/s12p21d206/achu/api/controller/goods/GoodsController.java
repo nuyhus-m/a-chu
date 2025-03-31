@@ -1,11 +1,13 @@
 package com.ssafy.s12p21d206.achu.api.controller.goods;
 
 import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
+import com.ssafy.s12p21d206.achu.api.controller.support.FileConverter;
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
 import com.ssafy.s12p21d206.achu.domain.*;
 import com.ssafy.s12p21d206.achu.domain.TradeStatus;
 import com.ssafy.s12p21d206.achu.domain.TradeType;
+import com.ssafy.s12p21d206.achu.domain.image.File;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class GoodsController {
+
+  private final GoodsImageFacade goodsImageFacade;
 
   private final CategoryService categoryService;
   private final GoodsService goodsService;
@@ -27,12 +31,14 @@ public class GoodsController {
   private final TradeService tradeService;
 
   public GoodsController(
+      GoodsImageFacade goodsImageFacade,
       CategoryService categoryService,
       GoodsService goodsService,
       LikeService likeService,
       ChatRoomService chatRoomService,
       UserService userService,
       TradeService tradeService) {
+    this.goodsImageFacade = goodsImageFacade;
     this.categoryService = categoryService;
     this.goodsService = goodsService;
     this.likeService = likeService;
@@ -45,16 +51,20 @@ public class GoodsController {
   public ApiResponse<DefaultIdResponse> appendGoods(
       ApiUser apiUser,
       @RequestPart("request") @Validated AppendGoodsRequest request,
-      @RequestPart("images") MultipartFile[] files) {
-    List<String> imgUrls = List.of("goods1-img-url1.jpg", "goods1-img-url2.jpg");
-    NewGoods newGoods = request.toNewGoods(imgUrls);
-    GoodsDetail goodsDetail = goodsService.append(apiUser.toUser(), newGoods);
+      @RequestPart("images") List<MultipartFile> multipartFiles) {
+    NewGoods newGoods = request.toNewGoods();
+    List<File> imageFiles = multipartFiles.stream().map(FileConverter::convert).toList();
+    GoodsDetail goodsDetail = goodsImageFacade.append(apiUser.toUser(), newGoods, imageFiles);
     return ApiResponse.success(new DefaultIdResponse(goodsDetail.goods().id()));
   }
 
   @PatchMapping("/goods/{goodsId}/images")
   public ApiResponse<Void> modifyGoodsImages(
-      Long userId, @PathVariable Long goodsId, @RequestParam("images") MultipartFile[] files) {
+      ApiUser apiUser,
+      @PathVariable Long goodsId,
+      @RequestParam("images") List<MultipartFile> multipartFiles) {
+    List<File> imageFiles = multipartFiles.stream().map(FileConverter::convert).toList();
+    goodsImageFacade.modifyImages(apiUser.toUser(), goodsId, imageFiles);
     return ApiResponse.success();
   }
 

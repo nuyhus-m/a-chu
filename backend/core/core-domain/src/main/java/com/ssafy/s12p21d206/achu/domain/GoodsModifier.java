@@ -23,4 +23,12 @@ public class GoodsModifier {
     babyValidator.validateParent(user, modifyGoods.babyId());
     return goodsRepository.modifyGoods(goodsId, modifyGoods);
   }
+
+  public Goods modifyImages(
+      User user, Long goodsId, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
+    goodsValidator.validateExists(goodsId);
+    goodsValidator.validateOwner(user.id(), goodsId);
+    goodsValidator.validateIsSelling(goodsId);
+    return goodsRepository.modifyImages(goodsId, imageUrlsWithThumbnail);
+  }
 }

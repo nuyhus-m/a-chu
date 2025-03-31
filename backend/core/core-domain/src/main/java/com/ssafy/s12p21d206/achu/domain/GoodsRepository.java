@@ -17,7 +17,7 @@ public interface GoodsRepository {
 
   GoodsDetail findGoodsDetail(Long id);
 
-  GoodsDetail save(User user, NewGoods newGoods);
+  GoodsDetail save(User user, NewGoods newGoods, ImageUrlsWithThumbnail imageUrlsWithThumbnail);
 
   GoodsDetail modifyGoods(Long id, ModifyGoods modifyGoods);
 
@@ -28,4 +28,6 @@ public interface GoodsRepository {
   boolean isSelling(Long id);
 
   Long delete(Long id);
+
+  Goods modifyImages(Long goodsId, ImageUrlsWithThumbnail imageUrlsWithThumbnail);
 }

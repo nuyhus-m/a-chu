@@ -32,7 +32,7 @@ public record GoodsResponse(
           return new GoodsResponse(
               goods.id(),
               goods.title(),
-              goods.imgUrls().get(0),
+              goods.imageUrlsWithThumbnail().thumbnailImageUrl(),
               goods.price(),
               goods.defaultDateTime().createdAt(),
               chatStatus.getChatCount(),

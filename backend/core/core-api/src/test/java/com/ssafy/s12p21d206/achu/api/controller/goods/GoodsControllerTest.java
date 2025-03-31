@@ -10,6 +10,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import com.ssafy.s12p21d206.achu.domain.*;
 import com.ssafy.s12p21d206.achu.domain.TradeStatus;
 import com.ssafy.s12p21d206.achu.domain.TradeType;
+import com.ssafy.s12p21d206.achu.domain.image.ImageService;
 import com.ssafy.s12p21d206.achu.domain.support.DefaultDateTime;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
@@ -36,6 +37,10 @@ class GoodsControllerTest extends RestDocsTest {
   private UserService userService;
   private TradeService tradeService;
 
+  private ImageService imageService;
+
+  private GoodsImageFacade goodsImageFacade;
+
   @BeforeEach
   void setup() {
     categoryService = mock(CategoryService.class);
@@ -44,8 +49,18 @@ class GoodsControllerTest extends RestDocsTest {
     chatRoomService = mock(ChatRoomService.class);
     userService = mock(UserService.class);
     tradeService = mock(TradeService.class);
+
+    imageService = mock(ImageService.class);
+    goodsImageFacade = new GoodsImageFacade(goodsService, imageService);
+
     controller = new GoodsController(
-        categoryService, goodsService, likeService, chatRoomService, userService, tradeService);
+        goodsImageFacade,
+        categoryService,
+        goodsService,
+        likeService,
+        chatRoomService,
+        userService,
+        tradeService);
     mockMvc = mockController(controller);
   }
 
@@ -53,7 +68,8 @@ class GoodsControllerTest extends RestDocsTest {
       1L,
       "장난감 자동차",
       "설명",
-      List.of("https://example.com/img1.jpg"),
+      new ImageUrlsWithThumbnail(
+          "https://dummy.thumbmail.image", List.of("https://example.com/img1.jpg")),
       TradeStatus.SELLING,
       10000L,
       new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now().minusDays(1)),
@@ -335,7 +351,7 @@ class GoodsControllerTest extends RestDocsTest {
 
   @Test
   void appendGoods() {
-    when(goodsService.append(any(User.class), any(NewGoods.class)))
+    when(goodsService.append(any(), any(), any()))
         .thenReturn(new GoodsDetail(goods, new Category(1L, "카테고리명1")));
     given()
         .contentType(MediaType.MULTIPART_FORM_DATA)

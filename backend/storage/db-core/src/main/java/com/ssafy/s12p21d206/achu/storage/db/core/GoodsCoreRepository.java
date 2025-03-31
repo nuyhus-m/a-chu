@@ -28,7 +28,8 @@ public class GoodsCoreRepository implements GoodsRepository {
   }
 
   @Override
-  public GoodsDetail save(User user, NewGoods newGoods) {
+  public GoodsDetail save(
+      User user, NewGoods newGoods, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
     CategoryEntity categoryEntity = categoryJpaRepository
         .findById(newGoods.categoryId())
         .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
@@ -36,7 +37,8 @@ public class GoodsCoreRepository implements GoodsRepository {
         .save(new GoodsEntity(
             newGoods.title(),
             newGoods.description(),
-            newGoods.imgUrls(),
+            imageUrlsWithThumbnail.thumbnailImageUrl(),
+            imageUrlsWithThumbnail.imageUrls(),
             TradeStatus.SELLING,
             newGoods.price(),
             newGoods.categoryId(),
@@ -71,6 +73,16 @@ public class GoodsCoreRepository implements GoodsRepository {
     goods.delete();
     goodsJpaRepository.save(goods);
     return goods.getId();
+  }
+
+  @Override
+  public Goods modifyImages(Long goodsId, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
+    GoodsEntity goods = goodsJpaRepository
+        .findByIdAndEntityStatus(goodsId, EntityStatus.ACTIVE)
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+    goods.changeImages(imageUrlsWithThumbnail);
+    goodsJpaRepository.save(goods);
+    return goods.toGoods();
   }
 
   @Override
