@@ -41,7 +41,7 @@ public class LikeCoreRepository implements LikeRepository {
 
     return goodsIds.stream()
         .collect(Collectors.toMap(
-            id -> id, id -> new LikeStatus(countMap.get(id), likedGoods.contains(id))));
+            id -> id, id -> new LikeStatus(countMap.getOrDefault(id, 0), likedGoods.contains(id))));
   }
 
   @Transactional

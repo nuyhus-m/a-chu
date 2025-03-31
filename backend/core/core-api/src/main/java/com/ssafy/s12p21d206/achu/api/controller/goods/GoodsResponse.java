@@ -26,8 +26,8 @@ public record GoodsResponse(
 
     return goodsList.stream()
         .map(goods -> {
-          ChatStatus chatStatus = chatStatusMap.get(goods.id());
-          LikeStatus likeStatus = likeStatusMap.get(goods.id());
+          ChatStatus chatStatus = chatStatusMap.getOrDefault(goods.id(), new ChatStatus(0L, 0L));
+          LikeStatus likeStatus = likeStatusMap.getOrDefault(goods.id(), new LikeStatus(0, false));
 
           return new GoodsResponse(
               goods.id(),
