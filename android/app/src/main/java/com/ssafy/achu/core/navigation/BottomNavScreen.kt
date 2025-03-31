@@ -5,51 +5,49 @@ import androidx.annotation.StringRes
 import com.ssafy.achu.R
 
 sealed class BottomNavScreen(
-    val route: String,
+    val route: BottomNavRoute,
+    val routeName: String?,
     @StringRes val titleResId: Int,
     @DrawableRes val icon: Int
 ) {
 
     data object Home : BottomNavScreen(
-        route = HOME,
+        route = BottomNavRoute.Home,
+        routeName = BottomNavRoute.Home::class.qualifiedName,
         titleResId = R.string.home,
         icon = R.drawable.ic_home
     )
 
     data object ProductList : BottomNavScreen(
-        route = PRODUCT_LIST,
+        route = BottomNavRoute.ProductList(categoryId = 0),
+        routeName = BottomNavRoute.ProductList::class.qualifiedName + "/{categoryId}",
         titleResId = R.string.shopping,
         icon = R.drawable.ic_shopping
     )
 
     data object MemoryList : BottomNavScreen(
-        route = MEMORY_LIST,
+        route = BottomNavRoute.MemoryList,
+        routeName = BottomNavRoute.MemoryList::class.qualifiedName,
         titleResId = R.string.memory,
         icon = R.drawable.ic_memory
     )
 
     data object ChatList : BottomNavScreen(
-        route = CHAT_LIST,
+        route = BottomNavRoute.ChatList,
+        routeName = BottomNavRoute.ChatList::class.qualifiedName,
         titleResId = R.string.chat,
         icon = R.drawable.ic_chat
     )
 
     data object MyPage : BottomNavScreen(
-        route = MY_PAGE,
+        route = BottomNavRoute.MyPage,
+        routeName = BottomNavRoute.MyPage::class.qualifiedName,
         titleResId = R.string.mypage,
         icon = R.drawable.ic_mypage
     )
-
-    companion object {
-        const val HOME = "home"
-        const val PRODUCT_LIST = "productlist"
-        const val MEMORY_LIST = "memorylist"
-        const val CHAT_LIST = "chatlist"
-        const val MY_PAGE = "mypage"
-    }
 }
 
-val bottomNavBarScreens =
+val bottomNavScreens =
     listOf(
         BottomNavScreen.Home,
         BottomNavScreen.ProductList,

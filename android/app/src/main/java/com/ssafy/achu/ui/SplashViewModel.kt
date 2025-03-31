@@ -37,10 +37,14 @@ class SplashViewModel : ViewModel() {
                 return@launch
             }
 
+            val accessToken = tokens.accessToken
             val refreshToken = tokens.refreshToken
             val accessTokenExpiresIn = tokens.accessTokenExpiresIn
             val refreshTokenExpiresIn = tokens.refreshTokenExpiresIn
             val refreshTokenRenewAvailableSeconds = tokens.refreshTokenRenewAvailableSeconds
+
+            Log.d(TAG, "checkAutoLogin accessToken: $accessToken")
+            Log.d(TAG, "checkAutoLogin refreshToken: $refreshToken")
 
             val currentTime = System.currentTimeMillis() / 1000 // 현재 시간 (초 단위)
             val accessTokenExpiryTime =
@@ -54,7 +58,7 @@ class SplashViewModel : ViewModel() {
 
                 // ✅ Refresh Token 갱신 가능 기간이면 Refresh Token 재발급 시도
                 currentTime in refreshTokenRenewTime..<refreshTokenExpiryTime -> {
-                    renewTokens(RefreshToken(refreshToken))
+                    renewTokens(RefreshToken("Bearer $refreshToken"))
                 }
 
                 // ✅ Access Token이 아직 유효하면 로그인 유지
@@ -64,7 +68,7 @@ class SplashViewModel : ViewModel() {
 
                 // ✅ Access Token 만료되었고 Refresh Token이 유효하면 Access Token 갱신
                 currentTime in accessTokenExpiryTime..<refreshTokenExpiryTime -> {
-                    refreshAccessToken(RefreshToken(refreshToken))
+                    refreshAccessToken(RefreshToken("Bearer $refreshToken"))
                 }
 
                 // ❌ Refresh Token도 만료됨 → 로그인 필요

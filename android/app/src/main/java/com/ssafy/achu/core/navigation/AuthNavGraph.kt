@@ -7,9 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.ssafy.achu.core.navigation.Routes.FIND_ACCOUNT
-import com.ssafy.achu.core.navigation.Routes.SIGN_IN
-import com.ssafy.achu.core.navigation.Routes.SIGN_UP
 import com.ssafy.achu.ui.auth.findaccount.FindAccountScreen
 import com.ssafy.achu.ui.auth.signin.SignInScreen
 import com.ssafy.achu.ui.auth.signup.SignUpScreen
@@ -22,29 +19,23 @@ fun AuthNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = SIGN_IN,
+        startDestination = AuthRoute.SignIn,
         modifier = modifier
     ) {
-        composable(route = SIGN_IN) {
+        composable<AuthRoute.SignIn> {
             SignInScreen(
-                onNavigateToSignUp = { navController.navigate(SIGN_UP) }
+                onNavigateToSignUp = { navController.navigate(AuthRoute.SignUp) }
             )
         }
 
-        composable(route = SIGN_UP) {
+        composable<AuthRoute.SignUp> {
             SignUpScreen(
-                onBackCLick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() }
             )
         }
 
-        composable(route = FIND_ACCOUNT) {
+        composable<AuthRoute.FindAccount> {
             FindAccountScreen()
         }
     }
-}
-
-object Routes {
-    const val SIGN_IN = "signin"
-    const val SIGN_UP = "signup"
-    const val FIND_ACCOUNT = "findaccount"
 }

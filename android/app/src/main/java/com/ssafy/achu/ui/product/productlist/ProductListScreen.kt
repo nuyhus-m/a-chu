@@ -27,6 +27,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -59,11 +60,19 @@ import com.ssafy.achu.data.model.product.ProductResponse
 fun ProductListScreen(
     modifier: Modifier = Modifier,
     viewModel: ProductListViewModel = viewModel(),
-    onNavigateToUploadProduct: () -> Unit = {},
-    onNavigateToProductDetail: () -> Unit = {}
+    onNavigateToUploadProduct: () -> Unit,
+    onNavigateToProductDetail: () -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState.selectedCategoryId) {
+        if (uiState.selectedCategoryId == 0) {
+            viewModel.getProductList()
+        } else {
+            viewModel.getProductListByCategory(uiState.selectedCategoryId)
+        }
+    }
 
     Box(
         modifier = modifier
@@ -87,109 +96,19 @@ fun ProductListScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // 카테고리 버튼 리스트
-            val categories = listOf(
-                CategoryResponse(
-                    id = 0,
-                    name = "전체"
-                ),
-                CategoryResponse(
-                    id = 1,
-                    name = "인형"
-                ),
-                CategoryResponse(
-                    id = 2,
-                    name = "공구"
-                ),
-                CategoryResponse(
-                    id = 3,
-                    name = "도서"
-                ),
-                CategoryResponse(
-                    id = 4,
-                    name = "기타"
-                )
-            )
             CategoryButtonList(
-                items = categories,
-                onButtonClick = {}
+                items = uiState.categories,
+                onButtonClick = { id -> viewModel.updateSelectedCategoryId(id) },
+                initialSelectedIndex = uiState.selectedCategoryId
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // 물품 리스트
-            val productResponses = listOf(
-                ProductResponse(
-                    chatCount = 11,
-                    createdAt = "3일 전",
-                    id = 1,
-                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                    likedByUser = false,
-                    likedUsersCount = 18,
-                    price = 5000,
-                    title = "미피 인형 어쩌고 저쩌고 저쩌고 아무말 대잔치 두줄 불가"
-                ),
-                ProductResponse(
-                    chatCount = 11,
-                    createdAt = "3일 전",
-                    id = 1,
-                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                    likedByUser = true,
-                    likedUsersCount = 18,
-                    price = 5000,
-                    title = "미피 인형"
-                ),
-                ProductResponse(
-                    chatCount = 11,
-                    createdAt = "3일 전",
-                    id = 1,
-                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                    likedByUser = true,
-                    likedUsersCount = 18,
-                    price = 5000,
-                    title = "미피 인형"
-                ),
-                ProductResponse(
-                    chatCount = 11,
-                    createdAt = "3일 전",
-                    id = 1,
-                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                    likedByUser = true,
-                    likedUsersCount = 18,
-                    price = 5000,
-                    title = "미피 인형"
-                ),
-                ProductResponse(
-                    chatCount = 11,
-                    createdAt = "3일 전",
-                    id = 1,
-                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                    likedByUser = true,
-                    likedUsersCount = 18,
-                    price = 5000,
-                    title = "미피 인형"
-                ),
-                ProductResponse(
-                    chatCount = 11,
-                    createdAt = "3일 전",
-                    id = 1,
-                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                    likedByUser = true,
-                    likedUsersCount = 18,
-                    price = 5000,
-                    title = "미피 인형"
-                ),
-                ProductResponse(
-                    chatCount = 11,
-                    createdAt = "3일 전",
-                    id = 1,
-                    imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                    likedByUser = true,
-                    likedUsersCount = 18,
-                    price = 5000,
-                    title = "미피 인형"
-                ),
+            ProductList(
+                items = uiState.products,
+                onNavigateToProductDetail = onNavigateToProductDetail
             )
-            ProductList(items = productResponses, onNavigateToProductDetail = onNavigateToProductDetail)
         }
 
         // FAB 버튼
@@ -245,7 +164,7 @@ fun CategoryButtonList(
     items: List<CategoryResponse>,
     onButtonClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    initialSelectedIndex: Int = 0
+    initialSelectedIndex: Int
 ) {
     var selectedIndex by remember { mutableIntStateOf(initialSelectedIndex) }
 
@@ -376,7 +295,10 @@ fun ProductItem(
 @Composable
 fun ProductListScreenPreview() {
     AchuTheme {
-        ProductListScreen()
+        ProductListScreen(
+            onNavigateToUploadProduct = {},
+            onNavigateToProductDetail = {}
+        )
     }
 }
 
