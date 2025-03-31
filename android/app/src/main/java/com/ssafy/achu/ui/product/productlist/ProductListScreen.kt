@@ -1,5 +1,7 @@
 package com.ssafy.achu.ui.product.productlist
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,9 +55,11 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatRelativeTime
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProductListScreen(
     modifier: Modifier = Modifier,
@@ -185,6 +189,7 @@ fun CategoryButtonList(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProductList(items: List<ProductResponse>, onNavigateToProductDetail: () -> Unit) {
     LazyColumn {
@@ -197,6 +202,7 @@ fun ProductList(items: List<ProductResponse>, onNavigateToProductDetail: () -> U
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProductItem(
     productResponse: ProductResponse,
@@ -239,7 +245,7 @@ fun ProductItem(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = productResponse.createdAt,
+                    text = formatRelativeTime(productResponse.createdAt),
                     style = AchuTheme.typography.regular16.copy(color = FontGray),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -302,6 +308,7 @@ fun ProductListScreenPreview() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun ProductItemPreview() {
