@@ -10,5 +10,7 @@ public enum CoreErrorCode {
   E1005,
   E1006,
   E1007,
-  E1008;
+  E1008,
+  E1009,
+  E1010;
 }

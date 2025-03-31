@@ -1,7 +1,7 @@
 package com.ssafy.s12p21d206.achu.domain.image;
 
-import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreErrorType;
-import com.ssafy.s12p21d206.achu.auth.domain.error.AuthCoreException;
+import com.ssafy.s12p21d206.achu.domain.error.CoreErrorType;
+import com.ssafy.s12p21d206.achu.domain.error.CoreException;
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +14,11 @@ class ImageValidator {
 
     String detectedMimeType = tika.detect(file.content());
     if (!detectedMimeType.equals(file.contentType())) {
-      throw new AuthCoreException(AuthCoreErrorType.INCORRECT_MIME_TYPE);
+      throw new CoreException(CoreErrorType.INCORRECT_MIME_TYPE);
     }
 
     if (!detectedMimeType.startsWith("image/")) {
-      throw new AuthCoreException(AuthCoreErrorType.INVALID_IMAGE);
+      throw new CoreException(CoreErrorType.INVALID_IMAGE);
     }
   }
 }
