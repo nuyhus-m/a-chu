@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.file.config;
 
+import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
@@ -18,7 +19,7 @@ public class S3Config {
 
   @Bean
   public AmazonS3 s3Client() {
-    BasicAWSCredentials awsCredentials =
+    AWSCredentials awsCredentials =
         new BasicAWSCredentials(s3Properties.getAccessKey(), s3Properties.getSecretKey());
 
     return AmazonS3ClientBuilder.standard()
