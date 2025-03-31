@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private const val TAG = "ProductListViewModel"
+private const val LIMIT = 20;
 
 class ProductListViewModel(
     savedStateHandle: SavedStateHandle,
@@ -42,6 +43,10 @@ class ProductListViewModel(
         _uiState.update { it.copy(selectedCategoryId = categoryId) }
     }
 
+    fun updateCurrentOffset(offset: Int) {
+        _uiState.update { it.copy(currentOffset = offset) }
+    }
+
     private fun getCategoryList() {
         viewModelScope.launch {
             productRepository.getCategoryList()
@@ -62,18 +67,22 @@ class ProductListViewModel(
         }
     }
 
-    fun getProductListByCategory(categoryId: Int) {
+    private fun getProductListByCategory() {
         viewModelScope.launch {
+            val offset = uiState.value.currentOffset
             productRepository.getProductListByCategory(
-                categoryId = categoryId,
-                offset = 0,
-                limit = 20,
+                categoryId = uiState.value.selectedCategoryId,
+                offset = offset,
+                limit = LIMIT,
                 sort = LATEST
             ).onSuccess { response ->
                 Log.d(TAG, "getProductListByCategory: $response")
                 if (response.result == SUCCESS) {
                     _uiState.update { currentState ->
-                        currentState.copy(products = response.data)
+                        currentState.copy(
+                            products = if (offset == 0) response.data else currentState.products + response.data,
+                            currentOffset = currentState.currentOffset + response.data.size
+                        )
                     }
                 }
             }.onFailure {
@@ -84,17 +93,21 @@ class ProductListViewModel(
         }
     }
 
-    fun getProductList() {
+    private fun getProductList() {
         viewModelScope.launch {
+            val offset = uiState.value.currentOffset
             productRepository.getProductList(
-                offset = 0,
-                limit = 20,
+                offset = offset,
+                limit = LIMIT,
                 sort = LATEST
             ).onSuccess { response ->
                 Log.d(TAG, "getProductList: $response")
                 if (response.result == SUCCESS) {
                     _uiState.update { currentState ->
-                        currentState.copy(products = response.data)
+                        currentState.copy(
+                            products = if (offset == 0) response.data else currentState.products + response.data,
+                            currentOffset = currentState.currentOffset + response.data.size
+                        )
                     }
                 }
             }.onFailure {
@@ -103,6 +116,82 @@ class ProductListViewModel(
                 Log.d(TAG, "getProductList error: ${it.message}")
             }
 
+        }
+    }
+
+    private fun searchProductList() {
+        viewModelScope.launch {
+            val offset = uiState.value.currentOffset
+            productRepository.searchProduct(
+                keyword = uiState.value.query,
+                offset = offset,
+                limit = LIMIT,
+                sort = LATEST
+            ).onSuccess { response ->
+                Log.d(TAG, "searchProductList: $response")
+                if (response.result == SUCCESS) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            products = if (offset == 0) response.data else currentState.products + response.data,
+                            currentOffset = currentState.currentOffset + response.data.size
+                        )
+                    }
+                }
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "searchProductList errorResponse: $errorResponse")
+                Log.d(TAG, "searchProductList error: ${it.message}")
+            }
+        }
+    }
+
+    private fun searchProductListByCategory() {
+        viewModelScope.launch {
+            val offset = uiState.value.currentOffset
+            productRepository.searchProductByCategory(
+                categoryId = uiState.value.selectedCategoryId,
+                keyword = uiState.value.query,
+                offset = offset,
+                limit = LIMIT,
+                sort = LATEST
+            ).onSuccess { response ->
+                Log.d(TAG, "searchProductListByCategory: $response")
+                if (response.result == SUCCESS) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            products = if (offset == 0) response.data else currentState.products + response.data,
+                            currentOffset = currentState.currentOffset + response.data.size
+                        )
+                    }
+                }
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "searchProductListByCategory errorResponse: $errorResponse")
+                Log.d(TAG, "searchProductListByCategory error: ${it}")
+            }
+        }
+    }
+
+    fun loadProductList() {
+        Log.d(
+            TAG, "loadProductList: " +
+                    "categoryId = ${uiState.value.selectedCategoryId}," +
+                    "query = ${uiState.value.query}" +
+                    "offset = ${uiState.value.currentOffset}"
+        )
+
+        if (uiState.value.selectedCategoryId == 0) {
+            if (uiState.value.query.isEmpty()) {
+                getProductList()
+            } else {
+                searchProductList()
+            }
+        } else {
+            if (uiState.value.query.isEmpty()) {
+                getProductListByCategory()
+            } else {
+                searchProductListByCategory()
+            }
         }
     }
 }

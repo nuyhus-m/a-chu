@@ -35,7 +35,7 @@ interface ProductService {
         @Query("sort") sort: String
     ): ApiResult<List<ProductResponse>>
 
-    @GET("/categories/{categoryId/goods/search")
+    @GET("/categories/{categoryId}/goods/search")
     suspend fun searchProductByCategory(
         @Path("categoryId") categoryId: Int,
         @Query("keyword") keyword: String,
