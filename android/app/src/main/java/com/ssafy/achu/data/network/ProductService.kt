@@ -26,4 +26,21 @@ interface ProductService {
         @Query("limit") limit: Int,
         @Query("sort") sort: String
     ): ApiResult<List<ProductResponse>>
+
+    @GET("/goods/search")
+    suspend fun searchProduct(
+        @Query("keyword") keyword: String,
+        @Query("offset") offset: Int,
+        @Query("limit") limit: Int,
+        @Query("sort") sort: String
+    ): ApiResult<List<ProductResponse>>
+
+    @GET("/categories/{categoryId/goods/search")
+    suspend fun searchProductByCategory(
+        @Path("categoryId") categoryId: Int,
+        @Query("keyword") keyword: String,
+        @Query("offset") offset: Int,
+        @Query("limit") limit: Int,
+        @Query("sort") sort: String
+    ): ApiResult<List<ProductResponse>>
 }
