@@ -79,13 +79,11 @@ fun BabyDetailScreen(
 ) {
     val babyUiState by babyViewModel.babyUiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
-    var pointColor:Color = PointBlue
+    var pointColor:Color = PointPink
 
 
     if (uiState.selectedBaby != null) {
         babyViewModel.getBaby(uiState.selectedBaby!!.id)
-        pointColor = if (uiState.selectedBaby!!.gender == "MALE") PointBlue else PointPink
-
     }
 
 
@@ -112,23 +110,38 @@ fun BabyDetailScreen(
     val context = LocalContext.current
     var dateList: List<Int>
 
-    fun showDatePicker() {
+    fun showDatePicker(defaultDate: String) {
         Log.d(TAG, "showDatePicker: 실행합니다")
+
         val calendar = Calendar.getInstance()
+
+        if (defaultDate.isNotBlank()) {
+            try {
+                val dateParts = defaultDate.split("-")
+                val year = dateParts[0].toInt()
+                val month = dateParts[1].toInt() - 1  // Calendar.MONTH는 0부터 시작
+                val day = dateParts[2].toInt()
+
+                calendar.set(year, month, day)  // 지정된 날짜 설정
+            } catch (e: Exception) {
+                Log.e(TAG, "날짜 변환 오류: $e")
+            }
+        }
+
         val datePickerDialog = DatePickerDialog(
             context,
-            { _, year, month, dayOfMonth ->
-                dateList = listOf(year, month + 1, dayOfMonth)
+            { _, selectedYear, selectedMonth, selectedDay ->
+                dateList = listOf(selectedYear, selectedMonth + 1, selectedDay)  // 월 보정
                 babyViewModel.updateBabyBirth(dateList)
                 if (babyUiState.selectedBaby != null) {
                     babyViewModel.changeBabyBirth()
-
                 }
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         )
+
         datePickerDialog.show()
     }
 
@@ -333,7 +346,7 @@ fun BabyDetailScreen(
                         icon = R.drawable.ic_calendar,
                         onIconClick = {
                             Log.d(TAG, "BabyDetailScreen: 클릭은된다")
-                            showDatePicker()
+                            showDatePicker("")
                         }
                     )
                 } else {
@@ -346,7 +359,7 @@ fun BabyDetailScreen(
                         icon = R.drawable.ic_calendar,
                         onIconClick = {
                             Log.d(TAG, "BabyDetailScreen: 클릭하냐고")
-                            showDatePicker()
+                            showDatePicker(babyUiState.selectedBaby!!.birth)
                         }
                     )
                 }

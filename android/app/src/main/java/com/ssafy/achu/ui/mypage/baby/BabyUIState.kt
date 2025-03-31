@@ -11,15 +11,11 @@ data class BabyUIState (
 
     val babyNickname: String = "",
     val calendar: Calendar = Calendar.getInstance(),
-    val babyBirth: List<Int> = listOf(
-        calendar.get(Calendar.YEAR),
-        calendar.get(Calendar.MONTH) + 1,
-        calendar.get(Calendar.DAY_OF_MONTH)
-    ),
+    val babyBirth: List<Int> = emptyList<Int>(),
     val babyGender: String = "",
     val babyImgUrl: String = "",
     val isCorrectNickname: Boolean = true,
 
     val toastString: String = "",
 
-)
+    )

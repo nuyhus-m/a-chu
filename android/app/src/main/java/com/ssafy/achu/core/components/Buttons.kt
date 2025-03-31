@@ -233,7 +233,7 @@ fun PointPinkFlexibleBtn(buttonText: String, onClick: () -> Unit) {
 
 //핑크색 라인 버튼 -> 클릭시 색상 반전
 @Composable
-fun PointPinkLineBtn(buttonText: String, isSelected: Boolean, onClick: () -> Unit, pointCo) {
+fun PointPinkLineBtn(buttonText: String, isSelected: Boolean, onClick: () -> Unit) {
     val buttonColor = if (isSelected) PointPink else Color.White
     val textColor = if (isSelected) Color.White else PointPink
 
