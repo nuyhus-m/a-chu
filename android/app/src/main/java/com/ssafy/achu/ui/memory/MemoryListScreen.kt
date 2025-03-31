@@ -118,7 +118,11 @@ fun MemoryListScreen(
                     modifier = Modifier
                         .size(90.dp)
                         .shadow(elevation = 4.dp, shape = CircleShape)
-                        .border(1.5.dp, PointBlue, CircleShape)
+                        .border(
+                            1.5.dp,
+                            if (uiState.selectedBaby!!.gender == "MALE") PointBlue else PointPink,
+                            CircleShape
+                        )
                         .background(color = Color.LightGray),
                     contentAlignment = Alignment.Center
                 ) {
@@ -216,7 +220,8 @@ fun MemoryListScreen(
                 Text(
                     text = "${uiState.selectedBaby?.birth}일생",
                     style = AchuTheme.typography.semiBold16,
-                    color = PointBlue
+                    color = if (uiState.selectedBaby!!.gender == "MALE") PointBlue else PointPink
+
                 )
                 if (memoryUIState.memoryList.isEmpty()) {
                     Column(

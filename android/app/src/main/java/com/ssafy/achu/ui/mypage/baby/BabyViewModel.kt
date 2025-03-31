@@ -3,15 +3,18 @@ package com.ssafy.achu.ui.mypage.baby
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil3.util.CoilUtils.result
 import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
-import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.baby.BabyBirthRequest
 import com.ssafy.achu.data.model.baby.BabyGenderRequest
 import com.ssafy.achu.data.model.baby.BabyNicknameRequest
 import com.ssafy.achu.data.model.baby.BabyRequest
+import com.ssafy.achu.data.model.baby.BabyResponse
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -24,12 +27,32 @@ class BabyViewModel : ViewModel() {
     private val _babyUiState = MutableStateFlow(BabyUIState())
     val babyUiState: StateFlow<BabyUIState> = _babyUiState.asStateFlow()
 
+    private val _isChanged = MutableSharedFlow<Boolean>()
+    val isChanged: SharedFlow<Boolean> = _isChanged
+
+    private val _isSelectedBabyChanged = MutableSharedFlow<Boolean>()
+    val isSelectedBabyChanged: SharedFlow<Boolean> = _isSelectedBabyChanged
+
+
+
     fun updateBabyNickname(babyNicknameInput: String) {
         _babyUiState.value = _babyUiState.value.copy(
             babyNickname = babyNicknameInput
         )
     }
 
+    fun updateBabyPhoto(babyPhoto: MultipartBody.Part) {
+        _babyUiState.value = _babyUiState.value.copy(
+            selectedPhoto = babyPhoto
+        )
+    }
+
+
+    fun updateToastString(string: String){
+        _babyUiState.value = _babyUiState.value.copy(
+            toastString = string
+        )
+    }
 
 
     fun getBaby(babyId: Int) {
@@ -39,16 +62,20 @@ class BabyViewModel : ViewModel() {
                     selectedBaby = it.data
                 )
                 Log.d(TAG, "getBaby: ${babyUiState.value.selectedBaby}")
+                _isSelectedBabyChanged.emit(true)
             }.onFailure {
-                Log.d(TAG, "getBaby: ${it.message}")
+
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "getBaby: ${errorResponse}")
             }
         }
     }
 
-    fun registerBaby(profileImage: MultipartBody.Part?) {
+    fun registerBaby() {
         viewModelScope.launch {
+            Log.d(TAG, "registerBaby: $_babyUiState.value.selectedPhoto}")
             babyRepository.registerBaby(
-                profileImage, BabyRequest(
+                _babyUiState.value.selectedPhoto, BabyRequest(
                     nickname = babyUiState.value.babyNickname,
                     birth = babyUiState.value.babyBirth,
                     gender = babyUiState.value.babyGender,
@@ -56,14 +83,19 @@ class BabyViewModel : ViewModel() {
             ).onSuccess {
                 Log.d(TAG, "registerBaby: ${it.data}")
                 getBaby(it.data.id)
+                updateToastString("아이 등록 성공!")
+                _isChanged.emit(true)
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "registerBaby: ${errorResponse}")
+                updateToastString("아이 등록 실패!")
+                _isChanged.emit(false)
             }
         }
     }
 
     fun changeBabyNickname() {
+
         viewModelScope.launch {
             babyRepository.updateNickname(
                 babyUiState.value.selectedBaby!!.id,
@@ -72,11 +104,15 @@ class BabyViewModel : ViewModel() {
                 )
             ).onSuccess {
                 getBaby(babyUiState.value.selectedBaby!!.id)
+                updateToastString("닉네임 변경 성공!")
+                _isChanged.emit(true)
             }.onFailure {
                 Log.d(TAG, "changeBabyNickname: ${it.message}")
+                updateToastString("닉네임 변경 실패")
+                _isChanged.emit(false)
             }
-
         }
+
     }
 
     fun changeBabyBirth() {
@@ -89,9 +125,13 @@ class BabyViewModel : ViewModel() {
             ).onSuccess {
                 getBaby(babyUiState.value.selectedBaby!!.id)
                 Log.d(TAG, "changeBabyBirth: ${it}")
-            }.onFailure {
+                updateToastString("생일 변경 성공!")
+                _isChanged.emit(true)
 
+            }.onFailure {
                 Log.d(TAG, "changeBabyBirth: ${it.message}")
+                updateToastString("생일 변경 실패!")
+                _isChanged.emit(false)
             }
         }
 
@@ -105,7 +145,13 @@ class BabyViewModel : ViewModel() {
                 BabyGenderRequest(
                     gender = babyUiState.value.babyGender,
                 )
-            )
+            ).onSuccess {
+                updateToastString("성별 변경 성공!")
+                _isChanged.emit(true)
+            }.onFailure {
+                updateToastString("성별 변경 실패")
+                _isChanged.emit(false)
+            }
         }
     }
 
@@ -122,8 +168,12 @@ class BabyViewModel : ViewModel() {
         viewModelScope.launch {
             babyRepository.deleteBaby(babyId).onSuccess {
                 Log.d(TAG, "deleteBaby: ${it.data}")
+                updateToastString("아이정보 삭제 성공")
+                _isChanged.emit(true)
             }.onFailure {
                 Log.d(TAG, "deleteBaby: ${it.message}")
+                updateToastString("아이정보 삭제 실패")
+                _isChanged.emit(false)
             }
 
         }
@@ -168,5 +218,7 @@ class BabyViewModel : ViewModel() {
             )
         }
     }
+
+
 
 }

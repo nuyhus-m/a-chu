@@ -39,6 +39,7 @@ class ActivityViewModel : ViewModel() {
                             )
                         }
                         Log.d(TAG, "getUserinfo: ${it}")
+                        getBabyList()
                     }
                 }.onFailure {
                     Log.d(TAG, "getUserinfo: ${it.message}")
@@ -50,16 +51,20 @@ class ActivityViewModel : ViewModel() {
     fun getBabyList() {
         viewModelScope.launch {
             babyRepository.getBabyList().onSuccess {
-                _uiState.update {
-                    it.copy(
-                        babyList = it.babyList
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        babyList = it.data,
                     )
                 }
+                Log.d(TAG, "getBabyList: ${it}")
+                Log.d(TAG, "getBabyList: ${uiState.value.babyList}")
             }.onFailure {
                 Log.d(TAG, "getBabyList: ${it.message}")
             }
         }
     }
+
+
 
 
 }

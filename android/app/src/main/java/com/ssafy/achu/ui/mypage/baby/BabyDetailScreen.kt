@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,18 +49,18 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
-import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.components.BasicTopAppBar
-import com.ssafy.achu.core.components.textfield.ClearTextField
 import com.ssafy.achu.core.components.PointPinkBtn
 import com.ssafy.achu.core.components.PointPinkLineBtn
 import com.ssafy.achu.core.components.SmallLineBtn
+import com.ssafy.achu.core.components.textfield.ClearTextField
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
+import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.data.model.baby.BabyResponse
-import com.ssafy.achu.ui.mypage.userinfo.NicknameUpdateDialog
+import com.ssafy.achu.ui.ActivityViewModel
+import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -69,15 +70,30 @@ import java.io.InputStream
 import java.util.Calendar
 
 private const val TAG = "BabyDetailScreen_안주현"
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BabyDetailScreen(
-    babyViewModel: BabyViewModel = viewModel()
+    babyViewModel: BabyViewModel = viewModel(),
+    viewModel: ActivityViewModel
 ) {
     val babyUiState by babyViewModel.babyUiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    var pointColor:Color = PointBlue
+
+
+    if (uiState.selectedBaby != null) {
+        babyViewModel.getBaby(uiState.selectedBaby!!.id)
+        pointColor = if (uiState.selectedBaby!!.gender == "MALE") PointBlue else PointPink
+
+    }
+
 
     val type = if (babyUiState.selectedBaby == null) "등록" else "수정"
-    var selectedGender by remember { mutableStateOf(if (type == "등록") null else babyUiState.selectedBaby!!.gender) }
+    var selectedGender by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(babyUiState.selectedBaby) {
+        selectedGender = if (type == "등록") null else babyUiState.selectedBaby?.gender
+    }
     val titleText = if (type == "등록") "아이 정보 관리" else "${babyUiState.selectedBaby!!.nickname} 정보"
     val profileBtnText = if (type == "등록") "프로필 사진 등록하기" else "프로필 사진 수정하기"
     val nicknameText =
@@ -104,15 +120,34 @@ fun BabyDetailScreen(
             { _, year, month, dayOfMonth ->
                 dateList = listOf(year, month + 1, dayOfMonth)
                 babyViewModel.updateBabyBirth(dateList)
-                if (babyUiState.selectedBaby != null){
-                babyViewModel.changeBabyBirth()
-            }
+                if (babyUiState.selectedBaby != null) {
+                    babyViewModel.changeBabyBirth()
+
+                }
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         )
         datePickerDialog.show()
+    }
+
+    LaunchedEffect(Unit) {
+        babyViewModel.isChanged.collectLatest { isChanged ->
+            viewModel.getBabyList()
+            Toast.makeText(context, babyUiState.toastString, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        babyViewModel.isSelectedBabyChanged.collectLatest { isChanged ->
+            if (uiState.selectedBaby != null){
+                if (uiState.selectedBaby!!.id == babyUiState.selectedBaby!!.id) {
+                    viewModel.updateSelectedBaby(babyUiState.selectedBaby!!)
+                }
+            }
+
+        }
     }
 
 
@@ -143,6 +178,8 @@ fun BabyDetailScreen(
                     if (type != "등록") {
                         babyViewModel.updateBabyProfile(multipartFile!!)
                     }
+
+                    babyViewModel.updateBabyPhoto(multipartFile!!)
                 } else {
                     Toast.makeText(context, "이미지 변환 실패", Toast.LENGTH_SHORT).show()
                 }
@@ -243,7 +280,7 @@ fun BabyDetailScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                SmallLineBtn(profileBtnText, PointPink, onClick = {
+                SmallLineBtn(profileBtnText, pointColor, onClick = {
                     launcher.launch("image/*")
                 })
 
@@ -265,7 +302,7 @@ fun BabyDetailScreen(
                             .clickable {
                                 showNickNameUpdateDialog = true
                             },
-                        colorFilter = ColorFilter.tint(PointPink) // 색을 빨간색으로 변경
+                        colorFilter = ColorFilter.tint(pointColor) // 색을 빨간색으로 변경
 
                     )
                 }
@@ -283,12 +320,16 @@ fun BabyDetailScreen(
 
                 if (type == "등록") {
                     ClearTextField(
-                        value = babyUiState.babyBirth.joinToString("-"),
+                        value = babyUiState.babyBirth.joinToString("-") {
+                            String.format(
+                                "%02d",
+                                it
+                            )
+                        },
                         onValueChange = {},
-                        pointColor = PointPink,
+                        pointColor = pointColor,
                         modifier = Modifier
-                            .fillMaxWidth()
-                          ,
+                            .fillMaxWidth(),
                         icon = R.drawable.ic_calendar,
                         onIconClick = {
                             Log.d(TAG, "BabyDetailScreen: 클릭은된다")
@@ -301,8 +342,7 @@ fun BabyDetailScreen(
                         onValueChange = {},
                         pointColor = PointPink,
                         modifier = Modifier
-                            .fillMaxWidth()
-                        ,
+                            .fillMaxWidth(),
                         icon = R.drawable.ic_calendar,
                         onIconClick = {
                             Log.d(TAG, "BabyDetailScreen: 클릭하냐고")
@@ -356,16 +396,15 @@ fun BabyDetailScreen(
                 Spacer(modifier = Modifier.weight(1f))
                 if (type == "등록") {
                     PointPinkBtn("등록하기", onClick = {
-                        babyViewModel.registerBaby(
-                            profileImage = multipartFile
-                        )
+                        babyViewModel.registerBaby()
                     })
-                }else{
+                } else {
                     PointPinkBtn("아이삭제", onClick = {
                         babyViewModel.deleteBaby(babyUiState.selectedBaby!!.id)
+
                     })
                 }
-                Spacer(modifier = Modifier.height(60.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
 
             }
@@ -390,9 +429,7 @@ fun BabyDetailScreen(
             BabyNicknameDialog(
                 onDismiss = { showNickNameUpdateDialog = false },
                 onConfirm = {
-                    babyViewModel.updateBabyNickname(
-                        babyUiState.babyNickname
-                    )
+                    babyViewModel.changeBabyNickname()
                     showNickNameUpdateDialog = false
                 },
                 PointPink,
@@ -409,7 +446,7 @@ fun BabyDetailScreen(
 @Composable
 fun BabyDetailScreenPreview() {
     AchuTheme {
-        BabyDetailScreen()
+        BabyDetailScreen(viewModel = viewModel())
     }
 
 }

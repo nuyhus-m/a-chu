@@ -85,7 +85,7 @@ fun HomeScreen(
     viewModel.getBabyList()
 
 
-    var selectedBaby = uiState.selectedBaby
+
 
     val imageList = listOf(
         R.drawable.img_banner1,
@@ -108,11 +108,16 @@ fun HomeScreen(
 
         Spacer(Modifier.height(24.dp))
         if (uiState.user != null && uiState.babyList.size != 0) {
-            selectedBaby?.let {
+            LaunchedEffect(uiState.babyList) {
+                if (uiState.selectedBaby == null) {
+                    viewModel.updateSelectedBaby(uiState.babyList[0])
+                }
+            }
+            uiState.selectedBaby?.let {
                 BabyDropdown(
                     babyList = uiState.babyList,
                     selectedBaby = it,
-                    onBabySelected = { selectedBaby = it },
+                    onBabySelected = { baby -> viewModel.updateSelectedBaby(baby) },
                     user = uiState.user!!
                 )
             }
@@ -134,7 +139,8 @@ fun HomeScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(66.dp).padding(horizontal = 24.dp),
+                    .height(66.dp)
+                    .padding(horizontal = 24.dp),
                 verticalAlignment = Alignment.CenterVertically
 
                 ) {
@@ -161,7 +167,7 @@ fun HomeScreen(
                     } else {
                         // URL을 통해 이미지를 로드
                         AsyncImage(
-                            model = selectedBaby!!.imgUrl,
+                            model = uiState.selectedBaby!!.imgUrl,
                             contentDescription = "Profile",
                             modifier = Modifier
                                 .size(60.dp)
@@ -379,11 +385,11 @@ fun HomeScreen(
                     text = "추천상품  ",
                     style = AchuTheme.typography.semiBold20,
                 )
-                if (selectedBaby != null) {
+                if (uiState.selectedBaby != null) {
                     Text(
-                        text = selectedBaby!!.nickname,
+                        text = uiState.selectedBaby!!.nickname,
                         style = AchuTheme.typography.semiBold18,
-                        color = if (selectedBaby!!.gender == "남") PointBlue else PointPink
+                        color = if (uiState.selectedBaby!!.gender == "MALE") PointBlue else PointPink
                     )
                 }
                 Spacer(modifier = Modifier.weight(1.0f))
