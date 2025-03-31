@@ -18,7 +18,7 @@ public class S3Properties {
   @Value("${aws.s3.endpoint}")
   private String s3Endpoint;
 
-  @Value(("${aws.s3.bucket-name}"))
+  @Value("${aws.s3.bucket-name}")
   private String bucketName;
 
   public String getAccessKey() {
