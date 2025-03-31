@@ -8,5 +8,24 @@ public interface GoodsRepository {
 
   List<Goods> findCategoryGoods(User user, Long categoryId, Long offset, Long limit, SortType sort);
 
-  boolean existsById(Long goodsId);
+  List<Goods> searchGoods(User user, String keyword, Long offset, Long limit, SortType sort);
+
+  List<Goods> searchCategoryGoods(
+      User user, Long categoryId, String keyword, Long offset, Long limit, SortType sort);
+
+  List<Goods> findGoodsByIds(List<Long> ids);
+
+  GoodsDetail findGoodsDetail(Long id);
+
+  GoodsDetail save(User user, NewGoods newGoods);
+
+  GoodsDetail modifyGoods(Long id, ModifyGoods modifyGoods);
+
+  boolean existsById(Long id);
+
+  boolean existsByIdAndUserId(Long id, Long userId);
+
+  boolean isSelling(Long id);
+
+  Long delete(Long id);
 }

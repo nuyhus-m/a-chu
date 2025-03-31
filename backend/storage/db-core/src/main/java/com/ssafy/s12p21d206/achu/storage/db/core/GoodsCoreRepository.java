@@ -1,38 +1,94 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
-import com.ssafy.s12p21d206.achu.domain.Goods;
-import com.ssafy.s12p21d206.achu.domain.GoodsRepository;
-import com.ssafy.s12p21d206.achu.domain.User;
+import com.ssafy.s12p21d206.achu.domain.*;
+import com.ssafy.s12p21d206.achu.domain.TradeStatus;
+import com.ssafy.s12p21d206.achu.domain.error.CoreErrorType;
+import com.ssafy.s12p21d206.achu.domain.error.CoreException;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
+import com.ssafy.s12p21d206.achu.storage.db.core.support.SortUtils;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class GoodsCoreRepository implements GoodsRepository {
 
   private final GoodsJpaRepository goodsJpaRepository;
+  private final CategoryJpaRepository categoryJpaRepository;
 
-  public GoodsCoreRepository(GoodsJpaRepository goodsJpaRepository) {
+  public GoodsCoreRepository(
+      GoodsJpaRepository goodsJpaRepository, CategoryJpaRepository categoryJpaRepository) {
     this.goodsJpaRepository = goodsJpaRepository;
+    this.categoryJpaRepository = categoryJpaRepository;
+  }
+
+  @Override
+  public GoodsDetail save(User user, NewGoods newGoods) {
+    CategoryEntity categoryEntity = categoryJpaRepository
+        .findById(newGoods.categoryId())
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+    return goodsJpaRepository
+        .save(new GoodsEntity(
+            newGoods.title(),
+            newGoods.description(),
+            newGoods.imgUrls(),
+            TradeStatus.SELLING,
+            newGoods.price(),
+            newGoods.categoryId(),
+            user.id(),
+            newGoods.babyId()))
+        .toGoodsDetail(categoryEntity.toCategory());
+  }
+
+  @Override
+  public GoodsDetail modifyGoods(Long id, ModifyGoods modifyGoods) {
+    GoodsEntity goods = goodsJpaRepository
+        .findByIdAndEntityStatus(id, EntityStatus.ACTIVE)
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+    CategoryEntity categoryEntity = categoryJpaRepository
+        .findById(modifyGoods.categoryId())
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+    goods.updateText(modifyGoods);
+    goodsJpaRepository.save(goods);
+    return goods.toGoodsDetail(categoryEntity.toCategory());
+  }
+
+  @Override
+  public boolean isSelling(Long id) {
+    return goodsJpaRepository.existsByIdAndTradeStatus(id, TradeStatus.SELLING);
+  }
+
+  @Override
+  public Long delete(Long id) {
+    GoodsEntity goods = goodsJpaRepository
+        .findByIdAndEntityStatus(id, EntityStatus.ACTIVE)
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+    goods.delete();
+    return goods.getId();
   }
 
   @Override
   public List<Goods> findGoods(User user, Long offset, Long limit, SortType sort) {
-    Pageable pageable = PageRequest.of(offset.intValue(), limit.intValue(), convertSort(sort));
-    List<GoodsEntity> goodsEntities =
-        goodsJpaRepository.findAllByEntityStatus(pageable, EntityStatus.ACTIVE);
+    Pageable pageable =
+        PageRequest.of(offset.intValue(), limit.intValue(), SortUtils.convertSort(sort));
+    List<GoodsEntity> goodsEntities = goodsJpaRepository.findByTradeStatusAndEntityStatus(
+        pageable, TradeStatus.SELLING, EntityStatus.ACTIVE);
     return goodsEntities.stream().map(GoodsEntity::toGoods).toList();
   }
 
   @Override
   public List<Goods> findCategoryGoods(
       User user, Long categoryId, Long offset, Long limit, SortType sort) {
-    Pageable pageable = PageRequest.of(offset.intValue(), limit.intValue(), convertSort(sort));
-    List<GoodsEntity> goodsEntities = goodsJpaRepository.findAllByCategoryIdAndEntityStatus(
-        categoryId, pageable, EntityStatus.ACTIVE);
+    Pageable pageable =
+        PageRequest.of(offset.intValue(), limit.intValue(), SortUtils.convertSort(sort));
+    List<GoodsEntity> goodsEntities =
+        goodsJpaRepository.findByCategoryIdAndTradeStatusAndEntityStatus(
+            categoryId, pageable, TradeStatus.SELLING, EntityStatus.ACTIVE);
     return goodsEntities.stream().map(GoodsEntity::toGoods).toList();
   }
 
@@ -41,10 +97,57 @@ public class GoodsCoreRepository implements GoodsRepository {
     return goodsJpaRepository.existsByIdAndEntityStatus(goodsId, EntityStatus.ACTIVE);
   }
 
-  private Sort convertSort(SortType sort) {
-    return switch (sort) {
-      case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
-      case OLDEST -> Sort.by(Sort.Direction.ASC, "createdAt");
-    };
+  @Override
+  public List<Goods> findGoodsByIds(List<Long> ids) {
+
+    List<GoodsEntity> goodsEntities =
+        goodsJpaRepository.findByIdInAndEntityStatus(ids, EntityStatus.ACTIVE);
+    Map<Long, GoodsEntity> entityMap =
+        goodsEntities.stream().collect(Collectors.toMap(GoodsEntity::getId, Function.identity()));
+
+    return ids.stream()
+        .map(entityMap::get)
+        .filter(Objects::nonNull)
+        .map(GoodsEntity::toGoods)
+        .toList();
+  }
+
+  @Override
+  public GoodsDetail findGoodsDetail(Long id) {
+    GoodsEntity goodsEntity = goodsJpaRepository
+        .findByIdAndEntityStatus(id, EntityStatus.ACTIVE)
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+    CategoryEntity categoryEntity = categoryJpaRepository
+        .findById(goodsEntity.getCategoryId())
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+    return goodsEntity.toGoodsDetail(categoryEntity.toCategory());
+  }
+
+  @Override
+  public List<Goods> searchGoods(
+      User user, String keyword, Long offset, Long limit, SortType sort) {
+    Pageable pageable =
+        PageRequest.of(offset.intValue(), limit.intValue(), SortUtils.convertSort(sort));
+    List<GoodsEntity> goodsEntities =
+        goodsJpaRepository.findByTitleContainingAndTradeStatusAndEntityStatus(
+            keyword, pageable, TradeStatus.SELLING, EntityStatus.ACTIVE);
+    return goodsEntities.stream().map(GoodsEntity::toGoods).toList();
+  }
+
+  @Override
+  public List<Goods> searchCategoryGoods(
+      User user, Long categoryId, String keyword, Long offset, Long limit, SortType sort) {
+    Pageable pageable =
+        PageRequest.of(offset.intValue(), limit.intValue(), SortUtils.convertSort(sort));
+    List<GoodsEntity> goodsEntities =
+        goodsJpaRepository.findByCategoryIdAndTitleContainingAndTradeStatusAndEntityStatus(
+            categoryId, keyword, pageable, TradeStatus.SELLING, EntityStatus.ACTIVE);
+
+    return goodsEntities.stream().map(GoodsEntity::toGoods).toList();
+  }
+
+  @Override
+  public boolean existsByIdAndUserId(Long id, Long userId) {
+    return goodsJpaRepository.existsByIdAndUserIdAndEntityStatus(id, userId, EntityStatus.ACTIVE);
   }
 }

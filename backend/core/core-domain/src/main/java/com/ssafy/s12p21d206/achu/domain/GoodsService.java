@@ -8,9 +8,34 @@ import org.springframework.stereotype.Service;
 public class GoodsService {
 
   private final GoodsReader goodsReader;
+  private final GoodsAppender goodsAppender;
+  private final GoodsModifier goodsModifier;
+  private final GoodsDeleter goodsDeleter;
+  private final GoodsSearch goodsSearch;
 
-  public GoodsService(GoodsReader goodsReader) {
+  public GoodsService(
+      GoodsReader goodsReader,
+      GoodsAppender goodsAppender,
+      GoodsModifier goodsModifier,
+      GoodsDeleter goodsDeleter,
+      GoodsSearch goodsSearch) {
     this.goodsReader = goodsReader;
+    this.goodsAppender = goodsAppender;
+    this.goodsModifier = goodsModifier;
+    this.goodsDeleter = goodsDeleter;
+    this.goodsSearch = goodsSearch;
+  }
+
+  public GoodsDetail append(User user, NewGoods newGoods) {
+    return goodsAppender.append(user, newGoods);
+  }
+
+  public GoodsDetail modify(User user, Long goodsId, ModifyGoods modifyGoods) {
+    return goodsModifier.modify(user, goodsId, modifyGoods);
+  }
+
+  public Long delete(User user, Long goodsId) {
+    return goodsDeleter.delete(user, goodsId);
   }
 
   public List<Goods> findGoods(User user, Long offset, Long limit, SortType sort) {
@@ -20,5 +45,19 @@ public class GoodsService {
   public List<Goods> findCategoryGoods(
       User user, Long categoryId, Long offset, Long limit, SortType sort) {
     return goodsReader.readCategoryGoods(user, categoryId, offset, limit, sort);
+  }
+
+  public GoodsDetail findGoodsDetail(Long goodsId) {
+    return goodsReader.readGoodsDetail(goodsId);
+  }
+
+  public List<Goods> searchGoods(
+      User user, String keyword, Long offset, Long limit, SortType sort) {
+    return goodsSearch.searchGoods(user, keyword, offset, limit, sort);
+  }
+
+  public List<Goods> searchCategoryGoods(
+      User user, Long categoryId, String keyword, Long offset, Long limit, SortType sort) {
+    return goodsSearch.searchCategoryGoods(user, categoryId, keyword, offset, limit, sort);
   }
 }

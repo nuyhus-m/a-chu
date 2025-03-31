@@ -5,4 +5,6 @@ import java.util.List;
 public interface CategoryRepository {
 
   List<Category> findCategories();
+
+  boolean existsById(Long categoryId);
 }

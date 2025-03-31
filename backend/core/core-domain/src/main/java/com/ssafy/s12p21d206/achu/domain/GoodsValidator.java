@@ -18,4 +18,16 @@ public class GoodsValidator {
       throw new CoreException(CoreErrorType.DATA_NOT_FOUND);
     }
   }
+
+  public void validateOwner(Long goodsId, Long userId) {
+    if (!goodsRepository.existsByIdAndUserId(goodsId, userId)) {
+      throw new CoreException(CoreErrorType.CANNOT_ACCESS_GOODS);
+    }
+  }
+
+  public void validateIsSelling(Long goodsId) {
+    if (!goodsRepository.isSelling(goodsId)) {
+      throw new CoreException(CoreErrorType.GOODS_ALREADY_SOLD);
+    }
+  }
 }

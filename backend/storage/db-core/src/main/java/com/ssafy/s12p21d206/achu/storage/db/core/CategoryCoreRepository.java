@@ -19,4 +19,9 @@ public class CategoryCoreRepository implements CategoryRepository {
     List<CategoryEntity> categoryEntities = categoryJpaRepository.findAll();
     return categoryEntities.stream().map(CategoryEntity::toCategory).toList();
   }
+
+  @Override
+  public boolean existsById(Long categoryId) {
+    return categoryJpaRepository.existsByIdAndEntityStatus(categoryId, EntityStatus.ACTIVE);
+  }
 }

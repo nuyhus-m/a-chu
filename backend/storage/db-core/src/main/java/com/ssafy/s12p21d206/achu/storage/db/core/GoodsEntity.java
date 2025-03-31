@@ -1,6 +1,7 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
-import com.ssafy.s12p21d206.achu.domain.Goods;
+import com.ssafy.s12p21d206.achu.domain.*;
+import com.ssafy.s12p21d206.achu.domain.support.DefaultDateTime;
 import com.ssafy.s12p21d206.achu.storage.db.core.converter.ImgUrlListJsonConverter;
 import jakarta.persistence.*;
 import java.util.List;
@@ -31,39 +32,68 @@ public class GoodsEntity extends BaseEntity {
 
   protected GoodsEntity() {}
 
-  public String getTitle() {
-    return title;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public List<String> getImgUrls() {
-    return imgUrls;
-  }
-
-  public TradeStatus getTradeStatus() {
-    return tradeStatus;
-  }
-
-  public Long getPrice() {
-    return price;
+  public GoodsEntity(
+      String title,
+      String description,
+      List<String> imgUrls,
+      TradeStatus tradeStatus,
+      Long price,
+      Long categoryId,
+      Long userId,
+      Long babyId) {
+    this.title = title;
+    this.description = description;
+    this.imgUrls = imgUrls;
+    this.tradeStatus = tradeStatus;
+    this.price = price;
+    this.categoryId = categoryId;
+    this.userId = userId;
+    this.babyId = babyId;
   }
 
   public Long getCategoryId() {
     return categoryId;
   }
 
-  public Long getUserId() {
-    return userId;
-  }
-
-  public Long getBabyId() {
-    return babyId;
-  }
-
   public Goods toGoods() {
-    return new Goods(getId(), title, imgUrls.get(0), price, getCreatedAt());
+    return new Goods(
+        getId(),
+        this.title,
+        this.description,
+        this.imgUrls,
+        this.tradeStatus,
+        this.price,
+        new DefaultDateTime(getCreatedAt(), getUpdatedAt()),
+        this.categoryId,
+        new User(this.userId),
+        this.babyId);
+  }
+
+  public GoodsDetail toGoodsDetail(Category category) {
+    return new GoodsDetail(
+        new Goods(
+            getId(),
+            this.title,
+            this.description,
+            this.imgUrls,
+            this.tradeStatus,
+            this.price,
+            new DefaultDateTime(getCreatedAt(), getUpdatedAt()),
+            this.categoryId,
+            new User(this.userId),
+            this.babyId),
+        category);
+  }
+
+  public void updateText(ModifyGoods modifyGoods) {
+    this.title = modifyGoods.title();
+    this.description = modifyGoods.description();
+    this.price = modifyGoods.price();
+    this.categoryId = modifyGoods.categoryId();
+    this.babyId = modifyGoods.babyId();
+  }
+
+  public void sold() {
+    this.tradeStatus = TradeStatus.SOLD;
   }
 }
