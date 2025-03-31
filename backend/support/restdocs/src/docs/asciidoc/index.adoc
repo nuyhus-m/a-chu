@@ -27,7 +27,7 @@ endif::[]
 [cols="2,5,3"]
 |====
 |환경         |DNS |비고
-|개발(dev)    | link:[api.a-chu.dukcode.org] |API 문서 제공
+|개발(dev)    | https://api.a-chu.dukcode.org |API 문서 제공
 |운영(prod)   | link:[추후 확정 예정] |API 문서 미제공
 |====
 
