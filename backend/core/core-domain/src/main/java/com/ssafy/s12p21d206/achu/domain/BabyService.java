@@ -26,8 +26,8 @@ public class BabyService {
     this.babyValidator = babyValidator;
   }
 
-  public Long append(User user, NewBaby newBaby) {
-    Baby baby = babyAppender.append(user, newBaby);
+  public Long append(User user, NewBaby newBaby, String imageUrl) {
+    Baby baby = babyAppender.append(user, newBaby, imageUrl);
     return baby.getId();
   }
 
@@ -61,5 +61,11 @@ public class BabyService {
     babyValidator.validateExists(id);
     babyValidator.validateParent(user, id);
     return babyModifier.modifyGender(id, gender);
+  }
+
+  public Baby modifyImageUrl(User user, Long id, String imageUrl) {
+    babyValidator.validateExists(id);
+    babyValidator.validateParent(user, id);
+    return babyModifier.modifyImageUrl(id, imageUrl);
   }
 }

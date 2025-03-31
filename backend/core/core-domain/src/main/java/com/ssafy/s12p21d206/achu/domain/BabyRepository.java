@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface BabyRepository {
 
-  Baby save(User user, NewBaby newBaby);
+  Baby save(User user, NewBaby newBaby, String imageUrl);
 
   List<Baby> findByUser(User user);
 
@@ -25,4 +25,6 @@ public interface BabyRepository {
   Baby modifyGender(Long id, Sex gender);
 
   int countByUserId(Long id);
+
+  Baby modifyImageUrl(Long id, String imageUrl);
 }
