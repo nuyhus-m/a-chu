@@ -63,4 +63,8 @@ public class AuthUserEntity extends AuthBaseEntity {
   public void changePhoneNumber(String phoneNumber) {
     this.phoneNumber = phoneNumber;
   }
+
+  public void changeProfileImageUrl(String profileImageUrl) {
+    this.profileImageUrl = profileImageUrl;
+  }
 }

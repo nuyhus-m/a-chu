@@ -59,4 +59,8 @@ public class AuthUserModifier {
     String encodedPassword = passwordEncoder.encode(newPassword);
     return authUserRepository.modifyPassword(authUser.id(), encodedPassword);
   }
+
+  public AuthUser modifyProfileImage(Long userId, String profileImageUrl) {
+    return authUserRepository.modifyProfileImage(userId, profileImageUrl);
+  }
 }

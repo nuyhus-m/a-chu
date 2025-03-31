@@ -7,8 +7,10 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 
+import com.ssafy.s12p21d206.achu.auth.domain.image.AuthImageService;
 import com.ssafy.s12p21d206.achu.auth.domain.support.AuthDefaultDateTime;
 import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUser;
+import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUserImageFacade;
 import com.ssafy.s12p21d206.achu.auth.domain.user.AuthUserService;
 import com.ssafy.s12p21d206.achu.auth.domain.verification.Phone;
 import com.ssafy.s12p21d206.achu.test.api.RestDocsTest;
@@ -28,11 +30,15 @@ class AuthUserEntityControllerTest extends RestDocsTest {
 
   private AuthUserController controller;
   private AuthUserService authUserService;
+  private AuthImageService authImageService;
+  private AuthUserImageFacade authUserImageFacade;
 
   @BeforeEach
   void setup() {
     authUserService = mock(AuthUserService.class);
-    controller = new AuthUserController(authUserService);
+    authImageService = mock(AuthImageService.class);
+    authUserImageFacade = new AuthUserImageFacade(authUserService, authImageService);
+    controller = new AuthUserController(authUserService, authUserImageFacade);
     mockMvc = mockController(controller);
   }
 
@@ -208,6 +214,8 @@ class AuthUserEntityControllerTest extends RestDocsTest {
 
   @Test
   void modifyProfileImage() {
+    when(authImageService.uploadImage(any())).thenReturn("http://dummy.image.url");
+
     given()
         .contentType(MediaType.MULTIPART_FORM_DATA)
         .multiPart("profileImage", "test.jpg", new byte[0], "image/jpeg")

@@ -54,4 +54,8 @@ public class AuthUserService {
   public AuthUser findUser(Long userId) {
     return authUserReader.findAuthUser(userId);
   }
+
+  public AuthUser modifyProfileImage(Long id, String profileImageUrl) {
+    return authUserModifier.modifyProfileImage(id, profileImageUrl);
+  }
 }

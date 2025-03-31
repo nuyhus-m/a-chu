@@ -86,4 +86,17 @@ public class AuthUserCoreRepository implements AuthUserRepository {
 
     return authUserEntity.toAuthUser();
   }
+
+  @Override
+  public AuthUser modifyProfileImage(Long userId, String profileImageUrl) {
+    AuthUserEntity authUserEntity = authUserJpaRepository
+        .findById(userId)
+        .orElseThrow(() -> new AuthCoreException(AuthCoreErrorType.USER_NOT_FOUND));
+
+    authUserEntity.changeProfileImageUrl(profileImageUrl);
+
+    authUserJpaRepository.save(authUserEntity);
+
+    return authUserEntity.toAuthUser();
+  }
 }

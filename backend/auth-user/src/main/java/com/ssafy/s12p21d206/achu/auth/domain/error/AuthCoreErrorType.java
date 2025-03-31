@@ -11,7 +11,10 @@ public enum AuthCoreErrorType {
   INVALID_VERIFICATION_CODE(CLIENT_ERROR, AUE1002, "잘못된 인증 코드입니다.", WARN),
   UNVERIFIED_VERIFICATION_CODE(CLIENT_ERROR, AUE1003, "인증 코드 인증이 완료되지 않았습니다.", WARN),
   DUPLICATED_USERNAME(CLIENT_ERROR, AUE1004, "유저네임이 중복되었습니다.", INFO),
-  DUPLICATED_NICKNAME(CLIENT_ERROR, AUE1005, "닉네임이 중복되었습니다.", INFO);
+  DUPLICATED_NICKNAME(CLIENT_ERROR, AUE1005, "닉네임이 중복되었습니다.", INFO),
+  FILE_SIZE_EXCEEDED(CLIENT_ERROR, AUE1006, "파일 최대 사이즈를 {0}MB를 초과하였습니다.", INFO),
+  INVALID_IMAGE(CLIENT_ERROR, AUE1006, "업로드 파일이 이미지가 아닙니다.", WARN),
+  INCORRECT_MIME_TYPE(CLIENT_ERROR, AUE1007, "MIME 타입과 파일이 일치하지 않습니다.", WARN);
 
   private final AuthCoreErrorKind kind;
   private final AuthCoreErrorCode code;
