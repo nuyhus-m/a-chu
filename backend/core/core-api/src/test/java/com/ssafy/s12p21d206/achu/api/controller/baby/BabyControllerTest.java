@@ -59,7 +59,7 @@ class BabyControllerTest extends RestDocsTest {
         .apply(document(
             "append-baby",
             requestParts(
-                partWithName("profileImage").description("프로필 이미지 파일"),
+                partWithName("profileImage").description("프로필 이미지 파일").optional(),
                 partWithName("request").description("자녀 등록 요청 데이터")),
             requestPartFields(
                 "request",
