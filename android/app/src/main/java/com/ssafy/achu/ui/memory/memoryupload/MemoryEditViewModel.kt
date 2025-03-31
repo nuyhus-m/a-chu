@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.memory
+package com.ssafy.achu.ui.memory.memoryupload
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -6,32 +6,50 @@ import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.memory.MemoryRequest
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 
 private const val TAG = "MemoryEditViewModel 안주현"
+
 class MemoryEditViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(MemoryEditUIState())
     val uiState: StateFlow<MemoryEditUIState> = _uiState.asStateFlow()
 
-    fun showDeleteDialog(boolean: Boolean) {
-        _uiState.value = _uiState.value.copy(showDeleteDialog = boolean)
+    private val _isChanged = MutableSharedFlow<Boolean>()
+    val isChanged: SharedFlow<Boolean> = _isChanged
+
+    fun isImageChanged(boolean: Boolean) {
+        _uiState.value = _uiState.value.copy(ifChangedImage = boolean)
     }
 
 
-    fun memoryTitleUpdate(title:String){
+    fun memoryTitleUpdate(title: String) {
+        Log.d(TAG, "memoryTitleUpdate: ${uiState.value.memoryTitle}")
         _uiState.value = _uiState.value.copy(memoryTitle = title)
+        Log.d(TAG, "memoryTitleUpdate: ${uiState.value.memoryTitle}")
+
     }
 
-    fun memoryContentUpdate(content:String){
+    fun memoryContentUpdate(content: String) {
         _uiState.value = _uiState.value.copy(memoryContent = content)
     }
 
     fun memoryImageUpdate(images: List<MultipartBody.Part>) {
-    _uiState.value = _uiState.value.copy(sendIMage = images)
+        _uiState.value = _uiState.value.copy(sendIMage = images)
+    }
+
+
+    fun babyIdUpdate(babyId: Int) {
+        _uiState.value = _uiState.value.copy(babyId = babyId)
+    }
+
+    fun updateToastString(toastString: String) {
+        _uiState.value = _uiState.value.copy(toastString = toastString)
     }
 
     fun uploadMemory() {
@@ -45,7 +63,9 @@ class MemoryEditViewModel : ViewModel() {
                 )
             ).onSuccess {
                 Log.d(TAG, "uploadMemory: ${it}")
+                updateToastString("추억 작성 완료!")
                 getMemory(it.data.id)
+                _isChanged.emit(true)
 
             }.onFailure {
                 val errorResponse = it.getErrorResponse(ApplicationClass.Companion.retrofit)
@@ -60,7 +80,9 @@ class MemoryEditViewModel : ViewModel() {
         viewModelScope.launch {
             ApplicationClass.Companion.memoryRepository.getMemory(memoryId).onSuccess {
                 _uiState.value = _uiState.value.copy(
-                    selectedMemory = it.data
+                    selectedMemory = it.data,
+                    memoryTitle = it.data.title,
+                    memoryContent = it.data.content
                 )
                 Log.d(TAG, "getMemory: ${it}")
             }.onFailure {
@@ -83,7 +105,11 @@ class MemoryEditViewModel : ViewModel() {
                 )
             ).onSuccess {
                 Log.d(TAG, "changeMemory: ${it}")
+
                 getMemory(uiState.value.selectedMemory.id)
+                updateToastString("추억 수정 완료!")
+                _isChanged.emit(true)
+
             }.onFailure {
                 val errorResponse = it.getErrorResponse(ApplicationClass.Companion.retrofit)
                 Log.d(TAG, "changeMemory: ${errorResponse}")
@@ -92,16 +118,6 @@ class MemoryEditViewModel : ViewModel() {
 
     }
 
-    fun deleteMemory() {
-        viewModelScope.launch {
-            ApplicationClass.Companion.memoryRepository.deleteMemory(uiState.value.selectedMemory.id).onSuccess {
-                Log.d(TAG, "deleteMemory: ${it}")
-            }.onFailure {
-                val errorResponse = it.getErrorResponse(ApplicationClass.Companion.retrofit)
-                Log.d(TAG, "deleteMemory: ${errorResponse}")
-            }
-        }
-    }
 
     fun updateImage() {
         viewModelScope.launch {
@@ -110,11 +126,15 @@ class MemoryEditViewModel : ViewModel() {
                 memoryImages = uiState.value.sendIMage
             ).onSuccess {
                 Log.d(TAG, "updateImage: ${it}")
-                getMemory(uiState.value.selectedMemory.id)
-                }.onFailure {
+//                getMemory(uiState.value.selectedMemory.id)
+//                updateToastString("추억 수정 완료!")
+//                _isChanged.emit(true)
+            }.onFailure {
                 val errorResponse = it.getErrorResponse(ApplicationClass.Companion.retrofit)
                 Log.d(TAG, "updateImage: ${errorResponse}")
             }
         }
     }
+
+
 }

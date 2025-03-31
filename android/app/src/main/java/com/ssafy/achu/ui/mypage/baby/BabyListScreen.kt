@@ -1,6 +1,7 @@
 package com.ssafy.achu.ui.mypage.baby
 
 import android.os.Build
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -60,6 +61,8 @@ fun BabyListScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
 
     Box(
         modifier = Modifier
@@ -73,7 +76,7 @@ fun BabyListScreen(
             BasicTopAppBar(
                 title = "아이 정보 관리",
                 onBackClick = {
-                    // Add logic for back button click if needed
+                    backPressedDispatcher?.onBackPressed()
                 }
             )
 

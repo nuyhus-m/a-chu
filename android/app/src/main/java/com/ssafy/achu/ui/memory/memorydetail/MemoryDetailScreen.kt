@@ -1,5 +1,7 @@
-package com.ssafy.achu.ui.memory
+package com.ssafy.achu.ui.memory.memorydetail
 
+import android.widget.Toast
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,11 +20,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,15 +45,18 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MemoryDetailScreen(
-    onNavigateToMemoryUpload: () -> Unit,
+    onNavigateToMemoryUpload: (memoryID:Int, babyId:Int) -> Unit,
     memoryViewModel: MemoryDetailViewModel = viewModel(),
     memoryId: Int,
+    babyId: Int,
 ) {
     val memoryUIState: MemoryDetailUIState by memoryViewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     val pagerState = rememberPagerState()
     val images = listOf(
@@ -57,6 +64,18 @@ fun MemoryDetailScreen(
         R.drawable.img_test_baby_summer,
         R.drawable.img_test_sopung
     )
+
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
+    LaunchedEffect(Unit) {
+        memoryViewModel.isChanged.collectLatest { isChanged ->
+            memoryViewModel.getMemory(memoryId)
+            Toast.makeText(context, memoryUIState.toastString, Toast.LENGTH_SHORT).show()
+            backPressedDispatcher?.onBackPressed()
+        }
+    }
+
+    memoryViewModel.getMemory(memoryId)
 
 
     Box(
@@ -79,7 +98,9 @@ fun MemoryDetailScreen(
                     modifier = Modifier
                         .size(30.dp)
                         .alignByBaseline()
-                        .clickable {},
+                        .clickable {
+                            backPressedDispatcher?.onBackPressed()
+                        },
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(FontBlack)
                 )
 
@@ -91,7 +112,10 @@ fun MemoryDetailScreen(
                         .size(32.dp)
                         .alignByBaseline()
                         .clickable {
-                            onNavigateToMemoryUpload()
+                            onNavigateToMemoryUpload(
+                                memoryUIState.selectedMemory.id,
+                                babyId
+                            )
 
                         },
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(PointBlue)
@@ -217,8 +241,12 @@ fun PageIndicator(totalPages: Int, currentPage: Int) {
 @Composable
 fun MemoryDetailScreenPreview() {
     AchuTheme { MemoryDetailScreen(
-        onNavigateToMemoryUpload = {},
-        memoryId = 0
+        onNavigateToMemoryUpload = {
+                memoryId: Int, babyId: Int ->
+        },
+        memoryId = 0,
+        babyId = 0,
+
     )
     }
 }

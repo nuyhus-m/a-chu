@@ -1,6 +1,6 @@
-package com.ssafy.achu.ui.memory
+package com.ssafy.achu.ui.memory.memoryupload
 
-import com.ssafy.achu.data.model.memory.MemoryResponse
+import com.google.android.material.slider.BaseOnChangeListener
 import com.ssafy.achu.data.model.memory.SingleMemoryResponse
 import okhttp3.MultipartBody
 
@@ -9,7 +9,6 @@ data class MemoryEditUIState (
     val memoryTitle: String = "",
     val memoryContent: String = "",
     val sendIMage: List<MultipartBody.Part> = emptyList(),
-    val showDeleteDialog: Boolean = false,
     val selectedMemory : SingleMemoryResponse = SingleMemoryResponse(
         imgUrls = emptyList(),
         title = "",
@@ -18,5 +17,7 @@ data class MemoryEditUIState (
         createdAt = "",
         updatedAt = ""
     )
+    , val toastString: String = "",
+    val ifChangedImage : Boolean = false
 
 )

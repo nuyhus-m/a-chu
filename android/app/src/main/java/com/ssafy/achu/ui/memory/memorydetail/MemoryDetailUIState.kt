@@ -1,14 +1,11 @@
-package com.ssafy.achu.ui.memory
+package com.ssafy.achu.ui.memory.memorydetail
 
-import com.ssafy.achu.data.model.memory.MemoryResponse
 import com.ssafy.achu.data.model.memory.SingleMemoryResponse
 import okhttp3.MultipartBody
 
 data class MemoryDetailUIState (
-    val babyId: Int = 0,
-    val memoryTitle: String = "",
-    val memoryContent: String = "",
-    val sendIMage: List<MultipartBody.Part> = emptyList(),
+    val isChanged: Boolean = false,
+    val toastString: String = "",
     val showDeleteDialog: Boolean = false,
     val selectedMemory : SingleMemoryResponse = SingleMemoryResponse(
         imgUrls = emptyList(),

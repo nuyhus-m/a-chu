@@ -61,7 +61,7 @@ import kotlin.String
 @Composable
 fun MemoryListScreen(
     modifier: Modifier = Modifier,
-    onNavigateToMemoryDetail: (memoryID:Int) -> Unit,
+    onNavigateToMemoryDetail: (memoryID:Int, babyId:Int) -> Unit,
     viewModel: ActivityViewModel,
     memoryViewModel: MemoryViewModel  = viewModel()
 ) {
@@ -218,7 +218,7 @@ fun MemoryListScreen(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "${uiState.selectedBaby?.birth}일생",
+                    text = "${uiState.selectedBaby?.birth}",
                     style = AchuTheme.typography.semiBold16,
                     color = if (uiState.selectedBaby!!.gender == "MALE") PointBlue else PointPink
 
@@ -233,7 +233,9 @@ fun MemoryListScreen(
                             painter = painterResource(id = R.drawable.img_smiling_face),
                             contentDescription = "Profile",
                             modifier = Modifier
-                                .size(80.dp)
+                                .size(80.dp).clickable {
+                                    onNavigateToMemoryDetail(0, uiState.selectedBaby!!.id)
+                                }
                         )
 
                         Spacer(Modifier.height(24.dp))
@@ -256,7 +258,7 @@ fun MemoryListScreen(
                                 title = memoryUIState.memoryList[index].title,
                                 date = memoryUIState.memoryList[index].createdAt,
                                 onClick = {
-                                    onNavigateToMemoryDetail(memoryUIState.memoryList[index].id)
+                                    onNavigateToMemoryDetail(memoryUIState.memoryList[index].id, memoryUIState.babyId)
                                 }
                             )
                             Spacer(modifier = Modifier.height(16.dp)) // 아이템 간 간격 추가
@@ -267,6 +269,8 @@ fun MemoryListScreen(
         }
     }
 }
+
+
 
 @Composable
 fun MemoryListItem(img: String, title: String, date: String, onClick: () -> Unit) {
@@ -332,7 +336,9 @@ fun MemoryListScreenPreview() {
 
     AchuTheme {
         MemoryListScreen(
-            onNavigateToMemoryDetail = {}, viewModel = viewModel(),
+            onNavigateToMemoryDetail = {
+                    memoryId, babyId ->
+            }, viewModel = viewModel(),
             memoryViewModel = viewModel()
         )
 //        MemoryListItem(

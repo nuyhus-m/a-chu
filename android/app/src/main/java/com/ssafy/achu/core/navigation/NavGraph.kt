@@ -12,9 +12,9 @@ import androidx.navigation.compose.composable
 import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.chat.chatdetail.ChatScreen
 import com.ssafy.achu.ui.chat.chatlist.ChatListScreen
-import com.ssafy.achu.ui.memory.MemoryDetailScreen
+import com.ssafy.achu.ui.memory.memorydetail.MemoryDetailScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
-import com.ssafy.achu.ui.memory.MemoryUploadScreen
+import com.ssafy.achu.ui.memory.memoryupload.MemoryUploadScreen
 import com.ssafy.achu.ui.mypage.baby.BabyDetailScreen
 import com.ssafy.achu.ui.mypage.baby.BabyListScreen
 import com.ssafy.achu.ui.mypage.likelist.LikeItemListScreen
@@ -66,9 +66,9 @@ fun NavGraph(
             MemoryListScreen(
                 viewModel = activityViewModel,
                 modifier = modifier,
-                onNavigateToMemoryDetail = { id ->
+                onNavigateToMemoryDetail = { memoryId, babyId ->
                     navController.navigate(
-                        route = Route.MemoryDetail(memoryId = id)
+                        route = Route.MemoryDetail(memoryId = memoryId, babyId = babyId)
                     )
                 }
             )
@@ -132,16 +132,25 @@ fun NavGraph(
         // 추억 관련 화면들
         composable<Route.MemoryUpload> {
             MemoryUploadScreen(
-                onNavigateToMemoryDetail = { navController.navigate(route = Route.MemoryDetail) },
-                memoryId = it.arguments?.getInt("memoryId") ?: 0
+                onNavigateToMemoryDetail = { memoryId, babyId ->
+                    navController.navigate(
+                        route = Route.MemoryDetail(memoryId = memoryId, babyId = babyId)
+                    )
+                },
+                memoryId = it.arguments?.getInt("memoryId") ?: 0,
+                babyId = it.arguments?.getInt("babyId") ?: 0,
             )
         }
 
         composable<Route.MemoryDetail> {
             MemoryDetailScreen(
-                onNavigateToMemoryUpload =
-                    { navController.navigate(route = Route.MemoryUpload) },
-                memoryId = it.arguments?.getInt("memoryId") ?: 0
+                onNavigateToMemoryUpload = { memoryId, babyId ->
+                    navController.navigate(
+                        route = Route.MemoryUpload(memoryId = memoryId, babyId = babyId)
+                    )
+                },
+                memoryId = it.arguments?.getInt("memoryId") ?: 0,
+                babyId = it.arguments?.getInt("babyId") ?: 0,
 
             )
         }
