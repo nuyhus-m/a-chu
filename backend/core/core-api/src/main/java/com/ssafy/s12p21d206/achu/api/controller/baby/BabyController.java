@@ -23,7 +23,7 @@ public class BabyController {
   @PostMapping("/babies")
   public ApiResponse<DefaultIdResponse> appendBaby(
       ApiUser apiUser,
-      @RequestPart(name = "profileImage") MultipartFile profileImage,
+      @RequestPart(name = "profileImage", required = false) MultipartFile profileImage,
       @RequestPart @Validated AppendBabyRequest request) {
     String imageUrl = "https://dummy-image-url.com/image.png";
     NewBaby newBaby = request.toNewBaby(imageUrl);
