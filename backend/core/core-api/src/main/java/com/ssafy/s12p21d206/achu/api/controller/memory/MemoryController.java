@@ -40,7 +40,6 @@ public class MemoryController {
       @PathVariable Long babyId,
       @RequestPart(name = "images") List<MultipartFile> multipartFiles,
       @RequestPart(name = "request") @Validated AppendMemoryRequest request) {
-    List<String> imgUrls = List.of("goods1-img-url1.jpg", "goods1-img-url2.jpg");
     NewMemory newMemory = request.toNewMemory();
     List<File> imageFiles = multipartFiles.stream().map(FileConverter::convert).toList();
     Memory memory = memoryImageFacade.append(apiUser.toUser(), babyId, newMemory, imageFiles);
