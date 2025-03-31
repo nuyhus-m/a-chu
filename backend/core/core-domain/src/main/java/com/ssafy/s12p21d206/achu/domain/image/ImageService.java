@@ -2,7 +2,6 @@ package com.ssafy.s12p21d206.achu.domain.image;
 
 import com.ssafy.s12p21d206.achu.domain.ImageUrlsWithThumbnail;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,7 +33,7 @@ public class ImageService {
   public List<String> uploadImages(List<File> files, ImageCompressionOption option) {
     List<File> compressedFiles = files.stream()
         .map(file -> authImageCompressor.compressFile(file, option))
-        .collect(Collectors.toList());
+        .toList();
     return fileUploader.uploadFiles(compressedFiles);
   }
 
