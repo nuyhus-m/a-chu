@@ -5,7 +5,6 @@ import com.ssafy.s12p21d206.achu.api.validation.GoodsTitle;
 import com.ssafy.s12p21d206.achu.domain.NewGoods;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
 
 public record AppendGoodsRequest(
     @NotNull @GoodsTitle String title,
@@ -13,8 +12,8 @@ public record AppendGoodsRequest(
     @NotNull @Min(0) Long price,
     @NotNull Long categoryId,
     @NotNull Long babyId) {
-  public NewGoods toNewGoods(List<String> imgUrls) {
+  public NewGoods toNewGoods() {
     return new NewGoods(
-        this.title(), this.description(), imgUrls, this.price(), this.categoryId(), this.babyId());
+        this.title(), this.description(), this.price(), this.categoryId(), this.babyId());
   }
 }

@@ -32,7 +32,14 @@ public enum CoreErrorType {
       CoreErrorKind.CLIENT_ERROR,
       CoreErrorCode.E1008,
       "limit 값은 1 이상이어야 합니다.",
-      CoreErrorLevel.INFO);
+      CoreErrorLevel.INFO),
+  INCORRECT_MIME_TYPE(
+      CoreErrorKind.CLIENT_ERROR,
+      CoreErrorCode.E1009,
+      "MIME 타입과 파일이 일치하지 않습니다.",
+      CoreErrorLevel.WARN),
+  INVALID_IMAGE(
+      CoreErrorKind.CLIENT_ERROR, CoreErrorCode.E1010, "파일이 이미지가 아닙니다.", CoreErrorLevel.WARN);
   private final CoreErrorKind kind;
   private final CoreErrorCode code;
   private final String message;

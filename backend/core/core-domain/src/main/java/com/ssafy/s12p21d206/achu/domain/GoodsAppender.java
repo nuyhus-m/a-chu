@@ -17,10 +17,11 @@ public class GoodsAppender {
     this.babyValidator = babyValidator;
   }
 
-  public GoodsDetail append(User user, NewGoods newGoods) {
+  public GoodsDetail append(
+      User user, NewGoods newGoods, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
     babyValidator.validateExists(newGoods.babyId());
     babyValidator.validateParent(user, newGoods.babyId());
     categoryValidator.validateExists(newGoods.categoryId());
-    return goodsRepository.save(user, newGoods);
+    return goodsRepository.save(user, newGoods, imageUrlsWithThumbnail);
   }
 }

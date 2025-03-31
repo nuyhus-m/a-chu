@@ -37,7 +37,12 @@ public enum AuthCoreApiErrorType {
       AuthCoreApiErrorCode.AE3004,
       "refresh token 갱신 가능한 시간이 아닙니다.",
       AuthCoreApiErrorLevel.WARN,
-      HttpStatus.FORBIDDEN);
+      HttpStatus.FORBIDDEN),
+  INVALID_FILE(
+      AuthCoreApiErrorCode.AE3005,
+      "파일이 올바르지 않습니다.",
+      AuthCoreApiErrorLevel.WARN,
+      HttpStatus.BAD_REQUEST);
 
   private final AuthCoreApiErrorCode code;
   private final String message;

@@ -13,11 +13,11 @@ public class BabyAppender {
     this.babyRepository = babyRepository;
   }
 
-  public Baby append(User user, NewBaby newBaby) {
+  public Baby append(User user, NewBaby newBaby, String imageUrl) {
     if (babyRepository.countByUserId(user.id()) > 15) {
       throw new CoreException(CoreErrorType.CANNOT_REGISTER_MORE_BABIES);
     }
 
-    return babyRepository.save(user, newBaby);
+    return babyRepository.save(user, newBaby, imageUrl);
   }
 }

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 public record AppendBabyRequest(
     @NotNull @BabyNickname String nickname, @NotNull Sex gender, @NotNull LocalDate birth) {
 
-  public NewBaby toNewBaby(String imageUrl) {
-    return new NewBaby(this.nickname(), this.gender(), imageUrl, this.birth());
+  public NewBaby toNewBaby() {
+    return new NewBaby(this.nickname(), this.gender(), this.birth());
   }
 }

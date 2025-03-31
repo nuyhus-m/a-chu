@@ -8,4 +8,6 @@ public enum AuthCoreErrorCode {
   AUE1004,
   AUE1005,
   AUE0000,
+  AUE1006,
+  AUE1007,
 }

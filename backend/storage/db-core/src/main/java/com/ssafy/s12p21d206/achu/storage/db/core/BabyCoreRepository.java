@@ -23,10 +23,10 @@ public class BabyCoreRepository implements BabyRepository {
   }
 
   @Override
-  public Baby save(User user, NewBaby newBaby) {
+  public Baby save(User user, NewBaby newBaby, String imageUrl) {
     return babyJpaRepository
         .save(new BabyEntity(
-            user.id(), newBaby.nickname(), newBaby.gender(), newBaby.imageUrl(), newBaby.birth()))
+            user.id(), newBaby.nickname(), newBaby.gender(), imageUrl, newBaby.birth()))
         .toBaby();
   }
 
@@ -107,5 +107,16 @@ public class BabyCoreRepository implements BabyRepository {
   @Override
   public int countByUserId(Long id) {
     return babyJpaRepository.countByUserIdAndEntityStatus(id, EntityStatus.ACTIVE);
+  }
+
+  @Override
+  public Baby modifyImageUrl(Long id, String profileImageUrl) {
+    BabyEntity babyEntity = babyJpaRepository
+        .findByIdAndEntityStatus(id, EntityStatus.ACTIVE)
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+
+    babyEntity.changeImageUrl(profileImageUrl);
+    babyJpaRepository.save(babyEntity);
+    return babyEntity.toBaby();
   }
 }

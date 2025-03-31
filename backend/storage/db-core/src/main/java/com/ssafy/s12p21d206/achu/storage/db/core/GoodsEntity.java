@@ -14,6 +14,8 @@ public class GoodsEntity extends BaseEntity {
 
   private String description;
 
+  private String thumbnailImageUrl;
+
   @Convert(converter = ImgUrlListJsonConverter.class)
   @Column(name = "imgUrls", columnDefinition = "json")
   private List<String> imgUrls;
@@ -35,6 +37,7 @@ public class GoodsEntity extends BaseEntity {
   public GoodsEntity(
       String title,
       String description,
+      String thumbnailImageUrl,
       List<String> imgUrls,
       TradeStatus tradeStatus,
       Long price,
@@ -43,6 +46,7 @@ public class GoodsEntity extends BaseEntity {
       Long babyId) {
     this.title = title;
     this.description = description;
+    this.thumbnailImageUrl = thumbnailImageUrl;
     this.imgUrls = imgUrls;
     this.tradeStatus = tradeStatus;
     this.price = price;
@@ -60,7 +64,7 @@ public class GoodsEntity extends BaseEntity {
         getId(),
         this.title,
         this.description,
-        this.imgUrls,
+        new ImageUrlsWithThumbnail(this.thumbnailImageUrl, this.imgUrls),
         this.tradeStatus,
         this.price,
         new DefaultDateTime(getCreatedAt(), getUpdatedAt()),
@@ -75,7 +79,7 @@ public class GoodsEntity extends BaseEntity {
             getId(),
             this.title,
             this.description,
-            this.imgUrls,
+            new ImageUrlsWithThumbnail(this.thumbnailImageUrl, this.imgUrls),
             this.tradeStatus,
             this.price,
             new DefaultDateTime(getCreatedAt(), getUpdatedAt()),
@@ -95,5 +99,10 @@ public class GoodsEntity extends BaseEntity {
 
   public void sold() {
     this.tradeStatus = TradeStatus.SOLD;
+  }
+
+  public void changeImages(ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
+    this.thumbnailImageUrl = imageUrlsWithThumbnail.thumbnailImageUrl();
+    this.imgUrls = imageUrlsWithThumbnail.imageUrls();
   }
 }

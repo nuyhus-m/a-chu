@@ -18,4 +18,5 @@ public enum AuthCoreApiErrorCode {
   AE3002,
   AE3003,
   AE3004,
+  AE3005,
 }

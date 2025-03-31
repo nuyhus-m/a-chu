@@ -9,7 +9,12 @@ spring:
       - db-core.yml
       - sms.yml
       - security.yml
+      - file.yml
   web.resources.add-mappings: false
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
 
 server:
   tomcat:
@@ -17,7 +22,6 @@ server:
     threads:
       max: 600
       min-spare: 100
-
 ---
 
 spring.config.activate.on-profile: local

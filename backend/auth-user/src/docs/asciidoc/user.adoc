@@ -51,7 +51,7 @@ user 객체의 비밀번호를 업데이트합니다.
 
 operation::reset-password[snippets='http-request,request-fields,http-response,response-fields']
 
-=== 프로필 변경 [미구현]
+=== 프로필 변경
 
 user 객체의 프로필을 업데이트합니다.
 

@@ -26,8 +26,9 @@ public class GoodsService {
     this.goodsSearch = goodsSearch;
   }
 
-  public GoodsDetail append(User user, NewGoods newGoods) {
-    return goodsAppender.append(user, newGoods);
+  public GoodsDetail append(
+      User user, NewGoods newGoods, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
+    return goodsAppender.append(user, newGoods, imageUrlsWithThumbnail);
   }
 
   public GoodsDetail modify(User user, Long goodsId, ModifyGoods modifyGoods) {
@@ -59,5 +60,10 @@ public class GoodsService {
   public List<Goods> searchCategoryGoods(
       User user, Long categoryId, String keyword, Long offset, Long limit, SortType sort) {
     return goodsSearch.searchCategoryGoods(user, categoryId, keyword, offset, limit, sort);
+  }
+
+  public Goods modifyImages(
+      User user, Long goodsId, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
+    return goodsModifier.modifyImages(user, goodsId, imageUrlsWithThumbnail);
   }
 }

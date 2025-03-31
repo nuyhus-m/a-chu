@@ -1,11 +1,14 @@
 package com.ssafy.s12p21d206.achu.api.controller.memory;
 
 import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
+import com.ssafy.s12p21d206.achu.api.controller.support.FileConverter;
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
 import com.ssafy.s12p21d206.achu.domain.Memory;
+import com.ssafy.s12p21d206.achu.domain.MemoryImageFacade;
 import com.ssafy.s12p21d206.achu.domain.MemoryService;
 import com.ssafy.s12p21d206.achu.domain.NewMemory;
+import com.ssafy.s12p21d206.achu.domain.image.File;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import java.util.List;
 import org.springframework.validation.annotation.Validated;
@@ -24,20 +27,22 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemoryController {
 
   private final MemoryService memoryService;
+  private final MemoryImageFacade memoryImageFacade;
 
-  public MemoryController(MemoryService memoryService) {
+  public MemoryController(MemoryService memoryService, MemoryImageFacade memoryImageFacade) {
     this.memoryService = memoryService;
+    this.memoryImageFacade = memoryImageFacade;
   }
 
   @PostMapping("/babies/{babyId}/memories")
   public ApiResponse<DefaultIdResponse> appendMemory(
       ApiUser apiUser,
       @PathVariable Long babyId,
-      @RequestPart(name = "images") List<MultipartFile> memoryImages,
+      @RequestPart(name = "images") List<MultipartFile> multipartFiles,
       @RequestPart(name = "request") @Validated AppendMemoryRequest request) {
-    List<String> imgUrls = List.of("goods1-img-url1.jpg", "goods1-img-url2.jpg");
-    NewMemory newMemory = request.toNewMemory(imgUrls);
-    Memory memory = memoryService.append(apiUser.toUser(), babyId, newMemory);
+    NewMemory newMemory = request.toNewMemory();
+    List<File> imageFiles = multipartFiles.stream().map(FileConverter::convert).toList();
+    Memory memory = memoryImageFacade.append(apiUser.toUser(), babyId, newMemory, imageFiles);
     return ApiResponse.success(new DefaultIdResponse(memory.memoryId()));
   }
 
@@ -64,8 +69,11 @@ public class MemoryController {
 
   @PatchMapping("/memories/{memoryId}/image")
   public ApiResponse<Void> modifyMemoryImage(
-      Long userId, @PathVariable Long memoryId, @RequestParam List<MultipartFile> memoryImages) {
-
+      ApiUser apiUser,
+      @PathVariable Long memoryId,
+      @RequestPart(name = "memoryImages") List<MultipartFile> multipartFiles) {
+    List<File> imageFiles = multipartFiles.stream().map(FileConverter::convert).toList();
+    memoryImageFacade.modifyImages(apiUser.toUser(), memoryId, imageFiles);
     return ApiResponse.success();
   }
 

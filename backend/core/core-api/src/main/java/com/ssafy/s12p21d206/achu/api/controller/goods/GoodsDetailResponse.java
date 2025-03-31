@@ -27,7 +27,7 @@ public record GoodsDetailResponse(
         goodsDetail.goods().id(),
         goodsDetail.goods().title(),
         goodsDetail.goods().description(),
-        goodsDetail.goods().imgUrls(),
+        goodsDetail.goods().imageUrlsWithThumbnail().imageUrls(),
         goodsDetail.goods().tradeStatus(),
         goodsDetail.goods().price(),
         goodsDetail.goods().defaultDateTime().createdAt(),

@@ -22,8 +22,9 @@ public class MemoryService {
     this.memoryDeleter = memoryDeleter;
   }
 
-  public Memory append(User user, Long babyId, NewMemory newMemory) {
-    return memoryAppender.append(user, babyId, newMemory);
+  public Memory append(
+      User user, Long babyId, NewMemory newMemory, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
+    return memoryAppender.append(user, babyId, newMemory, imageUrlsWithThumbnail);
   }
 
   public Memory findMemory(User user, Long memoryId) {
@@ -40,5 +41,10 @@ public class MemoryService {
 
   public Long delete(User user, Long memoryId) {
     return memoryDeleter.delete(user, memoryId);
+  }
+
+  public Memory modifyImages(
+      User user, Long memoryId, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
+    return memoryModifier.modifyImages(user, memoryId, imageUrlsWithThumbnail);
   }
 }

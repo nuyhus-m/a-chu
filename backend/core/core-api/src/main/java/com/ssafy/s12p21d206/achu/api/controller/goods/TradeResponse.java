@@ -12,7 +12,7 @@ public record TradeResponse(
             goods1.id(),
             goods1.tradeStatus(),
             goods1.title(),
-            goods1.imgUrls().get(0),
+            goods1.imageUrlsWithThumbnail().thumbnailImageUrl(),
             goods1.price()))
         .toList();
   }

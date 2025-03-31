@@ -6,6 +6,7 @@ dependencies {
     implementation project(':core:core-domain')
 
     runtimeOnly project(':storage:db-core')
+    runtimeOnly project(':storage:file')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'

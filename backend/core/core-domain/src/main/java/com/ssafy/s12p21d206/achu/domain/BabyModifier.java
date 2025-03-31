@@ -23,4 +23,8 @@ public class BabyModifier {
   public Baby modifyGender(Long id, Sex gender) {
     return babyRepository.modifyGender(id, gender);
   }
+
+  public Baby modifyImageUrl(Long id, String profileImageUrl) {
+    return babyRepository.modifyImageUrl(id, profileImageUrl);
+  }
 }

@@ -20,4 +20,6 @@ public interface AuthUserRepository {
   AuthUser modifyPassword(Long userId, String encodedPassword);
 
   AuthUser modifyPhoneNumber(Long userId, Phone phone);
+
+  AuthUser modifyProfileImage(Long userId, String profileImageUrl);
 }

@@ -56,4 +56,8 @@ public class BabyEntity extends BaseEntity {
   public void changeGender(Sex gender) {
     this.gender = gender;
   }
+
+  public void changeImageUrl(String imageUrl) {
+    this.imageUrl = imageUrl;
+  }
 }

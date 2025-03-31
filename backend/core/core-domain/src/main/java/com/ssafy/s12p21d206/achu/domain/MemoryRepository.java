@@ -4,7 +4,7 @@ import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import java.util.List;
 
 public interface MemoryRepository {
-  Memory save(Long babyId, NewMemory newMemory);
+  Memory save(Long babyId, NewMemory newMemory, ImageUrlsWithThumbnail imageUrlsWithThumbnail);
 
   Memory findMemory(Long memoryId);
 
@@ -15,4 +15,6 @@ public interface MemoryRepository {
   Long delete(Long memoryId);
 
   boolean existsById(Long memoryId);
+
+  Memory modifyImages(Long memoryId, ImageUrlsWithThumbnail imageUrlsWithThumbnail);
 }
