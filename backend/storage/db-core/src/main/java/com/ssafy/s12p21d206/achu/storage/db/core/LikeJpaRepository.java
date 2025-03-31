@@ -16,7 +16,7 @@ public interface LikeJpaRepository extends JpaRepository<LikeEntity, Long> {
       "SELECT l.goodsId, COUNT(l) FROM LikeEntity l WHERE l.goodsId IN :goodsIds AND l.entityStatus = :status GROUP BY l.goodsId")
   List<Object[]> countIn(List<Long> goodsIds, EntityStatus status);
 
-  @Query("SELECT l.goodsId FROM LikeEntity l WHERE l.goodsId IN :goodsId AND l.userId = :userId")
+  @Query("SELECT l.goodsId FROM LikeEntity l WHERE l.goodsId IN :goodsIds AND l.userId = :userId")
   Set<Long> findLikedGoodsByUser(Long userId, List<Long> goodsIds, EntityStatus entityStatus);
 
   Optional<LikeEntity> findByUserIdAndGoodsId(Long id, Long goodsId);
