@@ -29,7 +29,7 @@ sealed interface Route {
     data object MemoryUpload : Route
 
     @Serializable
-    data object ProductDetail : Route
+    data class ProductDetail(val productId: Int) : Route
 
     @Serializable
     data object UploadProduct : Route

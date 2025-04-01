@@ -62,7 +62,13 @@ fun NavGraph(
             ProductListScreen(
                 modifier = modifier,
                 onNavigateToUploadProduct = { navController.navigate(route = Route.UploadProduct) },
-                onNavigateToProductDetail = { navController.navigate(route = Route.ProductDetail) }
+                onNavigateToProductDetail = {
+                    navController.navigate(
+                        route = Route.ProductDetail(
+                            productId = it
+                        )
+                    )
+                }
             )
         }
         composable<BottomNavRoute.MemoryList> {

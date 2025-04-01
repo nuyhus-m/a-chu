@@ -1,5 +1,8 @@
 package com.ssafy.achu.ui.product.productlist
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,8 +18,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -53,25 +58,28 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatRelativeTime
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 
+private const val TAG = "ProductListScreen"
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProductListScreen(
     modifier: Modifier = Modifier,
     viewModel: ProductListViewModel = viewModel(),
     onNavigateToUploadProduct: () -> Unit,
-    onNavigateToProductDetail: () -> Unit
+    onNavigateToProductDetail: (Int) -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
+    val listState = rememberLazyListState()
 
-    LaunchedEffect(uiState.selectedCategoryId) {
-        if (uiState.selectedCategoryId == 0) {
-            viewModel.getProductList()
-        } else {
-            viewModel.getProductListByCategory(uiState.selectedCategoryId)
-        }
+    LaunchedEffect(uiState.selectedCategoryId, uiState.query) {
+        listState.scrollToItem(0)
+        viewModel.updateCurrentOffset(0)
+        viewModel.loadProductList()
     }
 
     Box(
@@ -89,7 +97,9 @@ fun ProductListScreen(
             ) {
                 SearchBar(
                     value = uiState.query,
-                    onValueChange = { viewModel.updateQuery(it) }
+                    onValueChange = {
+                        viewModel.updateQuery(it)
+                    }
                 )
             }
 
@@ -98,7 +108,9 @@ fun ProductListScreen(
             // 카테고리 버튼 리스트
             CategoryButtonList(
                 items = uiState.categories,
-                onButtonClick = { id -> viewModel.updateSelectedCategoryId(id) },
+                onButtonClick = { id ->
+                    viewModel.updateSelectedCategoryId(id)
+                },
                 initialSelectedIndex = uiState.selectedCategoryId
             )
 
@@ -107,6 +119,8 @@ fun ProductListScreen(
             // 물품 리스트
             ProductList(
                 items = uiState.products,
+                onLoadMore = { viewModel.loadProductList() },
+                listState = listState,
                 onNavigateToProductDetail = onNavigateToProductDetail
             )
         }
@@ -156,6 +170,7 @@ private fun SearchBar(
             unfocusedBorderColor = Color.Transparent,
             cursorColor = Color.Black
         ),
+        singleLine = true
     )
 }
 
@@ -185,18 +200,45 @@ fun CategoryButtonList(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ProductList(items: List<ProductResponse>, onNavigateToProductDetail: () -> Unit) {
-    LazyColumn {
+fun ProductList(
+    items: List<ProductResponse>,
+    listState: LazyListState,
+    onLoadMore: () -> Unit,
+    onNavigateToProductDetail: (Int) -> Unit
+) {
+
+    val lastIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+    val shouldLoadMore = lastIndex > 0 && (lastIndex >= items.size - 5) && items.isNotEmpty()
+    Log.d(
+        TAG,
+        "shouldLoadMore: $shouldLoadMore (Last index: $lastIndex, Items size: ${items.size})"
+    )
+
+    LaunchedEffect(key1 = lastIndex) {
+        if (shouldLoadMore) {
+            Log.d(
+                TAG,
+                "LOADING MORE ITEMS - Last visible index: $lastIndex, Total items: ${items.size}"
+            )
+            onLoadMore()
+        }
+    }
+
+    LazyColumn(
+        state = listState
+    ) {
         items(items) { item ->
             ProductItem(
                 productResponse = item,
-                onItemClick = onNavigateToProductDetail
+                onItemClick = { onNavigateToProductDetail(item.id) }
             )
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProductItem(
     productResponse: ProductResponse,
@@ -239,7 +281,7 @@ fun ProductItem(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = productResponse.createdAt,
+                    text = formatRelativeTime(productResponse.createdAt),
                     style = AchuTheme.typography.regular16.copy(color = FontGray),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -291,6 +333,7 @@ fun ProductItem(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun ProductListScreenPreview() {
@@ -302,6 +345,7 @@ fun ProductListScreenPreview() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun ProductItemPreview() {

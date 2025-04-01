@@ -44,4 +44,38 @@ class ProductRepository {
             )
         }
     }
+
+    suspend fun searchProduct(
+        keyword: String,
+        offset: Int,
+        limit: Int,
+        sort: String
+    ): Result<ApiResult<List<ProductResponse>>> {
+        return runCatching {
+            productService.searchProduct(
+                keyword = keyword,
+                offset = offset,
+                limit = limit,
+                sort = sort
+            )
+        }
+    }
+
+    suspend fun searchProductByCategory(
+        categoryId: Int,
+        keyword: String,
+        offset: Int,
+        limit: Int,
+        sort: String
+    ): Result<ApiResult<List<ProductResponse>>> {
+        return runCatching {
+            productService.searchProductByCategory(
+                categoryId = categoryId,
+                keyword = keyword,
+                offset = offset,
+                limit = limit,
+                sort = sort
+            )
+        }
+    }
 }
