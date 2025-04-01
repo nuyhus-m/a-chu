@@ -41,20 +41,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
+import com.ssafy.achu.core.navigation.Route
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.ui.ActivityViewModel
+import com.ssafy.achu.ui.home.HomeViewModel
 import com.ssafy.achu.ui.home.homecomponents.BabyDropdown
 import com.ssafy.achu.ui.home.homecomponents.RecommendGrid
-import com.ssafy.achu.ui.mypage.recommendlist.LikeItem2
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -66,21 +67,20 @@ fun HomeScreen(
     onNavigateToRecommend: () -> Unit,
     onNavigateToBabyList: () -> Unit,
     onNavigateToProductList: () -> Unit,
-    viewModel: ActivityViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: ActivityViewModel = viewModel(),
+    homeViewModel: HomeViewModel = viewModel(),
+    onNavigateToProductDetail: () -> Unit,
 ) {
+
+    LaunchedEffect(Unit) {
+        homeViewModel.getLikeItemList()
+    }
+
+    val likeItemList by homeViewModel.likeItemList.collectAsState()
 
     val uiState by viewModel.uiState.collectAsState()
 
 
-    val likeItemList = remember {
-        mutableListOf(
-            LikeItem2(R.drawable.img_miffy_doll, false, "판매중", "토끼 인형", "3,000원"),
-            LikeItem2(R.drawable.img_miffy_doll, true, "거래완료", "곰인형", "2,500원"),
-            LikeItem2(R.drawable.img_miffy_doll, true, "판매중", "곰인형", "2,500원"),
-            LikeItem2(R.drawable.img_miffy_doll, false, "판매중", "곰인형", "2,500원"),
-            LikeItem2(R.drawable.img_miffy_doll, false, "거래완료", "곰인형", "2,500원")
-        )
-    }
 
     viewModel.getBabyList()
 
@@ -459,14 +459,20 @@ fun HomeScreen(
             ) {
                 itemsIndexed(likeItemList) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
                     BasicLikeItem(
-                        isLiked = likeItem.like,
-                        onClickItem = { }, // 아이템 전체 클릭 시 동작
-                        onClickHeart = { }, // 하트 클릭 시 동작
-                        productName = likeItem.productName,
-                        state = likeItem.sate,
-                        price = likeItem.price,
-                        img = likeItem.img?.let { painterResource(id = likeItem.img) },
-                    ) // 각 아이템을 컴포넌트로 렌더링
+                        onClickItem = {
+                            onNavigateToProductDetail()
+                        },
+                        likeCLicked = {
+                            homeViewModel.likeItem(likeItem.id)
+                        },
+                        unlikeClicked = {
+                            homeViewModel.unlikeItem(likeItem.id)
+                        },
+                        productName = likeItem.title,
+                        state = likeItem.tradeStatus,
+                        price = "${ likeItem.price }원",
+                        img = likeItem.imgUrl,
+                    )
                     Spacer(modifier = Modifier.width(8.dp)) // 아이템 간 간격 추가
                 }
             }
@@ -509,7 +515,10 @@ fun HomeScreenPreview() {
             onNavigateToLikeList = { },
             onNavigateToRecommend = { },
             onNavigateToBabyList = { },
-            onNavigateToProductList = { }
+            onNavigateToProductList = { },
+            onNavigateToProductDetail = {
+
+            }
         )
     }
 }
