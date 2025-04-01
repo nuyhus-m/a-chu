@@ -3,6 +3,7 @@ package com.ssafy.achu.data.network
 import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.IdResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
+import com.ssafy.achu.data.model.product.LikeProduct
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 import retrofit2.http.DELETE
@@ -67,4 +68,22 @@ interface ProductService {
     suspend fun unlikeProduct(
         @Path("goodsId") productId: Int
     ): ApiResult<Unit>
+
+    @GET("/goods/liked")
+    suspend fun getLikedGoods(
+        @Query("offset") offset: Int,
+        @Query("limit") limit: Int,
+        @Query("sort") sort: String
+    ): ApiResult<List<LikeProduct>>
+
+    @GET("/trades")
+    suspend fun getTrades(
+        @Query("tradeType") tradeType: String, // "PURCHASE" 또는 "SALE"
+        @Query("offset") offset: Int,
+        @Query("limit") limit: Int,
+        @Query("sort") sort: String // "LATEST" 또는 "OLDEST"
+    ): ApiResult<List<LikeProduct>>
+
+
+
 }
