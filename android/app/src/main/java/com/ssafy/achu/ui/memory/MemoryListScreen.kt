@@ -61,9 +61,9 @@ import kotlin.String
 @Composable
 fun MemoryListScreen(
     modifier: Modifier = Modifier,
-    onNavigateToMemoryDetail: () -> Unit,
+    onNavigateToMemoryDetail: (memoryID:Int, babyId:Int) -> Unit,
     viewModel: ActivityViewModel,
-    memoryViewModel: MemoryViewModel
+    memoryViewModel: MemoryViewModel  = viewModel()
 ) {
 
     val uiState: ActivityUIState by viewModel.uiState.collectAsState()
@@ -134,7 +134,7 @@ fun MemoryListScreen(
                             .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
-                    if (uiState.selectedBaby?.imgUrl.isNullOrEmpty()) {
+                    if (!uiState.selectedBaby?.imgUrl.isNullOrEmpty()) {
                         AsyncImage(
                             model = uiState.selectedBaby?.imgUrl,
                             contentDescription = "Profile",
@@ -218,7 +218,7 @@ fun MemoryListScreen(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "${uiState.selectedBaby?.birth}일생",
+                    text = "${uiState.selectedBaby?.birth}",
                     style = AchuTheme.typography.semiBold16,
                     color = if (uiState.selectedBaby!!.gender == "MALE") PointBlue else PointPink
 
@@ -233,7 +233,9 @@ fun MemoryListScreen(
                             painter = painterResource(id = R.drawable.img_smiling_face),
                             contentDescription = "Profile",
                             modifier = Modifier
-                                .size(80.dp)
+                                .size(80.dp).clickable {
+                                    onNavigateToMemoryDetail(0, uiState.selectedBaby!!.id)
+                                }
                         )
 
                         Spacer(Modifier.height(24.dp))
@@ -254,10 +256,9 @@ fun MemoryListScreen(
                             MemoryListItem(
                                 img = memoryUIState.memoryList[index].imgUrl,
                                 title = memoryUIState.memoryList[index].title,
-                                date = memoryUIState.memoryList[index].content,
+                                date = memoryUIState.memoryList[index].createdAt,
                                 onClick = {
-                                    memoryViewModel.getMemory(memoryUIState.memoryList[index].id)
-                                    onNavigateToMemoryDetail()
+                                    onNavigateToMemoryDetail(memoryUIState.memoryList[index].id, memoryUIState.babyId)
                                 }
                             )
                             Spacer(modifier = Modifier.height(16.dp)) // 아이템 간 간격 추가
@@ -268,6 +269,8 @@ fun MemoryListScreen(
         }
     }
 }
+
+
 
 @Composable
 fun MemoryListItem(img: String, title: String, date: String, onClick: () -> Unit) {
@@ -313,7 +316,7 @@ fun MemoryListItem(img: String, title: String, date: String, onClick: () -> Unit
 
             )
             Text(
-                text = date,
+                text = date.substringBefore("T"),
                 style = AchuTheme.typography.semiBold18White.copy(
                     shadow = Shadow(
                         color = Color.Black.copy(alpha = 0.5f),
@@ -333,7 +336,9 @@ fun MemoryListScreenPreview() {
 
     AchuTheme {
         MemoryListScreen(
-            onNavigateToMemoryDetail = {}, viewModel = viewModel(),
+            onNavigateToMemoryDetail = {
+                    memoryId, babyId ->
+            }, viewModel = viewModel(),
             memoryViewModel = viewModel()
         )
 //        MemoryListItem(

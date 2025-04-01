@@ -1,9 +1,14 @@
-package com.ssafy.achu.ui.memory
+package com.ssafy.achu.ui.memory.memoryupload
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
+import android.util.Log
+import android.webkit.MimeTypeMap
 import android.widget.Toast
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -31,6 +36,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,20 +67,26 @@ import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.ui.memory.memorydetail.PageIndicator
+import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 
+private const val TAG = "MemoryUploadScreen안주현"
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MemoryUploadScreen(
-    memoryViewModel: MemoryViewModel,
-    onNavigateToMemoryDetail: () -> Unit
+    onNavigateToMemoryDetail: (memoryId: Int, babyId: Int) -> Unit,
+    memoryId: Int,
+    babyId: Int
 ) {
-    val memoryUIState: MemoryUIState by memoryViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val memoryViewModel: MemoryEditViewModel = viewModel()
+    val memoryUIState: MemoryEditUIState by memoryViewModel.uiState.collectAsState()
     val pagerState = rememberPagerState()
     val maxTitleLength = 15
     val maxContentLength = 100
@@ -82,28 +94,88 @@ fun MemoryUploadScreen(
         mutableStateOf(memoryUIState.selectedMemory.imgUrls.map { Uri.parse(it) })
     }
 
-    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        memoryViewModel.isChanged.collectLatest { isChanged ->
+            Toast.makeText(context, memoryUIState.toastString, Toast.LENGTH_SHORT).show()
+            onNavigateToMemoryDetail(memoryUIState.selectedMemory.id, babyId)
+        }
+    }
 
-    // 갤러리에서 여러 이미지를 선택하는 ActivityResultLauncher
+
+
+    fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
+        val contentResolver = context.contentResolver
+
+        // 실제 파일의 MIME 타입 가져오기
+        val mimeType = contentResolver.getType(uri) ?: return null
+
+        // MIME 타입에 맞는 확장자 추출
+        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
+
+        // InputStream → Bitmap 변환
+        val inputStream = contentResolver.openInputStream(uri) ?: return null
+        val bitmap = BitmapFactory.decodeStream(inputStream) ?: return null
+        inputStream.close()
+
+        // 압축을 위한 ByteArrayOutputStream 생성
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, byteArrayOutputStream)
+        val compressedByteArray = byteArrayOutputStream.toByteArray()
+
+        if (compressedByteArray.isEmpty()) {
+            Log.e(TAG, "⚠️ 압축 후 바이트 배열이 비어있음! 이미지 손실 가능성 있음!")
+            return null
+        }
+
+        Log.d(TAG, "✅ 압축된 바이트 배열 크기: ${compressedByteArray.size}, MIME: $mimeType, 확장자: $extension")
+
+        // 파일명을 MIME 타입에 맞게 설정
+        val fileName = "upload_${System.currentTimeMillis()}.$extension"
+
+        // 올바른 MIME 타입 적용
+        val requestBody = compressedByteArray.toRequestBody(mimeType.toMediaTypeOrNull())
+
+        return MultipartBody.Part.createFormData("memoryImages", fileName, requestBody)
+    }
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents(),
         onResult = { uris ->
             if (uris.size + images.size <= 3) { // 최대 3장 선택
+                // 기존 이미지를 그대로 두고 새로 들어온 이미지만 추가
                 images = images + uris
+
+                // 디버깅 로그로 images 배열의 요소가 Uri인지 확인
+                images.forEach { uri ->
+                    Log.d(TAG, "Image URI type: ${uri::class.java}")
+                }
+
+                // 모든 이미지를 멀티파트로 변환 (기존 이미지 + 새로 추가된 이미지)
+                val multipartFiles = images.mapNotNull { uri -> uriToMultipart(context, uri) }
+
+                // 멀티파트 파일들을 memoryViewModel에 전달하여 상태 업데이트
+                memoryViewModel.memoryImageUpdate(multipartFiles)
+
+                Log.d(TAG, "MemoryUploadScreen: $multipartFiles")
+                Log.d(TAG, "MemoryUploadScreen: ${memoryUIState.sendIMage}")
+
+                memoryViewModel.isImageChanged(true)
+
             } else {
                 Toast.makeText(context, "최대 3장까지만 선택 가능합니다.", Toast.LENGTH_SHORT).show()
             }
         }
     )
 
-    fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
-        val file = File(context.cacheDir, "upload_${System.currentTimeMillis()}.jpg")
-        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
-        file.outputStream().use { output -> inputStream.copyTo(output) }
-
-        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-        return MultipartBody.Part.createFormData("file", file.name, requestFile)
+    LaunchedEffect(key1 = Unit) {
+        memoryViewModel.babyIdUpdate(babyId)
+        memoryViewModel.getMemory(memoryId)
     }
+
+
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
+
 
     Box(
         modifier = Modifier
@@ -115,8 +187,11 @@ fun MemoryUploadScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             CenterTopAppBar(
-                title = if (memoryUIState.selectedMemory.title == "")"추억 업로드" else "추억 수정",
-                onBackClick = {}
+                title = if (memoryUIState.selectedMemory.id == 0) "추억 업로드" else "추억 수정",
+                onBackClick = {
+                    backPressedDispatcher?.onBackPressed()
+
+                }
             )
             if (images.size != 0) {
                 // 이미지 슬라이드
@@ -236,7 +311,7 @@ fun MemoryUploadScreen(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
-                            text = "(최대 3장)",
+                            text = "(최소 1장 최대 3장)",
                             style = AchuTheme.typography.semiBold14PointBlue,
                             color = FontGray,
                             textAlign = TextAlign.Center
@@ -255,8 +330,12 @@ fun MemoryUploadScreen(
 
 
                 OutlinedTextField(
-                    value = if (memoryUIState.selectedMemory.title == "") memoryUIState.memoryTitle else memoryUIState.selectedMemory!!.title,
-                    onValueChange = { if (it.length <= maxTitleLength) memoryViewModel.memoryTitleUpdate(it)},
+                    value = memoryUIState.memoryTitle,
+                    onValueChange = {
+                        if (it.length <= maxTitleLength) memoryViewModel.memoryTitleUpdate(
+                            it
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("타이틀을 입력해주세요", color = FontGray) },
                     textStyle = AchuTheme.typography.regular16,
@@ -286,8 +365,12 @@ fun MemoryUploadScreen(
                         .weight(1.0f)
                 ) {
                     OutlinedTextField(
-                        value = if (memoryUIState.selectedMemory.content == "") memoryUIState.memoryContent else memoryUIState.selectedMemory!!.content,
-                        onValueChange = { if (it.length <= maxContentLength) memoryViewModel.memoryContentUpdate(it)},
+                        value = memoryUIState.memoryContent,
+                        onValueChange = {
+                            if (it.length <= maxContentLength) memoryViewModel.memoryContentUpdate(
+                                it
+                            )
+                        },
                         modifier = Modifier
                             .fillMaxSize()
                             .align(Alignment.TopStart), // 텍스트 필드 정렬
@@ -320,17 +403,17 @@ fun MemoryUploadScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 PointPinkBtn(
-                    buttonText = if(memoryUIState.selectedMemory.title == "")"작성 완료" else "수정완료",
+                    buttonText = if (memoryUIState.selectedMemory.title == "") "작성 완료" else "수정완료",
                     onClick = {
-                        val multipartFiles = images.mapNotNull { uri -> uriToMultipart(context, uri) }
-                        memoryViewModel.memoryImageUpdate(multipartFiles)
-                        if (memoryUIState.selectedMemory.title == "") {
-                            memoryViewModel.uploadMemory()
-                            onNavigateToMemoryDetail()
+                        if (images.isEmpty()) {
+                            Toast.makeText(context, "사진을 추가해주세요", Toast.LENGTH_SHORT).show()
                         } else {
-                            memoryViewModel.changeMemory()
-                            memoryViewModel.updateImage()
-                            onNavigateToMemoryDetail()
+
+                            if (memoryId == 0) {
+                                memoryViewModel.uploadMemory()
+                            } else {
+                                memoryViewModel.changeMemory()
+                            }
                         }
                     }
                 )
@@ -348,8 +431,12 @@ fun MemoryUploadScreen(
 @Composable
 fun MemoryUploadScreenPreview() {
     AchuTheme {
-        MemoryUploadScreen(onNavigateToMemoryDetail = {  },
-            memoryViewModel = viewModel())
+        MemoryUploadScreen(
+            onNavigateToMemoryDetail = { memoryId, babyId ->
+            },
+            memoryId = 0,
+            babyId = 0
+        )
     }
 }
 

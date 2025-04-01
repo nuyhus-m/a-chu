@@ -20,13 +20,13 @@ sealed interface Route {
     data object BabyList : Route
 
     @Serializable
-    data object BabyDetail : Route
+    data class BabyDetail(val babyId: Int) : Route
 
     @Serializable
-    data object MemoryDetail : Route
+    data class MemoryDetail(val memoryId: Int, val babyId: Int) : Route
 
     @Serializable
-    data object MemoryUpload : Route
+    data class MemoryUpload(val memoryId: Int, val babyId: Int) : Route
 
     @Serializable
     data class ProductDetail(val isPreview: Boolean) : Route

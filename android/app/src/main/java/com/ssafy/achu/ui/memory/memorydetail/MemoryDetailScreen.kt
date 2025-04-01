@@ -1,5 +1,10 @@
-package com.ssafy.achu.ui.memory
+package com.ssafy.achu.ui.memory.memorydetail
 
+import android.os.Build
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,11 +23,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,24 +48,33 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.data.model.memory.SingleMemoryResponse
-import com.ssafy.achu.ui.ActivityUIState
-import com.ssafy.achu.ui.ActivityViewModel
+import kotlinx.coroutines.flow.collectLatest
 
+
+private const val TAG = "MemoryDetailScreen 안주현"
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MemoryDetailScreen(
-    onNavigateToMemoryUpload: () -> Unit,
-    memoryViewModel: MemoryViewModel,
+    onNavigateToMemoryUpload: (memoryID:Int, babyId:Int) -> Unit,
+    memoryViewModel: MemoryDetailViewModel = viewModel(),
+    memoryId: Int,
+    babyId: Int,
 ) {
-    val memoryUIState: MemoryUIState by memoryViewModel.uiState.collectAsState()
+    val memoryUIState: MemoryDetailUIState by memoryViewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     val pagerState = rememberPagerState()
-    val images = listOf(
-        R.drawable.img_test_baby_doll,
-        R.drawable.img_test_baby_summer,
-        R.drawable.img_test_sopung
-    )
+
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+    LaunchedEffect(Unit) {
+        memoryViewModel.isChanged.collectLatest { isChanged ->
+            memoryViewModel.getMemory(memoryId)
+            Toast.makeText(context, memoryUIState.toastString, Toast.LENGTH_SHORT).show()
+            backPressedDispatcher?.onBackPressed()
+        }
+    }
+
+    memoryViewModel.getMemory(memoryId)
 
 
     Box(
@@ -81,7 +97,9 @@ fun MemoryDetailScreen(
                     modifier = Modifier
                         .size(30.dp)
                         .alignByBaseline()
-                        .clickable {},
+                        .clickable {
+                            backPressedDispatcher?.onBackPressed()
+                        },
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(FontBlack)
                 )
 
@@ -93,7 +111,10 @@ fun MemoryDetailScreen(
                         .size(32.dp)
                         .alignByBaseline()
                         .clickable {
-                            onNavigateToMemoryUpload()
+                            onNavigateToMemoryUpload(
+                                memoryUIState.selectedMemory.id,
+                                babyId
+                            )
 
                         },
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(PointBlue)
@@ -118,14 +139,16 @@ fun MemoryDetailScreen(
 
             // 이미지 슬라이드
             HorizontalPager(
-                count = images.size,
+                count = memoryUIState.selectedMemory.imgUrls.size,
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(350.dp)
             ) { page ->
+
+                Log.d(TAG, "MemoryDetailScreen: ${memoryUIState.selectedMemory.imgUrls}")
                 AsyncImage(
-                    model = memoryUIState.selectedMemory.imgUrls,
+                    model = memoryUIState.selectedMemory.imgUrls[page],
                     contentDescription = "Memory Image",
                     modifier = Modifier.fillMaxSize(),
                     alignment = Alignment.Center,
@@ -134,14 +157,11 @@ fun MemoryDetailScreen(
             }
 
             PageIndicator(
-                totalPages = images.size,
+                totalPages = memoryUIState.selectedMemory.imgUrls.size,
                 currentPage = pagerState.currentPage
             )
 
 
-
-
-            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = memoryUIState.selectedMemory.title,
@@ -151,7 +171,7 @@ fun MemoryDetailScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = memoryUIState.selectedMemory.createdAt,
+                text =  memoryUIState.selectedMemory.createdAt.substringBefore("T"),
                 style = AchuTheme.typography.semiBold14PointBlue,
                 color = FontGray
 
@@ -198,8 +218,8 @@ fun PageIndicator(totalPages: Int, currentPage: Int) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .fillMaxWidth().height(24.dp)
-            .padding(top = 16.dp) // 여백 조정
+            .fillMaxWidth()
+            .height(24.dp)
     ) {
         // 각 점을 인디케이터로 표현
         repeat(totalPages) { index ->
@@ -208,7 +228,7 @@ fun PageIndicator(totalPages: Int, currentPage: Int) {
             val color = if (index == currentPage) PointBlue else LightGray
             Box(
                 modifier = Modifier
-                    .size(10.dp) // 점 크기 증가
+                    .size(8.dp)
                     .background(color = color, shape = CircleShape)
             )
         }
@@ -223,8 +243,12 @@ fun PageIndicator(totalPages: Int, currentPage: Int) {
 @Composable
 fun MemoryDetailScreenPreview() {
     AchuTheme { MemoryDetailScreen(
-        onNavigateToMemoryUpload = {},
-        memoryViewModel = viewModel()
+        onNavigateToMemoryUpload = {
+                memoryId: Int, babyId: Int ->
+        },
+        memoryId = 0,
+        babyId = 0,
+
     )
     }
 }

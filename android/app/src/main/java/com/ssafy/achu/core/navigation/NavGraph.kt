@@ -6,7 +6,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,10 +13,9 @@ import androidx.navigation.toRoute
 import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.chat.chatdetail.ChatScreen
 import com.ssafy.achu.ui.chat.chatlist.ChatListScreen
-import com.ssafy.achu.ui.memory.MemoryDetailScreen
+import com.ssafy.achu.ui.memory.memorydetail.MemoryDetailScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
-import com.ssafy.achu.ui.memory.MemoryUploadScreen
-import com.ssafy.achu.ui.memory.MemoryViewModel
+import com.ssafy.achu.ui.memory.memoryupload.MemoryUploadScreen
 import com.ssafy.achu.ui.mypage.baby.BabyDetailScreen
 import com.ssafy.achu.ui.mypage.baby.BabyListScreen
 import com.ssafy.achu.ui.mypage.likelist.LikeItemListScreen
@@ -34,7 +32,6 @@ fun NavGraph(
     navController: NavHostController,
     modifier: Modifier,
     activityViewModel: ActivityViewModel,
-    memoryViewModel: MemoryViewModel = viewModel(),
 ) {
     NavHost(
         navController = navController,
@@ -83,8 +80,12 @@ fun NavGraph(
             MemoryListScreen(
                 viewModel = activityViewModel,
                 modifier = modifier,
-                memoryViewModel = memoryViewModel,
-                onNavigateToMemoryDetail = { navController.navigate(route = Route.MemoryDetail) })
+                onNavigateToMemoryDetail = { memoryId, babyId ->
+                    navController.navigate(
+                        route = Route.MemoryDetail(memoryId = memoryId, babyId = babyId)
+                    )
+                }
+            )
         }
         composable<BottomNavRoute.ChatList> {
             ChatListScreen(
@@ -126,33 +127,52 @@ fun NavGraph(
         composable<Route.BabyList> {
             BabyListScreen(
                 viewModel = activityViewModel,
-                onNavigateToBabyDetail = { navController.navigate(route = Route.BabyDetail) }
+                onNavigateToBabyDetail = { id ->
+                    navController.navigate(
+                        route = Route.BabyDetail(babyId = id)
+                    )
+
+                }
             )
         }
 
-        // 추억 관련 화면들
         composable<Route.BabyDetail> {
             BabyDetailScreen(
                 viewModel = activityViewModel,
+                babyId = it.arguments?.getInt("babyId") ?: 0
             )
         }
 
         // 추억 관련 화면들
         composable<Route.MemoryUpload> {
             MemoryUploadScreen(
-                memoryViewModel = memoryViewModel,
-                onNavigateToMemoryDetail = { navController.navigate(route = Route.MemoryDetail) },
+                onNavigateToMemoryDetail = { memoryId, babyId ->
+                    navController.navigate(
+                        route = Route.MemoryDetail(memoryId = memoryId, babyId = babyId)
+                    ) {
+                        popUpTo(navController.currentBackStackEntry?.destination?.route ?: "") {
+                            inclusive = true
+                        }                    }
+                },
+                memoryId = it.arguments?.getInt("memoryId") ?: 0,
+                babyId = it.arguments?.getInt("babyId") ?: 0,
             )
         }
 
         composable<Route.MemoryDetail> {
             MemoryDetailScreen(
-                memoryViewModel = memoryViewModel,
-                onNavigateToMemoryUpload =
-                    { navController.navigate(route = Route.MemoryUpload) }
+                onNavigateToMemoryUpload = { memoryId, babyId ->
+                    navController.navigate(
+                        route = Route.MemoryUpload(memoryId = memoryId, babyId = babyId)
+                    ) {
+                        popUpTo(navController.currentBackStackEntry?.destination?.route ?: "") {
+                            inclusive = true
+                        }                    }
+                },
+                memoryId = it.arguments?.getInt("memoryId") ?: 0,
+                babyId = it.arguments?.getInt("babyId") ?: 0,
             )
         }
-
         // 중고 거래 관련 화면들
         composable<Route.UploadProduct> {
             UploadProductScreen(

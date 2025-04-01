@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.mypage.tradelist
 
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -66,7 +67,7 @@ fun TradeListScreen() {
 //    var showDialog by remember { mutableStateOf(false) }
 //    var selectedProduct by remember { mutableStateOf<ProductItem?>(null) }
 
-
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -79,6 +80,7 @@ fun TradeListScreen() {
                 BasicTopAppBar(
                     title = "거래목록",
                     onBackClick = {
+                        backPressedDispatcher?.onBackPressed()
 
                     }
                 )

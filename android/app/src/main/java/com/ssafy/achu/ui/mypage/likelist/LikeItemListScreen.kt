@@ -1,6 +1,7 @@
 package com.ssafy.achu.ui.mypage.likelist
 
 import LargeLikeItem
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +42,8 @@ fun LikeItemListScreen(viewModel: ActivityViewModel) {
         )
     }
 
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -56,6 +59,7 @@ fun LikeItemListScreen(viewModel: ActivityViewModel) {
                 BasicTopAppBar(
                     title = "찜한 상품",
                     onBackClick = {
+                        backPressedDispatcher?.onBackPressed()
                     }
                 )
             }
