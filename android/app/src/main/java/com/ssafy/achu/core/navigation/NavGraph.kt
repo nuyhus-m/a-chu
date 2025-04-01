@@ -53,6 +53,13 @@ fun NavGraph(
                             categoryId = 0
                         )
                     )
+                },
+                onNavigateToProductDetail = {
+                    navController.navigate(
+                        route = Route.ProductDetail(
+                            isPreview = false
+                        )
+                    )
                 }
             )
         }
@@ -106,15 +113,32 @@ fun NavGraph(
 
         // 마이페이지 화면들
         composable<Route.TradeList> {
-            TradeListScreen()
+            TradeListScreen(
+                onNavigateToProductDetail = {
+                    navController.navigate(
+                        route = Route.ProductDetail(
+                            isPreview = false
+                        )
+                    )
+                }
+            )
         }
         composable<Route.LikeList> {
             LikeItemListScreen(
-                viewModel = activityViewModel
+                onNavigateToProductDetail = {
+                    navController.navigate(
+                        route = Route.ProductDetail(
+                            isPreview = false
+                        )
+                    )
+                }
             )
         }
         composable<Route.RecommendList> {
-            RecommendItemScreen()
+            RecommendItemScreen(
+                viewModel = activityViewModel,
+
+                )
         }
 
         composable<Route.UserInfo> {
