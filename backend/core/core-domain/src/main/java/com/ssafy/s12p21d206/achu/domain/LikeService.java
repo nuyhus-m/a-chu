@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.domain;
 
+import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
@@ -9,10 +10,12 @@ public class LikeService {
 
   private final LikeReader likeReader;
   private final LikeProcessor likeProcessor;
+  private final GoodsReader goodsReader;
 
-  public LikeService(LikeReader likeReader, LikeProcessor likeProcessor) {
+  public LikeService(LikeReader likeReader, LikeProcessor likeProcessor, GoodsReader goodsReader) {
     this.likeReader = likeReader;
     this.likeProcessor = likeProcessor;
+    this.goodsReader = goodsReader;
   }
 
   public LikeStatus status(User user, Long goodsId) {
@@ -35,5 +38,10 @@ public class LikeService {
 
   public void deleteLike(User user, Long goodsId) {
     likeProcessor.deleteLike(user, goodsId);
+  }
+
+  public List<Goods> findLikedGoods(User user, Long offset, Long limit, SortType sort) {
+    List<Long> goodsIds = likeReader.readLikedGoods(user, offset, limit, sort);
+    return goodsReader.readGoodsByIds(goodsIds);
   }
 }

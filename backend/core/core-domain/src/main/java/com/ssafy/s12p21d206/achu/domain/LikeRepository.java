@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.domain;
 
+import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import java.util.List;
 import java.util.Map;
 
@@ -13,4 +14,6 @@ public interface LikeRepository {
   void like(User user, Long goodsId);
 
   void deleteLike(User user, Long goodsId);
+
+  List<Long> findLikedGoodsIds(User user, Long offset, Long limit, SortType sort);
 }
