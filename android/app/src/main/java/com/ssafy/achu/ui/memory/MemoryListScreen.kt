@@ -134,7 +134,7 @@ fun MemoryListScreen(
                             .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
-                    if (uiState.selectedBaby?.imgUrl.isNullOrEmpty()) {
+                    if (!uiState.selectedBaby?.imgUrl.isNullOrEmpty()) {
                         AsyncImage(
                             model = uiState.selectedBaby?.imgUrl,
                             contentDescription = "Profile",
@@ -316,7 +316,7 @@ fun MemoryListItem(img: String, title: String, date: String, onClick: () -> Unit
 
             )
             Text(
-                text = date,
+                text = date.substringBefore("T"),
                 style = AchuTheme.typography.semiBold18White.copy(
                     shadow = Shadow(
                         color = Color.Black.copy(alpha = 0.5f),

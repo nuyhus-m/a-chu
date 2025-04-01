@@ -3,6 +3,8 @@ package com.ssafy.achu.ui.memory.memoryupload
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import android.util.Log
+import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -67,8 +69,11 @@ import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import kotlin.jvm.java
 
+private const val TAG = "MemoryUploadScreen안주현"
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
@@ -98,27 +103,65 @@ fun MemoryUploadScreen(
     }
 
 
-    // 갤러리에서 여러 이미지를 선택하는 ActivityResultLauncher
+
+
+    fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
+        val contentResolver = context.contentResolver
+
+        // 실제 파일의 MIME 타입 가져오기
+        val mimeType = contentResolver.getType(uri) ?: return null
+
+        // MIME 타입에 맞는 확장자 추출
+        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
+
+        val inputStream = contentResolver.openInputStream(uri) ?: return null
+        val byteArray = inputStream.readBytes()
+        inputStream.close()
+
+        if (byteArray.isEmpty()) {
+            Log.e(TAG, "⚠️ 변환된 바이트 배열이 비어있음! 이미지 손실 가능성 있음!")
+            return null
+        }
+
+        Log.d(TAG, "✅ 변환된 바이트 배열 크기: ${byteArray.size}, MIME: $mimeType, 확장자: $extension")
+
+        // 파일명을 실제 MIME 타입에 맞게 설정
+        val fileName = "upload_${System.currentTimeMillis()}.$extension"
+
+        // 올바른 MIME 타입 적용
+        val requestBody = byteArray.toRequestBody(mimeType.toMediaTypeOrNull())
+
+        return MultipartBody.Part.createFormData("memoryImages", fileName, requestBody)
+    }
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents(),
         onResult = { uris ->
             if (uris.size + images.size <= 3) { // 최대 3장 선택
+                // 기존 이미지를 그대로 두고 새로 들어온 이미지만 추가
                 images = images + uris
+
+                // 디버깅 로그로 images 배열의 요소가 Uri인지 확인
+                images.forEach { uri ->
+                    Log.d(TAG, "Image URI type: ${uri::class.java}")
+                }
+
+                // 모든 이미지를 멀티파트로 변환 (기존 이미지 + 새로 추가된 이미지)
+                val multipartFiles = images.mapNotNull { uri -> uriToMultipart(context, uri) }
+
+                // 멀티파트 파일들을 memoryViewModel에 전달하여 상태 업데이트
+                memoryViewModel.memoryImageUpdate(multipartFiles)
+
+                Log.d(TAG, "MemoryUploadScreen: $multipartFiles")
+                Log.d(TAG, "MemoryUploadScreen: ${memoryUIState.sendIMage}")
+
+                memoryViewModel.isImageChanged(true)
+
             } else {
                 Toast.makeText(context, "최대 3장까지만 선택 가능합니다.", Toast.LENGTH_SHORT).show()
             }
         }
     )
-
-    fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
-        val file = File(context.cacheDir, "upload_${System.currentTimeMillis()}.jpg")
-        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
-        file.outputStream().use { output -> inputStream.copyTo(output) }
-
-        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-        memoryViewModel.isImageChanged(true)
-        return MultipartBody.Part.createFormData("file", file.name, requestFile)
-    }
 
     LaunchedEffect(key1 = Unit) {
         memoryViewModel.babyIdUpdate(babyId)
@@ -260,7 +303,7 @@ fun MemoryUploadScreen(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
-                            text = "(최대 3장)",
+                            text = "(최소 1장 최대 3장)",
                             style = AchuTheme.typography.semiBold14PointBlue,
                             color = FontGray,
                             textAlign = TextAlign.Center
@@ -354,15 +397,14 @@ fun MemoryUploadScreen(
                 PointPinkBtn(
                     buttonText = if (memoryUIState.selectedMemory.title == "") "작성 완료" else "수정완료",
                     onClick = {
-                        if (memoryUIState.selectedMemory.title == "") {
-                            memoryViewModel.uploadMemory()
+                        if (images.isEmpty()) {
+                            Toast.makeText(context, "사진을 추가해주세요", Toast.LENGTH_SHORT).show()
                         } else {
-                            memoryViewModel.changeMemory()
 
-                            if (memoryUIState.ifChangedImage) {
-                                val multipartFiles =  images.mapNotNull { uri -> uriToMultipart(context, uri) }
-                                memoryViewModel.memoryImageUpdate(multipartFiles)
-                                memoryViewModel.updateImage()
+                            if (memoryId == 0) {
+                                memoryViewModel.uploadMemory()
+                            } else {
+                                memoryViewModel.changeMemory()
                             }
                         }
                     }

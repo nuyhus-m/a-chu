@@ -1,6 +1,5 @@
 package com.ssafy.achu.ui.memory.memoryupload
 
-import com.google.android.material.slider.BaseOnChangeListener
 import com.ssafy.achu.data.model.memory.SingleMemoryResponse
 import okhttp3.MultipartBody
 

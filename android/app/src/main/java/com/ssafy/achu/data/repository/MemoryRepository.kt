@@ -1,5 +1,6 @@
 package com.ssafy.achu.data.repository
 
+import android.util.Log
 import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.IdResponse
 import com.ssafy.achu.data.model.memory.MemoryRequest
@@ -8,6 +9,7 @@ import com.ssafy.achu.data.model.memory.SingleMemoryResponse
 import com.ssafy.achu.data.network.RetrofitUtil
 import okhttp3.MultipartBody
 
+private const val TAG = "MemoryRepository 안주현"
 class MemoryRepository {
 
     private val memoryService = RetrofitUtil.memoryService
@@ -15,11 +17,12 @@ class MemoryRepository {
     //  추억 생성
     suspend fun createMemory(
         babyId: Int,
-        memoryImages: List<MultipartBody.Part>,
+        images: List<MultipartBody.Part>,
         request: MemoryRequest
     ): Result<ApiResult<IdResponse>> {
+        Log.d(TAG, "createMemory: ${images}")
         return runCatching {
-            memoryService.createMemory(babyId, memoryImages, request)
+            memoryService.createMemory(babyId, images, request)
         }
     }
 

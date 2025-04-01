@@ -1,7 +1,10 @@
 package com.ssafy.achu.ui.memory.memorydetail
 
+import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,6 +50,8 @@ import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import kotlinx.coroutines.flow.collectLatest
 
+
+private const val TAG = "MemoryDetailScreen 안주현"
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MemoryDetailScreen(
@@ -59,11 +64,6 @@ fun MemoryDetailScreen(
     val context = LocalContext.current
 
     val pagerState = rememberPagerState()
-    val images = listOf(
-        R.drawable.img_test_baby_doll,
-        R.drawable.img_test_baby_summer,
-        R.drawable.img_test_sopung
-    )
 
     val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
@@ -140,14 +140,16 @@ fun MemoryDetailScreen(
 
             // 이미지 슬라이드
             HorizontalPager(
-                count = images.size,
+                count = memoryUIState.selectedMemory.imgUrls.size,
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(350.dp)
             ) { page ->
+
+                Log.d(TAG, "MemoryDetailScreen: ${memoryUIState.selectedMemory.imgUrls}")
                 AsyncImage(
-                    model = memoryUIState.selectedMemory.imgUrls,
+                    model = memoryUIState.selectedMemory.imgUrls[page],
                     contentDescription = "Memory Image",
                     modifier = Modifier.fillMaxSize(),
                     alignment = Alignment.Center,
@@ -156,7 +158,7 @@ fun MemoryDetailScreen(
             }
 
             PageIndicator(
-                totalPages = images.size,
+                totalPages = memoryUIState.selectedMemory.imgUrls.size,
                 currentPage = pagerState.currentPage
             )
 
@@ -170,7 +172,7 @@ fun MemoryDetailScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = memoryUIState.selectedMemory.createdAt,
+                text =  memoryUIState.selectedMemory.createdAt.substringBefore("T"),
                 style = AchuTheme.typography.semiBold14PointBlue,
                 color = FontGray
 
@@ -217,7 +219,8 @@ fun PageIndicator(totalPages: Int, currentPage: Int) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .fillMaxWidth().height(24.dp)
+            .fillMaxWidth()
+            .height(24.dp)
     ) {
         // 각 점을 인디케이터로 표현
         repeat(totalPages) { index ->

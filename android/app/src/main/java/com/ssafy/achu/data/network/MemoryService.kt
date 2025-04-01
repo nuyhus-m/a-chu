@@ -8,6 +8,7 @@ import com.ssafy.achu.data.model.memory.SingleMemoryResponse
 import okhttp3.MultipartBody
 import retrofit2.http.*
 
+private const val TAG = "MemoryService 추억"
 interface MemoryService {
 
     // 추억 생성
@@ -15,7 +16,7 @@ interface MemoryService {
     @POST("/babies/{babyId}/memories")
     suspend fun createMemory(
         @Path("babyId") babyId: Int,
-        @Part memoryImages: List<MultipartBody.Part>,
+        @Part images: List<MultipartBody.Part>,
         @Part("request") request: MemoryRequest
     ): ApiResult<IdResponse>
 

@@ -54,15 +54,15 @@ class MemoryEditViewModel : ViewModel() {
 
     fun uploadMemory() {
         viewModelScope.launch {
+            Log.d(TAG, "uploadMemory: ${uiState.value.sendIMage}")
             ApplicationClass.Companion.memoryRepository.createMemory(
                 babyId = uiState.value.babyId,
-                memoryImages = uiState.value.sendIMage,
+                images = uiState.value.sendIMage,
                 request = MemoryRequest(
                     title = uiState.value.memoryTitle,
                     content = uiState.value.memoryContent
                 )
             ).onSuccess {
-                Log.d(TAG, "uploadMemory: ${it}")
                 updateToastString("추억 작성 완료!")
                 getMemory(it.data.id)
                 _isChanged.emit(true)
@@ -104,11 +104,17 @@ class MemoryEditViewModel : ViewModel() {
                     content = uiState.value.memoryContent
                 )
             ).onSuccess {
-                Log.d(TAG, "changeMemory: ${it}")
 
-                getMemory(uiState.value.selectedMemory.id)
-                updateToastString("추억 수정 완료!")
-                _isChanged.emit(true)
+                if (uiState.value.ifChangedImage) {
+                    updateImage()
+                }else{
+                    Log.d(TAG, "changeMemory: ${it}")
+
+                    getMemory(uiState.value.selectedMemory.id)
+                    updateToastString("추억 수정 완료!")
+                    _isChanged.emit(true)
+                }
+
 
             }.onFailure {
                 val errorResponse = it.getErrorResponse(ApplicationClass.Companion.retrofit)
@@ -121,14 +127,15 @@ class MemoryEditViewModel : ViewModel() {
 
     fun updateImage() {
         viewModelScope.launch {
+            Log.d(TAG, "updateImage: 이미지 보내는 함수 ${uiState.value.sendIMage}")
             ApplicationClass.Companion.memoryRepository.updateMemoryImages(
                 memoryId = uiState.value.selectedMemory.id,
                 memoryImages = uiState.value.sendIMage
             ).onSuccess {
                 Log.d(TAG, "updateImage: ${it}")
-//                getMemory(uiState.value.selectedMemory.id)
-//                updateToastString("추억 수정 완료!")
-//                _isChanged.emit(true)
+                getMemory(uiState.value.selectedMemory.id)
+                updateToastString("추억 수정 완료!")
+                _isChanged.emit(true)
             }.onFailure {
                 val errorResponse = it.getErrorResponse(ApplicationClass.Companion.retrofit)
                 Log.d(TAG, "updateImage: ${errorResponse}")
