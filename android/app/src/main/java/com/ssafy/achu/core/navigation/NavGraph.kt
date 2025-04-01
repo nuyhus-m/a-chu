@@ -135,7 +135,10 @@ fun NavGraph(
                 onNavigateToMemoryDetail = { memoryId, babyId ->
                     navController.navigate(
                         route = Route.MemoryDetail(memoryId = memoryId, babyId = babyId)
-                    )
+                    ) {
+                        popUpTo(navController.currentBackStackEntry?.destination?.route ?: "") {
+                            inclusive = true
+                        }                    }
                 },
                 memoryId = it.arguments?.getInt("memoryId") ?: 0,
                 babyId = it.arguments?.getInt("babyId") ?: 0,
@@ -147,14 +150,15 @@ fun NavGraph(
                 onNavigateToMemoryUpload = { memoryId, babyId ->
                     navController.navigate(
                         route = Route.MemoryUpload(memoryId = memoryId, babyId = babyId)
-                    )
+                    ) {
+                        popUpTo(navController.currentBackStackEntry?.destination?.route ?: "") {
+                            inclusive = true
+                        }                    }
                 },
                 memoryId = it.arguments?.getInt("memoryId") ?: 0,
                 babyId = it.arguments?.getInt("babyId") ?: 0,
-
             )
         }
-
         // 중고 거래 관련 화면들
         composable<Route.UploadProduct> {
             UploadProductScreen(

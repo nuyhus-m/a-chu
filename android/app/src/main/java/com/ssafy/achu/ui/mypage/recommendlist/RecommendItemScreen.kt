@@ -1,6 +1,7 @@
 package com.ssafy.achu.ui.mypage.recommendlist
 
 import BasicLikeItem
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -72,6 +73,7 @@ fun RecommendItemScreen() {
             gender = "여"
         ),
     )
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
     Box(
         modifier = Modifier
@@ -87,6 +89,7 @@ fun RecommendItemScreen() {
                 BasicTopAppBar(
                     title = "추천 상품",
                     onBackClick = {
+                        backPressedDispatcher?.onBackPressed()
 
                     }
                 )
