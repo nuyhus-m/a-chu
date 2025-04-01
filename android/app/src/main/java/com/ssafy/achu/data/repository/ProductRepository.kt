@@ -96,4 +96,20 @@ class ProductRepository {
             productService.deleteProduct(productId)
         }
     }
+
+    suspend fun likeProduct(
+        productId: Int
+    ): Result<ApiResult<Unit>> {
+        return runCatching {
+            productService.likeProduct(productId)
+        }
+    }
+
+    suspend fun unlikeProduct(
+        productId: Int
+    ): Result<ApiResult<Unit>> {
+        return runCatching {
+            productService.unlikeProduct(productId)
+        }
+    }
 }

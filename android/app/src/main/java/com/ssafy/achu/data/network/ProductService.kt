@@ -57,4 +57,14 @@ interface ProductService {
     suspend fun deleteProduct(
         @Path("goodsId") productId: Int
     ): ApiResult<IdResponse>
+
+    @POST("/goods/{goodsId}/like")
+    suspend fun likeProduct(
+        @Path("goodsId") productId: Int
+    ): ApiResult<Unit>
+
+    @DELETE("/goods/{goodsId}/like")
+    suspend fun unlikeProduct(
+        @Path("goodsId") productId: Int
+    ): ApiResult<Unit>
 }
