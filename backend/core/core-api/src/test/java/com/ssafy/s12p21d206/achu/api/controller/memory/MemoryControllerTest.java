@@ -64,8 +64,8 @@ class MemoryControllerTest extends RestDocsTest {
             new DefaultDateTime(LocalDateTime.now(), LocalDateTime.now())));
     given()
         .contentType(ContentType.MULTIPART)
-        .multiPart("images", "test1.jpg", new byte[0], "image/jpeg") // 파일 파트
-        .multiPart("images", "test2.jpg", new byte[0], "image/jpeg") // 파일 파트
+        .multiPart("memoryImages", "test1.jpg", new byte[0], "image/jpeg") // 파일 파트
+        .multiPart("memoryImages", "test2.jpg", new byte[0], "image/jpeg") // 파일 파트
         .multiPart("request", new AppendMemoryRequest("제목", "내용"), "application/json") // JSON 파트
         .post("/babies/{babyId}/memories", 1L)
         .then()
@@ -74,7 +74,7 @@ class MemoryControllerTest extends RestDocsTest {
             "append-memory",
             pathParameters(parameterWithName("babyId").description("추억을 생성할 자녀의 id")),
             requestParts(
-                partWithName("images").description("추억 이미지 파일"),
+                partWithName("memoryImages").description("추억 이미지 파일"),
                 partWithName("request").description("추억 생성 요청 데이터")),
             requestPartFields(
                 "request",

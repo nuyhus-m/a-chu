@@ -38,7 +38,7 @@ public class MemoryController {
   public ApiResponse<DefaultIdResponse> appendMemory(
       ApiUser apiUser,
       @PathVariable Long babyId,
-      @RequestPart(name = "images") List<MultipartFile> multipartFiles,
+      @RequestPart(name = "memoryImages") List<MultipartFile> multipartFiles,
       @RequestPart(name = "request") @Validated AppendMemoryRequest request) {
     NewMemory newMemory = request.toNewMemory();
     List<File> imageFiles = multipartFiles.stream().map(FileConverter::convert).toList();
