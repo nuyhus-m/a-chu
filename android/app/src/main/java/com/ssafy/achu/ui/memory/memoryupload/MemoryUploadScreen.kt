@@ -1,11 +1,14 @@
 package com.ssafy.achu.ui.memory.memoryupload
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.webkit.MimeTypeMap
 import android.widget.Toast
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -68,10 +71,8 @@ import com.ssafy.achu.ui.memory.memorydetail.PageIndicator
 import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.File
-import kotlin.jvm.java
+import java.io.ByteArrayOutputStream
 
 private const val TAG = "MemoryUploadScreen안주현"
 
@@ -93,15 +94,12 @@ fun MemoryUploadScreen(
         mutableStateOf(memoryUIState.selectedMemory.imgUrls.map { Uri.parse(it) })
     }
 
-
     LaunchedEffect(Unit) {
         memoryViewModel.isChanged.collectLatest { isChanged ->
-            memoryViewModel.getMemory(memoryId)
             Toast.makeText(context, memoryUIState.toastString, Toast.LENGTH_SHORT).show()
-            onNavigateToMemoryDetail(memoryId, babyId)
+            onNavigateToMemoryDetail(memoryUIState.selectedMemory.id, babyId)
         }
     }
-
 
 
 
@@ -114,22 +112,28 @@ fun MemoryUploadScreen(
         // MIME 타입에 맞는 확장자 추출
         val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
 
+        // InputStream → Bitmap 변환
         val inputStream = contentResolver.openInputStream(uri) ?: return null
-        val byteArray = inputStream.readBytes()
+        val bitmap = BitmapFactory.decodeStream(inputStream) ?: return null
         inputStream.close()
 
-        if (byteArray.isEmpty()) {
-            Log.e(TAG, "⚠️ 변환된 바이트 배열이 비어있음! 이미지 손실 가능성 있음!")
+        // 압축을 위한 ByteArrayOutputStream 생성
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, byteArrayOutputStream)
+        val compressedByteArray = byteArrayOutputStream.toByteArray()
+
+        if (compressedByteArray.isEmpty()) {
+            Log.e(TAG, "⚠️ 압축 후 바이트 배열이 비어있음! 이미지 손실 가능성 있음!")
             return null
         }
 
-        Log.d(TAG, "✅ 변환된 바이트 배열 크기: ${byteArray.size}, MIME: $mimeType, 확장자: $extension")
+        Log.d(TAG, "✅ 압축된 바이트 배열 크기: ${compressedByteArray.size}, MIME: $mimeType, 확장자: $extension")
 
-        // 파일명을 실제 MIME 타입에 맞게 설정
+        // 파일명을 MIME 타입에 맞게 설정
         val fileName = "upload_${System.currentTimeMillis()}.$extension"
 
         // 올바른 MIME 타입 적용
-        val requestBody = byteArray.toRequestBody(mimeType.toMediaTypeOrNull())
+        val requestBody = compressedByteArray.toRequestBody(mimeType.toMediaTypeOrNull())
 
         return MultipartBody.Part.createFormData("memoryImages", fileName, requestBody)
     }
@@ -169,6 +173,7 @@ fun MemoryUploadScreen(
     }
 
 
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
 
 
@@ -183,7 +188,10 @@ fun MemoryUploadScreen(
         ) {
             CenterTopAppBar(
                 title = if (memoryUIState.selectedMemory.id == 0) "추억 업로드" else "추억 수정",
-                onBackClick = {}
+                onBackClick = {
+                    backPressedDispatcher?.onBackPressed()
+
+                }
             )
             if (images.size != 0) {
                 // 이미지 슬라이드

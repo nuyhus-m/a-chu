@@ -16,7 +16,7 @@ interface MemoryService {
     @POST("/babies/{babyId}/memories")
     suspend fun createMemory(
         @Path("babyId") babyId: Int,
-        @Part images: List<MultipartBody.Part>,
+        @Part memoryImages: List<MultipartBody.Part>,
         @Part("request") request: MemoryRequest
     ): ApiResult<IdResponse>
 

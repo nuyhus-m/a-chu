@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.memory.memoryupload
 
+import android.provider.SyncStateContract.Helpers.update
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,6 +26,10 @@ class MemoryEditViewModel : ViewModel() {
 
     fun isImageChanged(boolean: Boolean) {
         _uiState.value = _uiState.value.copy(ifChangedImage = boolean)
+    }
+
+    fun isMemoryChanged(boolean: Boolean) {
+        _uiState.value = _uiState.value.copy(ifChangedMemory = boolean)
     }
 
 
@@ -57,7 +62,7 @@ class MemoryEditViewModel : ViewModel() {
             Log.d(TAG, "uploadMemory: ${uiState.value.sendIMage}")
             ApplicationClass.Companion.memoryRepository.createMemory(
                 babyId = uiState.value.babyId,
-                images = uiState.value.sendIMage,
+                memoryImages = uiState.value.sendIMage,
                 request = MemoryRequest(
                     title = uiState.value.memoryTitle,
                     content = uiState.value.memoryContent
@@ -65,7 +70,7 @@ class MemoryEditViewModel : ViewModel() {
             ).onSuccess {
                 updateToastString("추억 작성 완료!")
                 getMemory(it.data.id)
-                _isChanged.emit(true)
+
 
             }.onFailure {
                 val errorResponse = it.getErrorResponse(ApplicationClass.Companion.retrofit)
@@ -85,6 +90,10 @@ class MemoryEditViewModel : ViewModel() {
                     memoryContent = it.data.content
                 )
                 Log.d(TAG, "getMemory: ${it}")
+                if(uiState.value.ifChangedMemory|| uiState.value.ifChangedImage){
+                    _isChanged.emit(true)
+                }
+
             }.onFailure {
                 val errorResponse = it.getErrorResponse(ApplicationClass.Companion.retrofit)
                 Log.d(TAG, "getMemory: ${errorResponse}")
@@ -104,7 +113,7 @@ class MemoryEditViewModel : ViewModel() {
                     content = uiState.value.memoryContent
                 )
             ).onSuccess {
-
+                isMemoryChanged(true)
                 if (uiState.value.ifChangedImage) {
                     updateImage()
                 }else{
@@ -112,7 +121,7 @@ class MemoryEditViewModel : ViewModel() {
 
                     getMemory(uiState.value.selectedMemory.id)
                     updateToastString("추억 수정 완료!")
-                    _isChanged.emit(true)
+
                 }
 
 

@@ -17,12 +17,12 @@ class MemoryRepository {
     //  추억 생성
     suspend fun createMemory(
         babyId: Int,
-        images: List<MultipartBody.Part>,
+        memoryImages: List<MultipartBody.Part>,
         request: MemoryRequest
     ): Result<ApiResult<IdResponse>> {
-        Log.d(TAG, "createMemory: ${images}")
+        Log.d(TAG, "createMemory: ${memoryImages}")
         return runCatching {
-            memoryService.createMemory(babyId, images, request)
+            memoryService.createMemory(babyId, memoryImages, request)
         }
     }
 

@@ -9,6 +9,7 @@ import android.os.Build
 import android.util.Log
 import android.webkit.MimeTypeMap
 import android.widget.Toast
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -111,7 +112,7 @@ fun UserInfoScreen(
 
         // 이미지 압축: 품질을 80%로 설정 (0 ~ 100)
         val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, byteArrayOutputStream)
 
         // 압축된 이미지의 바이트 배열 반환
         return byteArrayOutputStream.toByteArray()
@@ -156,6 +157,7 @@ fun UserInfoScreen(
         }
     )
 
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
     Box(
         modifier = Modifier
@@ -169,7 +171,7 @@ fun UserInfoScreen(
             BasicTopAppBar(
                 title = "내 정보 수정",
                 onBackClick = {
-
+                    backPressedDispatcher?.onBackPressed()
                 }
             )
 

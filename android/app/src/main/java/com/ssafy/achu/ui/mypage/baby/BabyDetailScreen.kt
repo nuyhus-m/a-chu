@@ -9,6 +9,7 @@ import android.os.Build
 import android.util.Log
 import android.webkit.MimeTypeMap
 import android.widget.Toast
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -113,7 +114,6 @@ fun BabyDetailScreen(
         imgUrl = babyUiState.selectedBaby?.imgUrl ?: ""
     }
 
-    var multipartFile: MultipartBody.Part? = null
 
     var showNickNameUpdateDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -183,7 +183,7 @@ fun BabyDetailScreen(
 
         // 이미지 압축: 품질을 80%로 설정 (0 ~ 100)
         val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, byteArrayOutputStream)
 
         // 압축된 이미지의 바이트 배열 반환
         return byteArrayOutputStream.toByteArray()
@@ -233,6 +233,7 @@ fun BabyDetailScreen(
         }
     )
 
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
 
     Box(
@@ -246,7 +247,7 @@ fun BabyDetailScreen(
             BasicTopAppBar(
                 title = titleText,
                 onBackClick = {
-
+                    backPressedDispatcher?.onBackPressed()
                 }
             )
 

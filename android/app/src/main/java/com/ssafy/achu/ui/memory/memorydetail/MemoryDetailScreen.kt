@@ -66,7 +66,6 @@ fun MemoryDetailScreen(
     val pagerState = rememberPagerState()
 
     val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-
     LaunchedEffect(Unit) {
         memoryViewModel.isChanged.collectLatest { isChanged ->
             memoryViewModel.getMemory(memoryId)

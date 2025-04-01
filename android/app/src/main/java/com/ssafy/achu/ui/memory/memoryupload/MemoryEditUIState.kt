@@ -17,6 +17,7 @@ data class MemoryEditUIState (
         updatedAt = ""
     )
     , val toastString: String = "",
-    val ifChangedImage : Boolean = false
+    val ifChangedImage : Boolean = false,
+    val ifChangedMemory : Boolean = false
 
 )
