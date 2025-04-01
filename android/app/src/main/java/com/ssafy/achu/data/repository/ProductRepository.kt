@@ -78,4 +78,12 @@ class ProductRepository {
             )
         }
     }
+
+    suspend fun getProductDetail(
+        productId: Int
+    ): Result<ApiResult<ProductResponse>> {
+        return runCatching {
+            productService.getProductDetail(productId)
+        }
+    }
 }

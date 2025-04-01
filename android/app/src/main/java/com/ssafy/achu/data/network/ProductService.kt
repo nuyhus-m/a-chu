@@ -43,4 +43,9 @@ interface ProductService {
         @Query("limit") limit: Int,
         @Query("sort") sort: String
     ): ApiResult<List<ProductResponse>>
+
+    @GET("/goods/{goodsId}")
+    suspend fun getProductDetail(
+        @Path("goodsId") productId: Int
+    ): ApiResult<ProductResponse>
 }
