@@ -70,7 +70,7 @@ fun ProductListScreen(
     modifier: Modifier = Modifier,
     viewModel: ProductListViewModel = viewModel(),
     onNavigateToUploadProduct: () -> Unit,
-    onNavigateToProductDetail: () -> Unit
+    onNavigateToProductDetail: (Int) -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -206,7 +206,7 @@ fun ProductList(
     items: List<ProductResponse>,
     listState: LazyListState,
     onLoadMore: () -> Unit,
-    onNavigateToProductDetail: () -> Unit
+    onNavigateToProductDetail: (Int) -> Unit
 ) {
 
     val lastIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
@@ -232,7 +232,7 @@ fun ProductList(
         items(items) { item ->
             ProductItem(
                 productResponse = item,
-                onItemClick = onNavigateToProductDetail
+                onItemClick = { onNavigateToProductDetail(item.id) }
             )
         }
     }
