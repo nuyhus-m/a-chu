@@ -1,4 +1,4 @@
-package com.ssafy.s12p21d206.achu.auth.api.support;
+package com.ssafy.s12p21d206.achu.api.controller.support;
 
 import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
 import org.springframework.core.MethodParameter;
