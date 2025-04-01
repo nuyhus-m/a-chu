@@ -468,13 +468,22 @@ class GoodsControllerTest extends RestDocsTest {
 
   @Test
   void findLikedGoods() {
+    when(likeService.findLikedGoods(any(User.class), anyLong(), anyLong(), any(SortType.class)))
+        .thenReturn(List.of(goods));
     given()
         .contentType(ContentType.JSON)
+        .queryParam("offset", 0)
+        .queryParam("limit", 20)
+        .queryParam("sort", "LATEST")
         .get("/goods/liked")
         .then()
         .status(HttpStatus.OK)
         .apply(document(
             "find-liked",
+            queryParameters(
+                parameterWithName("offset").description("결과 목록의 시작 인덱스를 나타냅니다. (예: 0)"),
+                parameterWithName("limit").description("한 페이지에 반환할 최대 데이터 수를 지정합니다. (예: 20)"),
+                parameterWithName("sort").description("데이터 정렬 기준을 지정합니다. (예: LATEST 혹은 OLDEST)")),
             responseFields(
                 fieldWithPath("result")
                     .type(JsonFieldType.STRING)

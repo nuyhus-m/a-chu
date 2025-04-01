@@ -16,4 +16,8 @@ public class LikeEntity extends BaseEntity {
     this.userId = userId;
     this.goodsId = goodsId;
   }
+
+  public Long getGoodsId() {
+    return goodsId;
+  }
 }

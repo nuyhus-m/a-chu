@@ -3,12 +3,16 @@ package com.ssafy.s12p21d206.achu.storage.db.core;
 import com.ssafy.s12p21d206.achu.domain.LikeRepository;
 import com.ssafy.s12p21d206.achu.domain.LikeStatus;
 import com.ssafy.s12p21d206.achu.domain.User;
+import com.ssafy.s12p21d206.achu.domain.support.SortType;
+import com.ssafy.s12p21d206.achu.storage.db.core.support.SortUtils;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -66,5 +70,14 @@ public class LikeCoreRepository implements LikeRepository {
 
     LikeEntity likeEntity = likeEntityOptional.get();
     likeEntity.delete();
+  }
+
+  @Override
+  public List<Long> findLikedGoodsIds(User user, Long offset, Long limit, SortType sort) {
+    Pageable pageable =
+        PageRequest.of(offset.intValue(), limit.intValue(), SortUtils.convertSort(sort));
+    List<LikeEntity> likeEntities =
+        likeJpaRepository.findByUserIdAndEntityStatus(user.id(), EntityStatus.ACTIVE, pageable);
+    return likeEntities.stream().map(LikeEntity::getGoodsId).toList();
   }
 }

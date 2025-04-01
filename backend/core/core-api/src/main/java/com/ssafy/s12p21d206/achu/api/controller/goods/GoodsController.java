@@ -5,7 +5,6 @@ import com.ssafy.s12p21d206.achu.api.controller.support.FileConverter;
 import com.ssafy.s12p21d206.achu.api.response.ApiResponse;
 import com.ssafy.s12p21d206.achu.api.response.DefaultIdResponse;
 import com.ssafy.s12p21d206.achu.domain.*;
-import com.ssafy.s12p21d206.achu.domain.TradeStatus;
 import com.ssafy.s12p21d206.achu.domain.TradeType;
 import com.ssafy.s12p21d206.achu.domain.image.File;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
@@ -190,10 +189,13 @@ public class GoodsController {
   }
 
   @GetMapping("/goods/liked")
-  public ApiResponse<List<TradeResponse>> findLikedGoods(Long userId) {
-    List<TradeResponse> response = List.of(
-        new TradeResponse(6L, TradeStatus.SOLD, "유아 식기", "goods6_img_url", 5000L),
-        new TradeResponse(10L, TradeStatus.SELLING, "유모차", "goods10_img_url", 10000L));
-    return ApiResponse.success(response);
+  public ApiResponse<List<TradeResponse>> findLikedGoods(
+      ApiUser apiUser,
+      @RequestParam Long offset,
+      @RequestParam Long limit,
+      @RequestParam SortType sort) {
+    List<Goods> goods = likeService.findLikedGoods(apiUser.toUser(), offset, limit, sort);
+    List<TradeResponse> responses = TradeResponse.of(goods);
+    return ApiResponse.success(responses);
   }
 }

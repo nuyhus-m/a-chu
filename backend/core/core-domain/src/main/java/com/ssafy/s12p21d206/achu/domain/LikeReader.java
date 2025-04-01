@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.domain;
 
+import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -23,5 +24,9 @@ public class LikeReader {
 
   public Map<Long, LikeStatus> status(User user, List<Long> goodIds) {
     return likeRepository.status(user, goodIds);
+  }
+
+  public List<Long> readLikedGoods(User user, Long offset, Long limit, SortType sort) {
+    return likeRepository.findLikedGoodsIds(user, offset, limit, sort);
   }
 }
