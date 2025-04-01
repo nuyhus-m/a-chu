@@ -94,6 +94,18 @@ fun ProductDetailScreen(
         viewModel.toastMessage.collectLatest { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
+
+        viewModel.isLikeSuccess.collectLatest {
+            if (it) {
+                activityViewModel.getProductDetail(activityUiState.product.id)
+            }
+        }
+
+        viewModel.isUnlikeSuccess.collectLatest {
+            if (it) {
+                activityViewModel.getProductDetail(activityUiState.product.id)
+            }
+        }
     }
 
     LaunchedEffect(uiState.isDeleteSuccess) {
@@ -157,7 +169,8 @@ fun ProductDetailScreen(
             isSold = isSold,
             isPreview = isPreview,
             likedByUser = activityUiState.product.likedByUser,
-            onLikeClick = {},
+            onLikeClick = { viewModel.likeProduct(activityUiState.product.id) },
+            onUnLikeClick = { viewModel.unlikeProduct(activityUiState.product.id) },
             onButtonClick = onNavigateToChat,
         )
     }
@@ -182,6 +195,7 @@ private fun BottomBar(
     isSold: Boolean,
     isPreview: Boolean,
     onLikeClick: () -> Unit,
+    onUnLikeClick: () -> Unit,
     onButtonClick: () -> Unit
 ) {
     Row(
@@ -198,7 +212,10 @@ private fun BottomBar(
             tint = if (likedByUser) FontPink else FontGray,
             modifier = Modifier
                 .size(32.dp)
-                .clickable(onClick = onLikeClick, enabled = !isPreview),
+                .clickable(
+                    onClick = if (likedByUser) onUnLikeClick else onLikeClick,
+                    enabled = !isPreview
+                ),
         )
         if (likeCount > 0) {
             Text(
@@ -524,7 +541,8 @@ fun PreviewBottomBar() {
             likedByUser = true,
             onLikeClick = {},
             onButtonClick = {},
-            isPreview = false
+            isPreview = false,
+            onUnLikeClick = {}
         )
     }
 }

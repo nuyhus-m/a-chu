@@ -26,6 +26,12 @@ class ProductDetailViewModel : ViewModel() {
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage: SharedFlow<String> = _toastMessage.asSharedFlow()
 
+    private val _isLikeSuccess = MutableStateFlow(false)
+    val isLikeSuccess: StateFlow<Boolean> = _isLikeSuccess.asStateFlow()
+
+    private val _isUnlikeSuccess = MutableStateFlow(false)
+    val isUnlikeSuccess: StateFlow<Boolean> = _isUnlikeSuccess.asStateFlow()
+
     fun updateShowDialog(dialogState: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -55,4 +61,39 @@ class ProductDetailViewModel : ViewModel() {
                 }
         }
     }
+
+    fun likeProduct(productId: Int) {
+        viewModelScope.launch {
+            productRepository.likeProduct(productId)
+                .onSuccess { response ->
+                    Log.d(TAG, "likeProduct: $response")
+                    if (response.result == SUCCESS) {
+                        _isLikeSuccess.emit(true)
+                    }
+                }.onFailure {
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "likeProduct errorResponse: $errorResponse")
+                    Log.d(TAG, "likeProduct error: ${it.message}")
+                    _toastMessage.emit(errorResponse.message)
+                }
+        }
+    }
+
+    fun unlikeProduct(productId: Int) {
+        viewModelScope.launch {
+            productRepository.unlikeProduct(productId)
+                .onSuccess { response ->
+                    Log.d(TAG, "unlikeProduct: $response")
+                    if (response.result == SUCCESS) {
+                        _isUnlikeSuccess.emit(true)
+                    }
+                }.onFailure {
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "unlikeProduct errorResponse: $errorResponse")
+                    Log.d(TAG, "unlikeProduct error: ${it.message}")
+                    _toastMessage.emit(errorResponse.message)
+                }
+        }
+    }
 }
+
