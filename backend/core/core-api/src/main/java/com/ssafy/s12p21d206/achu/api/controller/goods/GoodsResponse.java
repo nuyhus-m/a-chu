@@ -16,7 +16,7 @@ public record GoodsResponse(
     Long price,
     LocalDateTime createdAt,
     Long chatCount,
-    int likedUsersCount,
+    Long likedUsersCount,
     Boolean likedByUser) {
 
   public static List<com.ssafy.s12p21d206.achu.api.controller.goods.GoodsResponse> of(

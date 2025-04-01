@@ -31,7 +31,7 @@ public record GoodsDetailResponse(
         goodsDetail.goods().tradeStatus(),
         goodsDetail.goods().price(),
         goodsDetail.goods().defaultDateTime().createdAt(),
-        (long) likeStatus.count(),
+        likeStatus.count(),
         likeStatus.isLike(),
         category,
         seller);

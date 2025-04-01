@@ -37,15 +37,16 @@ public class LikeCoreRepository implements LikeRepository {
 
   @Override
   public Map<Long, LikeStatus> status(User user, List<Long> goodsIds) {
-    Map<Long, Integer> countMap = likeJpaRepository.countIn(goodsIds, EntityStatus.ACTIVE).stream()
-        .collect(Collectors.toMap(e -> (Long) e[0], e -> (Integer) e[1]));
+    Map<Long, Long> countMap = likeJpaRepository.countIn(goodsIds, EntityStatus.ACTIVE).stream()
+        .collect(Collectors.toMap(e -> (Long) e[0], e -> (Long) e[1]));
     Set<Long> likedGoods = goodsIds.isEmpty()
         ? Set.of()
         : likeJpaRepository.findLikedGoodsByUser(user.id(), goodsIds, EntityStatus.ACTIVE);
 
     return goodsIds.stream()
         .collect(Collectors.toMap(
-            id -> id, id -> new LikeStatus(countMap.getOrDefault(id, 0), likedGoods.contains(id))));
+            id -> id,
+            id -> new LikeStatus(countMap.getOrDefault(id, 0L), likedGoods.contains(id))));
   }
 
   @Transactional
