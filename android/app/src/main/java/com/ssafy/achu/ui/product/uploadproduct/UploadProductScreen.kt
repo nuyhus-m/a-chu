@@ -42,6 +42,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,23 +61,36 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.rememberAsyncImagePainter
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.CenterTopAppBar
+import com.ssafy.achu.core.components.LabelWithErrorMsg
 import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.data.model.baby.BabyResponse
+import com.ssafy.achu.data.model.product.CategoryResponse
+import com.ssafy.achu.ui.ActivityViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun UploadProductScreen(onBackClick: () -> Unit = {}) {
+fun UploadProductScreen(
+    modifier: Modifier = Modifier,
+    viewModel: UploadProductViewModel = viewModel(),
+    activityViewModel: ActivityViewModel,
+    onBackClick: () -> Unit
+) {
 
     val context = LocalContext.current
     val space = 24.dp
     val smallSpace = 8.dp
+
+    val uiState by viewModel.uiState.collectAsState()
+    val activityUiState by activityViewModel.uiState.collectAsState()
 
     val scrollState = rememberScrollState()
 
@@ -93,8 +108,14 @@ fun UploadProductScreen(onBackClick: () -> Unit = {}) {
         }
     }
 
+    LaunchedEffect(Unit) {
+        activityUiState.selectedBaby?.let {
+            viewModel.updateSelectedBaby(it)
+        }
+    }
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(color = White)
     ) {
@@ -139,14 +160,16 @@ fun UploadProductScreen(onBackClick: () -> Unit = {}) {
             Spacer(modifier = Modifier.height(space))
 
             // 제목
-            Text(
-                text = stringResource(R.string.title),
-                style = AchuTheme.typography.semiBold18
+            LabelWithErrorMsg(
+                label = stringResource(R.string.title),
+                errorMessage = uiState.titleErrorMessage,
+                isBold = true,
+                enabled = uiState.isTitleValid
             )
             Spacer(modifier = Modifier.height(smallSpace))
             BasicTextField(
-                value = "",
-                onValueChange = {},
+                value = uiState.title,
+                onValueChange = { viewModel.updateTitle(it) },
                 placeholder = stringResource(R.string.writing_title),
                 placeholderColor = LightGray,
                 borderColor = PointBlue,
@@ -160,7 +183,11 @@ fun UploadProductScreen(onBackClick: () -> Unit = {}) {
                 style = AchuTheme.typography.semiBold18
             )
             Spacer(modifier = Modifier.height(smallSpace))
-            CategoryDropdown(onCategorySelected = {})
+            CategoryDropdown(
+                categories = uiState.categories,
+                selectedCategory = uiState.selectedCategory?.name ?: "",
+                onCategorySelected = { viewModel.updateSelectedCategory(it) }
+            )
             Spacer(modifier = Modifier.height(space))
 
             // 가격
@@ -176,14 +203,16 @@ fun UploadProductScreen(onBackClick: () -> Unit = {}) {
             Spacer(modifier = Modifier.height(space))
 
             // 자세한 설명
-            Text(
-                text = stringResource(R.string.detail_description),
-                style = AchuTheme.typography.semiBold18
+            LabelWithErrorMsg(
+                label = stringResource(R.string.detail_description),
+                errorMessage = uiState.descriptionErrorMessage,
+                isBold = true,
+                enabled = uiState.isDescriptionValid
             )
             Spacer(modifier = Modifier.height(smallSpace))
             DescriptionInputField(
-                value = "",
-                onValueChange = {}
+                value = uiState.description,
+                onValueChange = { viewModel.updateDescription(it) }
             )
             Spacer(modifier = Modifier.height(space))
 
@@ -193,7 +222,11 @@ fun UploadProductScreen(onBackClick: () -> Unit = {}) {
                 style = AchuTheme.typography.semiBold18
             )
             Spacer(modifier = Modifier.height(smallSpace))
-            BabyDropdown(onBabySelected = {})
+            BabyDropdown(
+                babyList = activityUiState.babyList,
+                selectedBaby = uiState.selectedBaby?.nickname ?: "",
+                onBabySelected = { viewModel.updateSelectedBaby(it) }
+            )
             Spacer(modifier = Modifier.height(space))
         }
 
@@ -303,11 +336,11 @@ fun ImageItem(uri: Uri, onDelete: () -> Unit = {}, isFirst: Boolean = false) {
 fun CategoryDropdown(
     modifier: Modifier = Modifier,
     label: String = stringResource(R.string.category),
-    onCategorySelected: (String) -> Unit
+    selectedCategory: String,
+    categories: List<CategoryResponse>,
+    onCategorySelected: (CategoryResponse) -> Unit
 ) {
-    val categories = listOf("의류", "가전제품", "가구", "도서", "스포츠/레저", "화장품", "기타")
     var expanded by remember { mutableStateOf(false) }
-    var selectedCategory by remember { mutableStateOf("") }
 
     Column(
         modifier = modifier
@@ -341,9 +374,8 @@ fun CategoryDropdown(
             ) {
                 categories.forEach { category ->
                     DropdownMenuItem(
-                        text = { Text(category) },
+                        text = { Text(category.name) },
                         onClick = {
-                            selectedCategory = category
                             expanded = false
                             onCategorySelected(category)
                         }
@@ -425,11 +457,11 @@ fun DescriptionInputField(
 @Composable
 fun BabyDropdown(
     modifier: Modifier = Modifier,
-    onBabySelected: (String) -> Unit
+    babyList: List<BabyResponse>,
+    selectedBaby: String,
+    onBabySelected: (BabyResponse) -> Unit
 ) {
-    val babyList = listOf("강두식", "강삼식")
     var expanded by remember { mutableStateOf(false) }
-    var selectedBaby by remember { mutableStateOf("강두식") }
 
     Column(
         modifier = modifier
@@ -459,13 +491,12 @@ fun BabyDropdown(
                 onDismissRequest = { expanded = false },
                 modifier = Modifier.background(Color.White)
             ) {
-                babyList.forEach { category ->
+                babyList.forEach { baby ->
                     DropdownMenuItem(
-                        text = { Text(category) },
+                        text = { Text(baby.nickname) },
                         onClick = {
-                            selectedBaby = category
                             expanded = false
-                            onBabySelected(category)
+                            onBabySelected(baby)
                         }
                     )
                 }
@@ -480,6 +511,9 @@ fun BabyDropdown(
 @Composable
 fun UploadProductScreenPreview() {
     AchuTheme {
-        UploadProductScreen()
+        UploadProductScreen(
+            activityViewModel = viewModel(),
+            onBackClick = {}
+        )
     }
 }

@@ -200,6 +200,7 @@ fun NavGraph(
         // 중고 거래 관련 화면들
         composable<Route.UploadProduct> {
             UploadProductScreen(
+                activityViewModel = activityViewModel,
                 onBackClick = { navController.popBackStack() }
             )
         }
