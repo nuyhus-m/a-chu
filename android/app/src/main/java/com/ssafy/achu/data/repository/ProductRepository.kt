@@ -3,6 +3,7 @@ package com.ssafy.achu.data.repository
 import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.IdResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
+import com.ssafy.achu.data.model.product.LikeProduct
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.data.network.RetrofitUtil
@@ -110,6 +111,27 @@ class ProductRepository {
     ): Result<ApiResult<Unit>> {
         return runCatching {
             productService.unlikeProduct(productId)
+        }
+    }
+
+    suspend fun getLikedGoods(
+        offset: Int = 0,
+        limit: Int = 20,
+        sort: String = "LATEST"
+    ): Result<ApiResult<List<LikeProduct>>> {
+        return runCatching {
+            productService.getLikedGoods(offset, limit, sort)
+        }
+    }
+
+    suspend fun getTradeList(
+        tradeType: String,
+        offset: Int = 0,
+        limit: Int = 20,
+        sort: String = "LATEST"
+    ): Result<ApiResult<List<LikeProduct>>> {
+        return runCatching {
+            productService.getTrades(tradeType, offset, limit, sort)
         }
     }
 }

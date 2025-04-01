@@ -1,6 +1,6 @@
 package com.ssafy.achu.ui.product.productdetail
 
-import BasicLikeItem
+import BasicRecommendItem
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -449,7 +449,7 @@ private fun ProfileInfo(
 fun RecommendList(items: List<ProductResponse>) {
     LazyRow {
         items(items) { item ->
-            BasicLikeItem(
+            BasicRecommendItem(
                 isLiked = item.likedByUser,
                 onClickItem = {},
                 onClickHeart = {},

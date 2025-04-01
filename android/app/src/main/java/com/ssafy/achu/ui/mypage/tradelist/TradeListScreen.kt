@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.mypage.tradelist
 
+import android.net.Uri
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,6 +23,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,40 +35,43 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.BasicTopAppBar
+import com.ssafy.achu.core.navigation.Route
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontBlue
+import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 
 @Composable
-fun TradeListScreen() {
+fun TradeListScreen(
+    viewModel: TradeListViewModel = viewModel(),
+    onNavigateToProductDetail: () -> Unit
+) {
 
-    val saleList = remember {
-        mutableListOf(
-            ProductItem(R.drawable.img_miffy_doll, "판매중", "토끼 인형", "판매가: 3,000원"),
-            ProductItem(R.drawable.img_miffy_doll, "판매완료", "곰인형", "판매가: 2,500원")
-        )
+
+    LaunchedEffect(Unit) {
+        viewModel.getPurchaseList()
+        viewModel.getSaleList()
     }
 
-    val purchaseList = remember {
-        mutableListOf(
-            ProductItem(R.drawable.img_miffy_doll, "구매완료", "인형", "구매가: 3,000원"),
-            ProductItem(R.drawable.img_miffy_doll, "구매완료", "장난감", "구매가: 1,500원")
-        )
-    }
+    val saleList by viewModel.saleList.collectAsState()
+    val purchaseList by viewModel.purchaseList.collectAsState()
 
     var selectedTab by remember { mutableStateOf("purchase") }
-//    var showDialog by remember { mutableStateOf(false) }
-//    var selectedProduct by remember { mutableStateOf<ProductItem?>(null) }
+
 
     val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     Box(
@@ -145,38 +151,96 @@ fun TradeListScreen() {
                             .background(color = PointBlue)
                     )
 
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 16.dp)
-                    ) {
-                        val listToDisplay =
-                            if (selectedTab == "purchase") purchaseList else saleList
+                    if (selectedTab == "purchase" && purchaseList.isNullOrEmpty()) {
 
-                        items(listToDisplay) { productItem ->
-                            ListItem(
-                                img = productItem.img,
-                                state = productItem.state,
-                                productName = productItem.productName,
-                                price = productItem.price,
-                                onClick = {
-                                },
 
-                                )
-                            Spacer(modifier = Modifier.height(8.dp))
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = 150.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                            Image(
+                                painter = painterResource(id = R.drawable.img_crying_face),
+                                contentDescription = "Crying Face",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(100.dp)
+                            )
+                            Spacer(modifier = Modifier.height(24.dp))
+                            Text(
+                                text = "구매내역이 없습니다.",
+                                style = AchuTheme.typography.semiBold18,
+                                lineHeight = 30.sp,
+                                color = FontGray,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    } else if (selectedTab != "purchase" && saleList.isNullOrEmpty()) {
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = 150.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                            Image(
+                                painter = painterResource(id = R.drawable.img_crying_face),
+                                contentDescription = "Crying Face",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(100.dp)
+                            )
+                            Spacer(modifier = Modifier.height(24.dp))
+                            Text(
+                                text = "판매내역이 없습니다.",
+                                style = AchuTheme.typography.semiBold18,
+                                lineHeight = 30.sp,
+                                color = FontGray,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
+                    } else {
+
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 16.dp)
+                        ) {
+                            val listToDisplay =
+                                if (selectedTab == "purchase") purchaseList else saleList
+
+                            items(listToDisplay) { productItem ->
+                                ListItem(
+                                    img = productItem.imgUrl.toUri(),
+                                    state = if (selectedTab == "purchase") "구매완료" else if (productItem.tradeStatus == "SELLING") "판매중" else "판매완료",
+                                    productName = productItem.title,
+                                    price = " ${productItem.price}원",
+                                    onClick = {
+                                        onNavigateToProductDetail()
+                                    },
+
+                                    )
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
                         }
                     }
                 }
             }
+
+
         }
-
-
     }
 }
 
 @Composable
 fun ListItem(
-    img: Int? = null,
+    img: Uri,
     state: String,
     productName: String,
     price: String,
@@ -196,52 +260,51 @@ fun ListItem(
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (img != null) {
-                Image(
-                    painter = painterResource(id = img),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .background(color = LightGray, shape = RoundedCornerShape(8.dp))
-                        .width(100.dp)
-                        .height(100.dp)
-                        .clip(shape = RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop
-                )
-            }
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.Start,
+            AsyncImage(
+                model = img,
+                contentDescription = null,
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(top = 8.dp, bottom = 8.dp)
-            ) {
-                Text(
-                    text = state,
-                    style = AchuTheme.typography.semiBold14PointBlue,
-                    color = if (state == "구매완료") FontPink else FontBlue
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = productName,
-                    style = AchuTheme.typography.semiBold18,
-                    color = FontBlack,
-                    maxLines = 1, // 한 줄만 표시
-                    overflow = TextOverflow.Ellipsis // 넘치는 부분은 "..."으로 표시
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+                    .background(color = LightGray, shape = RoundedCornerShape(8.dp))
+                    .width(100.dp)
+                    .height(100.dp)
+                    .clip(shape = RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
 
-                Text(
-                    text = price,
-                    style = AchuTheme.typography.semiBold16,
-                    fontSize = 14.sp,
-                    color = FontBlack,
-                    maxLines = 1, // 한 줄만 표시
-                    overflow = TextOverflow.Ellipsis // 넘치는 부분은 "..."으로 표시
-                )
-            }
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(top = 8.dp, bottom = 8.dp)
+        ) {
+            Text(
+                text = state,
+                style = AchuTheme.typography.semiBold14PointBlue,
+                color = if (state == "구매완료") FontPink else FontBlue
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = productName,
+                style = AchuTheme.typography.semiBold18,
+                color = FontBlack,
+                maxLines = 1, // 한 줄만 표시
+                overflow = TextOverflow.Ellipsis // 넘치는 부분은 "..."으로 표시
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = price,
+                style = AchuTheme.typography.semiBold16,
+                fontSize = 14.sp,
+                color = FontBlack,
+                maxLines = 1, // 한 줄만 표시
+                overflow = TextOverflow.Ellipsis // 넘치는 부분은 "..."으로 표시
+            )
         }
     }
 }
@@ -258,7 +321,9 @@ data class ProductItem(
 @Composable
 fun TradeListScreenPreview() {
     AchuTheme {
-        TradeListScreen()
+        TradeListScreen(onNavigateToProductDetail = {
+
+        })
 //        ListItem(R.drawable.img_miffy_doll, "판매중", "토끼인형", "판매가: 3,000원", onClick = {})
     }
 }
