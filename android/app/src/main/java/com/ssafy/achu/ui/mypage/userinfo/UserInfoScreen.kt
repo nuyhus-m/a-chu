@@ -2,8 +2,12 @@ package com.ssafy.achu.ui.mypage.userinfo
 
 import PhoneNumberTextField
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
+import android.util.Log
+import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +30,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,12 +61,16 @@ import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.ui.ActivityViewModel
+import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import kotlin.collections.plus
 
 private const val TAG = "UserInfoScreen 안주현"
 
@@ -76,41 +85,73 @@ fun UserInfoScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    val user = uiState.user!!
+    LaunchedEffect(Unit) {
+        userInfoViewModel.isChanged.collectLatest { isChanged ->
+            if (isChanged) {
+                viewModel.getUserinfo()
+                Toast.makeText(context, userInfoUiState.toastMessage, Toast.LENGTH_SHORT).show()
+            }else{
+                Toast.makeText(context, userInfoUiState.toastMessage, Toast.LENGTH_SHORT).show()
 
-
-    var img by remember {
-        mutableStateOf(
-            user.profileImageUrl
-        )
+            }
+        }
     }
 
 
+
+
+
+    fun compressImage(uri: Uri, context: Context): ByteArray? {
+        val contentResolver = context.contentResolver
+
+        // 파일의 InputStream을 열고 Bitmap으로 변환
+        val inputStream = contentResolver.openInputStream(uri) ?: return null
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream.close()
+
+        // 이미지 압축: 품질을 80%로 설정 (0 ~ 100)
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
+
+        // 압축된 이미지의 바이트 배열 반환
+        return byteArrayOutputStream.toByteArray()
+    }
+
     fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
         val contentResolver = context.contentResolver
-        val inputStream: InputStream? = contentResolver.openInputStream(uri)
 
-        inputStream?.let { input ->
-            val file = File(context.cacheDir, "upload_image.jpg") // 임시 파일 생성
-            val outputStream = FileOutputStream(file)
-            input.copyTo(outputStream)
-            outputStream.close()
-            input.close()
+        // 실제 파일의 MIME 타입 가져오기
+        val mimeType = contentResolver.getType(uri) ?: return null
 
-            val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), file)
-            return MultipartBody.Part.createFormData("profileImage", file.name, requestFile)
+        // MIME 타입에 맞는 확장자 추출
+        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
+
+        // 이미지 압축
+        val byteArray = compressImage(uri, context) ?: return null
+
+        if (byteArray.isEmpty()) {
+            Log.e(TAG, "⚠️ 변환된 바이트 배열이 비어있음! 이미지 손실 가능성 있음!")
+            return null
         }
-        return null
+
+        Log.d(TAG, "✅ 변환된 바이트 배열 크기: ${byteArray.size}, MIME: $mimeType, 확장자: $extension")
+
+        // 파일명을 실제 MIME 타입에 맞게 설정
+        val fileName = "upload_${System.currentTimeMillis()}.$extension"
+
+        // 올바른 MIME 타입 적용
+        val requestBody = byteArray.toRequestBody(mimeType.toMediaTypeOrNull())
+        return MultipartBody.Part.createFormData("profileImage", fileName, requestBody)
     }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
-            if (uri != null) { // 이미지가 선택되었을 때만 처리
-                img = uri.toString()
-                userInfoViewModel.changeProfile(uriToMultipart(context, uri)!!)
-                Toast.makeText(context, "프로필 수정완료", Toast.LENGTH_SHORT).show()
-                viewModel.getUserinfo()
+            uri?.let {
+                val multipartFile = uriToMultipart(context, it)
+                if (multipartFile != null) {
+                    userInfoViewModel.changeProfile(multipartFile)
+                }
             }
         }
     )
@@ -153,9 +194,9 @@ fun UserInfoScreen(
                         contentScale = ContentScale.Crop
                     )
 
-                    if (!user.profileImageUrl.isNullOrEmpty()) {
+                    if (!uiState.user!!.profileImageUrl.isNullOrEmpty()) {
                         AsyncImage(
-                            model = img,
+                            model = uiState.user!!.profileImageUrl,
                             contentDescription = "Profile",
                             modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
                             contentScale = ContentScale.Crop
@@ -173,7 +214,7 @@ fun UserInfoScreen(
                 Row(verticalAlignment = Alignment.Bottom) {
                     Spacer(modifier = Modifier.width(20.dp))
                     Text(
-                        text = user.nickname, style = AchuTheme.typography.bold24,
+                        text = uiState.user!!.nickname, style = AchuTheme.typography.bold24,
                         fontSize = 28.sp
                     )
                     Text(text = "님", style = AchuTheme.typography.bold24)
@@ -202,7 +243,7 @@ fun UserInfoScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 BasicTextField(
-                    value = user.username,
+                    value = uiState.user!!.username,
                     onValueChange = {},
                     placeholder = "아이디",
                     placeholderColor = FontBlack,
@@ -224,7 +265,7 @@ fun UserInfoScreen(
                 Row {
                     PhoneNumberTextField(
                         value = userInfoUiState.phoneNumber,
-                        placeholder = user.phoneNumber,
+                        placeholder = uiState.user!!.phoneNumber,
                         onValueChange = { userInfoViewModel.updatePhoneNumber(it) },
                         pointColor = PointBlue,
                         modifier = Modifier.weight(1f),
@@ -309,7 +350,7 @@ fun UserInfoScreen(
         BasicDialog(
             text = "로그아웃 하시겠습니까?",
             onDismiss = { userInfoViewModel.updateLogoutDialog(false) },
-            onConfirm = {  userInfoViewModel.updateLogoutDialog(false) }
+            onConfirm = { userInfoViewModel.updateLogoutDialog(false) }
         )
     }
 
@@ -320,7 +361,7 @@ fun UserInfoScreen(
             "와 함께한",
             text = "모든 추억이 삭제됩니다.\n정말 탈퇴하시겠습니까?",
             onDismiss = { userInfoViewModel.updateDeleteUserDialog(false) },
-            onConfirm = { userInfoViewModel.updateDeleteUserDialog(false)  }
+            onConfirm = { userInfoViewModel.updateDeleteUserDialog(false) }
         )
     }
 }

@@ -9,7 +9,9 @@ import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.auth.ChangePasswordRequest
 import com.ssafy.achu.data.model.auth.ChangePhoneNumberRequest
 import com.ssafy.achu.data.model.auth.NickNameRequest
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -22,6 +24,17 @@ class UserInfoViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(UserInfoUIState())
     val uiState: StateFlow<UserInfoUIState> = _uiState.asStateFlow()
 
+    private val _isChanged = MutableSharedFlow<Boolean>()
+    val isChanged: SharedFlow<Boolean> = _isChanged
+
+
+    fun updateToastMessage(message: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                toastMessage = message
+            )
+        }
+    }
 
     fun updateShowNickNameUpdateDialog(show: Boolean) {
         _uiState.update { currentState ->
@@ -176,8 +189,13 @@ class UserInfoViewModel : ViewModel() {
                     if (it.result == "SUCCESS") {
                         Log.d(TAG, "changeNickname: ${it}")
                     }
+
+                    _isChanged.emit(true)
+                    updateToastMessage("닉네임이 변경되었습니다")
                 }.onFailure {
                     Log.d(TAG, "changeNickname: ${it.message}")
+                    _isChanged.emit(false)
+                    updateToastMessage("닉네임 변경 실패")
 
                 }
 
@@ -245,25 +263,37 @@ class UserInfoViewModel : ViewModel() {
                 )
             )
                 .onSuccess {
-                    if (it.result == "SUCCESS") {
-                        Log.d(TAG, "changePhoneNumber: ${it}")
-                    }
+                    Log.d(TAG, "changePhoneNumber: ${it}")
+                    _isChanged.emit(true)
+                    updateToastMessage("핸드폰번호가 변경되었습니다")
                 }.onFailure {
                     Log.d(TAG, "changePhoneNumber: ${it.message}")
                     mismatchOldPWD()
+                    _isChanged.emit(false)
+                    updateToastMessage("핸드폰번호가 변경실패")
                 }
 
         }
     }
 
     fun changeProfile(img: MultipartBody.Part) {
+        Log.d(TAG, "changeProfile: ${img}")
         viewModelScope.launch {
             userRepository.uploadProfileImage(
                 profileImage = img
             ).onSuccess {
+                Log.d(TAG, "changeProfile: ${it}")
+                updateToastMessage("프로필이 변경되었습니다.")
+                _isChanged.emit(true)
+
+
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "changeProfile: ${errorResponse}")
+                _isChanged.emit(false)
+                updateToastMessage("프로필이 변경실패")
+
+                Log.d(TAG, "changeProfile error: ${it.message}")
             }
         }
     }
