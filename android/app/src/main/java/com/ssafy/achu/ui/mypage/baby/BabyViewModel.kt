@@ -156,11 +156,24 @@ class BabyViewModel : ViewModel() {
     }
 
     fun updateBabyProfile(profileImage: MultipartBody.Part) {
+        Log.d(TAG, "updateBabyProfile: ${profileImage}")
         viewModelScope.launch {
             babyRepository.updateProfileImage(
                 babyUiState.value.selectedBaby!!.id,
                 profileImage
-            )
+            ).onSuccess { 
+                getBaby(babyUiState.value.selectedBaby!!.id)
+                updateToastString("프로필 변경 성공!")
+                _isChanged.emit(true)
+            }.onFailure {
+                Log.d(TAG, "updateBabyProfile: ${it.message}")
+            }.onFailure{
+                updateToastString("프로필 변경 실패")
+                _isChanged.emit(false)
+
+                Log.d(TAG, "updateBabyProfile: ${it}")
+            }
+            
         }
     }
 

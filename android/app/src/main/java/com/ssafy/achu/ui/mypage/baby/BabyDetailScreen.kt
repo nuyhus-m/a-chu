@@ -2,9 +2,12 @@ package com.ssafy.achu.ui.mypage.baby
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -66,6 +69,8 @@ import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -168,42 +173,65 @@ fun BabyDetailScreen(
     }
 
 
+    fun compressImage(uri: Uri, context: Context): ByteArray? {
+        val contentResolver = context.contentResolver
+
+        // 파일의 InputStream을 열고 Bitmap으로 변환
+        val inputStream = contentResolver.openInputStream(uri) ?: return null
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream.close()
+
+        // 이미지 압축: 품질을 80%로 설정 (0 ~ 100)
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
+
+        // 압축된 이미지의 바이트 배열 반환
+        return byteArrayOutputStream.toByteArray()
+    }
+
     fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
         val contentResolver = context.contentResolver
-        val inputStream: InputStream? = contentResolver.openInputStream(uri)
 
-        inputStream?.let { input ->
-            val file = File(context.cacheDir, "upload_image.jpg") // 임시 파일 생성
-            val outputStream = FileOutputStream(file)
-            input.copyTo(outputStream)
-            outputStream.close()
-            input.close()
+        // 실제 파일의 MIME 타입 가져오기
+        val mimeType = contentResolver.getType(uri) ?: return null
 
-            val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), file)
-            return MultipartBody.Part.createFormData("profileImage", file.name, requestFile)
+        // MIME 타입에 맞는 확장자 추출
+        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
+
+        // 이미지 압축
+        val byteArray = compressImage(uri, context) ?: return null
+
+        if (byteArray.isEmpty()) {
+            Log.e(TAG, "⚠️ 변환된 바이트 배열이 비어있음! 이미지 손실 가능성 있음!")
+            return null
         }
-        return null
+
+        Log.d(TAG, "✅ 변환된 바이트 배열 크기: ${byteArray.size}, MIME: $mimeType, 확장자: $extension")
+
+        // 파일명을 실제 MIME 타입에 맞게 설정
+        val fileName = "upload_${System.currentTimeMillis()}.$extension"
+
+        // 올바른 MIME 타입 적용
+        val requestBody = byteArray.toRequestBody(mimeType.toMediaTypeOrNull())
+        return MultipartBody.Part.createFormData("profileImage", fileName, requestBody)
     }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
-            if (uri != null) {
-                imgUrl = uri.toString()
-                multipartFile = uriToMultipart(context, uri)
+            uri?.let {
+                val multipartFile = uriToMultipart(context, it)
                 if (multipartFile != null) {
-                    if (type != "등록") {
-                        babyViewModel.updateBabyProfile(multipartFile!!)
+                    if (type == "등록"){
+                        imgUrl = it.toString()
+                        babyViewModel.updateBabyPhoto(multipartFile)
+                    }else{
+                        babyViewModel.updateBabyProfile(multipartFile)
                     }
-
-                    babyViewModel.updateBabyPhoto(multipartFile!!)
-                } else {
-                    Toast.makeText(context, "이미지 변환 실패", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     )
-
 
 
 
