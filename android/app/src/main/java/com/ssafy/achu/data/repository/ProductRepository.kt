@@ -1,6 +1,7 @@
 package com.ssafy.achu.data.repository
 
 import com.ssafy.achu.data.model.ApiResult
+import com.ssafy.achu.data.model.IdResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.ProductResponse
@@ -85,6 +86,14 @@ class ProductRepository {
     ): Result<ApiResult<ProductDetailResponse>> {
         return runCatching {
             productService.getProductDetail(productId)
+        }
+    }
+
+    suspend fun deleteProduct(
+        productId: Int
+    ): Result<ApiResult<IdResponse>> {
+        return runCatching {
+            productService.deleteProduct(productId)
         }
     }
 }

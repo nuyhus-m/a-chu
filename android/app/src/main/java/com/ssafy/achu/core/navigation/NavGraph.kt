@@ -62,11 +62,17 @@ fun NavGraph(
         composable<BottomNavRoute.ProductList> {
             ProductListScreen(
                 modifier = modifier,
-                onNavigateToUploadProduct = { navController.navigate(route = Route.UploadProduct) },
+                onNavigateToUploadProduct = {
+                    navController.navigate(
+                        route = Route.UploadProduct(
+                            isModify = false
+                        )
+                    )
+                },
                 onNavigateToProductDetail = {
                     navController.navigate(
                         route = Route.ProductDetail(
-                            productId = it
+                            isPreview = false
                         )
                     )
                 }
@@ -154,10 +160,10 @@ fun NavGraph(
         }
 
         composable<Route.ProductDetail> { backStackEntry ->
-            val productId = backStackEntry.toRoute<Route.ProductDetail>().productId
+            val isPreview = backStackEntry.toRoute<Route.ProductDetail>().isPreview
             ProductDetailScreen(
                 activityViewModel = activityViewModel,
-                productId = productId,
+                isPreview = isPreview,
                 onBackClick = { navController.popBackStack() },
                 onNavigateToUpload = {
                     navController.navigate(

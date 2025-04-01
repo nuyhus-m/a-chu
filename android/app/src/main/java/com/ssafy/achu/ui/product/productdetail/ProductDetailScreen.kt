@@ -2,6 +2,7 @@ package com.ssafy.achu.ui.product.productdetail
 
 import BasicLikeItem
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -52,6 +54,7 @@ import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.Divider
 import com.ssafy.achu.core.components.TopBarWithMenu
+import com.ssafy.achu.core.components.dialog.BasicDialog
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
@@ -64,6 +67,7 @@ import com.ssafy.achu.data.model.product.Category
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.data.model.product.Seller
 import com.ssafy.achu.ui.ActivityViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -71,27 +75,32 @@ fun ProductDetailScreen(
     modifier: Modifier = Modifier,
     viewModel: ProductDetailViewModel = viewModel(),
     activityViewModel: ActivityViewModel,
-    productId: Int = -1,
+    isPreview: Boolean = false,
     onBackClick: () -> Unit,
     onNavigateToUpload: (Boolean) -> Unit,
     onNavigateToChat: () -> Unit,
     onNavigateToRecommend: () -> Unit
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     val activityUiState by activityViewModel.uiState.collectAsState()
 
     val isSeller = activityUiState.user?.nickname == activityUiState.product.seller.nickname
     val isSold = activityUiState.product.tradeStatus == SOLD
-    val isPreview = productId == -1
+
+    val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        if (isPreview) {
-
-        } else {
-            activityViewModel.getProductDetail(productId)
+        viewModel.toastMessage.collectLatest { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
     }
 
-    val scrollState = rememberScrollState()
+    LaunchedEffect(uiState.isDeleteSuccess) {
+        if (uiState.isDeleteSuccess) {
+            onBackClick()
+        }
+    }
 
     Column(
         modifier = modifier
@@ -150,6 +159,16 @@ fun ProductDetailScreen(
             likedByUser = activityUiState.product.likedByUser,
             onLikeClick = {},
             onButtonClick = onNavigateToChat,
+        )
+    }
+
+    if (uiState.showDialog) {
+        BasicDialog(
+            pinkText = activityUiState.product.title,
+            textLine1 = "의",
+            text = "판매를 중지하시겠습니까?",
+            onDismiss = { viewModel.updateShowDialog(false) },
+            onConfirm = { viewModel.deleteProduct(activityUiState.product.id) }
         )
     }
 }

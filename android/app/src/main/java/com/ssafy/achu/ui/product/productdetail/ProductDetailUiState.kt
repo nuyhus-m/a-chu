@@ -1,28 +1,6 @@
 package com.ssafy.achu.ui.product.productdetail
 
-import com.ssafy.achu.data.model.product.Category
-import com.ssafy.achu.data.model.product.ProductDetailResponse
-import com.ssafy.achu.data.model.product.Seller
-
 data class ProductDetailUiState(
-    val product: ProductDetailResponse = ProductDetailResponse(
-        id = 0,
-        title = "",
-        description = "",
-        imgUrls = emptyList(),
-        tradeStatus = "SELLING",
-        price = 0,
-        createdAt = "",
-        likedUsersCount = 0,
-        likedByUser = false,
-        category = Category(
-            id = 0,
-            name = ""
-        ),
-        seller = Seller(
-            id = 0,
-            nickname = "",
-            imgUrl = ""
-        )
-    )
+    val showDialog: Boolean = false,
+    val isDeleteSuccess: Boolean = false
 )

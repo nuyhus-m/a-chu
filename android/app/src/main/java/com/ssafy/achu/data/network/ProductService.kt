@@ -1,10 +1,13 @@
 package com.ssafy.achu.data.network
 
 import com.ssafy.achu.data.model.ApiResult
+import com.ssafy.achu.data.model.IdResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.ProductResponse
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -49,4 +52,9 @@ interface ProductService {
     suspend fun getProductDetail(
         @Path("goodsId") productId: Int
     ): ApiResult<ProductDetailResponse>
+
+    @DELETE("/goods/{goodsId}")
+    suspend fun deleteProduct(
+        @Path("goodsId") productId: Int
+    ): ApiResult<IdResponse>
 }
