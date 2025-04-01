@@ -96,13 +96,17 @@ fun ProductDetailScreen(
         viewModel.toastMessage.collectLatest { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
+    }
 
+    LaunchedEffect(Unit) {
         viewModel.isLikeSuccess.collectLatest {
             if (it) {
                 activityViewModel.getProductDetail(activityUiState.product.id)
             }
         }
+    }
 
+    LaunchedEffect(Unit) {
         viewModel.isUnLikeSuccess.collectLatest {
             if (it) {
                 activityViewModel.getProductDetail(activityUiState.product.id)
