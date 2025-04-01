@@ -4,7 +4,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
+import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
+import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
+import com.ssafy.achu.core.util.Constants.SUCCESS
+import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.baby.BabyResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +22,10 @@ private const val TAG = "ActivityViewModel_안주현"
 class ActivityViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ActivityUIState())
     val uiState: StateFlow<ActivityUIState> = _uiState.asStateFlow()
+
+    init {
+        getUserinfo()
+    }
 
     fun updateSelectedBaby(baby: BabyResponse) {
         _uiState.update {
@@ -64,7 +72,23 @@ class ActivityViewModel : ViewModel() {
         }
     }
 
-
-
-
+    fun getProductDetail(productId: Int) {
+        viewModelScope.launch {
+            productRepository.getProductDetail(productId)
+                .onSuccess { response ->
+                    Log.d(TAG, "getProductDetail: $response")
+                    if (response.result == SUCCESS) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                product = response.data
+                            )
+                        }
+                    }
+                }.onFailure {
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "getProductDetail errorResponse: $errorResponse")
+                    Log.d(TAG, "getProductDetail error: ${it.message}")
+                }
+        }
+    }
 }

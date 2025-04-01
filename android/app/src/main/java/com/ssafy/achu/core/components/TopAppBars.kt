@@ -86,7 +86,8 @@ fun TopBarWithMenu(
     menuFirstText: String = "",
     menuSecondText: String = "",
     onMenuFirstItemClick: () -> Unit,
-    onMenuSecondItemClick: () -> Unit
+    onMenuSecondItemClick: () -> Unit,
+    isMenuVisible: Boolean = true
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
 
@@ -115,45 +116,49 @@ fun TopBarWithMenu(
                 modifier = Modifier.weight(1f)
             )
 
-            Box {
-                IconButton(
-                    onClick = { menuExpanded = true }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = stringResource(R.string.more)
-                    )
-                }
+            if (isMenuVisible) {
 
-                DropdownMenu(
-                    expanded = menuExpanded,
-                    onDismissRequest = { menuExpanded = false },
-                    containerColor = White
-                ) {
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = menuFirstText,
-                                style = AchuTheme.typography.regular16
-                            )
-                        },
-                        onClick = {
-                            menuExpanded = false
-                            onMenuFirstItemClick()
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = menuSecondText,
-                                style = AchuTheme.typography.regular16
-                            )
-                        },
-                        onClick = {
-                            menuExpanded = false
-                            onMenuSecondItemClick()
-                        }
-                    )
+
+                Box {
+                    IconButton(
+                        onClick = { menuExpanded = true }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = stringResource(R.string.more)
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false },
+                        containerColor = White
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = menuFirstText,
+                                    style = AchuTheme.typography.regular16
+                                )
+                            },
+                            onClick = {
+                                menuExpanded = false
+                                onMenuFirstItemClick()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = menuSecondText,
+                                    style = AchuTheme.typography.regular16
+                                )
+                            },
+                            onClick = {
+                                menuExpanded = false
+                                onMenuSecondItemClick()
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -186,7 +191,7 @@ fun TopBarWithMenuPreview() {
             menuFirstText = "수정",
             menuSecondText = "삭제",
             onMenuFirstItemClick = {},
-            onMenuSecondItemClick = {}
+            onMenuSecondItemClick = {},
         )
     }
 }

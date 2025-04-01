@@ -2,6 +2,7 @@ package com.ssafy.achu.data.network
 
 import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.product.CategoryResponse
+import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -47,5 +48,5 @@ interface ProductService {
     @GET("/goods/{goodsId}")
     suspend fun getProductDetail(
         @Path("goodsId") productId: Int
-    ): ApiResult<ProductResponse>
+    ): ApiResult<ProductDetailResponse>
 }

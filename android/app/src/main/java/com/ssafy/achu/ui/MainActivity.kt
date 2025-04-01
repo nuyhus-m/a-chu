@@ -10,7 +10,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.ssafy.achu.core.components.BottomNavBar
@@ -37,16 +36,15 @@ class MainActivity : ComponentActivity() {
 fun AchuApp(viewModel: ActivityViewModel) {
     val navController = rememberNavController()
 
-    LaunchedEffect(Unit) {
-
-        viewModel.getUserinfo()
-    }
-
     Scaffold(
         bottomBar = {
             BottomNavBar(navController)
         },
     ) { innerPadding ->
-        NavGraph(navController, modifier = Modifier.padding(innerPadding), activityViewModel = viewModel)
+        NavGraph(
+            navController,
+            modifier = Modifier.padding(innerPadding),
+            activityViewModel = viewModel
+        )
     }
 }

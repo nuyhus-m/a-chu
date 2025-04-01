@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.chat.chatdetail.ChatScreen
 import com.ssafy.achu.ui.chat.chatlist.ChatListScreen
@@ -23,7 +24,7 @@ import com.ssafy.achu.ui.mypage.likelist.LikeItemListScreen
 import com.ssafy.achu.ui.mypage.recommendlist.RecommendItemScreen
 import com.ssafy.achu.ui.mypage.tradelist.TradeListScreen
 import com.ssafy.achu.ui.mypage.userinfo.UserInfoScreen
-import com.ssafy.achu.ui.product.ProductDetailScreen
+import com.ssafy.achu.ui.product.productdetail.ProductDetailScreen
 import com.ssafy.achu.ui.product.productlist.ProductListScreen
 import com.ssafy.achu.ui.product.uploadproduct.UploadProductScreen
 
@@ -152,8 +153,12 @@ fun NavGraph(
             )
         }
 
-        composable<Route.ProductDetail> {
-            ProductDetailScreen()
+        composable<Route.ProductDetail> { backStackEntry ->
+            val productId = backStackEntry.toRoute<Route.ProductDetail>().productId
+            ProductDetailScreen(
+                productId = productId,
+                activityViewModel = activityViewModel
+            )
         }
 
         // 채팅 관련 화면들

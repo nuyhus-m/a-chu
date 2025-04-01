@@ -43,11 +43,12 @@
     <!--중고 거래-->
     <string name="searchbar_placeholder">검색어를 입력하세요</string>
     <string name="search_icon">Search Icon</string>
-    <string name="product_detail">거래상세</string>
+    <string name="product_detail">물품상세</string>
     <string name="modify">수정</string>
     <string name="delete">삭제</string>
     <string name="profile">프로필</string>
     <string name="sale">판매중</string>
+    <string name="sale_complete">판매완료</string>
     <string name="symbol">" · "</string>
     <string name="recommend_title">이런 상품 어떠세요?</string>
     <string name="more">더보기</string>
@@ -65,6 +66,8 @@
     <string name="won">원</string>
     <string name="enter_description">올릴 게시글 내용을 작성해 주세요.\n신뢰할 수 있는 거래를 위해 자세히 적어주세요.</string>
     <string name="move_to_upload_screen">물건 등록 화면으로 이동</string>
+    <string name="register">등록하기</string>
+    <string name="upload_preview">업로드 미리보기</string>
 
     <!--채팅-->
     <string name="product_img">물건 이미지</string>

@@ -1,17 +1,10 @@
-package com.ssafy.achu.ui
+package com.ssafy.achu.ui.product.productdetail
 
-import com.ssafy.achu.data.model.auth.UserInfoResponse
-import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.Category
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.Seller
 
-data class ActivityUIState(
-    val user: UserInfoResponse? = null,
-
-    val babyList: List<BabyResponse> = emptyList(),
-    val selectedBaby: BabyResponse? = null,
-
+data class ProductDetailUiState(
     val product: ProductDetailResponse = ProductDetailResponse(
         id = 0,
         title = "",
@@ -31,5 +24,5 @@ data class ActivityUIState(
             nickname = "",
             imgUrl = ""
         )
-    ),
+    )
 )

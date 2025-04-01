@@ -2,6 +2,7 @@ package com.ssafy.achu.data.repository
 
 import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.product.CategoryResponse
+import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.data.network.RetrofitUtil
 
@@ -81,7 +82,7 @@ class ProductRepository {
 
     suspend fun getProductDetail(
         productId: Int
-    ): Result<ApiResult<ProductResponse>> {
+    ): Result<ApiResult<ProductDetailResponse>> {
         return runCatching {
             productService.getProductDetail(productId)
         }
