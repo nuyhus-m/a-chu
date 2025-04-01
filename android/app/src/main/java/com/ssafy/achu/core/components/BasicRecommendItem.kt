@@ -1,4 +1,3 @@
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,40 +15,37 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
+import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.White
 
 @Composable
-fun BasicLikeItem(
-    onClickItem: () -> Unit,
-    likeCLicked: () -> Unit,
-    unlikeClicked: () -> Unit,
+fun BasicRecommendItem(
+    isLiked: Boolean,
+    onClickItem: () -> Unit, // 아이템 전체 클릭 시 동작
+    onClickHeart: () -> Unit, // 하트 클릭 시 동작
     productName: String,
     state: String,
     price: String,
-    img: String,
+    img: Painter? = null,
 ) {
-
-    var isLiked by remember { mutableStateOf(true) }
 
     Box(
         modifier = Modifier
@@ -81,21 +77,10 @@ fun BasicLikeItem(
                         .aspectRatio(1f) // 정사각형
                         .clip(RoundedCornerShape(8.dp))
                 ) {
-
-                    Image(
-                        painter = painterResource(R.drawable.img_miffy_doll),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1f) // 정사각형
-                            .clip(RoundedCornerShape(8.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-
                     // 상품 이미지
-
-                        AsyncImage(
-                            model = img,
+                    img?.let {
+                        Image(
+                            painter = img,
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -103,10 +88,10 @@ fun BasicLikeItem(
                                 .clip(RoundedCornerShape(8.dp)),
                             contentScale = ContentScale.Crop
                         )
-
+                    }
 
                     // 🔹 거래 완료 오버레이 추가
-                    if (state == "SOLD") {
+                    if (state == "거래완료") {
                         Box(
                             modifier = Modifier
                                 .matchParentSize()
@@ -166,14 +151,7 @@ fun BasicLikeItem(
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
-                                onClick = {
-                                    isLiked = !isLiked
-                                    if (isLiked) {
-                                        likeCLicked()
-                                    } else {
-                                        unlikeClicked()
-                                    }
-                                }
+                                onClick = onClickHeart
                             )
                             .padding(end = 4.dp) // 우측 여백 추가
                     )
@@ -188,23 +166,23 @@ fun BasicLikeItem(
 
 @Preview
 @Composable
-fun preItem() {
+fun preItem2() {
     AchuTheme {
         Row(Modifier.padding(4.dp)) {
-//            BasicLikeItem(
-//                isLiked = true,
-//                onClickItem = {
-//                    // 아이템 전체 클릭 시 동작
-//                    println("아이템 클릭됨")
-//                },
-//                onClickHeart = {
-//                    println("하트 클릭됨")
-//                },
-//                productName = "유아fsdhkjhgdhflhg;;rioejdfivpiojbh;ktlf식기",
-//                state = "거래완료", // 거래완료 상태
-//                price = "50,000,000원",
-//                img = ColorPainter(LightGray)
-//            )
+            BasicRecommendItem(
+                isLiked = true,
+                onClickItem = {
+                    // 아이템 전체 클릭 시 동작
+                    println("아이템 클릭됨")
+                },
+                onClickHeart = {
+                    println("하트 클릭됨")
+                },
+                productName = "유아fsdhkjhgdhflhg;;rioejdfivpiojbh;ktlf식기",
+                state = "거래완료", // 거래완료 상태
+                price = "50,000,000원",
+                img = ColorPainter(LightGray)
+            )
 
         }
     }
