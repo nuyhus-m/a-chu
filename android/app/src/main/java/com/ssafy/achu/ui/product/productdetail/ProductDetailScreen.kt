@@ -70,10 +70,13 @@ import com.ssafy.achu.ui.ActivityViewModel
 fun ProductDetailScreen(
     modifier: Modifier = Modifier,
     viewModel: ProductDetailViewModel = viewModel(),
+    activityViewModel: ActivityViewModel,
     productId: Int = -1,
-    activityViewModel: ActivityViewModel
+    onBackClick: () -> Unit,
+    onNavigateToUpload: (Boolean) -> Unit,
+    onNavigateToChat: () -> Unit,
+    onNavigateToRecommend: () -> Unit
 ) {
-
     val activityUiState by activityViewModel.uiState.collectAsState()
 
     val isSeller = activityUiState.user?.nickname == activityUiState.product.seller.nickname
@@ -98,10 +101,10 @@ fun ProductDetailScreen(
         // 탑바
         TopBarWithMenu(
             title = if (isPreview) stringResource(R.string.upload_preview) else stringResource(R.string.product_detail),
-            onBackClick = {},
+            onBackClick = onBackClick,
             menuFirstText = stringResource(R.string.modify),
             menuSecondText = stringResource(R.string.delete),
-            onMenuFirstItemClick = {},
+            onMenuFirstItemClick = { onNavigateToUpload(true) },
             onMenuSecondItemClick = {},
             isMenuVisible = isSeller && !isSold && !isPreview
         )
@@ -132,7 +135,9 @@ fun ProductDetailScreen(
 
             // 추천 리스트
             if (!isPreview) {
-                RecommendList()
+                RecommendList(
+                    onNavigateToRecommend = onNavigateToRecommend
+                )
             }
         }
 
@@ -144,7 +149,7 @@ fun ProductDetailScreen(
             isPreview = isPreview,
             likedByUser = activityUiState.product.likedByUser,
             onLikeClick = {},
-            onButtonClick = {},
+            onButtonClick = onNavigateToChat,
         )
     }
 }
@@ -211,7 +216,9 @@ private fun BottomBar(
 }
 
 @Composable
-private fun RecommendList() {
+private fun RecommendList(
+    onNavigateToRecommend: () -> Unit
+) {
     Row(
         modifier = Modifier
             .wrapContentHeight()
@@ -226,7 +233,8 @@ private fun RecommendList() {
         )
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = stringResource(R.string.more)
+            contentDescription = stringResource(R.string.more),
+            modifier = Modifier.clickable(onClick = onNavigateToRecommend)
         )
     }
     val productResponses = listOf(

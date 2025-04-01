@@ -32,7 +32,7 @@ sealed interface Route {
     data class ProductDetail(val productId: Int) : Route
 
     @Serializable
-    data object UploadProduct : Route
+    data class UploadProduct(val isModify: Boolean = false) : Route
 
     @Serializable
     data object Chat : Route

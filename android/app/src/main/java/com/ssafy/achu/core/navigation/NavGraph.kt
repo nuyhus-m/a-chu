@@ -156,8 +156,18 @@ fun NavGraph(
         composable<Route.ProductDetail> { backStackEntry ->
             val productId = backStackEntry.toRoute<Route.ProductDetail>().productId
             ProductDetailScreen(
+                activityViewModel = activityViewModel,
                 productId = productId,
-                activityViewModel = activityViewModel
+                onBackClick = { navController.popBackStack() },
+                onNavigateToUpload = {
+                    navController.navigate(
+                        route = Route.UploadProduct(
+                            isModify = it
+                        )
+                    )
+                },
+                onNavigateToChat = { navController.navigate(route = Route.Chat) },
+                onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) }
             )
         }
 
