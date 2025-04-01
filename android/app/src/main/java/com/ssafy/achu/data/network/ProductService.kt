@@ -1,9 +1,13 @@
 package com.ssafy.achu.data.network
 
 import com.ssafy.achu.data.model.ApiResult
+import com.ssafy.achu.data.model.IdResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
+import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.ProductResponse
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -43,4 +47,24 @@ interface ProductService {
         @Query("limit") limit: Int,
         @Query("sort") sort: String
     ): ApiResult<List<ProductResponse>>
+
+    @GET("/goods/{goodsId}")
+    suspend fun getProductDetail(
+        @Path("goodsId") productId: Int
+    ): ApiResult<ProductDetailResponse>
+
+    @DELETE("/goods/{goodsId}")
+    suspend fun deleteProduct(
+        @Path("goodsId") productId: Int
+    ): ApiResult<IdResponse>
+
+    @POST("/goods/{goodsId}/like")
+    suspend fun likeProduct(
+        @Path("goodsId") productId: Int
+    ): ApiResult<Unit>
+
+    @DELETE("/goods/{goodsId}/like")
+    suspend fun unlikeProduct(
+        @Path("goodsId") productId: Int
+    ): ApiResult<Unit>
 }

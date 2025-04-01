@@ -1,7 +1,9 @@
 package com.ssafy.achu.data.repository
 
 import com.ssafy.achu.data.model.ApiResult
+import com.ssafy.achu.data.model.IdResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
+import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.data.network.RetrofitUtil
 
@@ -76,6 +78,38 @@ class ProductRepository {
                 limit = limit,
                 sort = sort
             )
+        }
+    }
+
+    suspend fun getProductDetail(
+        productId: Int
+    ): Result<ApiResult<ProductDetailResponse>> {
+        return runCatching {
+            productService.getProductDetail(productId)
+        }
+    }
+
+    suspend fun deleteProduct(
+        productId: Int
+    ): Result<ApiResult<IdResponse>> {
+        return runCatching {
+            productService.deleteProduct(productId)
+        }
+    }
+
+    suspend fun likeProduct(
+        productId: Int
+    ): Result<ApiResult<Unit>> {
+        return runCatching {
+            productService.likeProduct(productId)
+        }
+    }
+
+    suspend fun unlikeProduct(
+        productId: Int
+    ): Result<ApiResult<Unit>> {
+        return runCatching {
+            productService.unlikeProduct(productId)
         }
     }
 }

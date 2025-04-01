@@ -1,10 +1,11 @@
-package com.ssafy.achu.ui.product
+package com.ssafy.achu.ui.product.productdetail
 
 import BasicLikeItem
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,46 +34,106 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.Divider
 import com.ssafy.achu.core.components.TopBarWithMenu
+import com.ssafy.achu.core.components.dialog.BasicDialog
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.Constants.SOLD
+import com.ssafy.achu.core.util.formatDate
+import com.ssafy.achu.core.util.formatPrice
+import com.ssafy.achu.data.model.product.Category
 import com.ssafy.achu.data.model.product.ProductResponse
+import com.ssafy.achu.data.model.product.Seller
+import com.ssafy.achu.ui.ActivityViewModel
+import kotlinx.coroutines.flow.collectLatest
+
+private const val TAG = "ProductDetailScreen"
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ProductDetailScreen() {
+fun ProductDetailScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ProductDetailViewModel = viewModel(),
+    activityViewModel: ActivityViewModel,
+    isPreview: Boolean = false,
+    onBackClick: () -> Unit,
+    onNavigateToUpload: (Boolean) -> Unit,
+    onNavigateToChat: () -> Unit,
+    onNavigateToRecommend: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val activityUiState by activityViewModel.uiState.collectAsState()
+
+    val isSeller = activityUiState.user?.nickname == activityUiState.product.seller.nickname
+    val isSold = activityUiState.product.tradeStatus == SOLD
 
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.toastMessage.collectLatest { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.isLikeSuccess.collectLatest {
+            if (it) {
+                activityViewModel.getProductDetail(activityUiState.product.id)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.isUnLikeSuccess.collectLatest {
+            if (it) {
+                activityViewModel.getProductDetail(activityUiState.product.id)
+            }
+        }
+    }
+
+    LaunchedEffect(uiState.isDeleteSuccess) {
+        if (uiState.isDeleteSuccess) {
+            onBackClick()
+        }
+    }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(color = White)
     ) {
         // 탑바
         TopBarWithMenu(
-            title = stringResource(R.string.product_detail),
-            onBackClick = {},
+            title = if (isPreview) stringResource(R.string.upload_preview) else stringResource(R.string.product_detail),
+            onBackClick = onBackClick,
             menuFirstText = stringResource(R.string.modify),
             menuSecondText = stringResource(R.string.delete),
-            onMenuFirstItemClick = {},
-            onMenuSecondItemClick = {}
+            onMenuFirstItemClick = { onNavigateToUpload(true) },
+            onMenuSecondItemClick = {},
+            isMenuVisible = isSeller && !isSold && !isPreview
         )
 
         Column(
@@ -81,24 +142,68 @@ fun ProductDetailScreen() {
                 .verticalScroll(scrollState)
         ) {
             // 이미지 페이저
-            ImagePager()
+            ImagePager(
+                images = activityUiState.product.imgUrls
+            )
 
             // 프로필
-            ProfileInfo()
+            ProfileInfo(
+                seller = activityUiState.product.seller,
+                isSold = isSold
+            )
 
             // 물품 정보
-            ProductInfo()
+            ProductInfo(
+                title = activityUiState.product.title,
+                description = activityUiState.product.description,
+                category = activityUiState.product.category,
+                date = activityUiState.product.createdAt
+            )
 
             // 추천 리스트
-            RecommendList()
+            if (!isPreview) {
+                RecommendList(
+                    onNavigateToRecommend = onNavigateToRecommend
+                )
+            }
         }
 
-        BottomBar()
+        BottomBar(
+            likeCount = activityUiState.product.likedUsersCount,
+            price = activityUiState.product.price,
+            isSeller = isSeller,
+            isSold = isSold,
+            isPreview = isPreview,
+            likedByUser = activityUiState.product.likedByUser,
+            onLikeClick = { viewModel.likeProduct(activityUiState.product.id) },
+            onUnLikeClick = { viewModel.unlikeProduct(activityUiState.product.id) },
+            onButtonClick = onNavigateToChat,
+        )
+    }
+
+    if (uiState.showDialog) {
+        BasicDialog(
+            pinkText = activityUiState.product.title,
+            textLine1 = "의",
+            text = "판매를 중지하시겠습니까?",
+            onDismiss = { viewModel.updateShowDialog(false) },
+            onConfirm = { viewModel.deleteProduct(activityUiState.product.id) }
+        )
     }
 }
 
 @Composable
-private fun BottomBar() {
+private fun BottomBar(
+    likeCount: Int,
+    likedByUser: Boolean,
+    price: Int,
+    isSeller: Boolean,
+    isSold: Boolean,
+    isPreview: Boolean,
+    onLikeClick: () -> Unit,
+    onUnLikeClick: () -> Unit,
+    onButtonClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -107,16 +212,24 @@ private fun BottomBar() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_favorite_line),
+            painter = if (likedByUser) painterResource(id = R.drawable.ic_favorite)
+            else painterResource(id = R.drawable.ic_favorite_line),
             contentDescription = stringResource(R.string.like),
-            tint = FontGray,
-            modifier = Modifier.size(32.dp)
+            tint = if (likedByUser) FontPink else FontGray,
+            modifier = Modifier
+                .size(32.dp)
+                .clickable(
+                    onClick = if (likedByUser) onUnLikeClick else onLikeClick,
+                    enabled = !isPreview
+                ),
         )
-        Text(
-            text = "11",
-            style = AchuTheme.typography.regular18.copy(color = FontGray),
-            modifier = Modifier.padding(start = 8.dp)
-        )
+        if (likeCount > 0) {
+            Text(
+                text = likeCount.toString(),
+                style = AchuTheme.typography.regular18.copy(color = FontGray),
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
         Spacer(modifier = Modifier.width(16.dp))
         Box(
             modifier = Modifier
@@ -125,18 +238,19 @@ private fun BottomBar() {
                 .background(LightGray)
         )
         Text(
-            text = "10,000원",
+            text = formatPrice(price),
             style = AchuTheme.typography.semiBold20.copy(color = FontPink),
             modifier = Modifier.padding(start = 16.dp)
         )
         Spacer(modifier = Modifier.weight(1f))
         Button(
-            onClick = {},
+            onClick = onButtonClick,
+            enabled = !isSeller && !isSold && !isPreview,
             modifier = Modifier
                 .height(50.dp)
         ) {
             Text(
-                text = stringResource(R.string.go_chat),
+                text = if (isPreview) stringResource(R.string.register) else stringResource(R.string.go_chat),
                 style = AchuTheme.typography.semiBold20White
             )
         }
@@ -144,7 +258,9 @@ private fun BottomBar() {
 }
 
 @Composable
-private fun RecommendList() {
+private fun RecommendList(
+    onNavigateToRecommend: () -> Unit
+) {
     Row(
         modifier = Modifier
             .wrapContentHeight()
@@ -159,7 +275,8 @@ private fun RecommendList() {
         )
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = stringResource(R.string.more)
+            contentDescription = stringResource(R.string.more),
+            modifier = Modifier.clickable(onClick = onNavigateToRecommend)
         )
     }
     val productResponses = listOf(
@@ -244,8 +361,14 @@ private fun RecommendList() {
     Spacer(modifier = Modifier.height(24.dp))
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun ProductInfo() {
+private fun ProductInfo(
+    title: String,
+    description: String,
+    category: Category,
+    date: String
+) {
     Column(
         modifier = Modifier
             .wrapContentHeight()
@@ -254,13 +377,13 @@ private fun ProductInfo() {
             .padding(horizontal = 24.dp, vertical = 24.dp)
     ) {
         Text(
-            text = "미피 인형",
+            text = title,
             style = AchuTheme.typography.bold24
         )
         Spacer(modifier = Modifier.height(8.dp))
         Row {
             Text(
-                text = "장난감",
+                text = category.name,
                 style = AchuTheme.typography.regular14.copy(
                     color = FontGray,
                     textDecoration = TextDecoration.Underline
@@ -271,13 +394,13 @@ private fun ProductInfo() {
                 style = AchuTheme.typography.regular14.copy(color = FontGray)
             )
             Text(
-                text = "2025.03.07",
+                text = formatDate(date),
                 style = AchuTheme.typography.regular14.copy(color = FontGray)
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "8/31일에 사고 2번 시착한 제품입니다.",
+            text = description,
             style = AchuTheme.typography.regular18
         )
     }
@@ -285,7 +408,10 @@ private fun ProductInfo() {
 }
 
 @Composable
-private fun ProfileInfo() {
+private fun ProfileInfo(
+    seller: Seller,
+    isSold: Boolean,
+) {
     Row(
         modifier = Modifier
             .wrapContentHeight()
@@ -293,8 +419,8 @@ private fun ProfileInfo() {
             .padding(top = 24.dp, bottom = 16.dp, start = 24.dp, end = 24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.img_profile_test),
+        AsyncImage(
+            model = seller.imgUrl,
             contentDescription = stringResource(R.string.profile),
             modifier = Modifier
                 .fillMaxWidth(0.16f)
@@ -305,12 +431,13 @@ private fun ProfileInfo() {
         Spacer(modifier = Modifier.width(16.dp))
         Column {
             Text(
-                text = "재영맘",
+                text = seller.nickname,
                 style = AchuTheme.typography.semiBold20
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = stringResource(R.string.sale),
+                text = if (isSold) stringResource(R.string.sale_complete)
+                else stringResource(R.string.sale),
                 style = AchuTheme.typography.semiBold14PointBlue
             )
         }
@@ -337,14 +464,7 @@ fun RecommendList(items: List<ProductResponse>) {
 }
 
 @Composable
-fun ImagePager() {
-    // 이미지 리소스 리스트
-    val images = listOf(
-        R.drawable.img_miffy_doll,
-        R.drawable.img_test_sopung,
-        R.drawable.img_test_baby_summer,
-        // 필요한 만큼 이미지 추가
-    )
+fun ImagePager(images: List<String>) {
 
     // 페이저 상태
     val pagerState = rememberPagerState(pageCount = { images.size })
@@ -359,11 +479,10 @@ fun ImagePager() {
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
-            Image(
-                painter = painterResource(id = images[page]),
+            AsyncImage(
+                model = images[page],
                 contentDescription = "이미지 ${page + 1}",
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
         }
@@ -397,7 +516,7 @@ fun ImagePager() {
 @Composable
 fun PreviewProductDetailScreen() {
     AchuTheme {
-        ProductDetailScreen()
+//        ProductDetailScreen()
     }
 }
 
@@ -420,12 +539,22 @@ fun PreviewTopBarWithMenu() {
 @Composable
 fun PreviewBottomBar() {
     AchuTheme {
-        BottomBar()
+        BottomBar(
+            likeCount = 10,
+            price = 10000,
+            isSeller = true,
+            isSold = false,
+            likedByUser = true,
+            onLikeClick = {},
+            onButtonClick = {},
+            isPreview = false,
+            onUnLikeClick = {}
+        )
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewImagePager() {
-    ImagePager()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewImagePager() {
+//    ImagePager()
+//}

@@ -2,11 +2,13 @@ package com.ssafy.achu.core.util
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import java.text.NumberFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.Locale
 
 fun formatPhoneNumber(number: String): String {
     return if (number.length == 11 && number.startsWith("010")) {
@@ -55,4 +57,18 @@ fun formatRelativeTime(dateTimeStr: String): String {
     } catch (e: Exception) {
         return "날짜 형식 오류"
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun formatDate(input: String): String {
+    val inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    val outputFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+
+    val dateTime = LocalDateTime.parse(input, inputFormatter)
+    return dateTime.format(outputFormatter)
+}
+
+fun formatPrice(price: Int): String {
+    val formattedPrice = NumberFormat.getNumberInstance(Locale.KOREA).format(price)
+    return "${formattedPrice}원"
 }
