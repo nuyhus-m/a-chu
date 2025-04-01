@@ -69,6 +69,7 @@
     <string name="register">등록하기</string>
     <string name="upload_preview">업로드 미리보기</string>
     <string name="fail_get_product">데이터를 불러오는데 실패했습니다.</string>
+    <string name="free">무료 나눔</string>
 
     <!--채팅-->
     <string name="product_img">물건 이미지</string>

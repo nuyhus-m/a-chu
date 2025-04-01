@@ -56,10 +56,12 @@ import com.ssafy.achu.R
 import com.ssafy.achu.core.components.Divider
 import com.ssafy.achu.core.components.PointBlueLineBtn
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.FontBlue
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatPrice
 import com.ssafy.achu.core.util.formatRelativeTime
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductResponse
@@ -306,12 +308,21 @@ fun ProductItem(
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "${productResponse.price}원",
-                    style = AchuTheme.typography.semiBold18.copy(color = FontPink),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                if (productResponse.price != 0) {
+                    Text(
+                        text = formatPrice(productResponse.price),
+                        style = AchuTheme.typography.semiBold18.copy(color = FontPink),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.free),
+                        style = AchuTheme.typography.semiBold18.copy(color = FontBlue),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 Spacer(modifier = Modifier.weight(1f))
                 Row(
                     modifier = Modifier
