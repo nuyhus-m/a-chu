@@ -61,7 +61,7 @@ fun formatRelativeTime(dateTimeStr: String): String {
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun formatDate(input: String): String {
-    val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS")
+    val inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
     val outputFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
 
     val dateTime = LocalDateTime.parse(input, inputFormatter)

@@ -69,6 +69,8 @@ import com.ssafy.achu.data.model.product.Seller
 import com.ssafy.achu.ui.ActivityViewModel
 import kotlinx.coroutines.flow.collectLatest
 
+private const val TAG = "ProductDetailScreen"
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProductDetailScreen(
@@ -101,7 +103,7 @@ fun ProductDetailScreen(
             }
         }
 
-        viewModel.isUnlikeSuccess.collectLatest {
+        viewModel.isUnLikeSuccess.collectLatest {
             if (it) {
                 activityViewModel.getProductDetail(activityUiState.product.id)
             }

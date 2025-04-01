@@ -62,6 +62,7 @@ fun NavGraph(
         composable<BottomNavRoute.ProductList> {
             ProductListScreen(
                 modifier = modifier,
+                activityViewModel = activityViewModel,
                 onNavigateToUploadProduct = {
                     navController.navigate(
                         route = Route.UploadProduct(

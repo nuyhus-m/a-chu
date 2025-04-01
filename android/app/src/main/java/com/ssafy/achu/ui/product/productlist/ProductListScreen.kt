@@ -2,6 +2,7 @@ package com.ssafy.achu.ui.product.productlist
 
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -61,6 +63,8 @@ import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.formatRelativeTime
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductResponse
+import com.ssafy.achu.ui.ActivityViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 private const val TAG = "ProductListScreen"
 
@@ -69,17 +73,32 @@ private const val TAG = "ProductListScreen"
 fun ProductListScreen(
     modifier: Modifier = Modifier,
     viewModel: ProductListViewModel = viewModel(),
+    activityViewModel: ActivityViewModel,
     onNavigateToUploadProduct: () -> Unit,
     onNavigateToProductDetail: () -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
+    val context = LocalContext.current
 
     LaunchedEffect(uiState.selectedCategoryId, uiState.query) {
         listState.scrollToItem(0)
         viewModel.updateCurrentOffset(0)
         viewModel.loadProductList()
+    }
+
+    LaunchedEffect(Unit) {
+        activityViewModel.getProductSuccess.collectLatest {
+            if (it) {
+                onNavigateToProductDetail()
+            } else {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.fail_get_product), Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     Box(
@@ -121,7 +140,7 @@ fun ProductListScreen(
                 items = uiState.products,
                 onLoadMore = { viewModel.loadProductList() },
                 listState = listState,
-                onNavigateToProductDetail = onNavigateToProductDetail
+                onItemClick = { id -> activityViewModel.getProductDetail(id) }
             )
         }
 
@@ -206,7 +225,7 @@ fun ProductList(
     items: List<ProductResponse>,
     listState: LazyListState,
     onLoadMore: () -> Unit,
-    onNavigateToProductDetail: () -> Unit
+    onItemClick: (Int) -> Unit
 ) {
 
     val lastIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
@@ -232,7 +251,7 @@ fun ProductList(
         items(items) { item ->
             ProductItem(
                 productResponse = item,
-                onItemClick = onNavigateToProductDetail
+                onItemClick = { onItemClick(item.id) }
             )
         }
     }
@@ -333,17 +352,17 @@ fun ProductItem(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun ProductListScreenPreview() {
-    AchuTheme {
-        ProductListScreen(
-            onNavigateToUploadProduct = {},
-            onNavigateToProductDetail = {}
-        )
-    }
-}
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview(showBackground = true)
+//@Composable
+//fun ProductListScreenPreview() {
+//    AchuTheme {
+//        ProductListScreen(
+//            onNavigateToUploadProduct = {},
+//            onNavigateToProductDetail = {},
+//        )
+//    }
+//}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)

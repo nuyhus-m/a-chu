@@ -26,11 +26,11 @@ class ProductDetailViewModel : ViewModel() {
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage: SharedFlow<String> = _toastMessage.asSharedFlow()
 
-    private val _isLikeSuccess = MutableStateFlow(false)
-    val isLikeSuccess: StateFlow<Boolean> = _isLikeSuccess.asStateFlow()
+    private val _isLikeSuccess = MutableSharedFlow<Boolean>()
+    val isLikeSuccess: SharedFlow<Boolean> = _isLikeSuccess.asSharedFlow()
 
-    private val _isUnlikeSuccess = MutableStateFlow(false)
-    val isUnlikeSuccess: StateFlow<Boolean> = _isUnlikeSuccess.asStateFlow()
+    private val _isUnLikeSuccess = MutableSharedFlow<Boolean>()
+    val isUnLikeSuccess: SharedFlow<Boolean> = _isUnLikeSuccess.asSharedFlow()
 
     fun updateShowDialog(dialogState: Boolean) {
         _uiState.update { currentState ->
@@ -85,7 +85,7 @@ class ProductDetailViewModel : ViewModel() {
                 .onSuccess { response ->
                     Log.d(TAG, "unlikeProduct: $response")
                     if (response.result == SUCCESS) {
-                        _isUnlikeSuccess.emit(true)
+                        _isUnLikeSuccess.emit(true)
                     }
                 }.onFailure {
                     val errorResponse = it.getErrorResponse(retrofit)
