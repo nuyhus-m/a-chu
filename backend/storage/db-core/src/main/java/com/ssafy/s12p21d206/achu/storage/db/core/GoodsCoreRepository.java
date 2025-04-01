@@ -163,4 +163,15 @@ public class GoodsCoreRepository implements GoodsRepository {
   public boolean existsByIdAndUserId(Long id, Long userId) {
     return goodsJpaRepository.existsByIdAndUserIdAndEntityStatus(id, userId, EntityStatus.ACTIVE);
   }
+
+  @Override
+  public List<Goods> findByUserId(User user, Long offset, Long limit, SortType sort) {
+    Pageable pageable =
+        PageRequest.of(offset.intValue(), limit.intValue(), SortUtils.convertSort(sort));
+    return goodsJpaRepository
+        .findByUserIdAndEntityStatus(user.id(), EntityStatus.ACTIVE, pageable)
+        .stream()
+        .map(GoodsEntity::toGoods)
+        .toList();
+  }
 }
