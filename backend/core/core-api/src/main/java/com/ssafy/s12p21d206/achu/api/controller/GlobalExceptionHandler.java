@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 @RestControllerAdvice
@@ -28,6 +29,19 @@ public class GlobalExceptionHandler {
   private static final String EXCEPTION_LOG_FORMAT = "Exception : {}";
 
   private final Logger log = LoggerFactory.getLogger(getClass());
+
+  @ExceptionHandler(MissingServletRequestPartException.class)
+  protected ResponseEntity<ApiResponse<Void>> handleMissingServletRequestPartException(
+      MissingServletRequestPartException e) {
+    log.error("error={}", e.getMessage(), e);
+
+    String partName = e.getRequestPartName();
+    String errorMessage = String.format("%s: Required request part is missing", partName);
+
+    return new ResponseEntity<>(
+        ApiResponse.error(CoreApiErrorType.REQUIRED_FIELD_MISSING_OR_INVALID, errorMessage),
+        HttpStatus.BAD_REQUEST);
+  }
 
   @ExceptionHandler(HandlerMethodValidationException.class)
   protected ResponseEntity<ApiResponse<Void>> handleHandlerMethodValidationException(
