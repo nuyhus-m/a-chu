@@ -72,7 +72,9 @@ class GoodsControllerTest extends RestDocsTest {
   @Test
   void findCategories() {
     when(categoryService.findCategories())
-        .thenReturn(List.of(new Category(1L, "카테고리1"), new Category(2L, "카테고리2")));
+        .thenReturn(List.of(
+            new Category(1L, "카테고리1", "category-img.jpg"),
+            new Category(2L, "카테고리2", "category-img2.jpg")));
 
     given()
         .contentType(ContentType.JSON)
@@ -86,9 +88,10 @@ class GoodsControllerTest extends RestDocsTest {
                     .type(JsonFieldType.STRING)
                     .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
                 fieldWithPath("data.[].id").type(JsonFieldType.NUMBER).description("category id"),
-                fieldWithPath("data.[].name")
+                fieldWithPath("data.[].name").type(JsonFieldType.STRING).description("category 이름"),
+                fieldWithPath("data.[].imgUrl")
                     .type(JsonFieldType.STRING)
-                    .description("category 이름"))));
+                    .description("category 이미지"))));
   }
 
   @Test
@@ -282,7 +285,7 @@ class GoodsControllerTest extends RestDocsTest {
   @Test
   void findGoodsDetail() {
     when(goodsService.findGoodsDetail(anyLong()))
-        .thenReturn(new GoodsDetail(goods, new Category(1L, "카테고리명1")));
+        .thenReturn(new GoodsDetail(goods, new Category(1L, "카테고리명1", "category-img.jpg")));
     when(likeService.status(any(User.class), anyLong())).thenReturn(new LikeStatus(1, true));
 
     when(userService.findSellerInfo(any(User.class)))
@@ -336,7 +339,7 @@ class GoodsControllerTest extends RestDocsTest {
   @Test
   void appendGoods() {
     when(goodsService.append(any(), any(), any()))
-        .thenReturn(new GoodsDetail(goods, new Category(1L, "카테고리명1")));
+        .thenReturn(new GoodsDetail(goods, new Category(1L, "카테고리명1", "category-img.jpg")));
     given()
         .contentType(MediaType.MULTIPART_FORM_DATA)
         .multiPart(
