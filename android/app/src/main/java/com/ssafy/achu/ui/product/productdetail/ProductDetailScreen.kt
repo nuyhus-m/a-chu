@@ -148,7 +148,7 @@ fun ProductDetailScreen(
             menuFirstText = stringResource(R.string.modify),
             menuSecondText = stringResource(R.string.delete),
             onMenuFirstItemClick = { onNavigateToUpload(true) },
-            onMenuSecondItemClick = {},
+            onMenuSecondItemClick = { viewModel.updateShowDeleteDialog(true) },
             isMenuVisible = isSeller && !isSold && !isPreview
         )
 
