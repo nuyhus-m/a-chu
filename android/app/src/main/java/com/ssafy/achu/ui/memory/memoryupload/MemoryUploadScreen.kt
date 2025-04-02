@@ -423,6 +423,9 @@ fun MemoryUploadScreen(
             }
 
         }
+        if(memoryUIState.loading){
+            LoadingScreen()
+        }
     }
 }
 

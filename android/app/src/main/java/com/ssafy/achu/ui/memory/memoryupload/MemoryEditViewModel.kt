@@ -58,6 +58,7 @@ class MemoryEditViewModel : ViewModel() {
     }
 
     fun uploadMemory() {
+        _uiState.value = _uiState.value.copy(loading = true)
         viewModelScope.launch {
             Log.d(TAG, "uploadMemory: ${uiState.value.sendIMage}")
             ApplicationClass.Companion.memoryRepository.createMemory(
@@ -67,6 +68,7 @@ class MemoryEditViewModel : ViewModel() {
                     title = uiState.value.memoryTitle,
                     content = uiState.value.memoryContent
                 )
+
             ).onSuccess {
                 updateToastString("추억 작성 완료!")
                 getMemory(it.data.id)
@@ -105,6 +107,7 @@ class MemoryEditViewModel : ViewModel() {
 
 
     fun changeMemory() {
+        _uiState.value = _uiState.value.copy(loading = true)
         viewModelScope.launch {
             ApplicationClass.Companion.memoryRepository.updateMemory(
                 memoryId = uiState.value.selectedMemory.id,
@@ -135,6 +138,7 @@ class MemoryEditViewModel : ViewModel() {
 
 
     fun updateImage() {
+        _uiState.value = _uiState.value.copy(loading = true)
         viewModelScope.launch {
             Log.d(TAG, "updateImage: 이미지 보내는 함수 ${uiState.value.sendIMage}")
             ApplicationClass.Companion.memoryRepository.updateMemoryImages(
