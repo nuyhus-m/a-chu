@@ -37,6 +37,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -142,7 +143,9 @@ fun ProductListScreen(
                 items = uiState.products,
                 onLoadMore = { viewModel.loadProductList() },
                 listState = listState,
-                onItemClick = { id -> activityViewModel.getProductDetail(id) }
+                onItemClick = { id -> activityViewModel.getProductDetail(id) },
+                onLikeClick = { id -> viewModel.likeProduct(id) },
+                onUnLikeClick = { id -> viewModel.unlikeProduct(id) }
             )
         }
 
@@ -227,7 +230,9 @@ fun ProductList(
     items: List<ProductResponse>,
     listState: LazyListState,
     onLoadMore: () -> Unit,
-    onItemClick: (Int) -> Unit
+    onItemClick: (Int) -> Unit,
+    onLikeClick: (Int) -> Unit,
+    onUnLikeClick: (Int) -> Unit
 ) {
 
     val lastIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
@@ -253,7 +258,9 @@ fun ProductList(
         items(items) { item ->
             ProductItem(
                 productResponse = item,
-                onItemClick = { onItemClick(item.id) }
+                onItemClick = { onItemClick(item.id) },
+                onLikeClick = { onLikeClick(item.id) },
+                onUnLikeClick = { onUnLikeClick(item.id) }
             )
         }
     }
@@ -263,8 +270,13 @@ fun ProductList(
 @Composable
 fun ProductItem(
     productResponse: ProductResponse,
-    onItemClick: () -> Unit
+    onItemClick: () -> Unit,
+    onLikeClick: () -> Unit,
+    onUnLikeClick: () -> Unit
 ) {
+    var likedByUser by remember { mutableStateOf(productResponse.likedByUser) }
+    var likedUsersCount by remember { mutableIntStateOf(productResponse.likedUsersCount) }
+
     Column(
         modifier = Modifier
             .padding(horizontal = 24.dp)
@@ -343,15 +355,24 @@ fun ProductItem(
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         painter =
-                            if (productResponse.likedByUser)
-                                painterResource(id = R.drawable.ic_favorite)
+                            if (likedByUser) painterResource(id = R.drawable.ic_favorite)
                             else painterResource(id = R.drawable.ic_favorite_line),
                         contentDescription = null,
-                        tint = if (productResponse.likedByUser) FontPink else FontGray
+                        tint = if (likedByUser) FontPink else FontGray,
+                        modifier = Modifier.clickable(onClick = {
+                            if (likedByUser) {
+                                onUnLikeClick()
+                                likedUsersCount--
+                            } else {
+                                onLikeClick()
+                                likedUsersCount++
+                            }
+                            likedByUser = !likedByUser
+                        })
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = productResponse.likedUsersCount.toString(),
+                        text = likedUsersCount.toString(),
                         style = AchuTheme.typography.regular16.copy(color = FontGray)
                     )
                 }
@@ -391,7 +412,9 @@ fun ProductItemPreview() {
                 price = 5000,
                 title = "미피 인형"
             ),
-            onItemClick = {}
+            onItemClick = {},
+            onLikeClick = {},
+            onUnLikeClick = {}
         )
     }
 }

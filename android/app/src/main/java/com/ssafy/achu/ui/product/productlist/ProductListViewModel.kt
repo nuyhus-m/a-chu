@@ -194,4 +194,30 @@ class ProductListViewModel(
             }
         }
     }
+
+    fun likeProduct(productId: Int) {
+        viewModelScope.launch {
+            productRepository.likeProduct(productId)
+                .onSuccess { response ->
+                    Log.d(TAG, "likeProduct: $response")
+                }.onFailure {
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "likeProduct errorResponse: $errorResponse")
+                    Log.d(TAG, "likeProduct error: ${it.message}")
+                }
+        }
+    }
+
+    fun unlikeProduct(productId: Int) {
+        viewModelScope.launch {
+            productRepository.unlikeProduct(productId)
+                .onSuccess { response ->
+                    Log.d(TAG, "unlikeProduct: $response")
+                }.onFailure {
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "unlikeProduct errorResponse: $errorResponse")
+                    Log.d(TAG, "unlikeProduct error: ${it.message}")
+                }
+        }
+    }
 }
