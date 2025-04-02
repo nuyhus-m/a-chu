@@ -278,7 +278,7 @@ class UserInfoViewModel : ViewModel() {
             userRepository.changePhoneNumber(
                 ChangePhoneNumberRequest(
                     phoneNumber = uiState.value.phoneNumber,
-                    phoneVerificationCode = ""
+                    phoneVerificationCode = phoneAuthId
                 )
             )
                 .onSuccess {
@@ -322,6 +322,7 @@ class UserInfoViewModel : ViewModel() {
     fun sendPhoneAuth() {
 
         viewModelScope.launch {
+
             val phoneAuthRequest = PhoneAuthRequest(
                 phoneNumber = uiState.value.phoneNumber.replace("-", ""),
                 purpose = "CHANGE_PHONE_NUMBER"
@@ -354,6 +355,7 @@ class UserInfoViewModel : ViewModel() {
                         )
                     }
                     _isChanged.emit(false)
+
                 }
         }
     }
@@ -373,17 +375,22 @@ class UserInfoViewModel : ViewModel() {
                                 toastMessage = "전화번호 인증에 성공했습니다."
                             )
                         }
-
                         changePhoneNumber()
                     } else {
                         _uiState.update { currentState ->
                             currentState.copy(
-                                toastMessage = "* 전화번호 인증에 실패했습니다."
+
+                                toastMessage = "전화번호 인증에 실패했습니다."
                             )
                         }
+
+                        Log.d(TAG, "checkPhoneAuth: ${uiState.value.verifyNumber}")
+                        Log.d(TAG, "checkPhoneAuth: ${uiState.value.authCode}")
                     }
                 }.onFailure {
                     val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "checkPhoneAuth: ${uiState.value.verifyNumber}")
+                    Log.d(TAG, "checkPhoneAuth: ${uiState.value.authCode}")
                     Log.d(TAG, "confirmDialog errorResponse: $errorResponse")
                     Log.d(TAG, "confirmDialog error: ${it.message}")
                     _uiState.update { currentState ->

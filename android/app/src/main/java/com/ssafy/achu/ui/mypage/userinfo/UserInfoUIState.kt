@@ -26,6 +26,7 @@ data class UserInfoUIState(
     val logoutDialog: Boolean = false,
     val deleteUserDialog: Boolean = false,
     val verifyPhoneNumberDialog: Boolean = false,
+    val phoneNumberButtonState: Boolean = false,
 
 
     val toastMessage: String = "",

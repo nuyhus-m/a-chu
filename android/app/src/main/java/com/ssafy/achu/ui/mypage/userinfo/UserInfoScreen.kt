@@ -260,7 +260,7 @@ fun UserInfoScreen(
 
                 Row {
                     PhoneNumberTextField(
-                        value = formatPhoneNumber(userInfoUiState.phoneNumber),
+                        value = userInfoUiState.phoneNumber,
                         placeholder = formatPhoneNumber(uiState.user!!.phoneNumber),
                         onValueChange = { userInfoViewModel.updatePhoneNumber(it) },
                         pointColor = PointBlue,
@@ -269,8 +269,14 @@ fun UserInfoScreen(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     PointBlueFlexibleBtn("인증", onClick = {
-                        userInfoViewModel.sendPhoneAuth()
 
+                        if(userInfoUiState.phoneNumber == ""){
+                            Toast.makeText(context, "전화번호 변경 후 인증 요청해주세요", Toast.LENGTH_SHORT).show()
+                        }else if(userInfoUiState.phoneNumber.length != 13){
+                            Toast.makeText(context, "전화번호를 확인해주세요", Toast.LENGTH_SHORT).show()
+                        }else{
+                            userInfoViewModel.sendPhoneAuth()
+                        }
                     })
                 }
 
