@@ -324,6 +324,9 @@ class GoodsControllerTest extends RestDocsTest {
                 fieldWithPath("data.category.name")
                     .type(JsonFieldType.STRING)
                     .description("카테고리 이름"),
+                fieldWithPath("data.category.imgUrl")
+                    .type(JsonFieldType.STRING)
+                    .description("카테고리 이미지"),
                 fieldWithPath("data.seller").type(JsonFieldType.OBJECT).description("판매자 정보"),
                 fieldWithPath("data.seller.id")
                     .type(JsonFieldType.NUMBER)
