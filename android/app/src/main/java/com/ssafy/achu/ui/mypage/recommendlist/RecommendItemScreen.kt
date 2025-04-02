@@ -160,7 +160,7 @@ fun BabyListItem(babyInfo: BabyResponse, list: List<LikeItem2>) {
                     )
 
                     // URL이 비어 있으면 기본 이미지 리소스를 사용하고, 그렇지 않으면 네트워크 이미지를 로드합니다.
-                    if (imageUrl.isEmpty()) {
+                    if (imageUrl.isNullOrEmpty()) {
                         // 기본 이미지를 painter로 설정
                         Image(
                             painter = painterResource(id = R.drawable.img_baby_profile),

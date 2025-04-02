@@ -7,4 +7,5 @@ import okhttp3.MultipartBody
 data class MemoryUIState (
     val babyId: Int = 0,
     val memoryList: List<MemoryResponse> = emptyList(),
+    val isLoading: Boolean = false
 )

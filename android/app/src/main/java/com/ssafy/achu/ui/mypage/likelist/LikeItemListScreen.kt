@@ -1,6 +1,7 @@
 package com.ssafy.achu.ui.mypage.likelist
 
 import LargeLikeItem
+import android.util.Log
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,11 +18,14 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -33,18 +37,16 @@ import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.BasicTopAppBar
-import com.ssafy.achu.core.navigation.Route
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.White
 
-
+private const val TAG = "LikeItemListScreen_안주현"
 @Composable
 fun LikeItemListScreen(
     viewModel: LikeItemListViewModel = viewModel(),
     onNavigateToProductDetail: () -> Unit
 ) {
-
 
     LaunchedEffect(Unit) {
         viewModel.getLikeItemList()
@@ -82,7 +84,6 @@ fun LikeItemListScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-
                         Image(
                             painter = painterResource(id = R.drawable.img_crying_face),
                             contentDescription = "Crying Face",
@@ -100,58 +101,69 @@ fun LikeItemListScreen(
                         )
                     }
                 } else {
+                    val listState = rememberLazyListState()
 
                     LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        state = listState
                     ) {
                         itemsIndexed(likeItemList.chunked(2)) { _, rowItems ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 2.dp)
-                                    .clickable { }, // 좌우 여백 추가
-                                horizontalArrangement = Arrangement.SpaceBetween // 아이템 간 간격 추가
+                                    .clickable { },
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 rowItems.forEach { item ->
                                     LargeLikeItem(
                                         img = item.imgUrl.toUri(),
                                         state = item.tradeStatus,
                                         productName = item.title,
-                                        price = "${item.price}원",
-                                        onClickItem = {
-                                            onNavigateToProductDetail()
-                                        },
-                                        productLike = {
-                                            viewModel.likeItem(
-                                                item.id
-                                            )
-                                        },
-                                        productUnlike = {
-                                            viewModel.unlikeItem(
-                                                item.id
-                                            )
-                                        }
+                                        price = item.price,
+                                        onClickItem = { onNavigateToProductDetail() },
+                                        productLike = { viewModel.likeItem(item.id) },
+                                        productUnlike = { viewModel.unlikeItem(item.id) }
                                     )
                                 }
-
-                                // 홀수 개일 경우 빈 공간 추가하여 정렬 유지
                                 if (rowItems.size == 1) {
                                     Spacer(modifier = Modifier.weight(1f))
                                 }
                             }
-                            Spacer(modifier = Modifier.height(8.dp)) // 줄 간 간격 추가
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+                        // 로딩 중일 때 표시할 로딩 인디케이터
+                        item {
+                            if (viewModel.isLoading.collectAsState().value) {
+                                CircularProgressIndicator(modifier = Modifier.padding(horizontal = 8.dp))
+                            }
                         }
                     }
 
+                    LaunchedEffect(listState) {
+                        snapshotFlow {
+                            listState.layoutInfo.visibleItemsInfo
+                        }.collect { visibleItemsInfo ->
+                            Log.d(TAG, "Visible Items Info: $visibleItemsInfo")
 
+                            val lastVisibleItem = visibleItemsInfo.lastOrNull()
+                            val lastVisibleIndex = lastVisibleItem?.index
+
+                            Log.d(TAG, "Last Visible Index: $lastVisibleIndex")
+
+                            // 마지막에서 두 번째 아이템에 도달했을 때 추가 데이터를 로드
+                            if (lastVisibleIndex != null && lastVisibleIndex*2 >= likeItemList.size - 2) {
+                                Log.d(TAG, "Loading more items. Last visible index: $lastVisibleIndex")
+                                viewModel.loadMoreItems()
+                            }
+                        }
+                    }
                 }
-
             }
         }
     }
 }
-
 
 @Preview
 @Composable

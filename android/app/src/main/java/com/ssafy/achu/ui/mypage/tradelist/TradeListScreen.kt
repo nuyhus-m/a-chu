@@ -20,7 +20,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,6 +57,7 @@ import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatPrice
 
 @Composable
 fun TradeListScreen(
@@ -210,33 +214,49 @@ fun TradeListScreen(
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(top = 16.dp)
+                                .padding(top = 16.dp),
+                            state = rememberLazyListState()
                         ) {
                             val listToDisplay =
                                 if (selectedTab == "purchase") purchaseList else saleList
 
-                            items(listToDisplay) { productItem ->
+                            itemsIndexed(listToDisplay) { index, productItem ->
                                 ListItem(
                                     img = productItem.imgUrl.toUri(),
                                     state = if (selectedTab == "purchase") "구매완료" else if (productItem.tradeStatus == "SELLING") "판매중" else "판매완료",
                                     productName = productItem.title,
-                                    price = " ${productItem.price}원",
+                                    price = formatPrice(productItem.price),
                                     onClick = {
                                         onNavigateToProductDetail()
                                     },
 
                                     )
                                 Spacer(modifier = Modifier.height(8.dp))
+                                if (index == listToDisplay.size - 3) {
+                                    LaunchedEffect(index) {
+                                        if (selectedTab == "purchase") viewModel.loadMorePurchaseItems() else viewModel.loadMoreSaleItems()
+                                    }
+                                }
+                            }
+
+                            // 로딩 중일 때 표시할 로딩 인디케이터
+                            item {
+                                if (viewModel.isPurchaseLoading.collectAsState().value) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.padding(horizontal = 8.dp)
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
-
-
         }
+
+
     }
 }
+
 
 @Composable
 fun ListItem(
@@ -271,51 +291,45 @@ fun ListItem(
                     .clip(shape = RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop
             )
-        }
 
-        Spacer(modifier = Modifier.width(16.dp))
 
-        Column(
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.Start,
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(top = 8.dp, bottom = 8.dp)
-        ) {
-            Text(
-                text = state,
-                style = AchuTheme.typography.semiBold14PointBlue,
-                color = if (state == "구매완료") FontPink else FontBlue
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = productName,
-                style = AchuTheme.typography.semiBold18,
-                color = FontBlack,
-                maxLines = 1, // 한 줄만 표시
-                overflow = TextOverflow.Ellipsis // 넘치는 부분은 "..."으로 표시
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
-            Text(
-                text = price,
-                style = AchuTheme.typography.semiBold16,
-                fontSize = 14.sp,
-                color = FontBlack,
-                maxLines = 1, // 한 줄만 표시
-                overflow = TextOverflow.Ellipsis // 넘치는 부분은 "..."으로 표시
-            )
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(top = 8.dp, bottom = 8.dp)
+            ) {
+                Text(
+                    text = state,
+                    style = AchuTheme.typography.semiBold14PointBlue,
+                    color = if (state == "구매완료") FontPink else FontBlue
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = productName,
+                    style = AchuTheme.typography.semiBold18,
+                    color = FontBlack,
+                    maxLines = 1, // 한 줄만 표시
+                    overflow = TextOverflow.Ellipsis // 넘치는 부분은 "..."으로 표시
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = price,
+                    style = AchuTheme.typography.semiBold16,
+                    fontSize = 14.sp,
+                    color = FontBlack,
+                    maxLines = 1, // 한 줄만 표시
+                    overflow = TextOverflow.Ellipsis // 넘치는 부분은 "..."으로 표시
+                )
+            }
         }
     }
 }
 
-
-data class ProductItem(
-    val img: Int?, // 이미지 리소스 ID
-    val state: String, // 제품 상태 (판매중/구매중 등)
-    val productName: String, // 제품명
-    val price: String // 가격
-)
 
 @Preview
 @Composable

@@ -54,7 +54,7 @@ class ProductListViewModel(
                     Log.d(TAG, "getCategoryList: $response")
                     if (response.result == SUCCESS) {
                         val categories = response.data.toMutableList()
-                        categories.add(0, CategoryResponse(0, "All"))
+                        categories.add(0, CategoryResponse(0, "All", ""))
                         _uiState.update { currentState ->
                             currentState.copy(categories = categories)
                         }
