@@ -2,6 +2,7 @@ package com.ssafy.achu.ui.mypage.likelist
 
 import LargeLikeItem
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,17 +42,37 @@ import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.ui.ActivityViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 private const val TAG = "LikeItemListScreen_안주현"
 @Composable
 fun LikeItemListScreen(
     viewModel: LikeItemListViewModel = viewModel(),
-    onNavigateToProductDetail: () -> Unit
+    onNavigateToProductDetail: () -> Unit,
+    activityViewModel: ActivityViewModel
 ) {
+
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.getLikeItemList()
     }
+
+    LaunchedEffect(Unit) {
+        activityViewModel.getProductSuccess.collectLatest {
+            if (it) {
+                onNavigateToProductDetail()
+            } else {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.fail_get_product), Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+
 
     val likeItemList by viewModel.likeItemList.collectAsState()
     val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
@@ -121,7 +143,7 @@ fun LikeItemListScreen(
                                         state = item.tradeStatus,
                                         productName = item.title,
                                         price = item.price,
-                                        onClickItem = { onNavigateToProductDetail() },
+                                        onClickItem = { activityViewModel.getProductDetail(item.id) },
                                         productLike = { viewModel.likeItem(item.id) },
                                         productUnlike = { viewModel.unlikeItem(item.id) }
                                     )
@@ -171,6 +193,6 @@ fun LikeItemListScreenPreview() {
     AchuTheme {
         LikeItemListScreen(onNavigateToProductDetail = {
 
-        })
+        }, activityViewModel = viewModel())
     }
 }

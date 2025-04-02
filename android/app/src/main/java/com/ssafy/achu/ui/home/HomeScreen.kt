@@ -1,3 +1,4 @@
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -63,6 +64,7 @@ import com.ssafy.achu.ui.home.HomeViewModel
 import com.ssafy.achu.ui.home.homecomponents.BabyDropdown
 import com.ssafy.achu.ui.home.homecomponents.RecommendGrid
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
@@ -78,9 +80,23 @@ fun HomeScreen(
     onNavigateToProductDetail: () -> Unit,
 ) {
 
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         homeViewModel.getLikeItemList()
         homeViewModel.getCategoryList()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.getProductSuccess.collectLatest {
+            if (it) {
+                onNavigateToProductDetail()
+            } else {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.fail_get_product), Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     val likeItemList by homeViewModel.likeItemList.collectAsState()
@@ -406,7 +422,7 @@ fun HomeScreen(
                     itemsIndexed(likeItemList) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
                         BasicLikeItem(
                             onClickItem = {
-                                onNavigateToProductDetail()
+                               viewModel.getProductDetail(likeItem.id)
                             },
                             likeCLicked = {
                                 homeViewModel.likeItem(likeItem.id)
@@ -422,9 +438,9 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.width(8.dp)) // 아이템 간 간격 추가
 
                         // 리스트의 끝에 도달하면 추가 데이터 로드
-                        if (index == likeItemList.size - 2) { // 마지막에서 두 번째 아이템에 도달하면 미리 로드
+                        if (index == likeItemList.size - 2) { 
                             LaunchedEffect(index) {
-                                homeViewModel.loadMoreItems() // 이 메소드는 아래에서 새로 만들 것입니다
+                                homeViewModel.loadMoreItems()
                             }
                         }
                     }

@@ -1,6 +1,7 @@
 package com.ssafy.achu.ui.mypage.tradelist
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,7 +49,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.BasicTopAppBar
-import com.ssafy.achu.core.navigation.Route
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontBlue
@@ -58,17 +58,33 @@ import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.formatPrice
+import com.ssafy.achu.ui.ActivityViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun TradeListScreen(
     viewModel: TradeListViewModel = viewModel(),
-    onNavigateToProductDetail: () -> Unit
+    onNavigateToProductDetail: () -> Unit,
+    activityViewModel: ActivityViewModel
 ) {
-
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.getPurchaseList()
         viewModel.getSaleList()
+    }
+
+    LaunchedEffect(Unit) {
+        activityViewModel.getProductSuccess.collectLatest {
+            if (it) {
+                onNavigateToProductDetail()
+            } else {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.fail_get_product), Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     val saleList by viewModel.saleList.collectAsState()
@@ -227,7 +243,7 @@ fun TradeListScreen(
                                     productName = productItem.title,
                                     price = formatPrice(productItem.price),
                                     onClick = {
-                                        onNavigateToProductDetail()
+                                       activityViewModel.getProductDetail(productItem.id)
                                     },
 
                                     )
@@ -337,7 +353,7 @@ fun TradeListScreenPreview() {
     AchuTheme {
         TradeListScreen(onNavigateToProductDetail = {
 
-        })
+        }, activityViewModel = viewModel())
 //        ListItem(R.drawable.img_miffy_doll, "판매중", "토끼인형", "판매가: 3,000원", onClick = {})
     }
 }
