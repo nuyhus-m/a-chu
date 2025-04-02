@@ -241,9 +241,7 @@ fun NavGraph(
                             productName = productName
                         )
                     ) {
-                        popUpTo(BottomNavRoute.ProductList(0)) {
-                            inclusive = true
-                        }
+                        popUpTo(BottomNavRoute.ProductList(0))
                     }
                 },
                 onNavigateToProductList = {
