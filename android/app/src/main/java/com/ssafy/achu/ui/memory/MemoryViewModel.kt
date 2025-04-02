@@ -26,7 +26,8 @@ class MemoryViewModel : ViewModel() {
 
     // 메모리 리스트를 로드하는 함수
     fun getMemoryList(babyId: Int) {
-       loadMoreItems(babyId)
+        resetMemoryList()
+        loadMoreItems(babyId)
     }
 
     // 더 많은 메모리 아이템을 로드하는 함수 (페이지네이션)
@@ -59,6 +60,12 @@ class MemoryViewModel : ViewModel() {
                 _uiState.value = _uiState.value.copy(isLoading = false) // 로딩 상태 해제
             }
         }
+    }
+
+    private fun resetMemoryList() {
+        currentOffset = 0
+        hasMoreData = true
+        _uiState.value = MemoryUIState() // UI 상태 초기화
     }
 
 }

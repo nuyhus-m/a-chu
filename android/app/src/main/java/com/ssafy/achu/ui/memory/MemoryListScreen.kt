@@ -24,6 +24,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,7 +73,13 @@ fun MemoryListScreen(
     var expanded by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf(uiState.selectedBaby?.nickname) }
 
-    if (uiState.babyList.isNullOrEmpty()) {
+    LaunchedEffect(uiState.selectedBaby?.id) {
+        uiState.selectedBaby?.id?.let { babyId ->
+            memoryViewModel.getMemoryList(babyId)
+        }
+    }
+
+    if (uiState.babyList.isEmpty()) {
         Column(
             Modifier
                 .fillMaxSize()
@@ -99,8 +106,6 @@ fun MemoryListScreen(
 
         }
     } else {
-
-        memoryViewModel.getMemoryList(uiState.selectedBaby!!.id)
 
         Box(
             modifier = modifier
@@ -205,8 +210,7 @@ fun MemoryListScreen(
                                 onClick = {
                                     selectedItem = baby.nickname
                                     viewModel.updateSelectedBaby(
-                                        baby
-                                    )
+                                        baby)
                                     expanded = false
                                     //클릭되면 바꿔라이
                                 }
