@@ -9,6 +9,8 @@ import com.ssafy.s12p21d206.achu.security.JwtAuthenticationProcessingFilter;
 import com.ssafy.s12p21d206.achu.security.JwtAuthenticationSuccessHandler;
 import com.ssafy.s12p21d206.achu.security.JwtService;
 import com.ssafy.s12p21d206.achu.security.RefreshTokenRenewFilter;
+import java.util.Arrays;
+import java.util.Collections;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -24,6 +26,9 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @EnableWebSecurity
 @Configuration
@@ -45,7 +50,22 @@ public class SecurityConfig {
   }
 
   @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+    configuration.setAllowedMethods(
+        Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+    configuration.setAllowedHeaders(Collections.singletonList("*"));
+    configuration.setAllowCredentials(true);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
+
+  @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
     http.httpBasic(AbstractHttpConfigurer::disable);
     http.formLogin(AbstractHttpConfigurer::disable);
     http.csrf(AbstractHttpConfigurer::disable);
@@ -66,7 +86,7 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.PATCH, "/users/password/reset")
         .permitAll()
         .anyRequest()
-        .authenticated());
+        .permitAll());
 
     http.exceptionHandling(exceptionHandling ->
         exceptionHandling.authenticationEntryPoint(authenticationEntryPoint()));

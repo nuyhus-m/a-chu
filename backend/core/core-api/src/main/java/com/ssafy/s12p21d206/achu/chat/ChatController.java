@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.chat;
 
+import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -14,7 +15,9 @@ public class ChatController {
 
   @MessageMapping("/chat/rooms/{chatRoomId}")
   @SendTo("/sub/chat/rooms/{chatRoomId}")
-  public ChatMessage send(ChatMessage message, @DestinationVariable String chatRoomId) {
+  public ChatMessage send(
+      ApiUser apiUser, ChatMessage message, @DestinationVariable String chatRoomId) {
+    logger.info("apiUser: {}", apiUser);
     logger.info("chatRoomId: {}", chatRoomId);
     logger.info("message: {}", message);
     return message;

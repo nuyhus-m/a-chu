@@ -2,7 +2,8 @@
 INSERT INTO "user" (
     username, password, nickname, phone_number, created_at, updated_at, entity_status
 ) VALUES
-      ('local', '{noop}local-password', '김로컬', '01012341234', NOW(6), NOW(6), 'ACTIVE');
+      ('local', '{noop}local-password', '김로컬', '01012341234', NOW(6), NOW(6), 'ACTIVE'),
+('local2', '{noop}local-password', '김덕윤', '01012341234', NOW(6), NOW(6), 'ACTIVE');
 
 INSERT INTO category (
     name, created_at, updated_at, entity_status
