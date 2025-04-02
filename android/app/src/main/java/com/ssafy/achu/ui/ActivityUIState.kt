@@ -24,7 +24,8 @@ data class ActivityUIState(
         likedByUser = false,
         category = Category(
             id = 0,
-            name = ""
+            name = "",
+            imgUrl = ""
         ),
         seller = Seller(
             id = 0,

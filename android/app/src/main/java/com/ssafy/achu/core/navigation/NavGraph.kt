@@ -47,10 +47,10 @@ fun NavGraph(
                 onNavigateToLikeList = { navController.navigate(route = Route.LikeList) },
                 onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) },
                 onNavigateToBabyList = { navController.navigate(route = Route.BabyList) },
-                onNavigateToProductList = {
+                onNavigateToProductList = { categoryId ->
                     navController.navigate(
                         route = BottomNavRoute.ProductList(
-                            categoryId = 0
+                            categoryId = categoryId
                         )
                     )
                 },
