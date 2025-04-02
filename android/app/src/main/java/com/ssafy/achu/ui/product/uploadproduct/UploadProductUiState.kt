@@ -1,9 +1,9 @@
 package com.ssafy.achu.ui.product.uploadproduct
 
+import android.net.Uri
 import com.ssafy.achu.core.util.Constants.SALE
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
-import okhttp3.MultipartBody
 
 data class UploadProductUiState(
     val title: String = "",
@@ -12,7 +12,7 @@ data class UploadProductUiState(
     val categories: List<CategoryResponse> = emptyList(),
     val description: String = "",
     val selectedBaby: BabyResponse? = null,
-    val selectedImages: List<MultipartBody.Part> = emptyList(),
+    val imgUris: List<Uri> = emptyList(),
 
     val titleErrorMessage: String = "",
     val descriptionErrorMessage: String = "",

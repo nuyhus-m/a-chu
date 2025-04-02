@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.product.uploadproduct
 
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -33,8 +34,22 @@ class UploadProductViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(UploadProductUiState())
     val uiState: StateFlow<UploadProductUiState> = _uiState.asStateFlow()
 
+    private var _multipartImages = emptyList<MultipartBody.Part>()
+    val multipartImages: List<MultipartBody.Part> get() = _multipartImages
+
+    private val titleRegex = Regex("^\\S.{0,18}\\S$")
+    private val descriptionRegex = Regex("^\\S.{0,198}\\S$")
+    private val priceRegex = Regex("^[0-9]*$")
+
     init {
         getCategoryList()
+    }
+
+    fun updateImageUris(uris: List<Uri>) {
+        _uiState.update { currentState ->
+            currentState.copy(imgUris = uris)
+        }
+        updateButtonState()
     }
 
     fun updateTitle(title: String) {
@@ -42,12 +57,12 @@ class UploadProductViewModel : ViewModel() {
             currentState.copy(
                 title = title,
                 titleErrorMessage =
-                    if (title.isBlank() || title.length < 2 || title.length > 20) {
-                        "* 2~20자로 입력해주세요."
+                    if (!titleRegex.matches(title)) {
+                        "* 앞뒤 공백 없이 2~20자로 입력해주세요."
                     } else {
                         ""
                     },
-                isTitleValid = title.isNotBlank() && title.length in 2..20
+                isTitleValid = titleRegex.matches(title)
             )
         }
         updateButtonState()
@@ -57,7 +72,7 @@ class UploadProductViewModel : ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(
                 price = price,
-                isPriceValid = price.isNotBlank(),
+                isPriceValid = priceRegex.matches(price) && price.isNotBlank(),
                 priceCategory = if (price == "0") DONATION else SALE
             )
         }
@@ -80,12 +95,12 @@ class UploadProductViewModel : ViewModel() {
             currentState.copy(
                 description = description,
                 descriptionErrorMessage =
-                    if (description.isBlank() || description.length < 2 || description.length > 200) {
-                        "* 2~200자로 입력해주세요."
+                    if (!descriptionRegex.matches(description)) {
+                        "* 앞뒤 공백 없이 2~200자로 입력해주세요."
                     } else {
                         ""
                     },
-                isDescriptionValid = description.isNotBlank() && description.length in 2..200
+                isDescriptionValid = descriptionRegex.matches(description)
             )
         }
         updateButtonState()
@@ -106,10 +121,7 @@ class UploadProductViewModel : ViewModel() {
     }
 
     fun updateSelectedImages(images: List<MultipartBody.Part>) {
-        _uiState.update { currentState ->
-            currentState.copy(selectedImages = images)
-        }
-        updateButtonState()
+        _multipartImages = images
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -160,7 +172,7 @@ class UploadProductViewModel : ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(
                 buttonState = currentState.isTitleValid && currentState.isDescriptionValid && currentState.isPriceValid
-                        && currentState.selectedCategory != null && currentState.selectedBaby != null && currentState.selectedImages.isNotEmpty()
+                        && currentState.selectedCategory != null && currentState.selectedBaby != null && currentState.imgUris.isNotEmpty()
             )
         }
     }

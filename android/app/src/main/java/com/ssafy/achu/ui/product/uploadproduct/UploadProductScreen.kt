@@ -2,6 +2,7 @@ package com.ssafy.achu.ui.product.uploadproduct
 
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -103,18 +104,12 @@ fun UploadProductScreen(
 
     val scrollState = rememberScrollState()
 
-    var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
-
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
         // 5장을 초과하는 이미지를 추가하지 않도록 체크
-        if (imageUris.size + uris.size <= 5) {
-            imageUris = imageUris + uris
-
-            // 모든 이미지를 멀티파트로 변환
-            val multipartFiles = imageUris.mapNotNull { uri -> uriToMultipart(context, uri, "images") }
-            viewModel.updateSelectedImages(multipartFiles)
+        if (uiState.imgUris.size + uris.size <= 5) {
+            viewModel.updateImageUris(uiState.imgUris + uris)
         } else {
             Toast.makeText(context, context.getString(R.string.image_max_5), Toast.LENGTH_SHORT)
                 .show()
@@ -152,18 +147,20 @@ fun UploadProductScreen(
                 modifier = Modifier.height(100.dp)
             ) {
                 AddImageIcon(
-                    imgNumber = imageUris.size,
+                    imgNumber = uiState.imgUris.size,
                     onClick = { launcher.launch("image/*") }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
 
                 LazyRow {
-                    itemsIndexed(imageUris) { index, uri ->
+                    itemsIndexed(uiState.imgUris) { index, uri ->
                         ImageItem(
                             uri = uri,
                             isFirst = index == 0,
                             onDelete = {
-                                imageUris = imageUris.toMutableList().apply { removeAt(index) }
+                                viewModel.updateImageUris(
+                                    uiState.imgUris.toMutableList().apply { removeAt(index) }
+                                )
                             }
                         )
                     }
@@ -294,14 +291,19 @@ fun UploadProductScreen(
                 buttonText = stringResource(R.string.write_complete),
                 onClick = {
                     onNavigateToDetail()
+                    // 모든 이미지를 멀티파트로 변환
+                    val multipartFiles =
+                        uiState.imgUris.mapNotNull { uri -> uriToMultipart(context, uri, "images") }
+                    viewModel.updateSelectedImages(multipartFiles)
+                    Log.d(TAG, "UploadProductScreen: ${viewModel.multipartImages.size}")
                     val product = viewModel.uiStateToProductDetailResponse(
                         activityUiState.user?.nickname ?: "",
                         activityUiState.user?.profileImageUrl ?: ""
                     )
-                    activityViewModel.saveProductDetail(product, imageUris)
+                    activityViewModel.saveProductDetail(product, uiState.imgUris)
                     activityViewModel.saveProductInfo(
                         uploadProductRequest = viewModel.uiStateToUploadProductRequest(),
-                        multiPartImages = uiState.selectedImages,
+                        multiPartImages = viewModel.multipartImages,
                         babyName = uiState.selectedBaby?.nickname ?: ""
                     )
                 },
