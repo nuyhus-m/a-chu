@@ -66,10 +66,8 @@ storage:
           cacheServerConfiguration: true
           elideSetAutoCommits: true
           maintainTimeStats: false
-
 ---
 spring.config.activate.on-profile: live
-
 storage:
   datasource:
     core:

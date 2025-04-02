@@ -44,6 +44,9 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
       AuthUserDetails authUserDetails = jwtService.resolveAccessToken(accessToken);
       Authentication authentication = getAuthenticated(authUserDetails);
       SecurityContextHolder.getContext().setAuthentication(authentication);
+
+      Long userId = (Long) authentication.getPrincipal();
+      request.setAttribute("userId", userId);
     } catch (AuthCoreApiException e) {
       request.setAttribute(JwtConst.JWT_AUTH_EXCEPTION_ATTRIBUTE_KEY, e);
     }
