@@ -6,9 +6,13 @@ import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.LikeProduct
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.ProductResponse
+import com.ssafy.achu.data.model.product.UploadProductRequest
+import okhttp3.MultipartBody
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -84,6 +88,10 @@ interface ProductService {
         @Query("sort") sort: String // "LATEST" 또는 "OLDEST"
     ): ApiResult<List<LikeProduct>>
 
-
-
+    @Multipart
+    @POST("/goods")
+    suspend fun uploadProduct(
+        @Part images: List<MultipartBody.Part>,
+        @Part request: UploadProductRequest
+    ): ApiResult<IdResponse>
 }

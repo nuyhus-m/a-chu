@@ -6,7 +6,9 @@ import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.LikeProduct
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.ProductResponse
+import com.ssafy.achu.data.model.product.UploadProductRequest
 import com.ssafy.achu.data.network.RetrofitUtil
+import okhttp3.MultipartBody
 
 class ProductRepository {
 
@@ -132,6 +134,15 @@ class ProductRepository {
     ): Result<ApiResult<List<LikeProduct>>> {
         return runCatching {
             productService.getTrades(tradeType, offset, limit, sort)
+        }
+    }
+
+    suspend fun uploadProduct(
+        images: List<MultipartBody.Part>,
+        request: UploadProductRequest
+    ): Result<ApiResult<IdResponse>> {
+        return runCatching {
+            productService.uploadProduct(images, request)
         }
     }
 }
