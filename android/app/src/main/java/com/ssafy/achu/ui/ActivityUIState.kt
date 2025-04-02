@@ -1,8 +1,9 @@
 package com.ssafy.achu.ui
 
+import android.net.Uri
 import com.ssafy.achu.data.model.auth.UserInfoResponse
 import com.ssafy.achu.data.model.baby.BabyResponse
-import com.ssafy.achu.data.model.product.Category
+import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.Seller
 
@@ -22,7 +23,7 @@ data class ActivityUIState(
         createdAt = "",
         likedUsersCount = 0,
         likedByUser = false,
-        category = Category(
+        category = CategoryResponse(
             id = 0,
             name = ""
         ),
@@ -32,4 +33,5 @@ data class ActivityUIState(
             imgUrl = ""
         )
     ),
+    val previewImgUris: List<Uri> = emptyList(),
 )

@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,7 @@ import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.baby.BabyResponse
+import com.ssafy.achu.data.model.product.ProductDetailResponse
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -97,6 +99,15 @@ class ActivityViewModel : ViewModel() {
                     Log.d(TAG, "getProductDetail error: ${it.message}")
                     _getProductSuccess.emit(false)
                 }
+        }
+    }
+
+    fun saveProductDetail(productDetailResponse: ProductDetailResponse, imgUris: List<Uri>) {
+        _uiState.update {
+            it.copy(
+                product = productDetailResponse,
+                previewImgUris = imgUris
+            )
         }
     }
 }

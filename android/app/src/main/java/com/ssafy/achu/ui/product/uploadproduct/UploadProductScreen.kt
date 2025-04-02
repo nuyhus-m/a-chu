@@ -90,7 +90,8 @@ fun UploadProductScreen(
     modifier: Modifier = Modifier,
     viewModel: UploadProductViewModel = viewModel(),
     activityViewModel: ActivityViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onNavigateToDetail: () -> Unit = {}
 ) {
 
     val context = LocalContext.current
@@ -291,7 +292,14 @@ fun UploadProductScreen(
         ) {
             PointBlueButton(
                 buttonText = stringResource(R.string.write_complete),
-                onClick = {},
+                onClick = {
+                    val product = viewModel.uiStateToProductDetailResponse(
+                        activityUiState.user?.nickname ?: "",
+                        activityUiState.user?.profileImageUrl ?: ""
+                    )
+                    activityViewModel.saveProductDetail(product, imageUris)
+                    onNavigateToDetail()
+                },
                 enabled = uiState.buttonState
             )
         }

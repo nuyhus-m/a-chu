@@ -1,6 +1,7 @@
 package com.ssafy.achu.ui.product.productdetail
 
 import BasicRecommendItem
+import android.net.Uri
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -63,7 +64,7 @@ import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.Constants.SOLD
 import com.ssafy.achu.core.util.formatDate
 import com.ssafy.achu.core.util.formatPrice
-import com.ssafy.achu.data.model.product.Category
+import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.data.model.product.Seller
 import com.ssafy.achu.ui.ActivityViewModel
@@ -142,9 +143,15 @@ fun ProductDetailScreen(
                 .verticalScroll(scrollState)
         ) {
             // 이미지 페이저
-            ImagePager(
-                images = activityUiState.product.imgUrls
-            )
+            if (!isPreview) {
+                ImagePager(
+                    images = activityUiState.product.imgUrls
+                )
+            } else {
+                ImageUriPager(
+                    images = activityUiState.previewImgUris
+                )
+            }
 
             // 프로필
             ProfileInfo(
@@ -157,7 +164,7 @@ fun ProductDetailScreen(
                 title = activityUiState.product.title,
                 description = activityUiState.product.description,
                 category = activityUiState.product.category,
-                date = activityUiState.product.createdAt
+                date = if (!isPreview) formatDate(activityUiState.product.createdAt) else activityUiState.product.createdAt
             )
 
             // 추천 리스트
@@ -177,7 +184,7 @@ fun ProductDetailScreen(
             likedByUser = activityUiState.product.likedByUser,
             onLikeClick = { viewModel.likeProduct(activityUiState.product.id) },
             onUnLikeClick = { viewModel.unlikeProduct(activityUiState.product.id) },
-            onButtonClick = onNavigateToChat,
+            onButtonClick = if (!isPreview) onNavigateToChat else TODO(),
         )
     }
 
@@ -245,7 +252,7 @@ private fun BottomBar(
         Spacer(modifier = Modifier.weight(1f))
         Button(
             onClick = onButtonClick,
-            enabled = !isSeller && !isSold && !isPreview,
+            enabled = (!isSeller && !isSold && !isPreview) || isPreview,
             modifier = Modifier
                 .height(50.dp)
         ) {
@@ -366,7 +373,7 @@ private fun RecommendList(
 private fun ProductInfo(
     title: String,
     description: String,
-    category: Category,
+    category: CategoryResponse,
     date: String
 ) {
     Column(
@@ -394,7 +401,7 @@ private fun ProductInfo(
                 style = AchuTheme.typography.regular14.copy(color = FontGray)
             )
             Text(
-                text = formatDate(date),
+                text = date,
                 style = AchuTheme.typography.regular14.copy(color = FontGray)
             )
         }
@@ -465,6 +472,54 @@ fun RecommendList(items: List<ProductResponse>) {
 
 @Composable
 fun ImagePager(images: List<String>) {
+
+    // 페이저 상태
+    val pagerState = rememberPagerState(pageCount = { images.size })
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+    ) {
+        // 이미지 페이저
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { page ->
+            AsyncImage(
+                model = images[page],
+                contentDescription = "이미지 ${page + 1}",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        // 페이지 인디케이터
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(images.size) { index ->
+                // 현재 페이지에 따라 점 색상 변경
+                val color = if (pagerState.currentPage == index) Color.White else Color.Gray
+
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ImageUriPager(images: List<Uri>) {
 
     // 페이저 상태
     val pagerState = rememberPagerState(pageCount = { images.size })
