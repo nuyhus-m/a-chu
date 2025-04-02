@@ -1,11 +1,20 @@
 package com.ssafy.s12p21d206.achu.domain;
 
+import com.ssafy.s12p21d206.achu.domain.error.CoreErrorType;
+import com.ssafy.s12p21d206.achu.domain.error.CoreException;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserValidator {
+  private final UserRepository userRepository;
+
+  public UserValidator(UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
+
   public void validateExists(Long id) {
-    //        해당 유저가 존재하는지 여부 검증
-    throw new UnsupportedOperationException("아직 구현되지 않았습니다.");
+    if (!userRepository.existsById(id)) {
+      throw new CoreException(CoreErrorType.DATA_NOT_FOUND);
+    }
   }
 }

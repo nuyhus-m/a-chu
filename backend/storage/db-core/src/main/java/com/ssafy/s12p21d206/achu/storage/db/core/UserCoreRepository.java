@@ -19,4 +19,9 @@ public class UserCoreRepository implements UserRepository {
   public Optional<UserDetail> findUserDetail(User user) {
     return userJpaRepository.findById(user.id()).map(UserEntity::toUserDetail);
   }
+
+  @Override
+  public boolean existsById(Long id) {
+    return userJpaRepository.existsById(id);
+  }
 }

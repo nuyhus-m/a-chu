@@ -5,4 +5,6 @@ import java.util.Optional;
 public interface UserRepository {
 
   Optional<UserDetail> findUserDetail(User user);
+
+  boolean existsById(Long id);
 }
