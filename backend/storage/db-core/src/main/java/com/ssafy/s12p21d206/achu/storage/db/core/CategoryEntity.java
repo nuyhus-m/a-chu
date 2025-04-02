@@ -10,11 +10,11 @@ public class CategoryEntity extends BaseEntity {
 
   private String name;
 
-  private String imgURl;
+  private String imgUrl;
 
   protected CategoryEntity() {}
 
   public Category toCategory() {
-    return new Category(getId(), name, imgURl);
+    return new Category(getId(), name, imgUrl);
   }
 }
