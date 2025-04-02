@@ -7,6 +7,7 @@ import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
+import com.ssafy.achu.data.model.product.UploadProductRequest
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 
 private const val TAG = "ProductDetailViewModel"
 
@@ -32,10 +34,21 @@ class ProductDetailViewModel : ViewModel() {
     private val _isUnLikeSuccess = MutableSharedFlow<Boolean>()
     val isUnLikeSuccess: SharedFlow<Boolean> = _isUnLikeSuccess.asSharedFlow()
 
-    fun updateShowDialog(dialogState: Boolean) {
+    private val _navigateEvents = MutableSharedFlow<Boolean>()
+    val navigateEvents: SharedFlow<Boolean> = _navigateEvents.asSharedFlow()
+
+    fun updateShowDeleteDialog(dialogState: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(
-                showDialog = dialogState
+                showDeleteDialog = dialogState
+            )
+        }
+    }
+
+    fun updateShowUploadDialog(dialogState: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                showUploadDialog = dialogState
             )
         }
     }
@@ -56,7 +69,7 @@ class ProductDetailViewModel : ViewModel() {
                     val errorResponse = it.getErrorResponse(retrofit)
                     Log.d(TAG, "deleteProduct errorResponse: $errorResponse")
                     Log.d(TAG, "deleteProduct error: ${it.message}")
-                    updateShowDialog(false)
+                    updateShowDeleteDialog(false)
                     _toastMessage.emit(errorResponse.message)
                 }
         }
@@ -93,6 +106,31 @@ class ProductDetailViewModel : ViewModel() {
                     Log.d(TAG, "unlikeProduct error: ${it.message}")
                     _toastMessage.emit(errorResponse.message)
                 }
+        }
+    }
+
+    fun uploadProduct(
+        uploadProductRequest: UploadProductRequest,
+        images: List<MultipartBody.Part>,
+        isWithMemory: Boolean
+    ) {
+        viewModelScope.launch {
+            productRepository.uploadProduct(
+                images = images,
+                request = uploadProductRequest,
+            ).onSuccess { response ->
+                Log.d(TAG, "uploadProduct: $response")
+                if (response.result == SUCCESS) {
+                    _navigateEvents.emit(isWithMemory)
+                    updateShowUploadDialog(false)
+                }
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "uploadProduct errorResponse: $errorResponse")
+                Log.d(TAG, "uploadProduct error: ${it.message}")
+                _toastMessage.emit(errorResponse.message)
+                updateShowUploadDialog(false)
+            }
         }
     }
 }

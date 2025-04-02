@@ -6,6 +6,8 @@ import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.Seller
+import com.ssafy.achu.data.model.product.UploadProductRequest
+import okhttp3.MultipartBody
 
 data class ActivityUIState(
     val user: UserInfoResponse? = null,
@@ -18,7 +20,7 @@ data class ActivityUIState(
         title = "",
         description = "",
         imgUrls = emptyList(),
-        tradeStatus = "SELLING",
+        tradeStatus = "",
         price = 0,
         createdAt = "",
         likedUsersCount = 0,
@@ -34,4 +36,8 @@ data class ActivityUIState(
         )
     ),
     val previewImgUris: List<Uri> = emptyList(),
+
+    val uploadProductRequest: UploadProductRequest? = null,
+    val multiPartImages: List<MultipartBody.Part> = emptyList(),
+    val uploadBabyName: String = "",
 )

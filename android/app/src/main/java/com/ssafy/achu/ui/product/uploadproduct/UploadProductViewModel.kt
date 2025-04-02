@@ -16,6 +16,7 @@ import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.Seller
+import com.ssafy.achu.data.model.product.UploadProductRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -134,6 +135,17 @@ class UploadProductViewModel : ViewModel() {
             tradeStatus = SELLING
         )
     }
+
+    fun uiStateToUploadProductRequest(): UploadProductRequest {
+        return UploadProductRequest(
+            babyId = uiState.value.selectedBaby?.id ?: -1,
+            categoryId = uiState.value.selectedCategory?.id ?: -1,
+            description = uiState.value.description,
+            price = uiState.value.price.toInt(),
+            title = uiState.value.title
+        )
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun formatCurrentDate(): String {

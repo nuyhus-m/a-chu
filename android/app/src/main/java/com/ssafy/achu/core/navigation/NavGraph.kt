@@ -188,7 +188,11 @@ fun NavGraph(
             MemoryDetailScreen(
                 onNavigateToMemoryUpload = { memoryId, babyId ->
                     navController.navigate(
-                        route = Route.MemoryUpload(memoryId = memoryId, babyId = babyId)
+                        route = Route.MemoryUpload(
+                            memoryId = memoryId,
+                            babyId = babyId,
+                            productName = ""
+                        )
                     ) {
                         popUpTo(navController.currentBackStackEntry?.destination?.route ?: "") {
                             inclusive = true
@@ -228,7 +232,27 @@ fun NavGraph(
                     )
                 },
                 onNavigateToChat = { navController.navigate(route = Route.Chat) },
-                onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) }
+                onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) },
+                onNavigateToMemoryUpload = { babyId, productName ->
+                    navController.navigate(
+                        route = Route.MemoryUpload(
+                            memoryId = 0,
+                            babyId = babyId,
+                            productName = productName
+                        )
+                    ) {
+                        popUpTo(BottomNavRoute.ProductList(0)) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigateToProductList = {
+                    navController.navigate(route = BottomNavRoute.ProductList(0)) {
+                        popUpTo(BottomNavRoute.ProductList(0)) {
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
 

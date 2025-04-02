@@ -113,7 +113,7 @@ fun UploadProductScreen(
             imageUris = imageUris + uris
 
             // 모든 이미지를 멀티파트로 변환
-            val multipartFiles = imageUris.mapNotNull { uri -> uriToMultipart(context, uri) }
+            val multipartFiles = imageUris.mapNotNull { uri -> uriToMultipart(context, uri, "images") }
             viewModel.updateSelectedImages(multipartFiles)
         } else {
             Toast.makeText(context, context.getString(R.string.image_max_5), Toast.LENGTH_SHORT)
@@ -293,12 +293,17 @@ fun UploadProductScreen(
             PointBlueButton(
                 buttonText = stringResource(R.string.write_complete),
                 onClick = {
+                    onNavigateToDetail()
                     val product = viewModel.uiStateToProductDetailResponse(
                         activityUiState.user?.nickname ?: "",
                         activityUiState.user?.profileImageUrl ?: ""
                     )
                     activityViewModel.saveProductDetail(product, imageUris)
-                    onNavigateToDetail()
+                    activityViewModel.saveProductInfo(
+                        uploadProductRequest = viewModel.uiStateToUploadProductRequest(),
+                        multiPartImages = uiState.selectedImages,
+                        babyName = uiState.selectedBaby?.nickname ?: ""
+                    )
                 },
                 enabled = uiState.buttonState
             )

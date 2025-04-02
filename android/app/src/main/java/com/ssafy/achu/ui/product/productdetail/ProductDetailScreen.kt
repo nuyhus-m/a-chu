@@ -82,7 +82,9 @@ fun ProductDetailScreen(
     onBackClick: () -> Unit,
     onNavigateToUpload: (Boolean) -> Unit,
     onNavigateToChat: () -> Unit,
-    onNavigateToRecommend: () -> Unit
+    onNavigateToRecommend: () -> Unit,
+    onNavigateToMemoryUpload: (Int, String) -> Unit,
+    onNavigateToProductList: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val activityUiState by activityViewModel.uiState.collectAsState()
@@ -118,6 +120,19 @@ fun ProductDetailScreen(
     LaunchedEffect(uiState.isDeleteSuccess) {
         if (uiState.isDeleteSuccess) {
             onBackClick()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.navigateEvents.collectLatest {
+            if (it) {
+                onNavigateToMemoryUpload(
+                    activityUiState.uploadProductRequest?.babyId ?: 0,
+                    activityUiState.uploadProductRequest?.title ?: ""
+                )
+            } else {
+                onNavigateToProductList()
+            }
         }
     }
 
@@ -184,17 +199,41 @@ fun ProductDetailScreen(
             likedByUser = activityUiState.product.likedByUser,
             onLikeClick = { viewModel.likeProduct(activityUiState.product.id) },
             onUnLikeClick = { viewModel.unlikeProduct(activityUiState.product.id) },
-            onButtonClick = if (!isPreview) onNavigateToChat else TODO(),
+            onButtonClick = {
+                if (!isPreview) onNavigateToChat()
+                else viewModel.updateShowUploadDialog(true)
+            }
         )
     }
 
-    if (uiState.showDialog) {
+    if (uiState.showDeleteDialog) {
         BasicDialog(
             pinkText = activityUiState.product.title,
             textLine1 = "의",
             text = "판매를 중지하시겠습니까?",
-            onDismiss = { viewModel.updateShowDialog(false) },
+            onDismiss = { viewModel.updateShowDeleteDialog(false) },
             onConfirm = { viewModel.deleteProduct(activityUiState.product.id) }
+        )
+    }
+
+    if (uiState.showUploadDialog) {
+        UploadDialog(
+            productName = activityUiState.uploadProductRequest?.title ?: "",
+            babyName = activityUiState.uploadBabyName,
+            onUpload = {
+                viewModel.uploadProduct(
+                    uploadProductRequest = activityUiState.uploadProductRequest!!,
+                    images = activityUiState.multiPartImages,
+                    isWithMemory = false
+                )
+            },
+            onUploadWithMemory = {
+                viewModel.uploadProduct(
+                    uploadProductRequest = activityUiState.uploadProductRequest!!,
+                    images = activityUiState.multiPartImages,
+                    isWithMemory = true
+                )
+            }
         )
     }
 }

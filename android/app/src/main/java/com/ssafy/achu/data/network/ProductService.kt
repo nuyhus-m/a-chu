@@ -92,6 +92,7 @@ interface ProductService {
     @POST("/goods")
     suspend fun uploadProduct(
         @Part images: List<MultipartBody.Part>,
-        @Part request: UploadProductRequest
+        @Part("request") request: UploadProductRequest
     ): ApiResult<IdResponse>
 }
+

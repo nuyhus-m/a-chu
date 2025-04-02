@@ -13,7 +13,7 @@ import java.io.ByteArrayOutputStream
 
 private const val TAG = "ImageUtil"
 
-fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
+fun uriToMultipart(context: Context, uri: Uri, name: String = "memoryImages"): MultipartBody.Part? {
     val contentResolver = context.contentResolver
 
     // 실제 파일의 MIME 타입 가져오기
@@ -45,5 +45,5 @@ fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
     // 올바른 MIME 타입 적용
     val requestBody = compressedByteArray.toRequestBody(mimeType.toMediaTypeOrNull())
 
-    return MultipartBody.Part.createFormData("memoryImages", fileName, requestBody)
+    return MultipartBody.Part.createFormData(name, fileName, requestBody)
 }

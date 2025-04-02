@@ -26,7 +26,7 @@ sealed interface Route {
     data class MemoryDetail(val memoryId: Int, val babyId: Int) : Route
 
     @Serializable
-    data class MemoryUpload(val memoryId: Int, val babyId: Int) : Route
+    data class MemoryUpload(val memoryId: Int, val babyId: Int, val productName: String) : Route
 
     @Serializable
     data class ProductDetail(val isPreview: Boolean) : Route
