@@ -75,10 +75,12 @@ import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.Constants.DONATION
 import com.ssafy.achu.core.util.Constants.SALE
+import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.ui.ActivityViewModel
 
+private const val TAG = "UploadProductScreen"
 const val maxTitleLength = 20
 const val maxDescriptionLength = 200
 
@@ -108,6 +110,10 @@ fun UploadProductScreen(
         // 5장을 초과하는 이미지를 추가하지 않도록 체크
         if (imageUris.size + uris.size <= 5) {
             imageUris = imageUris + uris
+
+            // 모든 이미지를 멀티파트로 변환
+            val multipartFiles = imageUris.mapNotNull { uri -> uriToMultipart(context, uri) }
+            viewModel.updateSelectedImages(multipartFiles)
         } else {
             Toast.makeText(context, context.getString(R.string.image_max_5), Toast.LENGTH_SHORT)
                 .show()

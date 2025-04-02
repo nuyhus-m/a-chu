@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 
 private const val TAG = "UploadProductViewModel"
 
@@ -96,11 +97,18 @@ class UploadProductViewModel : ViewModel() {
         updateButtonState()
     }
 
+    fun updateSelectedImages(images: List<MultipartBody.Part>) {
+        _uiState.update { currentState ->
+            currentState.copy(selectedImages = images)
+        }
+        updateButtonState()
+    }
+
     private fun updateButtonState() {
         _uiState.update { currentState ->
             currentState.copy(
                 buttonState = currentState.isTitleValid && currentState.isDescriptionValid && currentState.isPriceValid
-                        && currentState.selectedCategory != null && currentState.selectedBaby != null
+                        && currentState.selectedCategory != null && currentState.selectedBaby != null && currentState.selectedImages.isNotEmpty()
             )
         }
     }
