@@ -206,8 +206,14 @@ fun CategoryButtonList(
     initialSelectedIndex: Int
 ) {
     var selectedIndex by remember { mutableIntStateOf(initialSelectedIndex) }
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(Unit) {
+        listState.scrollToItem(initialSelectedIndex)
+    }
 
     LazyRow(
+        state = listState,
         modifier = modifier
             .fillMaxWidth()
             .padding(start = 24.dp),
