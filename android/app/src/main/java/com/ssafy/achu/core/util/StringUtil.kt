@@ -33,10 +33,14 @@ fun formatRelativeTime(dateTimeStr: String): String {
         val nowKorea = ZonedDateTime.now(koreaZoneId)
 
         // 시간 차이 계산 (현재 시간 - 주어진 시간)
-        val secondsDiff = ChronoUnit.SECONDS.between(koreaDateTime, nowKorea)
+        var secondsDiff = ChronoUnit.SECONDS.between(koreaDateTime, nowKorea)
         val minutesDiff = ChronoUnit.MINUTES.between(koreaDateTime, nowKorea)
         val hoursDiff = ChronoUnit.HOURS.between(koreaDateTime, nowKorea)
         val daysDiff = ChronoUnit.DAYS.between(koreaDateTime, nowKorea)
+
+        if (secondsDiff < 0) {
+            secondsDiff = 0
+        }
 
         return when {
             // 1분 이하: n초 전
