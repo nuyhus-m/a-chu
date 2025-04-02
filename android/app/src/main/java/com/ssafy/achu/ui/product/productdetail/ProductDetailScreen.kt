@@ -436,8 +436,8 @@ private fun ProfileInfo(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = if (isSold) stringResource(R.string.sale_complete)
-                else stringResource(R.string.sale),
+                text = if (isSold) stringResource(R.string.sold)
+                else stringResource(R.string.selling),
                 style = AchuTheme.typography.semiBold14PointBlue
             )
         }

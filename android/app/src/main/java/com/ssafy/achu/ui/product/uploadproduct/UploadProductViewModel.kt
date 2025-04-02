@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
+import com.ssafy.achu.core.util.Constants.DONATION
+import com.ssafy.achu.core.util.Constants.SALE
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.baby.BabyResponse
@@ -39,6 +41,29 @@ class UploadProductViewModel : ViewModel() {
                 isTitleValid = title.isNotBlank() && title.length in 2..20
             )
         }
+        updateButtonState()
+    }
+
+    fun updatePrice(price: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                price = price,
+                isPriceValid = price.isNotBlank(),
+                priceCategory = if (price == "0") DONATION else SALE
+            )
+        }
+        updateButtonState()
+    }
+
+    fun updatePriceCategory(priceCategory: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                priceCategory = priceCategory,
+                price = if (priceCategory == DONATION) "0" else currentState.price,
+                isPriceValid = priceCategory == DONATION || currentState.price.isNotBlank()
+            )
+        }
+        updateButtonState()
     }
 
     fun updateDescription(description: String) {
@@ -54,17 +79,29 @@ class UploadProductViewModel : ViewModel() {
                 isDescriptionValid = description.isNotBlank() && description.length in 2..200
             )
         }
+        updateButtonState()
     }
 
     fun updateSelectedCategory(category: CategoryResponse) {
         _uiState.update { currentState ->
             currentState.copy(selectedCategory = category)
         }
+        updateButtonState()
     }
 
     fun updateSelectedBaby(baby: BabyResponse) {
         _uiState.update { currentState ->
             currentState.copy(selectedBaby = baby)
+        }
+        updateButtonState()
+    }
+
+    private fun updateButtonState() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                buttonState = currentState.isTitleValid && currentState.isDescriptionValid && currentState.isPriceValid
+                        && currentState.selectedCategory != null && currentState.selectedBaby != null
+            )
         }
     }
 

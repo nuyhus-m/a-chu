@@ -40,7 +40,8 @@ fun BasicTextField(
     radius: Int = 30,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     readOnly: Boolean = false,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    trailingIcon: @Composable (() -> Unit)? = null
 ) {
     OutlinedTextField(
         value = value,
@@ -64,7 +65,8 @@ fun BasicTextField(
         ),
         keyboardOptions = keyboardOptions,
         readOnly = readOnly,
-        visualTransformation = visualTransformation
+        visualTransformation = visualTransformation,
+        trailingIcon = trailingIcon
     )
 }
 

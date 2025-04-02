@@ -67,14 +67,20 @@ import com.ssafy.achu.R
 import com.ssafy.achu.core.components.CenterTopAppBar
 import com.ssafy.achu.core.components.LabelWithErrorMsg
 import com.ssafy.achu.core.components.PointBlueButton
+import com.ssafy.achu.core.components.PointBlueLineBtn
 import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.Constants.DONATION
+import com.ssafy.achu.core.util.Constants.SALE
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.ui.ActivityViewModel
+
+const val maxTitleLength = 20
+const val maxDescriptionLength = 200
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -169,11 +175,18 @@ fun UploadProductScreen(
             Spacer(modifier = Modifier.height(smallSpace))
             BasicTextField(
                 value = uiState.title,
-                onValueChange = { viewModel.updateTitle(it) },
+                onValueChange = { if (it.length <= maxTitleLength) viewModel.updateTitle(it) },
                 placeholder = stringResource(R.string.writing_title),
                 placeholderColor = LightGray,
                 borderColor = PointBlue,
-                radius = 8
+                radius = 8,
+                trailingIcon = {
+                    Text(
+                        text = "${uiState.title.length}/$maxTitleLength",
+                        style = AchuTheme.typography.regular14.copy(color = PointBlue),
+                        modifier = Modifier.padding(end = 16.dp)
+                    )
+                }
             )
             Spacer(modifier = Modifier.height(space))
 
@@ -191,28 +204,61 @@ fun UploadProductScreen(
             Spacer(modifier = Modifier.height(space))
 
             // 가격
-            Text(
-                text = stringResource(R.string.price),
-                style = AchuTheme.typography.semiBold18
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.trade_type),
+                    style = AchuTheme.typography.semiBold18
+                )
+                Spacer(modifier = Modifier.width(smallSpace))
+                PointBlueLineBtn(
+                    buttonText = stringResource(R.string.sale),
+                    isSelected = uiState.priceCategory == SALE,
+                    onClick = { viewModel.updatePriceCategory(SALE) }
+                )
+                Spacer(modifier = Modifier.width(smallSpace))
+                PointBlueLineBtn(
+                    buttonText = stringResource(R.string.donation),
+                    isSelected = uiState.priceCategory == DONATION,
+                    onClick = { viewModel.updatePriceCategory(DONATION) }
+                )
+            }
             Spacer(modifier = Modifier.height(smallSpace))
             PriceInputField(
-                value = "",
-                onValueChange = {}
+                value = uiState.price,
+                onValueChange = { viewModel.updatePrice(it) },
+                readOnly = uiState.priceCategory == DONATION
             )
             Spacer(modifier = Modifier.height(space))
 
             // 자세한 설명
-            LabelWithErrorMsg(
-                label = stringResource(R.string.detail_description),
-                errorMessage = uiState.descriptionErrorMessage,
-                isBold = true,
-                enabled = uiState.isDescriptionValid
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                LabelWithErrorMsg(
+                    label = stringResource(R.string.detail_description),
+                    errorMessage = uiState.descriptionErrorMessage,
+                    isBold = true,
+                    enabled = uiState.isDescriptionValid
+                )
+                Text(
+                    text = "${uiState.description.length}/$maxDescriptionLength",
+                    style = AchuTheme.typography.regular14.copy(color = PointBlue),
+                    textAlign = TextAlign.End,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 16.dp)
+                )
+            }
             Spacer(modifier = Modifier.height(smallSpace))
             DescriptionInputField(
                 value = uiState.description,
-                onValueChange = { viewModel.updateDescription(it) }
+                onValueChange = {
+                    if (it.length <= maxDescriptionLength)
+                        viewModel.updateDescription(it)
+                }
             )
             Spacer(modifier = Modifier.height(space))
 
@@ -239,7 +285,8 @@ fun UploadProductScreen(
         ) {
             PointBlueButton(
                 buttonText = stringResource(R.string.write_complete),
-                onClick = {}
+                onClick = {},
+                enabled = uiState.buttonState
             )
         }
     }
@@ -389,7 +436,8 @@ fun CategoryDropdown(
 @Composable
 fun PriceInputField(
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    readOnly: Boolean
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
@@ -408,6 +456,7 @@ fun PriceInputField(
             unfocusedBorderColor = PointBlue,
             cursorColor = Color.Black,
         ),
+        readOnly = readOnly,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         leadingIcon = {
             Icon(
