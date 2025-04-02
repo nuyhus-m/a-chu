@@ -2,7 +2,8 @@ package com.ssafy.s12p21d206.achu.api.validation;
 
 public class GoodsDescriptionValidator extends RegexValidator<GoodsDescription> {
 
-  private static final String REGEX = "^[a-zA-Z0-9가-힣\\p{P}\\p{So}\\p{Zs}]{2,200}$";
+  private static final String REGEX =
+      "^[a-zA-Z0-9가-힣\\p{P}\\p{So}\\p{Zs}+`~\\\\\\$\\^<>\\\"']{2,200}$";
 
   @Override
   public boolean isValid(String value, jakarta.validation.ConstraintValidatorContext context) {

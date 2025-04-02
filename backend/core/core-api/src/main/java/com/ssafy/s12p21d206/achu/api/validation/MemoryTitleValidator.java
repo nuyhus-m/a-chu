@@ -2,7 +2,8 @@ package com.ssafy.s12p21d206.achu.api.validation;
 
 public class MemoryTitleValidator extends RegexValidator<MemoryTitle> {
 
-  private static final String REGEX = "^[a-zA-Z0-9가-힣\\p{P}\\p{So}\\p{Zs}]{2,15}$";
+  private static final String REGEX =
+      "^[a-zA-Z0-9가-힣\\p{P}\\p{So}\\p{Zs}+`~\\\\\\$\\^<>\\\"']{2,15}$";
 
   @Override
   public boolean isValid(String value, jakarta.validation.ConstraintValidatorContext context) {
