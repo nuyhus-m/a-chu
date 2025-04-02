@@ -32,4 +32,7 @@ public interface GoodsJpaRepository extends JpaRepository<GoodsEntity, Long> {
       EntityStatus entityStatus);
 
   List<GoodsEntity> findByIdInAndEntityStatus(List<Long> ids, EntityStatus entityStatus);
+
+  List<GoodsEntity> findByUserIdAndEntityStatus(
+      Long userId, EntityStatus entityStatus, Pageable pageable);
 }

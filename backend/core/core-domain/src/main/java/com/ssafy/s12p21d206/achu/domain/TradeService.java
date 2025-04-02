@@ -1,5 +1,7 @@
 package com.ssafy.s12p21d206.achu.domain;
 
+import com.ssafy.s12p21d206.achu.domain.error.CoreErrorType;
+import com.ssafy.s12p21d206.achu.domain.error.CoreException;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -39,7 +41,12 @@ public class TradeService {
 
   public List<Goods> findTradedGoods(
       User user, TradeType tradeType, Long offset, Long limit, SortType sort) {
-    List<Long> goodsIds = tradeReader.findTradedGoodsIds(user, tradeType, offset, limit, sort);
+    List<Long> goodsIds =
+        switch (tradeType) {
+          case SALE -> goodsReader.readSaleGoodsIds(user, offset, limit, sort);
+          case PURCHASE -> tradeReader.findTradedGoodsIds(user, tradeType, offset, limit, sort);
+          default -> throw new CoreException(CoreErrorType.INVALID_TRADE_TYPE);
+        };
     return goodsReader.readGoodsByIds(goodsIds);
   }
 }

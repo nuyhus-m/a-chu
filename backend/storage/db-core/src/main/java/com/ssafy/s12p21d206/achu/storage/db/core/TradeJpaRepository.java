@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface TradeJpaRepository extends JpaRepository<TradeEntity, Long> {
 
   @Query(
-      "SELECT t FROM TradeEntity t where ((:tradeType = 'PURCHASE' AND t.buyerId = :userId) OR (:tradeType = 'SALE' AND t.sellerId = :userId)) AND t.entityStatus = :entityStatus")
+      "SELECT t FROM TradeEntity t where (:tradeType = 'PURCHASE' AND t.buyerId = :userId) AND t.entityStatus = :entityStatus")
   List<TradeEntity> findByUserIdAndEntityStatus(
       Long userId, String tradeType, Pageable pageable, EntityStatus entityStatus);
 }
