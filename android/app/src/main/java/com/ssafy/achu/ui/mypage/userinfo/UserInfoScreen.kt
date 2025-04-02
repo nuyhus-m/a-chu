@@ -34,9 +34,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,22 +53,19 @@ import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.PointBlueFlexibleBtn
 import com.ssafy.achu.core.components.SmallLineBtn
 import com.ssafy.achu.core.components.dialog.BasicDialog
+import com.ssafy.achu.core.components.dialog.PhoneVerificationDialog
 import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatPhoneNumber
 import com.ssafy.achu.ui.ActivityViewModel
 import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
-import kotlin.collections.plus
 
 private const val TAG = "UserInfoScreen 안주현"
 
@@ -91,7 +85,7 @@ fun UserInfoScreen(
             if (isChanged) {
                 viewModel.getUserinfo()
                 Toast.makeText(context, userInfoUiState.toastMessage, Toast.LENGTH_SHORT).show()
-            }else{
+            } else {
                 Toast.makeText(context, userInfoUiState.toastMessage, Toast.LENGTH_SHORT).show()
 
             }
@@ -266,8 +260,8 @@ fun UserInfoScreen(
 
                 Row {
                     PhoneNumberTextField(
-                        value = userInfoUiState.phoneNumber,
-                        placeholder = uiState.user!!.phoneNumber,
+                        value = formatPhoneNumber(userInfoUiState.phoneNumber),
+                        placeholder = formatPhoneNumber(uiState.user!!.phoneNumber),
                         onValueChange = { userInfoViewModel.updatePhoneNumber(it) },
                         pointColor = PointBlue,
                         modifier = Modifier.weight(1f),
@@ -275,6 +269,7 @@ fun UserInfoScreen(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     PointBlueFlexibleBtn("인증", onClick = {
+                        userInfoViewModel.sendPhoneAuth()
 
                     })
                 }
@@ -366,7 +361,22 @@ fun UserInfoScreen(
             onConfirm = { userInfoViewModel.updateDeleteUserDialog(false) }
         )
     }
+
+    if (userInfoUiState.verifyPhoneNumberDialog) {
+        PhoneVerificationDialog(
+            value = userInfoUiState.verifyNumber,
+            onValueChange = { userInfoViewModel.updateVerifyNumber(it) },
+            phoneNumber = formatPhoneNumber(userInfoUiState.phoneNumber),
+            onDismiss = { userInfoViewModel.updateLogoutDialog(false) },
+            onConfirm = { userInfoViewModel.updateLogoutDialog(false)
+                        userInfoViewModel.checkPhoneAuth()},
+            PointBlue
+        )
+
+    }
 }
+
+
 
 
 @RequiresApi(Build.VERSION_CODES.O)

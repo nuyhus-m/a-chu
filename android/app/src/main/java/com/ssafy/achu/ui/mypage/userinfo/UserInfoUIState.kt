@@ -12,6 +12,8 @@ data class UserInfoUIState(
 
     val isPhoneNumberValid: Boolean = true,
     val phoneNumber: String = "",
+    val verifyNumber: String = "",
+    val authCode: String = "",
 
 
     val newNickname: String = "",
@@ -23,6 +25,7 @@ data class UserInfoUIState(
     val showPasswordUpdateDialog: Boolean = false,
     val logoutDialog: Boolean = false,
     val deleteUserDialog: Boolean = false,
+    val verifyPhoneNumberDialog: Boolean = false,
 
 
     val toastMessage: String = "",
