@@ -1,4 +1,4 @@
-package com.ssafy.s12p21d206.achu.chat;
+package com.ssafy.s12p21d206.achu.api.config;
 
 import com.ssafy.s12p21d206.achu.api.controller.support.ApiUserStompArgumentResolver;
 import java.util.List;
