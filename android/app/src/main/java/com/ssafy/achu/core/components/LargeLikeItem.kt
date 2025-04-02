@@ -38,6 +38,7 @@ import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatPrice
 
 @Composable
 fun LargeLikeItem(
@@ -46,7 +47,7 @@ fun LargeLikeItem(
     productLike: () -> Unit,
     productUnlike: () -> Unit,
     productName: String,
-    price: String,
+    price: Int,
     img: Uri
 ) {
 
@@ -140,7 +141,7 @@ fun LargeLikeItem(
                 ) {
 
                     Text(
-                        text = price,
+                        text = formatPrice(price) ,
                         style = AchuTheme.typography.semiBold16Pink,
                         maxLines = 1, // 한 줄만 표시
                         overflow = TextOverflow.Ellipsis, // 넘치는 부분은 "..."으로 표시

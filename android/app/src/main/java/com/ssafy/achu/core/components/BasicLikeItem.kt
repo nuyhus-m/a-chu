@@ -37,6 +37,7 @@ import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatPrice
 
 @Composable
 fun BasicLikeItem(
@@ -45,7 +46,7 @@ fun BasicLikeItem(
     unlikeClicked: () -> Unit,
     productName: String,
     state: String,
-    price: String,
+    price: Int,
     img: String,
 ) {
 
@@ -144,7 +145,7 @@ fun BasicLikeItem(
                 ) {
                     // 가격 텍스트
                     Text(
-                        text = price,
+                        text = formatPrice(price) ,
                         style = AchuTheme.typography.semiBold16Pink,
                         modifier = Modifier
                             .padding(top = 8.dp) // 오른쪽 여백 추가
