@@ -44,4 +44,12 @@ public class ChatRoomEntity extends ChatBaseEntity {
   public static ChatRoomEntity fromNewChatRoom(ChatUser buyer, NewChatRoom newChatRoom) {
     return new ChatRoomEntity(newChatRoom.goodsId(), newChatRoom.seller().id(), buyer.id());
   }
+
+  public Long getSellerId() {
+    return sellerId;
+  }
+
+  public Long getBuyerId() {
+    return buyerId;
+  }
 }

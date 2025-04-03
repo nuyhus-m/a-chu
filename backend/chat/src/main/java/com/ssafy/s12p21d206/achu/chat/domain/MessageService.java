@@ -10,12 +10,17 @@ public class MessageService {
   private final MessageAppender messageAppender;
   private final MessageReader messageReader;
   private final ChatRoomReader chatRoomReader;
+  private final MessageReadHandler messageReadHandler;
 
   public MessageService(
-      MessageAppender messageAppender, MessageReader messageReader, ChatRoomReader chatRoomReader) {
+      MessageAppender messageAppender,
+      MessageReader messageReader,
+      ChatRoomReader chatRoomReader,
+      MessageReadHandler messageReadHandler) {
     this.messageAppender = messageAppender;
     this.messageReader = messageReader;
     this.chatRoomReader = chatRoomReader;
+    this.messageReadHandler = messageReadHandler;
   }
 
   public Message append(ChatUser sender, ChatRoom chatRoom, NewMessage newMessage) {
@@ -29,5 +34,9 @@ public class MessageService {
 
   public List<Message> readLastMessagesIn(List<ChatRoom> chatRooms) {
     return messageReader.readLastMessagesIn(chatRooms);
+  }
+
+  public void updateRead(ChatUser chatUser, Long roomId, Long lastReadMessageId) {
+    messageReadHandler.updateRead(chatUser, roomId, lastReadMessageId);
   }
 }

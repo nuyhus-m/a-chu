@@ -24,4 +24,12 @@ public class ChatController {
         messageService.append(chatApiUser.toChatUser(), roomId, request.toNewMessage());
     return MessageDto.fromMessage(message);
   }
+
+  @SendTo("/read/chat/rooms/{roomId}/messages/read")
+  @MessageMapping("/chat/rooms/{roomId}/messages/read")
+  public LastReadMessageDto handleReadMessage(
+      ChatApiUser chatApiUser, @DestinationVariable Long roomId, ReadMessageRequest request) {
+    messageService.updateRead(chatApiUser.toChatUser(), roomId, request.lastReadMessageId());
+    return new LastReadMessageDto(chatApiUser.id(), request.lastReadMessageId());
+  }
 }

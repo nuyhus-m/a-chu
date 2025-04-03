@@ -13,4 +13,8 @@ public interface ChatRoomRepository {
   List<ChatRoom> readChatRooms(ChatUser viewer);
 
   Optional<ChatRoom> readById(Long chatRoomId);
+
+  boolean isParticipant(Long chatRoomId, ChatUser user);
+
+  void updateRead(ChatUser user, Long roomId, Long lastReadMessageId);
 }

@@ -41,4 +41,24 @@ public class ChatRoomCoreRepository implements ChatRoomRepository {
   public Optional<ChatRoom> readById(Long chatRoomId) {
     return chatRoomJpaRepository.findById(chatRoomId).map(ChatRoomEntity::toChatRoom);
   }
+
+  @Override
+  public boolean isParticipant(Long chatRoomId, ChatUser user) {
+    return chatRoomJpaRepository.existsByIdAndUserId(chatRoomId, user.id());
+  }
+
+  @Override
+  public void updateRead(ChatUser user, Long roomId, Long lastReadMessageId) {
+    Optional<ChatRoomEntity> chatRoomOptional = chatRoomJpaRepository.findById(roomId);
+    if (chatRoomOptional.isEmpty()) {
+      return;
+    }
+
+    ChatRoomEntity chatRoom = chatRoomOptional.get();
+    if (chatRoom.getSellerId().equals(user.id())) {
+      chatRoomJpaRepository.updateSellerLastReadMessageId(roomId, user.id(), lastReadMessageId);
+    } else if (chatRoom.getBuyerId().equals(user.id())) {
+      chatRoomJpaRepository.updateBuyerLastReadMessageId(roomId, user.id(), lastReadMessageId);
+    }
+  }
 }

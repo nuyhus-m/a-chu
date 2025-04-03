@@ -25,4 +25,10 @@ public class ChatRoomValidator {
       throw new ChatException((ChatErrorType.USER_NOT_IN_CHAT_ROOM));
     }
   }
+
+  public void validateParticipant(Long chatRoomId, ChatUser user) {
+    if (!chatRoomRepository.isParticipant(chatRoomId, user)) {
+      throw new ChatException((ChatErrorType.USER_NOT_IN_CHAT_ROOM));
+    }
+  }
 }
