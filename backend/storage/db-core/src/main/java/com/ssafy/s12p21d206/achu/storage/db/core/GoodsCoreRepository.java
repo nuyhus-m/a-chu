@@ -162,7 +162,7 @@ public class GoodsCoreRepository implements GoodsRepository {
 
   @Override
   public boolean existsByIdAndUserId(Long id, Long userId) {
-    return goodsJpaRepository.existsByIdAndUserIdAndEntityStatus(id, userId, EntityStatus.ACTIVE);
+    return goodsJpaRepository.existsByIdAndUserId(id, userId);
   }
 
   @Override
