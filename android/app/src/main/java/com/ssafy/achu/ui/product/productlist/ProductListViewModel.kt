@@ -25,14 +25,14 @@ class ProductListViewModel(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val productList = savedStateHandle.toRoute<BottomNavRoute.ProductList>()
+    private val categoryId = savedStateHandle.toRoute<BottomNavRoute.ProductList>().categoryId
 
     private val _uiState = MutableStateFlow(ProductListUIState())
     val uiState: StateFlow<ProductListUIState> = _uiState.asStateFlow()
 
     init {
         getCategoryList()
-        updateSelectedCategoryId(productList.categoryId)
+        updateSelectedCategoryId(categoryId)
     }
 
     fun updateQuery(query: String) {
@@ -45,6 +45,10 @@ class ProductListViewModel(
 
     fun updateCurrentOffset(offset: Int) {
         _uiState.update { it.copy(currentOffset = offset) }
+    }
+
+    fun updateIsLastPage(isLastPage: Boolean) {
+        _uiState.update { it.copy(isLastPage = isLastPage) }
     }
 
     private fun getCategoryList() {
@@ -68,6 +72,7 @@ class ProductListViewModel(
     }
 
     private fun getProductListByCategory() {
+        if (uiState.value.isLastPage) return
         viewModelScope.launch {
             val offset = uiState.value.currentOffset
             productRepository.getProductListByCategory(
@@ -81,7 +86,8 @@ class ProductListViewModel(
                     _uiState.update { currentState ->
                         currentState.copy(
                             products = if (offset == 0) response.data else currentState.products + response.data,
-                            currentOffset = currentState.currentOffset + response.data.size
+                            currentOffset = currentState.currentOffset + 1,
+                            isLastPage = response.data.size < LIMIT
                         )
                     }
                 }
@@ -94,6 +100,7 @@ class ProductListViewModel(
     }
 
     private fun getProductList() {
+        if (uiState.value.isLastPage) return
         viewModelScope.launch {
             val offset = uiState.value.currentOffset
             productRepository.getProductList(
@@ -106,7 +113,8 @@ class ProductListViewModel(
                     _uiState.update { currentState ->
                         currentState.copy(
                             products = if (offset == 0) response.data else currentState.products + response.data,
-                            currentOffset = currentState.currentOffset + response.data.size
+                            currentOffset = currentState.currentOffset + 1,
+                            isLastPage = response.data.size < LIMIT
                         )
                     }
                 }
@@ -120,6 +128,7 @@ class ProductListViewModel(
     }
 
     private fun searchProductList() {
+        if (uiState.value.isLastPage) return
         viewModelScope.launch {
             val offset = uiState.value.currentOffset
             productRepository.searchProduct(
@@ -133,7 +142,8 @@ class ProductListViewModel(
                     _uiState.update { currentState ->
                         currentState.copy(
                             products = if (offset == 0) response.data else currentState.products + response.data,
-                            currentOffset = currentState.currentOffset + response.data.size
+                            currentOffset = currentState.currentOffset + 1,
+                            isLastPage = response.data.size < LIMIT
                         )
                     }
                 }
@@ -146,6 +156,7 @@ class ProductListViewModel(
     }
 
     private fun searchProductListByCategory() {
+        if (uiState.value.isLastPage) return
         viewModelScope.launch {
             val offset = uiState.value.currentOffset
             productRepository.searchProductByCategory(
@@ -160,7 +171,8 @@ class ProductListViewModel(
                     _uiState.update { currentState ->
                         currentState.copy(
                             products = if (offset == 0) response.data else currentState.products + response.data,
-                            currentOffset = currentState.currentOffset + response.data.size
+                            currentOffset = currentState.currentOffset + 1,
+                            isLastPage = response.data.size < LIMIT
                         )
                     }
                 }

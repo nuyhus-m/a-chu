@@ -1,7 +1,6 @@
 package com.ssafy.achu.ui.product.productlist
 
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -88,6 +87,7 @@ fun ProductListScreen(
     LaunchedEffect(uiState.selectedCategoryId, uiState.query) {
         listState.scrollToItem(0)
         viewModel.updateCurrentOffset(0)
+        viewModel.updateIsLastPage(false)
         viewModel.loadProductList()
     }
 
@@ -243,17 +243,9 @@ fun ProductList(
 
     val lastIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
     val shouldLoadMore = lastIndex > 0 && (lastIndex >= items.size - 5) && items.isNotEmpty()
-    Log.d(
-        TAG,
-        "shouldLoadMore: $shouldLoadMore (Last index: $lastIndex, Items size: ${items.size})"
-    )
 
     LaunchedEffect(key1 = lastIndex) {
         if (shouldLoadMore) {
-            Log.d(
-                TAG,
-                "LOADING MORE ITEMS - Last visible index: $lastIndex, Total items: ${items.size}"
-            )
             onLoadMore()
         }
     }
