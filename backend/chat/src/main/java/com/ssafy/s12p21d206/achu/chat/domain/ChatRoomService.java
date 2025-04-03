@@ -50,4 +50,8 @@ public class ChatRoomService {
             room, profileMap.get(room.seller()), profileMap.get(room.buyer())))
         .collect(Collectors.toList());
   }
+
+  public Long countUnreadMessages(ChatUser user) {
+    return chatRoomReader.countUnreadMessages(user);
+  }
 }

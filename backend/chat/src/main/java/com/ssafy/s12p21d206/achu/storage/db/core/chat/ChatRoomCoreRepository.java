@@ -61,4 +61,9 @@ public class ChatRoomCoreRepository implements ChatRoomRepository {
       chatRoomJpaRepository.updateBuyerLastReadMessageId(roomId, user.id(), lastReadMessageId);
     }
   }
+
+  @Override
+  public Long countUnreadMessages(ChatUser user) {
+    return chatRoomJpaRepository.countUnreadMessagesByUserId(user.id());
+  }
 }

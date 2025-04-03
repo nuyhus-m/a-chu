@@ -17,4 +17,6 @@ public interface ChatRoomRepository {
   boolean isParticipant(Long chatRoomId, ChatUser user);
 
   void updateRead(ChatUser user, Long roomId, Long lastReadMessageId);
+
+  Long countUnreadMessages(ChatUser user);
 }
