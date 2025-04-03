@@ -12,11 +12,16 @@ import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlue
 
 @Composable
-fun LabelWithErrorMsg(label: String, errorMessage: String, enabled: Boolean = false) {
+fun LabelWithErrorMsg(
+    label: String,
+    errorMessage: String,
+    isBold: Boolean = false,
+    enabled: Boolean = false
+) {
     Row {
         Text(
             text = label,
-            style = AchuTheme.typography.regular18
+            style = if (isBold) AchuTheme.typography.semiBold18 else AchuTheme.typography.regular18
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(

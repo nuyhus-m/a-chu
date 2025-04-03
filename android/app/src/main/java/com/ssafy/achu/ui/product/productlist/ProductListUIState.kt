@@ -8,5 +8,6 @@ data class ProductListUIState(
     val categories: List<CategoryResponse> = emptyList(),
     val selectedCategoryId: Int = 0,
     val products: List<ProductResponse> = emptyList(),
-    val currentOffset: Int = 0
+    val currentOffset: Int = 0,
+    val isLastPage: Boolean = false
 )

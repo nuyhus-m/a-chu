@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,8 @@ import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.baby.BabyResponse
+import com.ssafy.achu.data.model.product.ProductDetailResponse
+import com.ssafy.achu.data.model.product.UploadProductRequest
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -18,6 +21,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 
 
 private const val TAG = "ActivityViewModel_안주현"
@@ -99,4 +103,28 @@ class ActivityViewModel : ViewModel() {
                 }
         }
     }
+
+    fun saveProductDetail(productDetailResponse: ProductDetailResponse, imgUris: List<Uri>) {
+        _uiState.update {
+            it.copy(
+                product = productDetailResponse,
+                previewImgUris = imgUris
+            )
+        }
+    }
+
+    fun saveProductInfo(
+        uploadProductRequest: UploadProductRequest,
+        multiPartImages: List<MultipartBody.Part>,
+        babyName: String
+    ) {
+        _uiState.update {
+            it.copy(
+                uploadProductRequest = uploadProductRequest,
+                multiPartImages = multiPartImages,
+                uploadBabyName = babyName
+            )
+        }
+    }
+
 }

@@ -1,7 +1,6 @@
 package com.ssafy.achu.ui.product.productlist
 
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -22,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -87,7 +87,14 @@ fun ProductListScreen(
     LaunchedEffect(uiState.selectedCategoryId, uiState.query) {
         listState.scrollToItem(0)
         viewModel.updateCurrentOffset(0)
+        viewModel.updateIsLastPage(false)
         viewModel.loadProductList()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.toastMessage.collectLatest {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -142,7 +149,9 @@ fun ProductListScreen(
                 items = uiState.products,
                 onLoadMore = { viewModel.loadProductList() },
                 listState = listState,
-                onItemClick = { id -> activityViewModel.getProductDetail(id) }
+                onItemClick = { id -> activityViewModel.getProductDetail(id) },
+                onLikeClick = { id, index -> viewModel.likeProduct(id, index) },
+                onUnLikeClick = { id, index -> viewModel.unlikeProduct(id, index) }
             )
         }
 
@@ -203,8 +212,14 @@ fun CategoryButtonList(
     initialSelectedIndex: Int
 ) {
     var selectedIndex by remember { mutableIntStateOf(initialSelectedIndex) }
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(Unit) {
+        listState.scrollToItem(initialSelectedIndex)
+    }
 
     LazyRow(
+        state = listState,
         modifier = modifier
             .fillMaxWidth()
             .padding(start = 24.dp),
@@ -227,22 +242,16 @@ fun ProductList(
     items: List<ProductResponse>,
     listState: LazyListState,
     onLoadMore: () -> Unit,
-    onItemClick: (Int) -> Unit
+    onItemClick: (Int) -> Unit,
+    onLikeClick: (Int, Int) -> Unit,
+    onUnLikeClick: (Int, Int) -> Unit
 ) {
 
     val lastIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
     val shouldLoadMore = lastIndex > 0 && (lastIndex >= items.size - 5) && items.isNotEmpty()
-    Log.d(
-        TAG,
-        "shouldLoadMore: $shouldLoadMore (Last index: $lastIndex, Items size: ${items.size})"
-    )
 
     LaunchedEffect(key1 = lastIndex) {
         if (shouldLoadMore) {
-            Log.d(
-                TAG,
-                "LOADING MORE ITEMS - Last visible index: $lastIndex, Total items: ${items.size}"
-            )
             onLoadMore()
         }
     }
@@ -250,10 +259,12 @@ fun ProductList(
     LazyColumn(
         state = listState
     ) {
-        items(items) { item ->
+        itemsIndexed(items) { index, item ->
             ProductItem(
                 productResponse = item,
-                onItemClick = { onItemClick(item.id) }
+                onItemClick = { onItemClick(item.id) },
+                onLikeClick = { onLikeClick(item.id, index) },
+                onUnLikeClick = { onUnLikeClick(item.id, index) }
             )
         }
     }
@@ -263,7 +274,9 @@ fun ProductList(
 @Composable
 fun ProductItem(
     productResponse: ProductResponse,
-    onItemClick: () -> Unit
+    onItemClick: () -> Unit,
+    onLikeClick: () -> Unit,
+    onUnLikeClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -343,11 +356,17 @@ fun ProductItem(
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         painter =
-                            if (productResponse.likedByUser)
-                                painterResource(id = R.drawable.ic_favorite)
+                            if (productResponse.likedByUser) painterResource(id = R.drawable.ic_favorite)
                             else painterResource(id = R.drawable.ic_favorite_line),
                         contentDescription = null,
-                        tint = if (productResponse.likedByUser) FontPink else FontGray
+                        tint = if (productResponse.likedByUser) FontPink else FontGray,
+                        modifier = Modifier.clickable(onClick = {
+                            if (productResponse.likedByUser) {
+                                onUnLikeClick()
+                            } else {
+                                onLikeClick()
+                            }
+                        })
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
@@ -391,7 +410,9 @@ fun ProductItemPreview() {
                 price = 5000,
                 title = "미피 인형"
             ),
-            onItemClick = {}
+            onItemClick = {},
+            onLikeClick = {},
+            onUnLikeClick = {}
         )
     }
 }

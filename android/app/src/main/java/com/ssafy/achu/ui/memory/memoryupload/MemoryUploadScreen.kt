@@ -1,13 +1,8 @@
-
 package com.ssafy.achu.ui.memory.memoryupload
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.util.Log
-import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -68,13 +63,9 @@ import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.core.util.compressImage
+import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.ui.memory.memorydetail.PageIndicator
 import kotlinx.coroutines.flow.collectLatest
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.ByteArrayOutputStream
 
 private const val TAG = "MemoryUploadScreen안주현"
 
@@ -101,35 +92,6 @@ fun MemoryUploadScreen(
             Toast.makeText(context, memoryUIState.toastString, Toast.LENGTH_SHORT).show()
             onNavigateToMemoryDetail(memoryUIState.selectedMemory.id, babyId)
         }
-    }
-
-
-    fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
-        val contentResolver = context.contentResolver
-
-        // 실제 파일의 MIME 타입 가져오기
-        val mimeType = contentResolver.getType(uri) ?: return null
-
-        // MIME 타입에 맞는 확장자 추출
-        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
-
-        // 기존 `compressImage` 함수 사용
-        val byteArray = compressImage(uri, context) ?: return null
-
-        if (byteArray.isEmpty()) {
-            Log.e(TAG, "⚠️ 변환된 바이트 배열이 비어있음! 이미지 손실 가능성 있음!")
-            return null
-        }
-
-        Log.d(TAG, "✅ 변환된 바이트 배열 크기: ${byteArray.size}, MIME: $mimeType, 확장자: $extension")
-
-        // 파일명 설정
-        val fileName = "upload_${System.currentTimeMillis()}.$extension"
-
-        // 올바른 MIME 타입 적용
-        val requestBody = byteArray.toRequestBody(mimeType.toMediaTypeOrNull())
-
-        return MultipartBody.Part.createFormData("memoryImages", fileName, requestBody)
     }
 
     val launcher = rememberLauncherForActivityResult(
@@ -416,12 +378,11 @@ fun MemoryUploadScreen(
             }
 
         }
-        if(memoryUIState.loading){
+        if (memoryUIState.loading) {
             LoadingScreen()
         }
     }
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview

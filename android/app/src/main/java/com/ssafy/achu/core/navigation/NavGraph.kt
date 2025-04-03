@@ -13,8 +13,8 @@ import androidx.navigation.toRoute
 import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.chat.chatdetail.ChatScreen
 import com.ssafy.achu.ui.chat.chatlist.ChatListScreen
-import com.ssafy.achu.ui.memory.memorydetail.MemoryDetailScreen
 import com.ssafy.achu.ui.memory.MemoryListScreen
+import com.ssafy.achu.ui.memory.memorydetail.MemoryDetailScreen
 import com.ssafy.achu.ui.memory.memoryupload.MemoryUploadScreen
 import com.ssafy.achu.ui.mypage.baby.BabyDetailScreen
 import com.ssafy.achu.ui.mypage.baby.BabyListScreen
@@ -198,7 +198,11 @@ fun NavGraph(
             MemoryDetailScreen(
                 onNavigateToMemoryUpload = { memoryId, babyId ->
                     navController.navigate(
-                        route = Route.MemoryUpload(memoryId = memoryId, babyId = babyId)
+                        route = Route.MemoryUpload(
+                            memoryId = memoryId,
+                            babyId = babyId,
+                            productName = ""
+                        )
                     ) {
                         popUpTo(navController.currentBackStackEntry?.destination?.route ?: "") {
                             inclusive = true
@@ -211,8 +215,18 @@ fun NavGraph(
         }
         // 중고 거래 관련 화면들
         composable<Route.UploadProduct> {
+            val isModify = it.toRoute<Route.UploadProduct>().isModify
             UploadProductScreen(
-                onBackClick = { navController.popBackStack() }
+                activityViewModel = activityViewModel,
+                isModify = isModify,
+                onBackClick = { navController.popBackStack() },
+                onNavigateToDetail = {
+                    navController.navigate(
+                        route = Route.ProductDetail(
+                            isPreview = true
+                        )
+                    )
+                }
             )
         }
 
@@ -225,12 +239,30 @@ fun NavGraph(
                 onNavigateToUpload = {
                     navController.navigate(
                         route = Route.UploadProduct(
-                            isModify = it
+                            isModify = true
                         )
                     )
                 },
                 onNavigateToChat = { navController.navigate(route = Route.Chat) },
-                onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) }
+                onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) },
+                onNavigateToMemoryUpload = { babyId, productName ->
+                    navController.navigate(
+                        route = Route.MemoryUpload(
+                            memoryId = 0,
+                            babyId = babyId,
+                            productName = productName
+                        )
+                    ) {
+                        popUpTo(BottomNavRoute.ProductList(0))
+                    }
+                },
+                onNavigateToProductList = {
+                    navController.navigate(route = BottomNavRoute.ProductList(0)) {
+                        popUpTo(BottomNavRoute.ProductList(0)) {
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
 
