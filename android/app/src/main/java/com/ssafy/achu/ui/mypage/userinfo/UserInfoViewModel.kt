@@ -273,12 +273,14 @@ class UserInfoViewModel : ViewModel() {
 
 
     fun changePhoneNumber() {
+
+        Log.d(TAG, "changePhoneNumber: ${uiState.value.phoneNumber}")
         viewModelScope.launch {
 
             userRepository.changePhoneNumber(
                 ChangePhoneNumberRequest(
                     phoneNumber = uiState.value.phoneNumber,
-                    phoneVerificationCode = phoneAuthId
+                    verificationCodeId = phoneAuthId
                 )
             )
                 .onSuccess {
@@ -337,6 +339,7 @@ class UserInfoViewModel : ViewModel() {
                             )
                         }
                         _phoneAuthId = response.data.id
+                        Log.d(TAG, "sendPhoneAuth: ${_phoneAuthId}")
                     } else {
                         _uiState.update { currentState ->
                             currentState.copy(
@@ -351,7 +354,7 @@ class UserInfoViewModel : ViewModel() {
                     Log.d(TAG, "sendPhoneAuth error: ${it.message}")
                     _uiState.update { currentState ->
                         currentState.copy(
-                            toastMessage = "전화번호 인증 요청을 실패했습니다."
+                            toastMessage = errorResponse.message
                         )
                     }
                     _isChanged.emit(false)
@@ -366,6 +369,7 @@ class UserInfoViewModel : ViewModel() {
                 id = phoneAuthId,
                 code = uiState.value.verifyNumber
             )
+            Log.d(TAG, "checkPhoneAuth:${phoneAuthId} ")
             userRepository.checkPhoneAuth(checkPhoneAuthRequest)
                 .onSuccess { response ->
                     Log.d(TAG, "confirmDialog: $response")
@@ -375,6 +379,8 @@ class UserInfoViewModel : ViewModel() {
                                 toastMessage = "전화번호 인증에 성공했습니다."
                             )
                         }
+                        Log.d(TAG, "checkPhoneAuth: ${uiState.value.verifyNumber}")
+                        Log.d(TAG, "checkPhoneAuth: ${phoneAuthId}")
                         changePhoneNumber()
                     } else {
                         _uiState.update { currentState ->

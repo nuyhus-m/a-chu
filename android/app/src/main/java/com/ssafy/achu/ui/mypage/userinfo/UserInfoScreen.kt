@@ -59,7 +59,9 @@ import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.compressImage
 import com.ssafy.achu.core.util.formatPhoneNumber
+import com.ssafy.achu.core.util.getRotatedBitmap
 import com.ssafy.achu.ui.ActivityViewModel
 import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -93,24 +95,6 @@ fun UserInfoScreen(
     }
 
 
-
-
-
-    fun compressImage(uri: Uri, context: Context): ByteArray? {
-        val contentResolver = context.contentResolver
-
-        // 파일의 InputStream을 열고 Bitmap으로 변환
-        val inputStream = contentResolver.openInputStream(uri) ?: return null
-        val bitmap = BitmapFactory.decodeStream(inputStream)
-        inputStream.close()
-
-        // 이미지 압축: 품질을 80%로 설정 (0 ~ 100)
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, byteArrayOutputStream)
-
-        // 압축된 이미지의 바이트 배열 반환
-        return byteArrayOutputStream.toByteArray()
-    }
 
     fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
         val contentResolver = context.contentResolver
@@ -272,10 +256,15 @@ fun UserInfoScreen(
 
                         if(userInfoUiState.phoneNumber == ""){
                             Toast.makeText(context, "전화번호 변경 후 인증 요청해주세요", Toast.LENGTH_SHORT).show()
-                        }else if(userInfoUiState.phoneNumber.length != 13){
+                        }else if(userInfoUiState.phoneNumber.length >= 13){
+
+                            Log.d(TAG, "UserInfoScreen: ${userInfoUiState.phoneNumber.length}")
                             Toast.makeText(context, "전화번호를 확인해주세요", Toast.LENGTH_SHORT).show()
+                        }else if(userInfoUiState.phoneNumber.replace("-","") == uiState.user!!.phoneNumber){
+                            Toast.makeText(context, "이미 등록된 전화번호입니다", Toast.LENGTH_SHORT).show()
                         }else{
                             userInfoViewModel.sendPhoneAuth()
+
                         }
                     })
                 }
@@ -373,8 +362,8 @@ fun UserInfoScreen(
             value = userInfoUiState.verifyNumber,
             onValueChange = { userInfoViewModel.updateVerifyNumber(it) },
             phoneNumber = formatPhoneNumber(userInfoUiState.phoneNumber),
-            onDismiss = { userInfoViewModel.updateLogoutDialog(false) },
-            onConfirm = { userInfoViewModel.updateLogoutDialog(false)
+            onDismiss = { userInfoViewModel.updatePhoneNumberDialog(false) },
+            onConfirm = { userInfoViewModel.updatePhoneNumberDialog(false)
                         userInfoViewModel.checkPhoneAuth()},
             PointBlue
         )

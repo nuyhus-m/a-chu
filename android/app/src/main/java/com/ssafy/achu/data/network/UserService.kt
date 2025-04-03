@@ -51,7 +51,7 @@ interface UserService {
     @PATCH("/users/profile-image")
     suspend fun uploadProfileImage(@Part profileImage: MultipartBody.Part): ApiResult<Unit>
 
-    @PATCH("/users/change-phone")
+    @PATCH("/users/phone")
     suspend fun changePhoneNumber(@Body changePhoneNumberRequest: ChangePhoneNumberRequest): ApiResult<Unit>
 
     @PATCH("/users/password")
