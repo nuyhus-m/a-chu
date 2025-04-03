@@ -34,9 +34,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,22 +53,21 @@ import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.PointBlueFlexibleBtn
 import com.ssafy.achu.core.components.SmallLineBtn
 import com.ssafy.achu.core.components.dialog.BasicDialog
+import com.ssafy.achu.core.components.dialog.PhoneVerificationDialog
 import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.compressImage
+import com.ssafy.achu.core.util.formatPhoneNumber
+import com.ssafy.achu.core.util.getRotatedBitmap
 import com.ssafy.achu.ui.ActivityViewModel
 import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
-import kotlin.collections.plus
 
 private const val TAG = "UserInfoScreen 안주현"
 
@@ -91,7 +87,7 @@ fun UserInfoScreen(
             if (isChanged) {
                 viewModel.getUserinfo()
                 Toast.makeText(context, userInfoUiState.toastMessage, Toast.LENGTH_SHORT).show()
-            }else{
+            } else {
                 Toast.makeText(context, userInfoUiState.toastMessage, Toast.LENGTH_SHORT).show()
 
             }
@@ -99,24 +95,6 @@ fun UserInfoScreen(
     }
 
 
-
-
-
-    fun compressImage(uri: Uri, context: Context): ByteArray? {
-        val contentResolver = context.contentResolver
-
-        // 파일의 InputStream을 열고 Bitmap으로 변환
-        val inputStream = contentResolver.openInputStream(uri) ?: return null
-        val bitmap = BitmapFactory.decodeStream(inputStream)
-        inputStream.close()
-
-        // 이미지 압축: 품질을 80%로 설정 (0 ~ 100)
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, byteArrayOutputStream)
-
-        // 압축된 이미지의 바이트 배열 반환
-        return byteArrayOutputStream.toByteArray()
-    }
 
     fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
         val contentResolver = context.contentResolver
@@ -267,7 +245,7 @@ fun UserInfoScreen(
                 Row {
                     PhoneNumberTextField(
                         value = userInfoUiState.phoneNumber,
-                        placeholder = uiState.user!!.phoneNumber,
+                        placeholder = formatPhoneNumber(uiState.user!!.phoneNumber),
                         onValueChange = { userInfoViewModel.updatePhoneNumber(it) },
                         pointColor = PointBlue,
                         modifier = Modifier.weight(1f),
@@ -276,6 +254,18 @@ fun UserInfoScreen(
 
                     PointBlueFlexibleBtn("인증", onClick = {
 
+                        if(userInfoUiState.phoneNumber == ""){
+                            Toast.makeText(context, "전화번호 변경 후 인증 요청해주세요", Toast.LENGTH_SHORT).show()
+                        }else if(userInfoUiState.phoneNumber.length >= 13){
+
+                            Log.d(TAG, "UserInfoScreen: ${userInfoUiState.phoneNumber.length}")
+                            Toast.makeText(context, "전화번호를 확인해주세요", Toast.LENGTH_SHORT).show()
+                        }else if(userInfoUiState.phoneNumber.replace("-","") == uiState.user!!.phoneNumber){
+                            Toast.makeText(context, "이미 등록된 전화번호입니다", Toast.LENGTH_SHORT).show()
+                        }else{
+                            userInfoViewModel.sendPhoneAuth()
+
+                        }
                     })
                 }
 
@@ -366,7 +356,22 @@ fun UserInfoScreen(
             onConfirm = { userInfoViewModel.updateDeleteUserDialog(false) }
         )
     }
+
+    if (userInfoUiState.verifyPhoneNumberDialog) {
+        PhoneVerificationDialog(
+            value = userInfoUiState.verifyNumber,
+            onValueChange = { userInfoViewModel.updateVerifyNumber(it) },
+            phoneNumber = formatPhoneNumber(userInfoUiState.phoneNumber),
+            onDismiss = { userInfoViewModel.updatePhoneNumberDialog(false) },
+            onConfirm = { userInfoViewModel.updatePhoneNumberDialog(false)
+                        userInfoViewModel.checkPhoneAuth()},
+            PointBlue
+        )
+
+    }
 }
+
+
 
 
 @RequiresApi(Build.VERSION_CODES.O)

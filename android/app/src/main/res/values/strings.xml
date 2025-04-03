@@ -47,8 +47,8 @@
     <string name="modify">수정</string>
     <string name="delete">삭제</string>
     <string name="profile">프로필</string>
-    <string name="sale">판매중</string>
-    <string name="sale_complete">판매완료</string>
+    <string name="selling">판매중</string>
+    <string name="sold">판매완료</string>
     <string name="symbol">" · "</string>
     <string name="recommend_title">이런 상품 어떠세요?</string>
     <string name="more">더보기</string>
@@ -58,7 +58,7 @@
     <string name="title">제목</string>
     <string name="writing_title">글 제목</string>
     <string name="category">카테고리</string>
-    <string name="price">가격</string>
+    <string name="trade_type">거래 방식</string>
     <string name="detail_description">자세한 설명</string>
     <string name="baby_question">누가 쓰던 물건인가요?</string>
     <string name="add_img">이미지 추가</string>
@@ -70,6 +70,11 @@
     <string name="upload_preview">업로드 미리보기</string>
     <string name="fail_get_product">데이터를 불러오는데 실패했습니다.</string>
     <string name="free">무료 나눔</string>
+    <string name="image_max_5">사진은 최대 5장까지 업로드 가능합니다.</string>
+    <string name="selected_image">선택된 이미지</string>
+    <string name="first_image">대표사진</string>
+    <string name="sale">판매하기</string>
+    <string name="donation">나눔하기</string>
 
     <!--채팅-->
     <string name="product_img">물건 이미지</string>

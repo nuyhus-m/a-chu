@@ -5,10 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
+import com.ssafy.achu.core.util.Constants
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.auth.ChangePasswordRequest
 import com.ssafy.achu.data.model.auth.ChangePhoneNumberRequest
+import com.ssafy.achu.data.model.auth.CheckPhoneAuthRequest
 import com.ssafy.achu.data.model.auth.NickNameRequest
+import com.ssafy.achu.data.model.auth.PhoneAuthRequest
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -26,6 +29,10 @@ class UserInfoViewModel : ViewModel() {
 
     private val _isChanged = MutableSharedFlow<Boolean>()
     val isChanged: SharedFlow<Boolean> = _isChanged
+
+    private var _phoneAuthId: String = ""
+    private val phoneAuthId: String
+        get() = _phoneAuthId
 
 
     fun updateToastMessage(message: String) {
@@ -57,6 +64,18 @@ class UserInfoViewModel : ViewModel() {
     fun updateDeleteUserDialog(show: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(deleteUserDialog = show)
+        }
+    }
+
+    fun updateVerifyNumber(text: String){
+        _uiState.update { currentState ->
+            currentState.copy(verifyNumber = text)
+        }
+    }
+
+    fun updatePhoneNumberDialog(show: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(verifyPhoneNumberDialog = show)
         }
     }
 
@@ -254,23 +273,25 @@ class UserInfoViewModel : ViewModel() {
 
 
     fun changePhoneNumber() {
+
+        Log.d(TAG, "changePhoneNumber: ${uiState.value.phoneNumber}")
         viewModelScope.launch {
 
             userRepository.changePhoneNumber(
                 ChangePhoneNumberRequest(
                     phoneNumber = uiState.value.phoneNumber,
-                    phoneVerificationCode = ""
+                    verificationCodeId = phoneAuthId
                 )
             )
                 .onSuccess {
                     Log.d(TAG, "changePhoneNumber: ${it}")
-                    _isChanged.emit(true)
                     updateToastMessage("핸드폰번호가 변경되었습니다")
+                    _isChanged.emit(true)
                 }.onFailure {
                     Log.d(TAG, "changePhoneNumber: ${it.message}")
                     mismatchOldPWD()
+                    updateToastMessage("핸드폰번호 변경실패")
                     _isChanged.emit(false)
-                    updateToastMessage("핸드폰번호가 변경실패")
                 }
 
         }
@@ -291,10 +312,99 @@ class UserInfoViewModel : ViewModel() {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "changeProfile: ${errorResponse}")
                 _isChanged.emit(false)
-                updateToastMessage("프로필이 변경실패")
+                updateToastMessage("프로필 변경실패")
 
                 Log.d(TAG, "changeProfile error: ${it.message}")
             }
+        }
+    }
+
+
+
+    fun sendPhoneAuth() {
+
+        viewModelScope.launch {
+
+            val phoneAuthRequest = PhoneAuthRequest(
+                phoneNumber = uiState.value.phoneNumber.replace("-", ""),
+                purpose = "CHANGE_PHONE_NUMBER"
+            )
+            userRepository.sendPhoneAuthRequest(phoneAuthRequest)
+                .onSuccess { response ->
+                    Log.d(TAG, "sendPhoneAuth: $response")
+                    if (response.result == Constants.SUCCESS) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                verifyPhoneNumberDialog = true,
+                            )
+                        }
+                        _phoneAuthId = response.data.id
+                        Log.d(TAG, "sendPhoneAuth: ${_phoneAuthId}")
+                    } else {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                toastMessage = "전화번호 인증 요청을 실패했습니다."
+                            )
+                        }
+                        _isChanged.emit(false)
+                    }
+                }.onFailure {
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "sendPhoneAuth errorResponse: $errorResponse")
+                    Log.d(TAG, "sendPhoneAuth error: ${it.message}")
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            toastMessage = errorResponse.message
+                        )
+                    }
+                    _isChanged.emit(false)
+
+                }
+        }
+    }
+
+    fun checkPhoneAuth() {
+        viewModelScope.launch {
+            val checkPhoneAuthRequest = CheckPhoneAuthRequest(
+                id = phoneAuthId,
+                code = uiState.value.verifyNumber
+            )
+            Log.d(TAG, "checkPhoneAuth:${phoneAuthId} ")
+            userRepository.checkPhoneAuth(checkPhoneAuthRequest)
+                .onSuccess { response ->
+                    Log.d(TAG, "confirmDialog: $response")
+                    if (response.result == Constants.SUCCESS) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                toastMessage = "전화번호 인증에 성공했습니다."
+                            )
+                        }
+                        Log.d(TAG, "checkPhoneAuth: ${uiState.value.verifyNumber}")
+                        Log.d(TAG, "checkPhoneAuth: ${phoneAuthId}")
+                        changePhoneNumber()
+                    } else {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+
+                                toastMessage = "전화번호 인증에 실패했습니다."
+                            )
+                        }
+
+                        Log.d(TAG, "checkPhoneAuth: ${uiState.value.verifyNumber}")
+                        Log.d(TAG, "checkPhoneAuth: ${uiState.value.authCode}")
+                    }
+                }.onFailure {
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "checkPhoneAuth: ${uiState.value.verifyNumber}")
+                    Log.d(TAG, "checkPhoneAuth: ${uiState.value.authCode}")
+                    Log.d(TAG, "confirmDialog errorResponse: $errorResponse")
+                    Log.d(TAG, "confirmDialog error: ${it.message}")
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            toastMessage = "전화번호 인증에 실패했습니다."
+                        )
+                    }
+                }
         }
     }
 

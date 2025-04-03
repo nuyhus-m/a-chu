@@ -1,7 +1,7 @@
 package com.ssafy.achu.data.model.product
 
 data class ProductDetailResponse(
-    val category: Category,
+    val category: CategoryResponse,
     val createdAt: String,
     val description: String,
     val id: Int,

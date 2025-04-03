@@ -12,8 +12,11 @@ import com.ssafy.achu.core.util.Constants.LATEST
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -25,14 +28,17 @@ class ProductListViewModel(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val productList = savedStateHandle.toRoute<BottomNavRoute.ProductList>()
+    private val categoryId = savedStateHandle.toRoute<BottomNavRoute.ProductList>().categoryId
 
     private val _uiState = MutableStateFlow(ProductListUIState())
     val uiState: StateFlow<ProductListUIState> = _uiState.asStateFlow()
 
+    private val _toastMessage = MutableSharedFlow<String>()
+    val toastMessage: SharedFlow<String> = _toastMessage.asSharedFlow()
+
     init {
         getCategoryList()
-        updateSelectedCategoryId(productList.categoryId)
+        updateSelectedCategoryId(categoryId)
     }
 
     fun updateQuery(query: String) {
@@ -47,6 +53,10 @@ class ProductListViewModel(
         _uiState.update { it.copy(currentOffset = offset) }
     }
 
+    fun updateIsLastPage(isLastPage: Boolean) {
+        _uiState.update { it.copy(isLastPage = isLastPage) }
+    }
+
     private fun getCategoryList() {
         viewModelScope.launch {
             productRepository.getCategoryList()
@@ -54,7 +64,7 @@ class ProductListViewModel(
                     Log.d(TAG, "getCategoryList: $response")
                     if (response.result == SUCCESS) {
                         val categories = response.data.toMutableList()
-                        categories.add(0, CategoryResponse(0, "All"))
+                        categories.add(0, CategoryResponse(0, "All", ""))
                         _uiState.update { currentState ->
                             currentState.copy(categories = categories)
                         }
@@ -68,6 +78,7 @@ class ProductListViewModel(
     }
 
     private fun getProductListByCategory() {
+        if (uiState.value.isLastPage) return
         viewModelScope.launch {
             val offset = uiState.value.currentOffset
             productRepository.getProductListByCategory(
@@ -81,7 +92,8 @@ class ProductListViewModel(
                     _uiState.update { currentState ->
                         currentState.copy(
                             products = if (offset == 0) response.data else currentState.products + response.data,
-                            currentOffset = currentState.currentOffset + response.data.size
+                            currentOffset = currentState.currentOffset + 1,
+                            isLastPage = response.data.size < LIMIT
                         )
                     }
                 }
@@ -94,6 +106,7 @@ class ProductListViewModel(
     }
 
     private fun getProductList() {
+        if (uiState.value.isLastPage) return
         viewModelScope.launch {
             val offset = uiState.value.currentOffset
             productRepository.getProductList(
@@ -106,7 +119,8 @@ class ProductListViewModel(
                     _uiState.update { currentState ->
                         currentState.copy(
                             products = if (offset == 0) response.data else currentState.products + response.data,
-                            currentOffset = currentState.currentOffset + response.data.size
+                            currentOffset = currentState.currentOffset + 1,
+                            isLastPage = response.data.size < LIMIT
                         )
                     }
                 }
@@ -120,6 +134,7 @@ class ProductListViewModel(
     }
 
     private fun searchProductList() {
+        if (uiState.value.isLastPage) return
         viewModelScope.launch {
             val offset = uiState.value.currentOffset
             productRepository.searchProduct(
@@ -133,7 +148,8 @@ class ProductListViewModel(
                     _uiState.update { currentState ->
                         currentState.copy(
                             products = if (offset == 0) response.data else currentState.products + response.data,
-                            currentOffset = currentState.currentOffset + response.data.size
+                            currentOffset = currentState.currentOffset + 1,
+                            isLastPage = response.data.size < LIMIT
                         )
                     }
                 }
@@ -146,6 +162,7 @@ class ProductListViewModel(
     }
 
     private fun searchProductListByCategory() {
+        if (uiState.value.isLastPage) return
         viewModelScope.launch {
             val offset = uiState.value.currentOffset
             productRepository.searchProductByCategory(
@@ -160,7 +177,8 @@ class ProductListViewModel(
                     _uiState.update { currentState ->
                         currentState.copy(
                             products = if (offset == 0) response.data else currentState.products + response.data,
-                            currentOffset = currentState.currentOffset + response.data.size
+                            currentOffset = currentState.currentOffset + 1,
+                            isLastPage = response.data.size < LIMIT
                         )
                     }
                 }
@@ -192,6 +210,57 @@ class ProductListViewModel(
             } else {
                 searchProductListByCategory()
             }
+        }
+    }
+
+    fun likeProduct(productId: Int, index: Int) {
+        viewModelScope.launch {
+            productRepository.likeProduct(productId)
+                .onSuccess { response ->
+                    Log.d(TAG, "likeProduct: $response")
+                    if (response.result == SUCCESS) {
+                        updateLikeProductState(index, true)
+                    }
+                }.onFailure {
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "likeProduct errorResponse: $errorResponse")
+                    Log.d(TAG, "likeProduct error: ${it.message}")
+                    _toastMessage.emit(errorResponse.message)
+                }
+        }
+    }
+
+    fun unlikeProduct(productId: Int, index: Int) {
+        viewModelScope.launch {
+            productRepository.unlikeProduct(productId)
+                .onSuccess { response ->
+                    Log.d(TAG, "unlikeProduct: $response")
+                    if (response.result == SUCCESS) {
+                        updateLikeProductState(index, false)
+                    }
+                }.onFailure {
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "unlikeProduct errorResponse: $errorResponse")
+                    Log.d(TAG, "unlikeProduct error: ${it.message}")
+                    _toastMessage.emit(errorResponse.message)
+                }
+        }
+    }
+
+    private fun updateLikeProductState(index: Int, isLiked: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                products = currentState.products.mapIndexed { i, product ->
+                    if (i == index) {
+                        product.copy(
+                            likedByUser = isLiked,
+                            likedUsersCount = if (isLiked) product.likedUsersCount + 1 else product.likedUsersCount - 1
+                        )
+                    } else {
+                        product
+                    }
+                }
+            )
         }
     }
 }

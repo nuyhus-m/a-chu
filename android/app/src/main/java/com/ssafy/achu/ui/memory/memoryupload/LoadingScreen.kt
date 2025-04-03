@@ -1,34 +1,19 @@
 package com.ssafy.achu.ui.memory.memoryupload
 
-import android.R.attr.text
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -36,7 +21,6 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
-import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.NewPink
 import com.ssafy.achu.core.theme.PointPink
 
@@ -80,16 +64,21 @@ fun LoadingScreen(text: String) {
         )
 
 
-
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             Text(
                 text = text,
                 style = AchuTheme.typography.semiBold20,
-                color = NewPink,
+                color = NewPink,)
+
+            Text(
+                text = "추억업로드중...\n잠시만 기다려주세요",
+                style = AchuTheme.typography.semiBold18,
+                color = PointPink,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
         }
@@ -102,4 +91,5 @@ fun PreviewLoadingScreen() {
     AchuTheme {
         LoadingScreen("추억 업로드 중...\n잠시만 기다려 주세요!")
     }
+
 }

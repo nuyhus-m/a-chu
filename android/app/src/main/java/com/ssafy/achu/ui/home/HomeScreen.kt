@@ -1,3 +1,4 @@
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,12 +19,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,14 +42,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
-import com.ssafy.achu.core.navigation.Route
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontGray
@@ -57,6 +64,7 @@ import com.ssafy.achu.ui.home.HomeViewModel
 import com.ssafy.achu.ui.home.homecomponents.BabyDropdown
 import com.ssafy.achu.ui.home.homecomponents.RecommendGrid
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
@@ -66,25 +74,39 @@ fun HomeScreen(
     onNavigateToLikeList: () -> Unit,
     onNavigateToRecommend: () -> Unit,
     onNavigateToBabyList: () -> Unit,
-    onNavigateToProductList: () -> Unit,
+    onNavigateToProductList: (Int) -> Unit,
     viewModel: ActivityViewModel = viewModel(),
     homeViewModel: HomeViewModel = viewModel(),
     onNavigateToProductDetail: () -> Unit,
 ) {
 
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         homeViewModel.getLikeItemList()
+        homeViewModel.getCategoryList()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.getProductSuccess.collectLatest {
+            if (it) {
+                onNavigateToProductDetail()
+            } else {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.fail_get_product), Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     val likeItemList by homeViewModel.likeItemList.collectAsState()
+    val categoryList by homeViewModel.categoryList.collectAsState()
 
     val uiState by viewModel.uiState.collectAsState()
 
 
 
     viewModel.getBabyList()
-
-
 
 
     val imageList = listOf(
@@ -143,7 +165,7 @@ fun HomeScreen(
                     .padding(horizontal = 24.dp),
                 verticalAlignment = Alignment.CenterVertically
 
-                ) {
+            ) {
                 Box(
                     modifier = Modifier
                         .size(66.dp)
@@ -152,9 +174,7 @@ fun HomeScreen(
                 ) {
 
                     val imageUrl = uiState.user!!.profileImageUrl
-                    // URL이 비어 있으면 기본 이미지 리소스를 사용하고, 그렇지 않으면 네트워크 이미지를 로드합니다.
-                    if (imageUrl.isNullOrEmpty()) {
-                        // 기본 이미지를 painter로 설정
+                    if (imageUrl.isEmpty()) {
                         Image(
                             painter = painterResource(id = R.drawable.img_profile_test),
                             contentDescription = "Profile",
@@ -167,7 +187,7 @@ fun HomeScreen(
                     } else {
                         // URL을 통해 이미지를 로드
                         AsyncImage(
-                            model = uiState.selectedBaby!!.imgUrl,
+                            model = imageUrl ,
                             contentDescription = "Profile",
                             modifier = Modifier
                                 .size(60.dp)
@@ -180,8 +200,10 @@ fun HomeScreen(
                     }
                 }
                 Spacer(Modifier.width(16.dp))
-                Column (Modifier.fillMaxHeight(),
-                    verticalArrangement = Arrangement.Center){
+                Column(
+                    Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Text(
                         text = "${uiState.user!!.nickname}님 안녕하세요!",
                         style = AchuTheme.typography.semiBold18,
@@ -267,115 +289,28 @@ fun HomeScreen(
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            CategoryItem(
-                R.drawable.ic_category_clothing,
-                "의류",
-                modifier = Modifier
-                    .weight(1.0f)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
-                        indication = null
-                    ) {
-                        onNavigateToProductList()
-                    })
-            CategoryItem(
-                R.drawable.ic_category_miscellaneous,
-                "잡화",
-                modifier = Modifier
-                    .weight(1.0f)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
-                        indication = null
-                    ) {
-                        onNavigateToProductList()
-                    })
 
-            CategoryItem(
-                R.drawable.ic_category_toys,
-                "장난감",
-                modifier = Modifier
-                    .weight(1.0f)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
-                        indication = null
-                    ) {
-                        onNavigateToProductList()
-                    })
-            CategoryItem(
-                R.drawable.ic_category_maternity,
-                "출산",
-                modifier = Modifier
-                    .weight(1.0f)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
-                        indication = null
-                    ) {
-                        onNavigateToProductList()
-                    })
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(4), // 4개의 열로 고정
+            modifier = Modifier
+                .padding(bottom = 24.dp, start = 16.dp, end = 16.dp)
+                .height(180.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(categoryList) { category ->
+                CategoryItem(
+                    img = category.imgUrl,
+                    categoryTitle = category.name,
+                    modifier = Modifier
+                        .clickable {
+                            onNavigateToProductList(category.id)
+                        }
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-
-            CategoryItem(
-                R.drawable.ic_category_furniture,
-                "가구",
-                modifier = Modifier
-                    .weight(1.0f)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
-                        indication = null
-                    ) {
-                        onNavigateToProductList()
-                    })
-            CategoryItem(
-                R.drawable.ic_category_parenting,
-                "육아",
-                modifier = Modifier
-                    .weight(1.0f)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
-                        indication = null
-                    ) {
-                        onNavigateToProductList()
-                    })
-            CategoryItem(
-                R.drawable.ic_category_indoor,
-                "실내",
-                modifier = Modifier
-                    .weight(1.0f)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
-                        indication = null
-                    ) {
-                        onNavigateToProductList()
-                    })
-            CategoryItem(
-                R.drawable.ic_category_others,
-                "기타",
-                modifier = Modifier
-                    .weight(1.0f)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() }, // 리플 제거
-                        indication = null
-                    ) {
-                        onNavigateToProductList()
-                    })
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
         Column(Modifier.padding(horizontal = 24.dp)) {
 
             Row(
@@ -454,49 +389,95 @@ fun HomeScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            LazyRow(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                itemsIndexed(likeItemList) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
-                    BasicLikeItem(
-                        onClickItem = {
-                            onNavigateToProductDetail()
-                        },
-                        likeCLicked = {
-                            homeViewModel.likeItem(likeItem.id)
-                        },
-                        unlikeClicked = {
-                            homeViewModel.unlikeItem(likeItem.id)
-                        },
-                        productName = likeItem.title,
-                        state = likeItem.tradeStatus,
-                        price = "${ likeItem.price }원",
-                        img = likeItem.imgUrl,
+            if (likeItemList.isNullOrEmpty()) {
+                Column (
+                    Modifier.fillMaxWidth().height(100.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+
+                    Image(
+                        painter = painterResource(id = R.drawable.img_crying_face),
+                        contentDescription = "Crying Face",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(30.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp)) // 아이템 간 간격 추가
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "찜한 상품이 없습니다.",
+                        style = AchuTheme.typography.semiBold18,
+                        lineHeight = 40.sp,
+                        color = FontGray,
+                        textAlign = TextAlign.Center
+                    )
                 }
+            } else {
+
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    // 스크롤 상태를 기억하기 위한 rememberLazyListState 추가
+                    state = rememberLazyListState()
+                ) {
+                    itemsIndexed(likeItemList) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
+                        BasicLikeItem(
+                            onClickItem = {
+                               viewModel.getProductDetail(likeItem.id)
+                            },
+                            likeCLicked = {
+                                homeViewModel.likeItem(likeItem.id)
+                            },
+                            unlikeClicked = {
+                                homeViewModel.unlikeItem(likeItem.id)
+                            },
+                            productName = likeItem.title,
+                            state = likeItem.tradeStatus,
+                            price = likeItem.price,
+                            img = likeItem.imgUrl,
+                        )
+                        Spacer(modifier = Modifier.width(8.dp)) // 아이템 간 간격 추가
+
+                        // 리스트의 끝에 도달하면 추가 데이터 로드
+                        if (index == likeItemList.size - 2) { 
+                            LaunchedEffect(index) {
+                                homeViewModel.loadMoreItems()
+                            }
+                        }
+                    }
+
+                    // 로딩 중일 때 표시할 로딩 인디케이터
+                    item {
+                        if (homeViewModel.isLoading.collectAsState().value) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(24.dp))
+
             }
 
-            Spacer(Modifier.height(24.dp))
-
         }
-
     }
-
 }
 
 @Composable
 fun CategoryItem(
-    img: Int,
+    img: String,
     categoryTitle: String,
     modifier: Modifier
 ) {
+
+    val context = LocalContext.current
+    val resId = context.resources.getIdentifier(img, "drawable", context.packageName)
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = img),
+            painter = painterResource(id = resId),
             contentDescription = "Heart",
         )
         Spacer(modifier = Modifier.height(4.dp))
@@ -517,7 +498,6 @@ fun HomeScreenPreview() {
             onNavigateToBabyList = { },
             onNavigateToProductList = { },
             onNavigateToProductDetail = {
-
             }
         )
     }

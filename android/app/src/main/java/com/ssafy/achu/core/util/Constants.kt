@@ -6,4 +6,6 @@ object Constants {
     const val OLDEST = "OLDEST"
     const val SELLING = "SELLING"
     const val SOLD = "SOLD"
+    const val SALE = "SALE"
+    const val DONATION = "DONATION"
 }
