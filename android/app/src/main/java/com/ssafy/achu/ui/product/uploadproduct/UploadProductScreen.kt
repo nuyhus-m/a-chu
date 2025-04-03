@@ -91,6 +91,7 @@ fun UploadProductScreen(
     modifier: Modifier = Modifier,
     viewModel: UploadProductViewModel = viewModel(),
     activityViewModel: ActivityViewModel,
+    isModify: Boolean,
     onBackClick: () -> Unit,
     onNavigateToDetail: () -> Unit = {}
 ) {
@@ -117,8 +118,19 @@ fun UploadProductScreen(
     }
 
     LaunchedEffect(Unit) {
-        activityUiState.selectedBaby?.let {
-            viewModel.updateSelectedBaby(it)
+        if (isModify) {
+            viewModel.updateTitle(activityUiState.product.title)
+            viewModel.updateDescription(activityUiState.product.description)
+            viewModel.updateSelectedCategory(activityUiState.product.category)
+            viewModel.updatePrice(activityUiState.product.price.toString())
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (!isModify) {
+            activityUiState.selectedBaby?.let {
+                viewModel.updateSelectedBaby(it)
+            }
         }
     }
 
@@ -141,33 +153,35 @@ fun UploadProductScreen(
                 .padding(horizontal = 24.dp)
                 .verticalScroll(scrollState)
         ) {
-            // 이미지 추가
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.height(100.dp)
-            ) {
-                AddImageIcon(
-                    imgNumber = uiState.imgUris.size,
-                    onClick = { launcher.launch("image/*") }
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+            if (!isModify) {
+                // 이미지 추가
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.height(100.dp)
+                ) {
+                    AddImageIcon(
+                        imgNumber = uiState.imgUris.size,
+                        onClick = { launcher.launch("image/*") }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
 
-                LazyRow {
-                    itemsIndexed(uiState.imgUris) { index, uri ->
-                        ImageItem(
-                            uri = uri,
-                            isFirst = index == 0,
-                            onDelete = {
-                                viewModel.updateImageUris(
-                                    uiState.imgUris.toMutableList().apply { removeAt(index) }
-                                )
-                            }
-                        )
+                    LazyRow {
+                        itemsIndexed(uiState.imgUris) { index, uri ->
+                            ImageItem(
+                                uri = uri,
+                                isFirst = index == 0,
+                                onDelete = {
+                                    viewModel.updateImageUris(
+                                        uiState.imgUris.toMutableList().apply { removeAt(index) }
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(space))
+                Spacer(modifier = Modifier.height(space))
+            }
 
             // 제목
             LabelWithErrorMsg(
@@ -266,18 +280,20 @@ fun UploadProductScreen(
             )
             Spacer(modifier = Modifier.height(space))
 
-            // 누가 쓰던 물건인가요?
-            Text(
-                text = stringResource(R.string.baby_question),
-                style = AchuTheme.typography.semiBold18
-            )
-            Spacer(modifier = Modifier.height(smallSpace))
-            BabyDropdown(
-                babyList = activityUiState.babyList,
-                selectedBaby = uiState.selectedBaby?.nickname ?: "",
-                onBabySelected = { viewModel.updateSelectedBaby(it) }
-            )
-            Spacer(modifier = Modifier.height(space))
+            if (!isModify) {
+                // 누가 쓰던 물건인가요?
+                Text(
+                    text = stringResource(R.string.baby_question),
+                    style = AchuTheme.typography.semiBold18
+                )
+                Spacer(modifier = Modifier.height(smallSpace))
+                BabyDropdown(
+                    babyList = activityUiState.babyList,
+                    selectedBaby = uiState.selectedBaby?.nickname ?: "",
+                    onBabySelected = { viewModel.updateSelectedBaby(it) }
+                )
+                Spacer(modifier = Modifier.height(space))
+            }
         }
 
         // 바텀바
@@ -290,22 +306,33 @@ fun UploadProductScreen(
             PointBlueButton(
                 buttonText = stringResource(R.string.write_complete),
                 onClick = {
-                    onNavigateToDetail()
-                    // 모든 이미지를 멀티파트로 변환
-                    val multipartFiles =
-                        uiState.imgUris.mapNotNull { uri -> uriToMultipart(context, uri, "images") }
-                    viewModel.updateSelectedImages(multipartFiles)
-                    Log.d(TAG, "UploadProductScreen: ${viewModel.multipartImages.size}")
-                    val product = viewModel.uiStateToProductDetailResponse(
-                        activityUiState.user?.nickname ?: "",
-                        activityUiState.user?.profileImageUrl ?: ""
-                    )
-                    activityViewModel.saveProductDetail(product, uiState.imgUris)
-                    activityViewModel.saveProductInfo(
-                        uploadProductRequest = viewModel.uiStateToUploadProductRequest(),
-                        multiPartImages = viewModel.multipartImages,
-                        babyName = uiState.selectedBaby?.nickname ?: ""
-                    )
+                    if (!isModify) {
+                        onNavigateToDetail()
+                        // 모든 이미지를 멀티파트로 변환
+                        val multipartFiles =
+                            uiState.imgUris.mapNotNull { uri ->
+                                uriToMultipart(
+                                    context,
+                                    uri,
+                                    "images"
+                                )
+                            }
+                        viewModel.updateSelectedImages(multipartFiles)
+                        Log.d(TAG, "UploadProductScreen: ${viewModel.multipartImages.size}")
+                        val product = viewModel.uiStateToProductDetailResponse(
+                            activityUiState.user?.nickname ?: "",
+                            activityUiState.user?.profileImageUrl ?: ""
+                        )
+                        activityViewModel.saveProductDetail(product, uiState.imgUris)
+                        activityViewModel.saveProductInfo(
+                            uploadProductRequest = viewModel.uiStateToUploadProductRequest(),
+                            multiPartImages = viewModel.multipartImages,
+                            babyName = uiState.selectedBaby?.nickname ?: ""
+                        )
+                    } else {
+                        // 수정 모드
+
+                    }
                 },
                 enabled = uiState.buttonState
             )
@@ -583,6 +610,7 @@ fun UploadProductScreenPreview() {
     AchuTheme {
         UploadProductScreen(
             activityViewModel = viewModel(),
+            isModify = false,
             onBackClick = {}
         )
     }

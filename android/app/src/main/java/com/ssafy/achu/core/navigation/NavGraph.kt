@@ -205,8 +205,10 @@ fun NavGraph(
         }
         // 중고 거래 관련 화면들
         composable<Route.UploadProduct> {
+            val isModify = it.toRoute<Route.UploadProduct>().isModify
             UploadProductScreen(
                 activityViewModel = activityViewModel,
+                isModify = isModify,
                 onBackClick = { navController.popBackStack() },
                 onNavigateToDetail = {
                     navController.navigate(
@@ -227,7 +229,7 @@ fun NavGraph(
                 onNavigateToUpload = {
                     navController.navigate(
                         route = Route.UploadProduct(
-                            isModify = it
+                            isModify = true
                         )
                     )
                 },

@@ -4,10 +4,13 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
+import com.ssafy.achu.core.navigation.Route
 import com.ssafy.achu.core.util.Constants.DONATION
 import com.ssafy.achu.core.util.Constants.SALE
 import com.ssafy.achu.core.util.Constants.SELLING
@@ -29,7 +32,11 @@ import java.time.format.DateTimeFormatter
 
 private const val TAG = "UploadProductViewModel"
 
-class UploadProductViewModel : ViewModel() {
+class UploadProductViewModel(
+    savedStateHandle: SavedStateHandle
+) : ViewModel() {
+
+    private val isModify = savedStateHandle.toRoute<Route.UploadProduct>().isModify
 
     private val _uiState = MutableStateFlow(UploadProductUiState())
     val uiState: StateFlow<UploadProductUiState> = _uiState.asStateFlow()
@@ -65,7 +72,11 @@ class UploadProductViewModel : ViewModel() {
                 isTitleValid = titleRegex.matches(title)
             )
         }
-        updateButtonState()
+        if (isModify) {
+            updateModifyButtonState()
+        } else {
+            updateButtonState()
+        }
     }
 
     fun updatePrice(price: String) {
@@ -76,7 +87,11 @@ class UploadProductViewModel : ViewModel() {
                 priceCategory = if (price == "0") DONATION else SALE
             )
         }
-        updateButtonState()
+        if (isModify) {
+            updateModifyButtonState()
+        } else {
+            updateButtonState()
+        }
     }
 
     fun updatePriceCategory(priceCategory: String) {
@@ -87,7 +102,11 @@ class UploadProductViewModel : ViewModel() {
                 isPriceValid = priceCategory == DONATION || currentState.price.isNotBlank()
             )
         }
-        updateButtonState()
+        if (isModify) {
+            updateModifyButtonState()
+        } else {
+            updateButtonState()
+        }
     }
 
     fun updateDescription(description: String) {
@@ -103,14 +122,22 @@ class UploadProductViewModel : ViewModel() {
                 isDescriptionValid = descriptionRegex.matches(description)
             )
         }
-        updateButtonState()
+        if (isModify) {
+            updateModifyButtonState()
+        } else {
+            updateButtonState()
+        }
     }
 
     fun updateSelectedCategory(category: CategoryResponse) {
         _uiState.update { currentState ->
             currentState.copy(selectedCategory = category)
         }
-        updateButtonState()
+        if (isModify) {
+            updateModifyButtonState()
+        } else {
+            updateButtonState()
+        }
     }
 
     fun updateSelectedBaby(baby: BabyResponse) {
@@ -173,6 +200,15 @@ class UploadProductViewModel : ViewModel() {
             currentState.copy(
                 buttonState = currentState.isTitleValid && currentState.isDescriptionValid && currentState.isPriceValid
                         && currentState.selectedCategory != null && currentState.selectedBaby != null && currentState.imgUris.isNotEmpty()
+            )
+        }
+    }
+
+    private fun updateModifyButtonState() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                buttonState = currentState.isTitleValid && currentState.isDescriptionValid && currentState.isPriceValid
+                        && currentState.selectedCategory != null
             )
         }
     }

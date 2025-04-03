@@ -80,7 +80,7 @@ fun ProductDetailScreen(
     activityViewModel: ActivityViewModel,
     isPreview: Boolean = false,
     onBackClick: () -> Unit,
-    onNavigateToUpload: (Boolean) -> Unit,
+    onNavigateToUpload: () -> Unit,
     onNavigateToChat: () -> Unit,
     onNavigateToRecommend: () -> Unit,
     onNavigateToMemoryUpload: (Int, String) -> Unit,
@@ -147,7 +147,7 @@ fun ProductDetailScreen(
             onBackClick = onBackClick,
             menuFirstText = stringResource(R.string.modify),
             menuSecondText = stringResource(R.string.delete),
-            onMenuFirstItemClick = { onNavigateToUpload(true) },
+            onMenuFirstItemClick = onNavigateToUpload,
             onMenuSecondItemClick = { viewModel.updateShowDeleteDialog(true) },
             isMenuVisible = isSeller && !isSold && !isPreview
         )
