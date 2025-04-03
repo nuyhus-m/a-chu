@@ -152,6 +152,8 @@ class MemoryEditViewModel : ViewModel() {
             }.onFailure {
                 val errorResponse = it.getErrorResponse(ApplicationClass.Companion.retrofit)
                 Log.d(TAG, "updateImage: ${errorResponse}")
+                updateToastString("이미지 업로드 실패!")
+                _isChanged.emit(false)
             }
         }
     }

@@ -68,6 +68,7 @@ import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.compressImage
 import com.ssafy.achu.ui.memory.memorydetail.PageIndicator
 import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -103,7 +104,6 @@ fun MemoryUploadScreen(
     }
 
 
-
     fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
         val contentResolver = context.contentResolver
 
@@ -113,28 +113,21 @@ fun MemoryUploadScreen(
         // MIME 타입에 맞는 확장자 추출
         val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
 
-        // InputStream → Bitmap 변환
-        val inputStream = contentResolver.openInputStream(uri) ?: return null
-        val bitmap = BitmapFactory.decodeStream(inputStream) ?: return null
-        inputStream.close()
+        // 기존 `compressImage` 함수 사용
+        val byteArray = compressImage(uri, context) ?: return null
 
-        // 압축을 위한 ByteArrayOutputStream 생성
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, byteArrayOutputStream)
-        val compressedByteArray = byteArrayOutputStream.toByteArray()
-
-        if (compressedByteArray.isEmpty()) {
-            Log.e(TAG, "⚠️ 압축 후 바이트 배열이 비어있음! 이미지 손실 가능성 있음!")
+        if (byteArray.isEmpty()) {
+            Log.e(TAG, "⚠️ 변환된 바이트 배열이 비어있음! 이미지 손실 가능성 있음!")
             return null
         }
 
-        Log.d(TAG, "✅ 압축된 바이트 배열 크기: ${compressedByteArray.size}, MIME: $mimeType, 확장자: $extension")
+        Log.d(TAG, "✅ 변환된 바이트 배열 크기: ${byteArray.size}, MIME: $mimeType, 확장자: $extension")
 
-        // 파일명을 MIME 타입에 맞게 설정
+        // 파일명 설정
         val fileName = "upload_${System.currentTimeMillis()}.$extension"
 
         // 올바른 MIME 타입 적용
-        val requestBody = compressedByteArray.toRequestBody(mimeType.toMediaTypeOrNull())
+        val requestBody = byteArray.toRequestBody(mimeType.toMediaTypeOrNull())
 
         return MultipartBody.Part.createFormData("memoryImages", fileName, requestBody)
     }

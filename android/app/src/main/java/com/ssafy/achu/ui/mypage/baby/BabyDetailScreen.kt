@@ -65,6 +65,7 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.compressImage
 import com.ssafy.achu.ui.ActivityViewModel
 import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -173,21 +174,7 @@ fun BabyDetailScreen(
     }
 
 
-    fun compressImage(uri: Uri, context: Context): ByteArray? {
-        val contentResolver = context.contentResolver
 
-        // 파일의 InputStream을 열고 Bitmap으로 변환
-        val inputStream = contentResolver.openInputStream(uri) ?: return null
-        val bitmap = BitmapFactory.decodeStream(inputStream)
-        inputStream.close()
-
-        // 이미지 압축: 품질을 80%로 설정 (0 ~ 100)
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, byteArrayOutputStream)
-
-        // 압축된 이미지의 바이트 배열 반환
-        return byteArrayOutputStream.toByteArray()
-    }
 
     fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
         val contentResolver = context.contentResolver
@@ -293,7 +280,7 @@ fun BabyDetailScreen(
 
 
                             // URL이 비어 있으면 기본 이미지 리소스를 사용하고, 그렇지 않으면 네트워크 이미지를 로드합니다.
-                            if (imgUrl.isNullOrEmpty()) {
+                            if (imgUrl.isEmpty()) {
                                 // 기본 이미지를 painter로 설정
                                 Image(
                                     painter = painterResource(id = R.drawable.img_baby_profile),
@@ -378,9 +365,9 @@ fun BabyDetailScreen(
                             .fillMaxWidth(),
                         icon = R.drawable.ic_calendar,
                         onIconClick = {
-                            Log.d(TAG, "BabyDetailScreen: 클릭은된다")
                             showDatePicker("")
-                        }
+                        },
+                        redOnly = true
                     )
                 } else {
                     ClearTextField(
@@ -391,9 +378,9 @@ fun BabyDetailScreen(
                             .fillMaxWidth(),
                         icon = R.drawable.ic_calendar,
                         onIconClick = {
-                            Log.d(TAG, "BabyDetailScreen: 클릭하냐고")
                             showDatePicker(babyUiState.selectedBaby!!.birth)
-                        }
+                        },
+                        redOnly = true
                     )
                 }
 
