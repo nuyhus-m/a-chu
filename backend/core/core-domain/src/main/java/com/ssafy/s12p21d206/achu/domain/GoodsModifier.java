@@ -22,7 +22,7 @@ public class GoodsModifier {
 
   public GoodsDetail modify(User user, Long goodsId, ModifyGoods modifyGoods) {
     goodsValidator.validateExists(goodsId);
-    goodsValidator.validateOwner(user.id(), goodsId);
+    goodsValidator.validateOwner(goodsId, user.id());
     goodsValidator.validateIsSelling(goodsId);
     Goods goods = goodsReader.getGoods(goodsId);
     babyValidator.validateExists(goods.babyId());
@@ -33,7 +33,7 @@ public class GoodsModifier {
   public Goods modifyImages(
       User user, Long goodsId, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
     goodsValidator.validateExists(goodsId);
-    goodsValidator.validateOwner(user.id(), goodsId);
+    goodsValidator.validateOwner(goodsId, user.id());
     goodsValidator.validateIsSelling(goodsId);
     return goodsRepository.modifyImages(goodsId, imageUrlsWithThumbnail);
   }

@@ -14,7 +14,7 @@ public class GoodsDeleter {
 
   public Long delete(User user, Long goodsId) {
     goodsValidator.validateExists(goodsId);
-    goodsValidator.validateOwner(user.id(), goodsId);
+    goodsValidator.validateOwner(goodsId, user.id());
     goodsValidator.validateIsSelling(goodsId);
     return goodsRepository.delete(goodsId);
   }
