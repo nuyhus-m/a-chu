@@ -76,6 +76,7 @@ class ApplicationClass : Application() {
             // 로그캣에 okhttp.OkHttpClient로 검색하면 http 통신 내용을 보여줍니다.
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .addInterceptor(TokenInterceptor())
+            .authenticator(TokenAuthenticator())
             .build()
 
         // 앱이 처음 생성되는 순간, retrofit 인스턴스를 생성
