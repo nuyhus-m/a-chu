@@ -1,4 +1,4 @@
-package com.ssafy.s12p21d206.achu.chat.controller.support;
+package com.ssafy.s12p21d206.achu.chat.controller;
 
 import com.ssafy.s12p21d206.achu.chat.controller.response.ChatApiResponse;
 import com.ssafy.s12p21d206.achu.chat.domain.error.ChatErrorKind;

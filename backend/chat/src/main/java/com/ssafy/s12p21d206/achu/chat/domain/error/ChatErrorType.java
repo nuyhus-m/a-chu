@@ -35,7 +35,11 @@ public enum ChatErrorType {
 
   // 서버 에러 (CE5xxx)
   INTERNAL_SERVER_ERROR(
-      ChatErrorKind.SERVER_ERROR, ChatErrorCode.CE5001, "서버 내부 오류가 발생했습니다.", ChatErrorLevel.ERROR);
+      ChatErrorKind.SERVER_ERROR, ChatErrorCode.CE5001, "서버 내부 오류가 발생했습니다.", ChatErrorLevel.ERROR),
+
+  // 상품 관련 에러 (CE6xxx)
+  GOODS_NOT_FOUND(
+      ChatErrorKind.CLIENT_ERROR, ChatErrorCode.CE6001, "물품을 찾을 수 없습니다.", ChatErrorLevel.ERROR);
 
   private final ChatErrorKind kind;
   private final ChatErrorCode code;

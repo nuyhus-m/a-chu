@@ -18,6 +18,6 @@ public enum ChatErrorCode {
   // 사용자 관련 에러 (CE4xxx)
   CE4001,
 
-  // 서버 에러 (CE5xxx)
+  CE6001, // 서버 에러 (CE5xxx)
   CE5001
 }

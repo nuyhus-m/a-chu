@@ -1,6 +1,5 @@
 package com.ssafy.s12p21d206.achu.storage.db.core;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -22,7 +21,6 @@ public abstract class BaseEntity {
   private Long id;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "entityStatus", columnDefinition = "VARCHAR")
   private EntityStatus entityStatus = EntityStatus.ACTIVE;
 
   @CreationTimestamp

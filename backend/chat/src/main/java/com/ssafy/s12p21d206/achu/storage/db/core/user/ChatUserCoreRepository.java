@@ -1,10 +1,12 @@
-package com.ssafy.s12p21d206.achu.chat.storage.db.core.user;
+package com.ssafy.s12p21d206.achu.storage.db.core.user;
 
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUserProfile;
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUserRepository;
-import com.ssafy.s12p21d206.achu.chat.storage.db.core.support.ChatEntityStatus;
+import com.ssafy.s12p21d206.achu.storage.db.core.support.ChatEntityStatus;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -19,7 +21,20 @@ public class ChatUserCoreRepository implements ChatUserRepository {
   @Override
   public Optional<ChatUserProfile> findProfile(ChatUser user) {
     return chatUserJpaRepository
-        .findByIdAndStatus(user.id(), ChatEntityStatus.ACTIVE)
+        .findByIdAndEntityStatus(user.id(), ChatEntityStatus.ACTIVE)
         .map(ChatUserEntity::toProfile);
+  }
+
+  @Override
+  public boolean exists(ChatUser chatUser) {
+    return chatUserJpaRepository.existsById(chatUser.id());
+  }
+
+  @Override
+  public List<ChatUserProfile> findProfilesIn(Set<ChatUser> chatUsers) {
+    List<Long> userIds = chatUsers.stream().map(ChatUser::id).toList();
+    return chatUserJpaRepository.findByUserIdsIn(userIds).stream()
+        .map(ChatUserEntity::toProfile)
+        .toList();
   }
 }

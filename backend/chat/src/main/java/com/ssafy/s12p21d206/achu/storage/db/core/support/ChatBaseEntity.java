@@ -1,4 +1,4 @@
-package com.ssafy.s12p21d206.achu.chat.storage.db.core.support;
+package com.ssafy.s12p21d206.achu.storage.db.core.support;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

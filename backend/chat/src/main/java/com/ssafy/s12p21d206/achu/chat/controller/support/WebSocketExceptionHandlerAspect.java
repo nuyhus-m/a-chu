@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class WebSocketExceptionHandlerAspect {
 
   // WebSocket destination 상수
-  private static final String DESTINATION_USER_ERRORS = "/user/%d/queue/errors";
+  private static final String DESTINATION_USER_ERRORS = "/users/%d/errors";
 
   private final SimpMessagingTemplate messagingTemplate;
 

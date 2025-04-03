@@ -1,9 +1,8 @@
-package com.ssafy.s12p21d206.achu.chat.storage.db.core.user;
+package com.ssafy.s12p21d206.achu.storage.db.core.user;
 
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUserProfile;
-import com.ssafy.s12p21d206.achu.chat.storage.db.core.support.ChatEntityStatus;
+import com.ssafy.s12p21d206.achu.storage.db.core.support.ChatBaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.Immutable;
 
@@ -14,20 +13,15 @@ import org.hibernate.annotations.Immutable;
 @Entity
 @Immutable
 @Table(name = "`user`")
-public class ChatUserEntity {
-
-  @Id
-  private Long id;
+public class ChatUserEntity extends ChatBaseEntity {
 
   private String nickname;
 
   private String profileImageUrl;
 
-  private ChatEntityStatus status;
-
   protected ChatUserEntity() {}
 
   public ChatUserProfile toProfile() {
-    return ChatUserProfile.of(id, nickname, profileImageUrl);
+    return ChatUserProfile.of(getId(), nickname, profileImageUrl);
   }
 }
