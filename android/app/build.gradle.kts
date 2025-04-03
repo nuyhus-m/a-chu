@@ -90,4 +90,16 @@ dependencies {
 
     // kotlinx-serialization
     implementation(libs.kotlinx.serialization.json)
+<<<<<<< Updated upstream
+=======
+
+    //fcm
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.google.firebase.messaging.ktx)
+
+    //lottie
+    implementation ("com.airbnb.android:lottie-compose:6.1.0")
+
+>>>>>>> Stashed changes
 }

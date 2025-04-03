@@ -422,6 +422,12 @@ fun MemoryUploadScreen(
             }
 
         }
+<<<<<<< Updated upstream
+=======
+        if(memoryUIState.loading){
+            LoadingScreen("추억 업로드 중...\n잠시만 기다려 주세요!")
+        }
+>>>>>>> Stashed changes
     }
 }
 
