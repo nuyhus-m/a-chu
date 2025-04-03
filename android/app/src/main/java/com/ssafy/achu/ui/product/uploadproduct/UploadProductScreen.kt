@@ -80,6 +80,7 @@ import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.ui.ActivityViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 private const val TAG = "UploadProductScreen"
 const val maxTitleLength = 20
@@ -130,6 +131,33 @@ fun UploadProductScreen(
         if (!isModify) {
             activityUiState.selectedBaby?.let {
                 viewModel.updateSelectedBaby(it)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.toastMessage.collectLatest { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.isModifySuccess.collectLatest {
+            if (it) {
+                activityViewModel.getProductDetail(activityUiState.product.id)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        activityViewModel.getProductSuccess.collectLatest {
+            if (it) {
+                onBackClick()
+            } else {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.fail_get_product), Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -330,8 +358,7 @@ fun UploadProductScreen(
                             babyName = uiState.selectedBaby?.nickname ?: ""
                         )
                     } else {
-                        // 수정 모드
-
+                        viewModel.modifyProduct(activityUiState.product.id)
                     }
                 },
                 enabled = uiState.buttonState

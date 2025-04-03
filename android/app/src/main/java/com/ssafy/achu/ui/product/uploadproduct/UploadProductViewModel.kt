@@ -18,11 +18,15 @@ import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
+import com.ssafy.achu.data.model.product.ModifyProductRequest
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.Seller
 import com.ssafy.achu.data.model.product.UploadProductRequest
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -43,6 +47,12 @@ class UploadProductViewModel(
 
     private var _multipartImages = emptyList<MultipartBody.Part>()
     val multipartImages: List<MultipartBody.Part> get() = _multipartImages
+
+    private val _toastMessage = MutableSharedFlow<String>()
+    val toastMessage: SharedFlow<String> = _toastMessage.asSharedFlow()
+
+    private val _isModifySuccess = MutableSharedFlow<Boolean>()
+    val isModifySuccess: SharedFlow<Boolean> = _isModifySuccess.asSharedFlow()
 
     private val titleRegex = Regex("^\\S.{0,18}\\S$")
     private val descriptionRegex = Regex("^\\S.{0,198}\\S$")
@@ -192,6 +202,33 @@ class UploadProductViewModel(
         )
     }
 
+    fun modifyProduct(
+        productId: Int
+    ) {
+        val request = ModifyProductRequest(
+            categoryId = uiState.value.selectedCategory!!.id,
+            description = uiState.value.description,
+            price = uiState.value.price.toInt(),
+            title = uiState.value.title
+        )
+        viewModelScope.launch {
+            productRepository.modifyProduct(
+                productId,
+                request
+            ).onSuccess { response ->
+                Log.d(TAG, "modifyProduct: $response")
+                if (response.result == SUCCESS) {
+                    _toastMessage.emit("수정이 완료되었습니다.")
+                    _isModifySuccess.emit(true)
+                }
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "modifyProduct errorResponse: $errorResponse")
+                Log.d(TAG, "modifyProduct error: ${it.message}")
+                _toastMessage.emit(errorResponse.message)
+            }
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun formatCurrentDate(): String {
