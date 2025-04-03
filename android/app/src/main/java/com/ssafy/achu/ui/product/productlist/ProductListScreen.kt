@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -36,7 +37,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -92,6 +92,12 @@ fun ProductListScreen(
     }
 
     LaunchedEffect(Unit) {
+        viewModel.toastMessage.collectLatest {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(Unit) {
         activityViewModel.getProductSuccess.collectLatest {
             if (it) {
                 onNavigateToProductDetail()
@@ -144,8 +150,8 @@ fun ProductListScreen(
                 onLoadMore = { viewModel.loadProductList() },
                 listState = listState,
                 onItemClick = { id -> activityViewModel.getProductDetail(id) },
-                onLikeClick = { id -> viewModel.likeProduct(id) },
-                onUnLikeClick = { id -> viewModel.unlikeProduct(id) }
+                onLikeClick = { id, index -> viewModel.likeProduct(id, index) },
+                onUnLikeClick = { id, index -> viewModel.unlikeProduct(id, index) }
             )
         }
 
@@ -237,8 +243,8 @@ fun ProductList(
     listState: LazyListState,
     onLoadMore: () -> Unit,
     onItemClick: (Int) -> Unit,
-    onLikeClick: (Int) -> Unit,
-    onUnLikeClick: (Int) -> Unit
+    onLikeClick: (Int, Int) -> Unit,
+    onUnLikeClick: (Int, Int) -> Unit
 ) {
 
     val lastIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
@@ -253,12 +259,12 @@ fun ProductList(
     LazyColumn(
         state = listState
     ) {
-        items(items) { item ->
+        itemsIndexed(items) { index, item ->
             ProductItem(
                 productResponse = item,
                 onItemClick = { onItemClick(item.id) },
-                onLikeClick = { onLikeClick(item.id) },
-                onUnLikeClick = { onUnLikeClick(item.id) }
+                onLikeClick = { onLikeClick(item.id, index) },
+                onUnLikeClick = { onUnLikeClick(item.id, index) }
             )
         }
     }
@@ -272,9 +278,6 @@ fun ProductItem(
     onLikeClick: () -> Unit,
     onUnLikeClick: () -> Unit
 ) {
-    var likedByUser by remember { mutableStateOf(productResponse.likedByUser) }
-    var likedUsersCount by remember { mutableIntStateOf(productResponse.likedUsersCount) }
-
     Column(
         modifier = Modifier
             .padding(horizontal = 24.dp)
@@ -353,24 +356,21 @@ fun ProductItem(
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         painter =
-                            if (likedByUser) painterResource(id = R.drawable.ic_favorite)
+                            if (productResponse.likedByUser) painterResource(id = R.drawable.ic_favorite)
                             else painterResource(id = R.drawable.ic_favorite_line),
                         contentDescription = null,
-                        tint = if (likedByUser) FontPink else FontGray,
+                        tint = if (productResponse.likedByUser) FontPink else FontGray,
                         modifier = Modifier.clickable(onClick = {
-                            if (likedByUser) {
+                            if (productResponse.likedByUser) {
                                 onUnLikeClick()
-                                likedUsersCount--
                             } else {
                                 onLikeClick()
-                                likedUsersCount++
                             }
-                            likedByUser = !likedByUser
                         })
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = likedUsersCount.toString(),
+                        text = productResponse.likedUsersCount.toString(),
                         style = AchuTheme.typography.regular16.copy(color = FontGray)
                     )
                 }

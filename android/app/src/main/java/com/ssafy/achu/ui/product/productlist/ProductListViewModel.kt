@@ -12,8 +12,11 @@ import com.ssafy.achu.core.util.Constants.LATEST
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -29,6 +32,9 @@ class ProductListViewModel(
 
     private val _uiState = MutableStateFlow(ProductListUIState())
     val uiState: StateFlow<ProductListUIState> = _uiState.asStateFlow()
+
+    private val _toastMessage = MutableSharedFlow<String>()
+    val toastMessage: SharedFlow<String> = _toastMessage.asSharedFlow()
 
     init {
         getCategoryList()
@@ -207,29 +213,54 @@ class ProductListViewModel(
         }
     }
 
-    fun likeProduct(productId: Int) {
+    fun likeProduct(productId: Int, index: Int) {
         viewModelScope.launch {
             productRepository.likeProduct(productId)
                 .onSuccess { response ->
                     Log.d(TAG, "likeProduct: $response")
+                    if (response.result == SUCCESS) {
+                        updateLikeProductState(index, true)
+                    }
                 }.onFailure {
                     val errorResponse = it.getErrorResponse(retrofit)
                     Log.d(TAG, "likeProduct errorResponse: $errorResponse")
                     Log.d(TAG, "likeProduct error: ${it.message}")
+                    _toastMessage.emit(errorResponse.message)
                 }
         }
     }
 
-    fun unlikeProduct(productId: Int) {
+    fun unlikeProduct(productId: Int, index: Int) {
         viewModelScope.launch {
             productRepository.unlikeProduct(productId)
                 .onSuccess { response ->
                     Log.d(TAG, "unlikeProduct: $response")
+                    if (response.result == SUCCESS) {
+                        updateLikeProductState(index, false)
+                    }
                 }.onFailure {
                     val errorResponse = it.getErrorResponse(retrofit)
                     Log.d(TAG, "unlikeProduct errorResponse: $errorResponse")
                     Log.d(TAG, "unlikeProduct error: ${it.message}")
+                    _toastMessage.emit(errorResponse.message)
                 }
+        }
+    }
+
+    private fun updateLikeProductState(index: Int, isLiked: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                products = currentState.products.mapIndexed { i, product ->
+                    if (i == index) {
+                        product.copy(
+                            likedByUser = isLiked,
+                            likedUsersCount = if (isLiked) product.likedUsersCount + 1 else product.likedUsersCount - 1
+                        )
+                    } else {
+                        product
+                    }
+                }
+            )
         }
     }
 }
