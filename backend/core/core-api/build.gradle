@@ -10,12 +10,12 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     implementation project(':support:logging')
     implementation project(':support:monitoring')
 
     runtimeOnly project(':auth-user')
+    runtimeOnly project(':chat')
 
     testImplementation project(":tests:api-docs")
 }
