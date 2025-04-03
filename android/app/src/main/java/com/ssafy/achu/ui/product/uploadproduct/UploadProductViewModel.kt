@@ -47,6 +47,7 @@ class UploadProductViewModel(
     private val titleRegex = Regex("^\\S.{0,18}\\S$")
     private val descriptionRegex = Regex("^\\S.{0,198}\\S$")
     private val priceRegex = Regex("^[0-9]*$")
+    private val tempRegex = Regex("""^[^"\\]*$""")
 
     init {
         getCategoryList()
@@ -64,12 +65,14 @@ class UploadProductViewModel(
             currentState.copy(
                 title = title,
                 titleErrorMessage =
-                    if (!titleRegex.matches(title)) {
+                    if (!tempRegex.matches(title)) {
+                        "* \" 또는 \\ 는 포함할 수 없습니다."
+                    } else if (!titleRegex.matches(title)) {
                         "* 앞뒤 공백 없이 2~20자로 입력해주세요."
                     } else {
                         ""
                     },
-                isTitleValid = titleRegex.matches(title)
+                isTitleValid = titleRegex.matches(title) && tempRegex.matches(title)
             )
         }
         if (isModify) {
@@ -114,12 +117,16 @@ class UploadProductViewModel(
             currentState.copy(
                 description = description,
                 descriptionErrorMessage =
-                    if (!descriptionRegex.matches(description)) {
+                    if (!tempRegex.matches(description)) {
+                        "* \" 또는 \\ 는 포함할 수 없습니다."
+                    } else if (!descriptionRegex.matches(description)) {
                         "* 앞뒤 공백 없이 2~200자로 입력해주세요."
                     } else {
                         ""
                     },
-                isDescriptionValid = descriptionRegex.matches(description)
+                isDescriptionValid = descriptionRegex.matches(description) && tempRegex.matches(
+                    description
+                )
             )
         }
         if (isModify) {
