@@ -18,6 +18,8 @@ import com.ssafy.achu.core.components.BottomNavBar
 import com.ssafy.achu.core.navigation.NavGraph
 import com.ssafy.achu.core.theme.AchuTheme
 
+private const val TAG = "MainActivity_안주현"
+
 class MainActivity : ComponentActivity() {
 
     private val activityViewModel: ActivityViewModel by viewModels()
@@ -27,10 +29,19 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         requestFcmToken()
+        val showSelectDialog = intent?.getBooleanExtra("showSelectDialog", false) ?: false
+        Log.d(TAG, "onCreate: intent -> ${intent}")
+        Log.d(TAG, "onCreate: extras -> ${intent?.extras}")
+        Log.d(TAG, "onCreate: showSelectDialog -> $showSelectDialog")
+        if (intent?.extras != null) {
+            for (key in intent.extras!!.keySet()) {
+                Log.d(TAG, "Key: $key, Value: ${intent.extras!!.get(key)}")
+            }
+        }
 
         setContent {
             AchuTheme {
-                AchuApp(viewModel = activityViewModel)
+                AchuApp(viewModel = activityViewModel, showDialog = showSelectDialog)
             }
         }
     }
@@ -55,8 +66,10 @@ fun requestFcmToken() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AchuApp(viewModel: ActivityViewModel) {
+fun AchuApp(viewModel: ActivityViewModel, showDialog: Boolean) {
     val navController = rememberNavController()
+
+    Log.d(TAG, "AchuApp: ${showDialog}")
 
     Scaffold(
         bottomBar = {
@@ -66,7 +79,8 @@ fun AchuApp(viewModel: ActivityViewModel) {
         NavGraph(
             navController,
             modifier = Modifier.padding(innerPadding),
-            activityViewModel = viewModel
+            activityViewModel = viewModel,
+            showSelectDialog = showDialog
         )
     }
 }

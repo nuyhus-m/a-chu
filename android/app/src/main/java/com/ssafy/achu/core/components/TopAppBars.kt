@@ -30,19 +30,21 @@ import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.White
 
 @Composable
-fun BasicTopAppBar(title: String, onBackClick: () -> Unit) {
+fun BasicTopAppBar(title: String, onBackClick: () -> Unit, ableBack: Boolean = true) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = { onBackClick() }) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_back),
-                contentDescription = stringResource(R.string.back),
-                modifier = Modifier.size(28.dp)
-            )
+        if (ableBack) {
+            IconButton(onClick = { onBackClick() }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_back),
+                    contentDescription = stringResource(R.string.back),
+                    modifier = Modifier.size(28.dp)
+                )
+            }
         }
         Text(
             text = title,

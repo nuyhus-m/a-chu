@@ -27,8 +27,8 @@ class BabyViewModel : ViewModel() {
     private val _babyUiState = MutableStateFlow(BabyUIState())
     val babyUiState: StateFlow<BabyUIState> = _babyUiState.asStateFlow()
 
-    private val _isChanged = MutableSharedFlow<Boolean>()
-    val isChanged: SharedFlow<Boolean> = _isChanged
+    private val _isChanged = MutableSharedFlow<String>()
+    val isChanged: SharedFlow<String> = _isChanged
 
     private val _isSelectedBabyChanged = MutableSharedFlow<Boolean>()
     val isSelectedBabyChanged: SharedFlow<Boolean> = _isSelectedBabyChanged
@@ -84,12 +84,12 @@ class BabyViewModel : ViewModel() {
                 Log.d(TAG, "registerBaby: ${it.data}")
                 getBaby(it.data.id)
                 updateToastString("아이 등록 성공!")
-                _isChanged.emit(true)
+                _isChanged.emit("등록")
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "registerBaby: ${errorResponse}")
-                updateToastString("아이 등록 실패!")
-                _isChanged.emit(false)
+                updateToastString(errorResponse.message)
+                _isChanged.emit("등록")
             }
         }
     }
@@ -105,11 +105,11 @@ class BabyViewModel : ViewModel() {
             ).onSuccess {
                 getBaby(babyUiState.value.selectedBaby!!.id)
                 updateToastString("닉네임 변경 성공!")
-                _isChanged.emit(true)
+                _isChanged.emit("")
             }.onFailure {
                 Log.d(TAG, "changeBabyNickname: ${it.message}")
                 updateToastString("닉네임 변경 실패")
-                _isChanged.emit(false)
+                _isChanged.emit("")
             }
         }
 
@@ -126,12 +126,12 @@ class BabyViewModel : ViewModel() {
                 getBaby(babyUiState.value.selectedBaby!!.id)
                 Log.d(TAG, "changeBabyBirth: ${it}")
                 updateToastString("생일 변경 성공!")
-                _isChanged.emit(true)
+                _isChanged.emit("")
 
             }.onFailure {
                 Log.d(TAG, "changeBabyBirth: ${it.message}")
                 updateToastString("생일 변경 실패!")
-                _isChanged.emit(false)
+                _isChanged.emit("")
             }
         }
 
@@ -147,10 +147,10 @@ class BabyViewModel : ViewModel() {
                 )
             ).onSuccess {
                 updateToastString("성별 변경 성공!")
-                _isChanged.emit(true)
+                _isChanged.emit("")
             }.onFailure {
                 updateToastString("성별 변경 실패")
-                _isChanged.emit(false)
+                _isChanged.emit("")
             }
         }
     }
@@ -164,12 +164,12 @@ class BabyViewModel : ViewModel() {
             ).onSuccess { 
                 getBaby(babyUiState.value.selectedBaby!!.id)
                 updateToastString("프로필 변경 성공!")
-                _isChanged.emit(true)
+                _isChanged.emit("")
             }.onFailure {
                 Log.d(TAG, "updateBabyProfile: ${it.message}")
             }.onFailure{
                 updateToastString("프로필 변경 실패")
-                _isChanged.emit(false)
+                _isChanged.emit("")
 
                 Log.d(TAG, "updateBabyProfile: ${it}")
             }
@@ -182,11 +182,11 @@ class BabyViewModel : ViewModel() {
             babyRepository.deleteBaby(babyId).onSuccess {
                 Log.d(TAG, "deleteBaby: ${it.data}")
                 updateToastString("아이정보 삭제 성공")
-                _isChanged.emit(true)
+                _isChanged.emit("삭제")
             }.onFailure {
                 Log.d(TAG, "deleteBaby: ${it.message}")
                 updateToastString("아이정보 삭제 실패")
-                _isChanged.emit(false)
+                _isChanged.emit("삭제")
             }
 
         }

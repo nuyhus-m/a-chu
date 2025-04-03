@@ -64,7 +64,9 @@ fun SignInScreen(
         if (uiState.signInSuccess) {
             val options = ActivityOptions.makeCustomAnimation(context, 0, 0)
             Intent(context, MainActivity::class.java).apply {
+                putExtra("showSelectDialog", true)
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
             }.also { intent ->
                 context.startActivity(intent, options.toBundle())
             }

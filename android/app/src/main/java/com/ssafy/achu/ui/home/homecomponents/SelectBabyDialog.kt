@@ -2,6 +2,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,9 +26,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,22 +41,25 @@ import com.ssafy.achu.core.theme.DisabledPink
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
+import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.data.model.baby.BabyResponse
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectBabyDialog(
     babyList: List<BabyResponse>,
-    onConfirm: (Int) -> Unit // 선택된 아기의 id를 반환하도록 수정
+    onConfirm: (BabyResponse) -> Unit
 ) {
-    var selectedBaby by remember { mutableStateOf("아이를 선택해주세요.") }
-    var selectedBabyId by remember { mutableStateOf<Int?>(null) } // 선택된 아기의 ID 저장
+    var selectedBabyString by remember { mutableStateOf("아이를 선택해주세요.") }
+    var selectedBaby by remember { mutableStateOf<BabyResponse?>(null) }
     var expanded by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f)) // 배경 어두운 오버레이 추가
+            .background(Color.Black.copy(alpha = 0.5f))
             .padding(32.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -92,10 +98,13 @@ fun SelectBabyDialog(
                     color = Color.Black
                 )
 
-                // 🔹 드롭다운 메뉴 추가
                 ExposedDropdownMenuBox(
                     expanded = expanded,
-                    onExpandedChange = { expanded = !expanded }
+                    modifier = Modifier.background(White),
+                    onExpandedChange = {
+                        expanded = !expanded
+                        focusManager.clearFocus()
+                    }
                 ) {
                     Box(
                         modifier = Modifier
@@ -103,14 +112,17 @@ fun SelectBabyDialog(
                             .padding(horizontal = 24.dp)
                             .border(1.dp, FontPink, RoundedCornerShape(30.dp))
                             .clickable { expanded = true }
-                            .padding(vertical = 12.dp, horizontal = 16.dp),
+                            .padding(vertical = 12.dp, horizontal = 16.dp)
+                            .focusRequester(focusRequester)
+                            .focusable()
+                            .menuAnchor(),
                         contentAlignment = Alignment.Center
                     ) {
                         Row {
                             Text(
-                                text = selectedBaby,
+                                text = selectedBabyString,
                                 style = AchuTheme.typography.regular16,
-                                color = FontGray
+                                color = if (selectedBaby != null) FontGray else FontBlack
                             )
                             Spacer(modifier = Modifier.weight(1.0f))
 
@@ -125,17 +137,23 @@ fun SelectBabyDialog(
                         }
                     }
 
-                    // 드롭다운 메뉴
                     ExposedDropdownMenu(
                         expanded = expanded,
-                        onDismissRequest = { expanded = false }
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.background(White)
                     ) {
                         babyList.forEach { baby ->
                             DropdownMenuItem(
-                                text = { Text(baby.nickname) },
+                                modifier = Modifier.background(White),
+                                text = {
+                                    Text(
+                                        baby.nickname,
+                                        style = AchuTheme.typography.regular16
+                                    )
+                                },
                                 onClick = {
-                                    selectedBaby = baby.nickname
-                                    selectedBabyId = baby.id // 선택된 아기의 ID 저장
+                                    selectedBabyString = baby.nickname
+                                    selectedBaby = baby
                                     expanded = false
                                 }
                             )
@@ -145,7 +163,6 @@ fun SelectBabyDialog(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 버튼들
                 Row(
                     modifier = Modifier
                         .width(220.dp)
@@ -162,11 +179,11 @@ fun SelectBabyDialog(
                         modifier = Modifier
                             .weight(1.0f)
                             .background(
-                                if (selectedBabyId != null) FontPink else DisabledPink,
+                                if (selectedBaby != null) FontPink else DisabledPink,
                                 shape = RoundedCornerShape(8.dp)
                             )
-                            .clickable(enabled = selectedBabyId != null) {
-                                selectedBabyId?.let { onConfirm(it) }
+                            .clickable(enabled = selectedBaby != null) {
+                                selectedBaby?.let { onConfirm(it) }
                             }
                             .padding(vertical = 12.dp),
                         contentAlignment = Alignment.Center
@@ -192,7 +209,6 @@ fun BabyDialogPreview() {
                 BabyResponse("2018-10-22", "남", 2, "https://example.com/baby2.png", "아기2"),
                 BabyResponse("2022-01-30", "여", 3, "https://example.com/baby3.png", "아기3")
             ),
-
             onConfirm = {}
         )
     }

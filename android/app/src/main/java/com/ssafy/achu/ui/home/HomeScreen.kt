@@ -1,7 +1,7 @@
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -10,12 +10,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
@@ -25,7 +23,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -50,10 +47,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil3.compose.AsyncImage
 import com.ssafy.achu.R
+import com.ssafy.achu.core.navigation.Route
 import com.ssafy.achu.core.theme.AchuTheme
-import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
@@ -67,7 +63,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-
+private const val TAG = "HomeScreen_안주현"
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -78,12 +74,24 @@ fun HomeScreen(
     viewModel: ActivityViewModel = viewModel(),
     homeViewModel: HomeViewModel = viewModel(),
     onNavigateToProductDetail: () -> Unit,
+    showSelectDialog: Boolean,
+    onNavigateToBabyDetail: () -> Unit,
 ) {
+
+    var showCreateDialog by remember { mutableStateOf(false) }
+    var selectDialog by remember { mutableStateOf(false) }
+
+
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
         homeViewModel.getLikeItemList()
         homeViewModel.getCategoryList()
+    }
+
+    LaunchedEffect(showSelectDialog) {
+        selectDialog = showSelectDialog
+        Log.d("HomeScreen", "showSelectDialog 값 변경: $showSelectDialog -> selectDialog: $selectDialog")
     }
 
     LaunchedEffect(Unit) {
@@ -129,7 +137,9 @@ fun HomeScreen(
     ) {
 
         Spacer(Modifier.height(24.dp))
-        if (uiState.user != null && uiState.babyList.size != 0) {
+        if (uiState.user != null && uiState.babyList.size > 0) {
+
+
             LaunchedEffect(uiState.babyList) {
                 if (uiState.selectedBaby == null) {
                     viewModel.updateSelectedBaby(uiState.babyList[0])
@@ -157,67 +167,32 @@ fun HomeScreen(
                     modifier = Modifier.height(66.dp)
                 )
             }
-        } else if (uiState.babyList.isEmpty()) {
-            Row(
+        } else {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(66.dp)
-                    .padding(horizontal = 24.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .height(66.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(66.dp)
-                        .clip(CircleShape)
-                        .border(1.dp, PointBlue, CircleShape)
-                ) {
-
-                    val imageUrl = uiState.user!!.profileImageUrl
-                    if (imageUrl.isEmpty()) {
-                        Image(
-                            painter = painterResource(id = R.drawable.img_profile_test),
-                            contentDescription = "Profile",
-                            modifier = Modifier
-                                .size(60.dp)
-                                .clip(CircleShape)
-                                .align(Alignment.Center),
-                            contentScale = ContentScale.Crop
-                        )
-                    } else {
-                        // URL을 통해 이미지를 로드
-                        AsyncImage(
-                            model = imageUrl ,
-                            contentDescription = "Profile",
-                            modifier = Modifier
-                                .size(60.dp)
-                                .clip(CircleShape)
-                                .align(Alignment.Center),
-                            contentScale = ContentScale.Crop,
-                            error = painterResource(R.drawable.img_baby_profile)
-                        )
-
-                    }
-                }
-                Spacer(Modifier.width(16.dp))
-                Column(
-                    Modifier.fillMaxHeight(),
-                    verticalArrangement = Arrangement.Center
-                ) {
+                Row {
                     Text(
-                        text = "${uiState.user!!.nickname}님 안녕하세요!",
-                        style = AchuTheme.typography.semiBold18,
-                        color = FontBlack,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-                    Text(
-                        text = "등록된 아이가 없습니다.",
-                        style = AchuTheme.typography.semiBold16,
+                        text = uiState.user!!.nickname,
+                        style = AchuTheme.typography.semiBold20,
                         color = PointBlue,
+                        modifier = Modifier.alignByBaseline()
+                    )
+
+                    Text(
+                        text = "님환영합니다.",
+                        style = AchuTheme.typography.semiBold18,
+                        modifier = Modifier.alignByBaseline()
                     )
                 }
 
             }
+            showCreateDialog = true
         }
 
         Spacer(Modifier.height(16.dp))
@@ -390,11 +365,13 @@ fun HomeScreen(
             Spacer(Modifier.height(24.dp))
 
             if (likeItemList.isNullOrEmpty()) {
-                Column (
-                    Modifier.fillMaxWidth().height(100.dp),
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
-                ){
+                ) {
 
                     Image(
                         painter = painterResource(id = R.drawable.img_crying_face),
@@ -422,7 +399,7 @@ fun HomeScreen(
                     itemsIndexed(likeItemList) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
                         BasicLikeItem(
                             onClickItem = {
-                               viewModel.getProductDetail(likeItem.id)
+                                viewModel.getProductDetail(likeItem.id)
                             },
                             likeCLicked = {
                                 homeViewModel.likeItem(likeItem.id)
@@ -438,7 +415,7 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.width(8.dp)) // 아이템 간 간격 추가
 
                         // 리스트의 끝에 도달하면 추가 데이터 로드
-                        if (index == likeItemList.size - 2) { 
+                        if (index == likeItemList.size - 2) {
                             LaunchedEffect(index) {
                                 homeViewModel.loadMoreItems()
                             }
@@ -459,6 +436,24 @@ fun HomeScreen(
 
             }
 
+        }
+
+    }
+
+    if (showCreateDialog) {
+
+        CreateBabyDialog {
+            onNavigateToBabyDetail()
+            showCreateDialog = false
+        }
+    }
+
+    if (uiState.babyList.size > 1 && selectDialog ) {
+        SelectBabyDialog(
+            babyList = uiState.babyList,
+        ) {
+            viewModel.updateSelectedBaby(it)
+            selectDialog = false
         }
     }
 }
@@ -498,7 +493,9 @@ fun HomeScreenPreview() {
             onNavigateToBabyList = { },
             onNavigateToProductList = { },
             onNavigateToProductDetail = {
-            }
+            },
+            showSelectDialog = true,
+            onNavigateToBabyDetail = {}
         )
     }
 }
