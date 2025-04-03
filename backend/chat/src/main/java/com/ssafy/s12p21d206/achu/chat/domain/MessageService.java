@@ -9,13 +9,21 @@ public class MessageService {
 
   private final MessageAppender messageAppender;
   private final MessageReader messageReader;
+  private final ChatRoomReader chatRoomReader;
 
-  public MessageService(MessageAppender messageAppender, MessageReader messageReader) {
+  public MessageService(
+      MessageAppender messageAppender, MessageReader messageReader, ChatRoomReader chatRoomReader) {
     this.messageAppender = messageAppender;
     this.messageReader = messageReader;
+    this.chatRoomReader = chatRoomReader;
   }
 
   public Message append(ChatUser sender, ChatRoom chatRoom, NewMessage newMessage) {
+    return messageAppender.append(sender, chatRoom, newMessage);
+  }
+
+  public Message append(ChatUser sender, Long chatRoomId, NewMessage newMessage) {
+    ChatRoom chatRoom = chatRoomReader.read(chatRoomId);
     return messageAppender.append(sender, chatRoom, newMessage);
   }
 

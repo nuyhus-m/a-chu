@@ -2,6 +2,7 @@ package com.ssafy.s12p21d206.achu.chat.domain;
 
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
 import java.util.List;
+import java.util.Optional;
 
 public interface ChatRoomRepository {
 
@@ -10,4 +11,6 @@ public interface ChatRoomRepository {
   ChatRoom save(ChatUser buyer, NewChatRoom newChatRoom);
 
   List<ChatRoom> readChatRooms(ChatUser viewer);
+
+  Optional<ChatRoom> readById(Long chatRoomId);
 }
