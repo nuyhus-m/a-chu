@@ -4,6 +4,7 @@ import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.IdResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.LikeProduct
+import com.ssafy.achu.data.model.product.ModifyProductRequest
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.data.model.product.UploadProductRequest
@@ -145,4 +146,14 @@ class ProductRepository {
             productService.uploadProduct(images, request)
         }
     }
+
+    suspend fun modifyProduct(
+        productId: Int,
+        request: ModifyProductRequest
+    ): Result<ApiResult<Unit>> {
+        return runCatching {
+            productService.modifyProduct(productId, request)
+        }
+    }
+
 }

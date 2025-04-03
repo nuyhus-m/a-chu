@@ -4,14 +4,17 @@ import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.IdResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.LikeProduct
+import com.ssafy.achu.data.model.product.ModifyProductRequest
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.data.model.product.UploadProductRequest
 import okhttp3.MultipartBody
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -94,5 +97,11 @@ interface ProductService {
         @Part images: List<MultipartBody.Part>,
         @Part("request") request: UploadProductRequest
     ): ApiResult<IdResponse>
+
+    @PUT("/goods/{goodsId}")
+    suspend fun modifyProduct(
+        @Path("goodsId") productId: Int,
+        @Body request: ModifyProductRequest
+    ): ApiResult<Unit>
 }
 
