@@ -17,7 +17,7 @@ public interface GoodsJpaRepository extends JpaRepository<GoodsEntity, Long> {
 
   Optional<GoodsEntity> findByIdAndEntityStatus(Long id, EntityStatus entityStatus);
 
-  boolean existsByIdAndUserIdAndEntityStatus(Long id, Long userId, EntityStatus entityStatus);
+  boolean existsByIdAndUserId(Long id, Long userId);
 
   boolean existsByIdAndTradeStatus(Long id, TradeStatus tradeStatus);
 

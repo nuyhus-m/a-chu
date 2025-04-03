@@ -398,7 +398,7 @@ class GoodsControllerTest extends RestDocsTest {
   void modifyGoods() {
     given()
         .contentType(ContentType.JSON)
-        .body(new ModifyGoodsRequest("수정된 제목", "수정된 설명", 2000L, 1L, 2L))
+        .body(new ModifyGoodsRequest("수정된 제목", "수정된 설명", 2000L, 1L))
         .put("/goods/{goodsId}", 1L)
         .then()
         .status(HttpStatus.OK)
@@ -411,10 +411,7 @@ class GoodsControllerTest extends RestDocsTest {
                 fieldWithPath("price").type(JsonFieldType.NUMBER).description("수정할 물건 가격"),
                 fieldWithPath("categoryId")
                     .type(JsonFieldType.NUMBER)
-                    .description("수정할 물건 카테고리 id"),
-                fieldWithPath("babyId")
-                    .type(JsonFieldType.NUMBER)
-                    .description("수정할 물건 주인(아기)의 id")),
+                    .description("수정할 물건 카테고리 id")),
             responseFields(fieldWithPath("result")
                 .type(JsonFieldType.STRING)
                 .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));

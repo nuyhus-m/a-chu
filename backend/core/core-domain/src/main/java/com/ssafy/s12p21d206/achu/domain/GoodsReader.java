@@ -34,4 +34,8 @@ public class GoodsReader {
     List<Goods> goodsList = goodsRepository.findByUserId(user, offset, limit, sort);
     return goodsList.stream().map(Goods::id).toList();
   }
+
+  public Goods getGoods(Long goodsId) {
+    return goodsRepository.findById(goodsId);
+  }
 }
