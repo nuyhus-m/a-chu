@@ -57,6 +57,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.ssafy.achu.R
+import com.ssafy.achu.core.LoadingScreen
 import com.ssafy.achu.core.components.CenterTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
 import com.ssafy.achu.core.theme.AchuTheme
