@@ -47,10 +47,10 @@ fun NavGraph(
                 onNavigateToLikeList = { navController.navigate(route = Route.LikeList) },
                 onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) },
                 onNavigateToBabyList = { navController.navigate(route = Route.BabyList) },
-                onNavigateToProductList = {
+                onNavigateToProductList = { categoryId ->
                     navController.navigate(
                         route = BottomNavRoute.ProductList(
-                            categoryId = 0
+                            categoryId = categoryId
                         )
                     )
                 },
@@ -114,6 +114,8 @@ fun NavGraph(
         // 마이페이지 화면들
         composable<Route.TradeList> {
             TradeListScreen(
+
+                activityViewModel = activityViewModel,
                 onNavigateToProductDetail = {
                     navController.navigate(
                         route = Route.ProductDetail(
@@ -125,6 +127,7 @@ fun NavGraph(
         }
         composable<Route.LikeList> {
             LikeItemListScreen(
+                activityViewModel = activityViewModel,
                 onNavigateToProductDetail = {
                     navController.navigate(
                         route = Route.ProductDetail(
@@ -136,9 +139,16 @@ fun NavGraph(
         }
         composable<Route.RecommendList> {
             RecommendItemScreen(
-                viewModel = activityViewModel,
+                activityViewModel = activityViewModel,
+                onNavigateToProductDetail = {
+                    navController.navigate(
+                        route = Route.ProductDetail(
+                            isPreview = false
+                        )
+                    )
+                }
 
-                )
+            )
         }
 
         composable<Route.UserInfo> {
@@ -176,7 +186,8 @@ fun NavGraph(
                     ) {
                         popUpTo(navController.currentBackStackEntry?.destination?.route ?: "") {
                             inclusive = true
-                        }                    }
+                        }
+                    }
                 },
                 memoryId = it.arguments?.getInt("memoryId") ?: 0,
                 babyId = it.arguments?.getInt("babyId") ?: 0,
@@ -191,7 +202,8 @@ fun NavGraph(
                     ) {
                         popUpTo(navController.currentBackStackEntry?.destination?.route ?: "") {
                             inclusive = true
-                        }                    }
+                        }
+                    }
                 },
                 memoryId = it.arguments?.getInt("memoryId") ?: 0,
                 babyId = it.arguments?.getInt("babyId") ?: 0,

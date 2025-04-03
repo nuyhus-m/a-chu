@@ -28,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -46,6 +47,7 @@ import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.LightGray
+import com.ssafy.achu.core.theme.LightPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import kotlinx.coroutines.flow.collectLatest
@@ -146,14 +148,21 @@ fun MemoryDetailScreen(
                     .height(350.dp)
             ) { page ->
 
-                Log.d(TAG, "MemoryDetailScreen: ${memoryUIState.selectedMemory.imgUrls}")
-                AsyncImage(
-                    model = memoryUIState.selectedMemory.imgUrls[page],
-                    contentDescription = "Memory Image",
-                    modifier = Modifier.fillMaxSize(),
-                    alignment = Alignment.Center,
-                    contentScale = ContentScale.Crop
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = LightPink), // 기본 배경 설정
+                    contentAlignment = Alignment.Center // 가운데 정렬
+                ) {
+                    AsyncImage(
+                        model = memoryUIState.selectedMemory.imgUrls[page],
+                        contentDescription = "Memory Image",
+                        modifier = Modifier.fillMaxSize(),
+                        alignment = Alignment.Center,
+                        contentScale = ContentScale.Crop,
+                        placeholder = ColorPainter(LightPink) // 로딩 중일 때 배경 유지
+                    )
+                }
             }
 
             PageIndicator(

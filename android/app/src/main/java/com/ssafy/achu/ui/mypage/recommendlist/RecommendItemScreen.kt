@@ -1,6 +1,7 @@
 package com.ssafy.achu.ui.mypage.recommendlist
 
 import BasicRecommendItem
+import android.widget.Toast
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -32,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,10 +50,27 @@ import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.ui.ActivityViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun RecommendItemScreen(viewModel: ActivityViewModel) {
-    val uiState = viewModel.uiState.collectAsState()
+fun RecommendItemScreen(
+    activityViewModel: ActivityViewModel = viewModel(),
+    onNavigateToProductDetail: () -> Unit
+) {
+    val uiState = activityViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        activityViewModel.getProductSuccess.collectLatest {
+            if (it) {
+                onNavigateToProductDetail()
+            } else {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.fail_get_product), Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
 
     val likeItemList = remember {
         mutableListOf(
@@ -92,7 +112,10 @@ fun RecommendItemScreen(viewModel: ActivityViewModel) {
                     modifier = Modifier.fillMaxSize() // LazyColumn 크기 설정
                 ) {
                     itemsIndexed(uiState.value.babyList) { index, babyInfo ->
-                        BabyListItem(babyInfo, likeItemList) // BabyListItem을 LazyColumn 내에 추가
+                        BabyListItem(
+                            babyInfo,
+                            likeItemList,
+                            { activityViewModel.getProductDetail(1) }) // BabyListItem을 LazyColumn 내에 추가
                     }
                 }
 
@@ -107,7 +130,7 @@ fun RecommendItemScreen(viewModel: ActivityViewModel) {
 
 
 @Composable
-fun BabyListItem(babyInfo: BabyResponse, list: List<LikeItem2>) {
+fun BabyListItem(babyInfo: BabyResponse, list: List<LikeItem2>, onClick: () -> Unit) {
     val birthTextColor = when (babyInfo.gender) {
         "MALE" -> {
             PointBlue
@@ -160,7 +183,7 @@ fun BabyListItem(babyInfo: BabyResponse, list: List<LikeItem2>) {
                     )
 
                     // URL이 비어 있으면 기본 이미지 리소스를 사용하고, 그렇지 않으면 네트워크 이미지를 로드합니다.
-                    if (imageUrl.isEmpty()) {
+                    if (imageUrl.isNullOrEmpty()) {
                         // 기본 이미지를 painter로 설정
                         Image(
                             painter = painterResource(id = R.drawable.img_baby_profile),
@@ -220,7 +243,9 @@ fun BabyListItem(babyInfo: BabyResponse, list: List<LikeItem2>) {
                 itemsIndexed(list) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
                     BasicRecommendItem(
                         isLiked = likeItem.like,
-                        onClickItem = { }, // 아이템 전체 클릭 시 동작
+                        onClickItem = {
+                            onClick
+                        }, // 아이템 전체 클릭 시 동작
                         onClickHeart = { }, // 하트 클릭 시 동작
                         productName = likeItem.productName,
                         state = likeItem.sate,
@@ -239,7 +264,9 @@ fun BabyListItem(babyInfo: BabyResponse, list: List<LikeItem2>) {
 @Composable
 fun RecommendItemScreenPreview() {
     AchuTheme {
-        RecommendItemScreen(viewModel())
+        RecommendItemScreen(viewModel()) {
+
+        }
 //        BabyListItem(
 //            BabyInfo(
 //                profileImg = R.drawable.img_baby_profile,
