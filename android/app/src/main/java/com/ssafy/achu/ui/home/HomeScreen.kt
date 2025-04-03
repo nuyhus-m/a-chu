@@ -71,14 +71,13 @@ fun HomeScreen(
     onNavigateToRecommend: () -> Unit,
     onNavigateToBabyList: () -> Unit,
     onNavigateToProductList: (Int) -> Unit,
-    viewModel: ActivityViewModel = viewModel(),
+    viewModel: ActivityViewModel,
     homeViewModel: HomeViewModel = viewModel(),
     onNavigateToProductDetail: () -> Unit,
     showSelectDialog: Boolean,
     onNavigateToBabyDetail: () -> Unit,
 ) {
 
-    var showCreateDialog by remember { mutableStateOf(false) }
     var selectDialog by remember { mutableStateOf(false) }
 
 
@@ -192,7 +191,7 @@ fun HomeScreen(
                 }
 
             }
-            showCreateDialog = true
+            viewModel.updateShowCreateDialog(true)
         }
 
         Spacer(Modifier.height(16.dp))
@@ -440,11 +439,11 @@ fun HomeScreen(
 
     }
 
-    if (showCreateDialog) {
+    if (uiState.showCreateDialog) {
 
         CreateBabyDialog {
+            viewModel.updateShowCreateDialog(false)
             onNavigateToBabyDetail()
-            showCreateDialog = false
         }
     }
 
@@ -495,7 +494,8 @@ fun HomeScreenPreview() {
             onNavigateToProductDetail = {
             },
             showSelectDialog = true,
-            onNavigateToBabyDetail = {}
+            onNavigateToBabyDetail = {},
+            viewModel = viewModel()
         )
     }
 }

@@ -162,13 +162,14 @@ fun BabyDetailScreen(
             viewModel.getBabyList()
             Toast.makeText(context, babyUiState.toastString, Toast.LENGTH_SHORT).show()
 
-            if (isChanged == "등록" && babyId == -1) {
-                backPressedDispatcher?.onBackPressed()
-            }else if(isChanged =="삭제"){
-                backPressedDispatcher?.onBackPressed()
+                if (isChanged == "등록" && babyId == -1) {
+                    backPressedDispatcher?.onBackPressed()
+                }else if(isChanged =="삭제"){
+                    backPressedDispatcher?.onBackPressed()
 
+                }
             }
-        }
+        
     }
 
     LaunchedEffect(Unit) {
@@ -427,7 +428,13 @@ fun BabyDetailScreen(
                     })
                 } else {
                     PointPinkBtn("아이삭제", onClick = {
-                        babyViewModel.deleteBaby(babyUiState.selectedBaby!!.id)
+                        if (uiState.babyList.size>0){
+                            babyViewModel.deleteBaby(babyUiState.selectedBaby!!.id)
+
+                        }else{
+                            Toast.makeText(context,"이용을 위해 한명 이상의 아이 정보가 필요합니다." , Toast.LENGTH_SHORT).show()
+
+                        }
 
                     })
                 }
