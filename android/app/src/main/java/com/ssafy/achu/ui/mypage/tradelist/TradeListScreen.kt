@@ -75,14 +75,15 @@ fun TradeListScreen(
     }
 
     LaunchedEffect(Unit) {
+        activityViewModel.errorMessage.collectLatest {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(Unit) {
         activityViewModel.getProductSuccess.collectLatest {
             if (it) {
                 onNavigateToProductDetail()
-            } else {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.fail_get_product), Toast.LENGTH_SHORT
-                ).show()
             }
         }
     }
@@ -243,7 +244,7 @@ fun TradeListScreen(
                                     productName = productItem.title,
                                     price = formatPrice(productItem.price),
                                     onClick = {
-                                       activityViewModel.getProductDetail(productItem.id)
+                                        activityViewModel.getProductDetail(productItem.id)
                                     },
 
                                     )

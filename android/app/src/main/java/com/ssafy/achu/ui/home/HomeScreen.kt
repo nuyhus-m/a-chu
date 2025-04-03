@@ -87,14 +87,15 @@ fun HomeScreen(
     }
 
     LaunchedEffect(Unit) {
+        viewModel.errorMessage.collectLatest {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(Unit) {
         viewModel.getProductSuccess.collectLatest {
             if (it) {
                 onNavigateToProductDetail()
-            } else {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.fail_get_product), Toast.LENGTH_SHORT
-                ).show()
             }
         }
     }
@@ -187,7 +188,7 @@ fun HomeScreen(
                     } else {
                         // URL을 통해 이미지를 로드
                         AsyncImage(
-                            model = imageUrl ,
+                            model = imageUrl,
                             contentDescription = "Profile",
                             modifier = Modifier
                                 .size(60.dp)
@@ -390,11 +391,13 @@ fun HomeScreen(
             Spacer(Modifier.height(24.dp))
 
             if (likeItemList.isNullOrEmpty()) {
-                Column (
-                    Modifier.fillMaxWidth().height(100.dp),
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
-                ){
+                ) {
 
                     Image(
                         painter = painterResource(id = R.drawable.img_crying_face),
@@ -422,7 +425,7 @@ fun HomeScreen(
                     itemsIndexed(likeItemList) { index, likeItem -> // 인덱스와 아이템을 동시에 전달
                         BasicLikeItem(
                             onClickItem = {
-                               viewModel.getProductDetail(likeItem.id)
+                                viewModel.getProductDetail(likeItem.id)
                             },
                             likeCLicked = {
                                 homeViewModel.likeItem(likeItem.id)
@@ -438,7 +441,7 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.width(8.dp)) // 아이템 간 간격 추가
 
                         // 리스트의 끝에 도달하면 추가 데이터 로드
-                        if (index == likeItemList.size - 2) { 
+                        if (index == likeItemList.size - 2) {
                             LaunchedEffect(index) {
                                 homeViewModel.loadMoreItems()
                             }
