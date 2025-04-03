@@ -121,7 +121,8 @@ fun ClearTextField(
     modifier: Modifier = Modifier
     , icon: Int = R.drawable.ic_write,
     placeholder: String = "생년월일을 선택하세요.",
-    onIconClick: () -> Unit
+    onIconClick: () -> Unit,
+    redOnly: Boolean = false
 ) {
     OutlinedTextField(value = value,
         onValueChange = onValueChange,
@@ -147,7 +148,9 @@ fun ClearTextField(
                     contentDescription = "Clear text"
                 )
             }
-        })
+        },
+        readOnly = redOnly)
+
 }
 
 @Preview(showBackground = true)
