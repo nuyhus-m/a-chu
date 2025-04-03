@@ -10,14 +10,9 @@ public record ModifyGoodsRequest(
     @NotNull @GoodsTitle String title,
     @NotNull @GoodsDescription String description,
     @NotNull @Min(0) Long price,
-    @NotNull Long categoryId,
-    @NotNull Long babyId) {
+    @NotNull Long categoryId) {
   public static ModifyGoods toModifyGoods(ModifyGoodsRequest request) {
     return new ModifyGoods(
-        request.title(),
-        request.description(),
-        request.price(),
-        request.categoryId(),
-        request.babyId());
+        request.title(), request.description(), request.price(), request.categoryId());
   }
 }

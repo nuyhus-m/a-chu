@@ -32,4 +32,6 @@ public interface GoodsRepository {
   Goods modifyImages(Long goodsId, ImageUrlsWithThumbnail imageUrlsWithThumbnail);
 
   List<Goods> findByUserId(User user, Long offset, Long limit, SortType sort);
+
+  Goods findById(Long id);
 }

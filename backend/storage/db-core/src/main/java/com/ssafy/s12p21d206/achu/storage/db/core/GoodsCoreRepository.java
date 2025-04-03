@@ -6,6 +6,7 @@ import com.ssafy.s12p21d206.achu.domain.error.CoreErrorType;
 import com.ssafy.s12p21d206.achu.domain.error.CoreException;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
 import com.ssafy.s12p21d206.achu.storage.db.core.support.SortUtils;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,6 +48,7 @@ public class GoodsCoreRepository implements GoodsRepository {
         .toGoodsDetail(categoryEntity.toCategory());
   }
 
+  @Transactional
   @Override
   public GoodsDetail modifyGoods(Long id, ModifyGoods modifyGoods) {
     GoodsEntity goods = goodsJpaRepository
@@ -56,7 +58,6 @@ public class GoodsCoreRepository implements GoodsRepository {
         .findById(modifyGoods.categoryId())
         .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
     goods.updateText(modifyGoods);
-    goodsJpaRepository.save(goods);
     return goods.toGoodsDetail(categoryEntity.toCategory());
   }
 
@@ -65,23 +66,23 @@ public class GoodsCoreRepository implements GoodsRepository {
     return goodsJpaRepository.existsByIdAndTradeStatus(id, TradeStatus.SELLING);
   }
 
+  @Transactional
   @Override
   public Long delete(Long id) {
     GoodsEntity goods = goodsJpaRepository
         .findByIdAndEntityStatus(id, EntityStatus.ACTIVE)
         .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
     goods.delete();
-    goodsJpaRepository.save(goods);
     return goods.getId();
   }
 
+  @Transactional
   @Override
   public Goods modifyImages(Long goodsId, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
     GoodsEntity goods = goodsJpaRepository
         .findByIdAndEntityStatus(goodsId, EntityStatus.ACTIVE)
         .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
     goods.changeImages(imageUrlsWithThumbnail);
-    goodsJpaRepository.save(goods);
     return goods.toGoods();
   }
 
@@ -173,5 +174,13 @@ public class GoodsCoreRepository implements GoodsRepository {
         .stream()
         .map(GoodsEntity::toGoods)
         .toList();
+  }
+
+  @Override
+  public Goods findById(Long id) {
+    GoodsEntity goods = goodsJpaRepository
+        .findById(id)
+        .orElseThrow(() -> new CoreException(CoreErrorType.DATA_NOT_FOUND));
+    return goods.toGoods();
   }
 }
