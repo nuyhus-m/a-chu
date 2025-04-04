@@ -6,13 +6,13 @@ import okhttp3.Interceptor
 
 private const val TAG = "TokenInterceptor"
 
-class TokenInterceptor() : Interceptor {
+class TokenInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
 
         val token = sharedPreferencesUtil.getTokens() ?: return chain.proceed(chain.request())
         val originalRequest = chain.request()
         val isNeedAccessToken = shouldAddToken(originalRequest)
-        
+
         // 헤더를 추가할지 결정하는 로직
         val newRequest = if (isNeedAccessToken) {
             originalRequest.newBuilder()

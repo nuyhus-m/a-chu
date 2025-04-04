@@ -33,6 +33,9 @@ class ActivityViewModel : ViewModel() {
     private val _getProductSuccess = MutableSharedFlow<Boolean>()
     val getProductSuccess: SharedFlow<Boolean> = _getProductSuccess.asSharedFlow()
 
+    private val _errorMessage = MutableSharedFlow<String>()
+    val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
+
     init {
         getUserinfo()
     }
@@ -100,6 +103,7 @@ class ActivityViewModel : ViewModel() {
                     Log.d(TAG, "getProductDetail errorResponse: $errorResponse")
                     Log.d(TAG, "getProductDetail error: ${it.message}")
                     _getProductSuccess.emit(false)
+                    _errorMessage.emit(errorResponse.message)
                 }
         }
     }
