@@ -8,4 +8,6 @@ object Constants {
     const val SOLD = "SOLD"
     const val SALE = "SALE"
     const val DONATION = "DONATION"
+    const val TEXT = "TEXT"
+    const val IMAGE = "IMAGE"
 }

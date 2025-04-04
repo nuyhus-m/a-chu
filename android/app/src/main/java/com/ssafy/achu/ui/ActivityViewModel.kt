@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
+import com.ssafy.achu.core.ApplicationClass.Companion.stompService
 import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
@@ -38,6 +39,13 @@ class ActivityViewModel : ViewModel() {
 
     init {
         getUserinfo()
+        stompConnect()
+    }
+
+    private fun stompConnect() {
+        viewModelScope.launch {
+            stompService.connect()
+        }
     }
 
     fun updateSelectedBaby(baby: BabyResponse) {
@@ -131,4 +139,10 @@ class ActivityViewModel : ViewModel() {
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.launch {
+            stompService.disconnect()
+        }
+    }
 }

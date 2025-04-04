@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.ssafy.achu.data.database.SharedPreferencesUtil
+import com.ssafy.achu.data.network.StompService
 import com.ssafy.achu.data.repository.AuthRepository
 import com.ssafy.achu.data.repository.BabyRepository
 import com.ssafy.achu.data.repository.MemoryRepository
@@ -59,6 +60,8 @@ class ApplicationClass : Application() {
         lateinit var productRepository: ProductRepository
         lateinit var memoryRepository: MemoryRepository
         lateinit var babyRepository: BabyRepository
+
+        lateinit var stompService: StompService
     }
 
 
@@ -94,7 +97,7 @@ class ApplicationClass : Application() {
         memoryRepository = MemoryRepository()
         babyRepository = BabyRepository()
 
-
+        stompService = StompService()
     }
 
     //GSon은 엄격한 json type을 요구하는데, 느슨하게 하기 위한 설정. success, fail이 json이 아니라 단순 문자열로 리턴될 경우 처리..
