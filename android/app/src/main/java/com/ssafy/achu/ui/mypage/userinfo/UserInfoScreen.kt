@@ -1,9 +1,9 @@
 package com.ssafy.achu.ui.mypage.userinfo
 
 import PhoneNumberTextField
+import android.app.ActivityOptions
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
+import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.PointBlueFlexibleBtn
@@ -61,13 +62,12 @@ import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.compressImage
 import com.ssafy.achu.core.util.formatPhoneNumber
-import com.ssafy.achu.core.util.getRotatedBitmap
 import com.ssafy.achu.ui.ActivityViewModel
+import com.ssafy.achu.ui.AuthActivity
 import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.ByteArrayOutputStream
 
 private const val TAG = "UserInfoScreen 안주현"
 
@@ -254,15 +254,20 @@ fun UserInfoScreen(
 
                     PointBlueFlexibleBtn("인증", onClick = {
 
-                        if(userInfoUiState.phoneNumber == ""){
-                            Toast.makeText(context, "전화번호 변경 후 인증 요청해주세요", Toast.LENGTH_SHORT).show()
-                        }else if(userInfoUiState.phoneNumber.length >= 13){
+                        if (userInfoUiState.phoneNumber == "") {
+                            Toast.makeText(context, "전화번호 변경 후 인증 요청해주세요", Toast.LENGTH_SHORT)
+                                .show()
+                        } else if (userInfoUiState.phoneNumber.length >= 13) {
 
                             Log.d(TAG, "UserInfoScreen: ${userInfoUiState.phoneNumber.length}")
                             Toast.makeText(context, "전화번호를 확인해주세요", Toast.LENGTH_SHORT).show()
-                        }else if(userInfoUiState.phoneNumber.replace("-","") == uiState.user!!.phoneNumber){
+                        } else if (userInfoUiState.phoneNumber.replace(
+                                "-",
+                                ""
+                            ) == uiState.user!!.phoneNumber
+                        ) {
                             Toast.makeText(context, "이미 등록된 전화번호입니다", Toast.LENGTH_SHORT).show()
-                        }else{
+                        } else {
                             userInfoViewModel.sendPhoneAuth()
 
                         }
@@ -341,8 +346,13 @@ fun UserInfoScreen(
     if (userInfoUiState.logoutDialog) {
         BasicDialog(
             text = "로그아웃 하시겠습니까?",
-            onDismiss = { userInfoViewModel.updateLogoutDialog(false) },
-            onConfirm = { userInfoViewModel.updateLogoutDialog(false) }
+            onDismiss = {
+                userInfoViewModel.updateLogoutDialog(false)
+            },
+            onConfirm = {
+                sharedPreferencesUtil.clearTokensInfo()
+                navigateToAuthActivity(context)
+            }
         )
     }
 
@@ -353,7 +363,10 @@ fun UserInfoScreen(
             "와 함께한",
             text = "모든 추억이 삭제됩니다.\n정말 탈퇴하시겠습니까?",
             onDismiss = { userInfoViewModel.updateDeleteUserDialog(false) },
-            onConfirm = { userInfoViewModel.updateDeleteUserDialog(false) }
+            onConfirm = {
+                sharedPreferencesUtil.clearTokensInfo()
+                navigateToAuthActivity(context)
+            }
         )
     }
 
@@ -363,16 +376,24 @@ fun UserInfoScreen(
             onValueChange = { userInfoViewModel.updateVerifyNumber(it) },
             phoneNumber = formatPhoneNumber(userInfoUiState.phoneNumber),
             onDismiss = { userInfoViewModel.updatePhoneNumberDialog(false) },
-            onConfirm = { userInfoViewModel.updatePhoneNumberDialog(false)
-                        userInfoViewModel.checkPhoneAuth()},
+            onConfirm = {
+                userInfoViewModel.updatePhoneNumberDialog(false)
+                userInfoViewModel.checkPhoneAuth()
+            },
             PointBlue
         )
 
     }
 }
 
-
-
+fun navigateToAuthActivity(context: Context) {
+    val options = ActivityOptions.makeCustomAnimation(context, 0, 0)
+    Intent(context, AuthActivity::class.java).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    }.also { intent ->
+        context.startActivity(intent, options.toBundle())
+    }
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview

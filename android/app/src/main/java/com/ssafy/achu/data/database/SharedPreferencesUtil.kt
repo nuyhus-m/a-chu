@@ -64,4 +64,11 @@ class SharedPreferencesUtil(context: Context) {
         }
     }
 
+    fun clearTokensInfo() {
+        preferences.edit {
+            remove("token_data")
+            remove("access_issued_at")
+            remove("refresh_issued_at")
+        }
+    }
 }
