@@ -36,7 +36,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -93,14 +93,16 @@ dependencies {
     // kotlinx-serialization
     implementation(libs.kotlinx.serialization.json)
 
-
     //fcm
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.google.firebase.messaging.ktx)
 
-
     //lottie
     implementation ("com.airbnb.android:lottie-compose:6.1.0")
 
+    // Krossbow - 코틀린 코루틴 기반 STOMP 클라이언트
+    implementation(libs.krossbow.stomp.core)
+    implementation(libs.krossbow.websocket.okhttp)
+    implementation(libs.krossbow.stomp.kxserialization.json)
 }
