@@ -42,7 +42,7 @@ class ActivityViewModel : ViewModel() {
     val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
 
     private var backgroundJobToken: Job? = null
-    private val backgroundTimeoutMs = 60000L // 1분 후 연결 解制
+    private val backgroundTimeoutMs = 60000L // 1분
 
     init {
         getUserinfo()
