@@ -252,7 +252,14 @@ fun NavGraph(
                         )
                     )
                 },
-                onNavigateToChat = { navController.navigate(route = Route.Chat) },
+                onNavigateToChat = { productId, sellerId ->
+                    navController.navigate(
+                        route = Route.Chat(
+                            productId = productId,
+                            sellerId = sellerId
+                        )
+                    )
+                },
                 onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) },
                 onNavigateToMemoryUpload = { babyId, productName ->
                     navController.navigate(
