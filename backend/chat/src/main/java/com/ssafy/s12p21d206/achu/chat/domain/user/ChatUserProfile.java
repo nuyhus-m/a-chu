@@ -11,4 +11,8 @@ public record ChatUserProfile(Long id, String nickname, String profileImageUrl) 
   public static ChatUserProfile from(ChatUser chatUser, String nickname, String profileImageUrl) {
     return new ChatUserProfile(chatUser.id(), nickname, profileImageUrl);
   }
+
+  public ChatUser toChatUser() {
+    return new ChatUser(this.id);
+  }
 }
