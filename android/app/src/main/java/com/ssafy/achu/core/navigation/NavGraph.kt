@@ -32,7 +32,6 @@ fun NavGraph(
     navController: NavHostController,
     modifier: Modifier,
     activityViewModel: ActivityViewModel,
-    showSelectDialog: Boolean,
 ) {
     NavHost(
         navController = navController,
@@ -45,7 +44,6 @@ fun NavGraph(
             HomeScreen(
                 modifier = modifier,
                 viewModel = activityViewModel,
-                showSelectDialog = showSelectDialog,
                 onNavigateToLikeList = { navController.navigate(route = Route.LikeList) },
                 onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) },
                 onNavigateToBabyList = { navController.navigate(route = Route.BabyList) },

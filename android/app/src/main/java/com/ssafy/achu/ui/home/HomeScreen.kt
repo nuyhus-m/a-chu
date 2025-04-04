@@ -1,3 +1,4 @@
+import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -17,9 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -28,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.R
-import com.ssafy.achu.core.navigation.Route
+import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
@@ -58,12 +57,15 @@ import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.home.HomeViewModel
 import com.ssafy.achu.ui.home.homecomponents.BabyDropdown
+import com.ssafy.achu.ui.home.homecomponents.FixedGrid
 import com.ssafy.achu.ui.home.homecomponents.RecommendGrid
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 private const val TAG = "HomeScreen_안주현"
+
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -74,12 +76,10 @@ fun HomeScreen(
     viewModel: ActivityViewModel,
     homeViewModel: HomeViewModel = viewModel(),
     onNavigateToProductDetail: () -> Unit,
-    showSelectDialog: Boolean,
     onNavigateToBabyDetail: () -> Unit,
 ) {
 
-    var selectDialog by remember { mutableStateOf(false) }
-
+    val uiState by viewModel.uiState.collectAsState()
 
 
     val context = LocalContext.current
@@ -88,9 +88,14 @@ fun HomeScreen(
         homeViewModel.getCategoryList()
     }
 
-    LaunchedEffect(showSelectDialog) {
-        selectDialog = showSelectDialog
-        Log.d("HomeScreen", "showSelectDialog 값 변경: $showSelectDialog -> selectDialog: $selectDialog")
+
+// showCreateDialog 상태가 변경될 때마다 실행
+    LaunchedEffect(uiState.showCreateDialog) {
+        if (uiState.showCreateDialog) {
+            viewModel.hideBottomNav()
+        } else {
+            viewModel.showBottomNav()
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -109,7 +114,6 @@ fun HomeScreen(
     val likeItemList by homeViewModel.likeItemList.collectAsState()
     val categoryList by homeViewModel.categoryList.collectAsState()
 
-    val uiState by viewModel.uiState.collectAsState()
 
 
 
@@ -126,7 +130,11 @@ fun HomeScreen(
     var currentIndex by remember { mutableStateOf(imageList.size) }
     val scrollState = rememberScrollState() // 스크롤 상태 저장
 
-
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.updateShowCreateDialog(false)
+        }
+    }
 
     Column(
         modifier = modifier
@@ -137,7 +145,6 @@ fun HomeScreen(
 
         Spacer(Modifier.height(24.dp))
         if (uiState.user != null && uiState.babyList.size > 0) {
-
 
             LaunchedEffect(uiState.babyList) {
                 if (uiState.selectedBaby == null) {
@@ -167,6 +174,7 @@ fun HomeScreen(
                 )
             }
         } else {
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -184,14 +192,13 @@ fun HomeScreen(
                     )
 
                     Text(
-                        text = "님환영합니다.",
+                        text = "님 환영합니다.",
                         style = AchuTheme.typography.semiBold18,
                         modifier = Modifier.alignByBaseline()
                     )
                 }
-
             }
-            viewModel.updateShowCreateDialog(true)
+
         }
 
         Spacer(Modifier.height(16.dp))
@@ -264,25 +271,12 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(4), // 4개의 열로 고정
-            modifier = Modifier
-                .padding(bottom = 24.dp, start = 16.dp, end = 16.dp)
-                .height(180.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(categoryList) { category ->
-                CategoryItem(
-                    img = category.imgUrl,
-                    categoryTitle = category.name,
-                    modifier = Modifier
-                        .clickable {
-                            onNavigateToProductList(category.id)
-                        }
-                )
+        FixedGrid(
+            categoryList,
+            onNavigateToProductList = {
+                onNavigateToProductList(it.toInt())
             }
-        }
+        )
 
 
         Column(Modifier.padding(horizontal = 24.dp)) {
@@ -440,47 +434,32 @@ fun HomeScreen(
     }
 
     if (uiState.showCreateDialog) {
+        viewModel.hideBottomNav() // 이 부분이 실제로 실행되는지 로그 추가
+        Log.d("HomeScreen", "CreateBabyDialog 표시: 바텀 네비 숨김 시도")
 
         CreateBabyDialog {
             viewModel.updateShowCreateDialog(false)
             onNavigateToBabyDetail()
+            viewModel.showBottomNav()
+            Log.d("HomeScreen", "CreateBabyDialog 닫힘: 바텀 네비 표시 시도")
         }
     }
 
-    if (uiState.babyList.size > 1 && selectDialog ) {
+    if (uiState.babyList.size > 1 && !sharedPreferencesUtil.isAutoLogin()) {
+        viewModel.hideBottomNav()
+        Log.d("HomeScreen", "SelectBabyDialog 표시: 바텀 네비 숨김 시도")
+
         SelectBabyDialog(
             babyList = uiState.babyList,
         ) {
             viewModel.updateSelectedBaby(it)
-            selectDialog = false
+            sharedPreferencesUtil.saveIsAutoLogin(true)
+            viewModel.showBottomNav()
+            Log.d("HomeScreen", "SelectBabyDialog 닫힘: 바텀 네비 표시 시도")
         }
     }
 }
 
-@Composable
-fun CategoryItem(
-    img: String,
-    categoryTitle: String,
-    modifier: Modifier
-) {
-
-    val context = LocalContext.current
-    val resId = context.resources.getIdentifier(img, "drawable", context.packageName)
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = painterResource(id = resId),
-            contentDescription = "Heart",
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = categoryTitle,
-            style = AchuTheme.typography.semiBold16
-        )
-    }
-}
 
 @Preview
 @Composable
@@ -493,7 +472,6 @@ fun HomeScreenPreview() {
             onNavigateToProductList = { },
             onNavigateToProductDetail = {
             },
-            showSelectDialog = true,
             onNavigateToBabyDetail = {},
             viewModel = viewModel()
         )

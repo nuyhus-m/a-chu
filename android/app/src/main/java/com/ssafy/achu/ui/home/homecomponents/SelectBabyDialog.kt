@@ -60,7 +60,8 @@ fun SelectBabyDialog(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.5f))
-            .padding(32.dp),
+            .padding(32.dp)
+            .clickable(enabled = false){},
         contentAlignment = Alignment.Center
     ) {
         Box(

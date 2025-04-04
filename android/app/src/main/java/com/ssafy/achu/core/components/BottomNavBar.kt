@@ -44,11 +44,12 @@ import com.ssafy.achu.core.navigation.bottomNavScreens
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.ui.ActivityViewModel
 
 private const val TAG = "BottomNavBar"
 
 @Composable
-fun BottomNavBar(navController: NavHostController) {
+fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel) {
     val currentBackStack by navController.currentBackStackEntryAsState()
     // 현재 화면 루트
     val currentRoute by remember {
@@ -58,7 +59,7 @@ fun BottomNavBar(navController: NavHostController) {
     }
 
     AnimatedVisibility(
-        visible = bottomNavScreens.map { it.routeName }.contains(currentRoute),
+        visible = bottomNavScreens.map { it.routeName }.contains(currentRoute)&& viewModel.isBottomNavVisible.value,
         enter = fadeIn(),
         exit = fadeOut()
     ) {
@@ -71,7 +72,9 @@ fun BottomNavBar(navController: NavHostController) {
                 })
                 .shadow(elevation = 8.dp, shape = RectangleShape)
                 .windowInsetsPadding(WindowInsets.navigationBars)
-        ) {
+
+
+            ) {
             Row(
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -87,7 +90,7 @@ fun BottomNavBar(navController: NavHostController) {
                             .fillMaxHeight()
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
-                                indication = ripple(color = PointBlue)
+                                indication = ripple(color = PointBlue),
                             ) {
                                 navController.navigate(screen.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
