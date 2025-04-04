@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.chat.domain;
 
+import com.ssafy.s12p21d206.achu.chat.domain.message.MessageEventNotifier;
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
 import java.util.List;
 import org.springframework.stereotype.Service;

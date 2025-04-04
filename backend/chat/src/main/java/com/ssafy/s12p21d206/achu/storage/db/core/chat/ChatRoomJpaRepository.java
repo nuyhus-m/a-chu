@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface ChatRoomJpaRepository extends JpaRepository<ChatRoomEntity, Long> {
 
@@ -16,11 +17,13 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoomEntity, Lon
       "SELECT COUNT(cr) > 0 FROM ChatRoomEntity cr WHERE cr.id = :chatRoomId AND (cr.sellerId = :userId OR cr.buyerId = :userId)")
   boolean existsByIdAndUserId(Long chatRoomId, Long userId);
 
+  @Transactional
   @Modifying
   @Query(
       "UPDATE ChatRoomEntity cr SET cr.sellerLastReadMessageId = :lastReadMessageId WHERE cr.id = :chatRoomId AND cr.sellerId = :userId")
   void updateSellerLastReadMessageId(Long chatRoomId, Long userId, Long lastReadMessageId);
 
+  @Transactional
   @Modifying
   @Query(
       "UPDATE ChatRoomEntity cr SET cr.buyerLastReadMessageId = :lastReadMessageId WHERE cr.id = :chatRoomId AND cr.buyerId = :userId")
@@ -89,6 +92,7 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoomEntity, Lon
             AND seller.entityStatus = 'ACTIVE'
             AND buyer.entityStatus = 'ACTIVE'
             AND g.entityStatus = 'ACTIVE'
+            ORDER BY m.createdAt DESC
             """)
   List<ChatRoomDto> findByParticipant(
       @Param("userId") Long userId, @Param("status") ChatEntityStatus status);

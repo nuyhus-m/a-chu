@@ -21,7 +21,7 @@ public class ChatRoomValidator {
   }
 
   public void validateParticipant(ChatRoom chatRoom, ChatUser user) {
-    if (chatRoom.isParticipant(user)) {
+    if (!chatRoom.isParticipant(user)) {
       throw new ChatException((ChatErrorType.USER_NOT_IN_CHAT_ROOM));
     }
   }

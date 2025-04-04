@@ -18,7 +18,7 @@ public record ChatRoom(
   }
 
   public ChatUser findPartner(ChatUser user) {
-    if (!Objects.equals(seller.id(), user.id()) || !(Objects.equals(buyer.id(), user.id()))) {
+    if (!Objects.equals(seller.id(), user.id()) && !(Objects.equals(buyer.id(), user.id()))) {
       throw new IllegalArgumentException("채팅 참여자가 아닙니다.");
     }
 

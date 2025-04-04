@@ -1,5 +1,9 @@
-package com.ssafy.s12p21d206.achu.chat.domain;
+package com.ssafy.s12p21d206.achu.chat.domain.message;
 
+import com.ssafy.s12p21d206.achu.chat.domain.ChatRoom;
+import com.ssafy.s12p21d206.achu.chat.domain.ChatRoomReader;
+import com.ssafy.s12p21d206.achu.chat.domain.Message;
+import com.ssafy.s12p21d206.achu.chat.domain.UnreadCount;
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
@@ -48,9 +52,9 @@ public class MessageEventNotifier {
 
     messagingTemplate.convertAndSend(
         String.format(CHAT_ROOM_UPDATE_DESTINATION_FORMAT, user.id()),
-        new ChatRoomWithUnreadCount(chatRoom, userUnreadCount));
+        ChatRoomDto.from(user, chatRoom, userUnreadCount));
     messagingTemplate.convertAndSend(
         String.format(CHAT_ROOM_UPDATE_DESTINATION_FORMAT, partner.id()),
-        new ChatRoomWithUnreadCount(chatRoom, partnerUnreadCount));
+        ChatRoomDto.from(partner, chatRoom, partnerUnreadCount));
   }
 }
