@@ -7,7 +7,6 @@ import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUserReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -48,7 +47,7 @@ public class ChatRoomService {
     return chatRooms.stream()
         .map(room -> new ChatRoomWithParticipant(
             room, profileMap.get(room.seller()), profileMap.get(room.buyer())))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public Long countUnreadMessages(ChatUser user) {

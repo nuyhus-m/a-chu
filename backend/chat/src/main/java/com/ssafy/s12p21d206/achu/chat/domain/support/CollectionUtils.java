@@ -25,7 +25,7 @@ public class CollectionUtils {
   }
 
   public static <T, R> List<R> mapToList(Collection<T> collection, Function<T, R> mapper) {
-    return collection.stream().map(mapper).collect(Collectors.toList());
+    return collection.stream().map(mapper).toList();
   }
 
   public static <T, R> Set<R> flatMapToSet(

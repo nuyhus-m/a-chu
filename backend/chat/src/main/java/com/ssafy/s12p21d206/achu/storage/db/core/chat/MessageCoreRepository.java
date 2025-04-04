@@ -6,7 +6,6 @@ import com.ssafy.s12p21d206.achu.chat.domain.MessageRepository;
 import com.ssafy.s12p21d206.achu.chat.domain.NewMessage;
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -31,10 +30,10 @@ public class MessageCoreRepository implements MessageRepository {
       return List.of();
     }
 
-    List<Long> chatRoomIds = chatRooms.stream().map(ChatRoom::id).collect(Collectors.toList());
+    List<Long> chatRoomIds = chatRooms.stream().map(ChatRoom::id).toList();
 
     return messageJpaRepository.findLastMessagesInChatRoomIds(chatRoomIds).stream()
         .map(MessageEntity::toMessage)
-        .collect(Collectors.toList());
+        .toList();
   }
 }

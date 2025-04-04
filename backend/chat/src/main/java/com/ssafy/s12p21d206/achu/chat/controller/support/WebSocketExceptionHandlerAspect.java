@@ -49,8 +49,8 @@ public class WebSocketExceptionHandlerAspect {
   private Long getUserId(ProceedingJoinPoint joinPoint) {
     Object[] args = joinPoint.getArgs();
     for (Object arg : args) {
-      if (arg instanceof ChatApiUser) {
-        return ((ChatApiUser) arg).id();
+      if (arg instanceof ChatApiUser chatApiUser) {
+        return chatApiUser.id();
       }
     }
     // 사용자 ID를 찾을 수 없는 경우 기본값 반환

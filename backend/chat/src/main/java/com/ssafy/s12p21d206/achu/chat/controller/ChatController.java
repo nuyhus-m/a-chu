@@ -17,7 +17,7 @@ public class ChatController {
   }
 
   @SendTo("/read/chat/rooms/{roomId}/messages")
-  @MessageMapping("/chat/rooms/{roomId}")
+  @MessageMapping("/chat/rooms/{roomId}/messages")
   public MessageDto handleMessage(
       ChatApiUser chatApiUser, @DestinationVariable Long roomId, AppendMessageRequest request) {
     Message message =

@@ -10,7 +10,6 @@ public interface ChatUserJpaRepository extends JpaRepository<ChatUserEntity, Lon
 
   Optional<ChatUserEntity> findByIdAndEntityStatus(Long id, ChatEntityStatus entityStatus);
 
-  @Query("""
-SELECT u FROM ChatUserEntity u WHERE u.id IN :userIds""")
+  @Query("SELECT u FROM ChatUserEntity u WHERE u.id IN :userIds")
   List<ChatUserEntity> findByUserIdsIn(List<Long> userIds);
 }
