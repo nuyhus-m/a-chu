@@ -15,6 +15,8 @@ import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.UploadProductRequest
 import com.ssafy.achu.data.network.StompService
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -38,23 +40,13 @@ class ActivityViewModel : ViewModel() {
     private val _errorMessage = MutableSharedFlow<String>()
     val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
 
-    // 연결 상태를 관찰하기 위한 StateFlow
-    private val _connectionState =
-        MutableStateFlow<StompService.ConnectionState>(StompService.ConnectionState.Disconnected)
-    val connectionState: StateFlow<StompService.ConnectionState> = _connectionState.asStateFlow()
-
+    private var backgroundJobToken: Job? = null
+    private val backgroundTimeoutMs = 60000L // 1분 후 연결 解制
 
     init {
         getUserinfo()
         // 앱이 시작될 때 STOMP 연결 시작
         connectToStompServer()
-
-        // STOMP 연결 상태 관찰
-        viewModelScope.launch {
-            stompService.connectionState.collect { state ->
-                _connectionState.value = state
-            }
-        }
     }
 
     // STOMP 서버에 연결
@@ -156,6 +148,10 @@ class ActivityViewModel : ViewModel() {
     }
 
     fun onAppForeground() {
+        // 백그라운드 작업 취소
+        backgroundJobToken?.cancel()
+        backgroundJobToken = null
+
         // 앱이 포그라운드로 돌아올 때 처리
         viewModelScope.launch {
             if (stompService.connectionState.value !is StompService.ConnectionState.Connected) {
@@ -166,6 +162,13 @@ class ActivityViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        stompService.cleanup()
+        // 이미 실행 중인 백그라운드 작업 취소
+        backgroundJobToken?.cancel()
+
+        // 새 백그라운드 작업 시작 - 일정 시간 후 연결 해제
+        backgroundJobToken = viewModelScope.launch {
+            delay(backgroundTimeoutMs)
+            stompService.cleanup()
+        }
     }
 }
