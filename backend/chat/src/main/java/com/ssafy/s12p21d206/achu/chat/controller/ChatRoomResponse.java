@@ -36,6 +36,6 @@ public record ChatRoomResponse(
         UserProfileResponse.from(partner),
         GoodsResponse.from(chatRoom.goods()),
         unreadCount.unreadCount(),
-        MessageResponse.from(chatRoom.lastMessage()));
+        MessageResponse.from(chatRoom.lastMessage(), viewer));
   }
 }

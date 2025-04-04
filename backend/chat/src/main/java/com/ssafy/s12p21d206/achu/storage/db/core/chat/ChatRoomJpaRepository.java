@@ -75,16 +75,16 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoomEntity, Lon
                 buyer.nickname, buyer.profileImageUrl,
                 m.id, m.content, m.senderId, m.type, m.createdAt)
             FROM ChatRoomEntity cr
-            JOIN com.ssafy.s12p21d206.achu.storage.db.core.user.ChatUserEntity seller ON cr.sellerId = seller.id
-            JOIN com.ssafy.s12p21d206.achu.storage.db.core.user.ChatUserEntity buyer ON cr.buyerId = buyer.id
-            JOIN com.ssafy.s12p21d206.achu.storage.db.core.goods.ChatGoodsEntity g ON cr.goodsId = g.id
+            JOIN ChatUserEntity seller ON cr.sellerId = seller.id
+            JOIN ChatUserEntity buyer ON cr.buyerId = buyer.id
+            JOIN ChatGoodsEntity g ON cr.goodsId = g.id
             LEFT JOIN MessageEntity m ON m.chatRoomId = cr.id AND m.createdAt = (
                 SELECT MAX(m2.createdAt)
                 FROM MessageEntity m2
                 WHERE m2.chatRoomId = cr.id
                 AND m2.entityStatus = 'ACTIVE'
             )
-            WHERE (cr.buyerId = :userId OR cr.sellerId = :userId)
+            WHERE ((cr.buyerId = :userId AND NOT cr.isBuyerLeft) OR (cr.sellerId = :userId AND NOT cr.isBuyerLeft))
             AND cr.entityStatus = :status
             AND seller.entityStatus = 'ACTIVE'
             AND buyer.entityStatus = 'ACTIVE'
@@ -103,9 +103,9 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoomEntity, Lon
                 buyer.nickname, buyer.profileImageUrl,
                 m.id, m.content, m.senderId, m.type, m.createdAt)
             FROM ChatRoomEntity cr
-            JOIN com.ssafy.s12p21d206.achu.storage.db.core.user.ChatUserEntity seller ON cr.sellerId = seller.id
-            JOIN com.ssafy.s12p21d206.achu.storage.db.core.user.ChatUserEntity buyer ON cr.buyerId = buyer.id
-            JOIN com.ssafy.s12p21d206.achu.storage.db.core.goods.ChatGoodsEntity g ON cr.goodsId = g.id
+            JOIN ChatUserEntity seller ON cr.sellerId = seller.id
+            JOIN ChatUserEntity buyer ON cr.buyerId = buyer.id
+            JOIN ChatGoodsEntity g ON cr.goodsId = g.id
             LEFT JOIN MessageEntity m ON m.chatRoomId = cr.id AND m.createdAt = (
                 SELECT MAX(m2.createdAt)
                 FROM MessageEntity m2
