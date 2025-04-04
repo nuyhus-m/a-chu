@@ -27,14 +27,16 @@ public class MessageService {
   }
 
   public Message append(ChatUser sender, ChatRoom chatRoom, NewMessage newMessage) {
-    return messageAppender.append(sender, chatRoom, newMessage);
+    Message message = messageAppender.append(sender, chatRoom, newMessage);
+    ChatUser partner = chatRoom.findPartner(sender);
+    messageEventNotifier.notifyMessageArrived(partner, message);
+    messageEventNotifier.notifyChatRoomUpdate(sender, partner, chatRoom, message);
+    return message;
   }
 
   public Message append(ChatUser sender, Long chatRoomId, NewMessage newMessage) {
     ChatRoom chatRoom = chatRoomReader.read(chatRoomId);
-    Message message = messageAppender.append(sender, chatRoom, newMessage);
-    messageEventNotifier.notifyMessageArrivedToPartner(chatRoom, message);
-    return message;
+    return this.append(sender, chatRoom, newMessage);
   }
 
   public List<Message> readLastMessagesIn(List<ChatRoom> chatRooms) {
@@ -43,5 +45,9 @@ public class MessageService {
 
   public void updateRead(ChatUser chatUser, Long roomId, Long lastReadMessageId) {
     messageReadHandler.updateRead(chatUser, roomId, lastReadMessageId);
+  }
+
+  public List<Message> getMessagesByChatRoomId(ChatUser viewer, Long chatRoomId) {
+    return messageReader.readMessagesByChatRoomId(viewer, chatRoomId);
   }
 }
