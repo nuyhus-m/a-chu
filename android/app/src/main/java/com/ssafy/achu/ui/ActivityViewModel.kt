@@ -14,6 +14,7 @@ import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.UploadProductRequest
+import com.ssafy.achu.data.network.StompService
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -37,12 +38,27 @@ class ActivityViewModel : ViewModel() {
     private val _errorMessage = MutableSharedFlow<String>()
     val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
 
+    // 연결 상태를 관찰하기 위한 StateFlow
+    private val _connectionState =
+        MutableStateFlow<StompService.ConnectionState>(StompService.ConnectionState.Disconnected)
+    val connectionState: StateFlow<StompService.ConnectionState> = _connectionState.asStateFlow()
+
+
     init {
         getUserinfo()
-        stompConnect()
+        // 앱이 시작될 때 STOMP 연결 시작
+        connectToStompServer()
+
+        // STOMP 연결 상태 관찰
+        viewModelScope.launch {
+            stompService.connectionState.collect { state ->
+                _connectionState.value = state
+            }
+        }
     }
 
-    private fun stompConnect() {
+    // STOMP 서버에 연결
+    private fun connectToStompServer() {
         viewModelScope.launch {
             stompService.connect()
         }
@@ -139,10 +155,17 @@ class ActivityViewModel : ViewModel() {
         }
     }
 
+    fun onAppForeground() {
+        // 앱이 포그라운드로 돌아올 때 처리
+        viewModelScope.launch {
+            if (stompService.connectionState.value !is StompService.ConnectionState.Connected) {
+                stompService.connect()
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
-        viewModelScope.launch {
-            stompService.disconnect()
-        }
+        stompService.cleanup()
     }
 }

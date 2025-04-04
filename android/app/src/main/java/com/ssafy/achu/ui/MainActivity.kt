@@ -12,11 +12,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ssafy.achu.core.components.BottomNavBar
 import com.ssafy.achu.core.navigation.NavGraph
 import com.ssafy.achu.core.theme.AchuTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -28,6 +32,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         requestFcmToken()
 
+        // 액티비티 라이프사이클에 따라 StompService 상태 관리
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // 앱이 포그라운드에 있을 때만 실행
+                activityViewModel.onAppForeground()
+            }
+        }
+
         setContent {
             AchuTheme {
                 AchuApp(viewModel = activityViewModel)
@@ -36,7 +48,6 @@ class MainActivity : ComponentActivity() {
     }
 
 }
-
 
 fun requestFcmToken() {
     FirebaseMessaging.getInstance().token
