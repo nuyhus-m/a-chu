@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -48,11 +49,12 @@ fun NavGraph(
                 onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) },
                 onNavigateToBabyList = { navController.navigate(route = Route.BabyList) },
                 onNavigateToProductList = { categoryId ->
-                    navController.navigate(
-                        route = BottomNavRoute.ProductList(
-                            categoryId = categoryId
-                        )
-                    )
+                    navController.navigate(route = BottomNavRoute.ProductList(categoryId)) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                    }
                 },
                 onNavigateToProductDetail = {
                     navController.navigate(

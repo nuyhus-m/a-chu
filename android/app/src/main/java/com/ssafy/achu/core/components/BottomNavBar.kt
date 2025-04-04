@@ -94,7 +94,6 @@ fun BottomNavBar(navController: NavHostController) {
                                         saveState = true
                                     }
                                     launchSingleTop = true
-                                    restoreState = true
                                 }
                             }
                     ) {
