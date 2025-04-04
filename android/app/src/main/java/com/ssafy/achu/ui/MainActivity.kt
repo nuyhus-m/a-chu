@@ -3,7 +3,6 @@ package com.ssafy.achu.ui
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,10 +11,10 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ssafy.achu.core.components.BottomNavBar
 import com.ssafy.achu.core.navigation.NavGraph
@@ -34,42 +33,58 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         requestFcmToken()
 
-        if (intent?.extras != null) {
-            for (key in intent.extras!!.keySet()) {
-                Log.d(TAG, "Key: $key, Value: ${intent.extras!!.get(key)}")
-            }
-        }
+        val targetRoute = intent?.getStringExtra("targetRoute")
+        val requestId = intent?.getStringExtra("requestId") ?: ""
+        val type = intent?.getStringExtra("type") ?: ""
+
+
+      when(targetRoute){
+          "ProductDetailScreen" -> activityViewModel.getProductDetail(requestId.toInt())
+//          "ChatScreen" -> 여기서 아이디는 넘겨 줘야 하는값
+
+      }
+
+
+
 
         setContent {
             AchuTheme {
-                AchuApp(viewModel = activityViewModel)
+                AchuApp(activityViewModel, targetRoute, requestId)
             }
         }
     }
 
-}
+    private fun requestFcmToken() {
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w("FCM", "토큰 가져오기 실패", task.exception)
+                    return@addOnCompleteListener
+                }
 
+                // 👉 FCM 토큰 가져오기
+                val token = task.result
+                Log.d("FCM", "토큰: $token")
+                activityViewModel.updateFcmToken(token)
 
-fun requestFcmToken() {
-    FirebaseMessaging.getInstance().token
-        .addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w("FCM", "토큰 가져오기 실패", task.exception)
-                return@addOnCompleteListener
             }
-
-            // 👉 FCM 토큰 가져오기
-            val token = task.result
-            Log.d("FCM", "토큰: $token")
-
-        }
+    }
 }
+
+
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AchuApp(viewModel: ActivityViewModel) {
+fun AchuApp(viewModel: ActivityViewModel, targetRoute: String?, requestId: String) {
     val navController = rememberNavController()
 
+    LaunchedEffect(targetRoute) {
+        if (!targetRoute.isNullOrEmpty()) {
+            Log.d(TAG, "🔄 네비게이션 이동: $targetRoute")
+            navController.navigate(targetRoute)
+        }
+    }
 
     Scaffold(
         bottomBar = {

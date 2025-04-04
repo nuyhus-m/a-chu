@@ -48,6 +48,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.BabyBlue
+import com.ssafy.achu.core.theme.BabyYellow
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontBlue
 import com.ssafy.achu.core.theme.FontGray
@@ -127,16 +129,15 @@ fun MemoryListScreen(
                             1.5.dp,
                             if (uiState.selectedBaby!!.gender == "MALE") PointBlue else PointPink,
                             CircleShape
-                        )
-                        .background(color = Color.LightGray),
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.img_baby_profile),
+                        painter = painterResource(id =   if (uiState.selectedBaby!!.gender == "MALE") R.drawable.img_profile_baby_boy else R.drawable.img_profile_baby_girl,),
                         contentDescription = "Profile",
                         modifier = Modifier
                             .size(80.dp)
-                            .clip(CircleShape),
+                            .clip(CircleShape).background(  if (uiState.selectedBaby!!.gender == "MALE") BabyBlue else BabyYellow,),
                         contentScale = ContentScale.Crop
                     )
                     if (!uiState.selectedBaby?.imgUrl.isNullOrEmpty()) {

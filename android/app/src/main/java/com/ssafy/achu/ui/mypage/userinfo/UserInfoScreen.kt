@@ -56,6 +56,7 @@ import com.ssafy.achu.core.components.dialog.PhoneVerificationDialog
 import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
+import com.ssafy.achu.core.theme.LightPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.formatPhoneNumber
@@ -132,10 +133,10 @@ fun UserInfoScreen(
                     modifier = Modifier
                         .size(150.dp) // 크기 지정
                         .shadow(elevation = 8.dp, shape = CircleShape) // 그림자 적용
-                        .clip(CircleShape) // 원형 이미지 적용
+                        .clip(CircleShape).background(LightPink) // 원형 이미지 적용
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.img_profile_test),
+                        painter = painterResource(id = R.drawable.img_profile_basic2),
                         contentDescription = "Profile",
                         modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
                         contentScale = ContentScale.Crop
@@ -318,6 +319,7 @@ fun UserInfoScreen(
             },
             onConfirm = {
                 sharedPreferencesUtil.clearTokensInfo()
+                viewModel.deleteFcmToken()
                 navigateToAuthActivity(context)
             }
         )

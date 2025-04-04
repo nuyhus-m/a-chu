@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.BabyBlue
+import com.ssafy.achu.core.theme.BabyYellow
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontBlue
 import com.ssafy.achu.core.theme.FontGray
@@ -59,11 +61,24 @@ fun BabyDropdown(
         else -> FontGray
     }
 
+    val backColor = when (selectedBaby.gender) {
+        "MALE" -> BabyBlue
+        "FEMALE" -> BabyYellow
+        else -> FontGray
+    }
+
+    val profileImg = when (selectedBaby.gender) {
+        "MALE" -> R.drawable.img_profile_baby_boy
+        else -> R.drawable.img_profile_baby_girl
+    }
+
+
     val NicknameTextColor = when (selectedBaby.gender) {
         "MALE" -> FontBlue
         "FEMALE" -> PointPink
         else -> FontGray
     }
+
 
     Row(
         modifier = Modifier
@@ -84,11 +99,11 @@ fun BabyDropdown(
             if (imageUrl.isNullOrEmpty()) {
                 // 기본 이미지를 painter로 설정
                 Image(
-                    painter = painterResource(id = R.drawable.img_baby_profile),
+                    painter = painterResource(id = profileImg),
                     contentDescription = "Profile",
                     modifier = Modifier
                         .size(60.dp)
-                        .clip(CircleShape)
+                        .clip(CircleShape).background(color = backColor)
                         .align(Alignment.Center),
                     contentScale = ContentScale.Crop
                 )

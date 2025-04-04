@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.mypage.baby
 
+import android.R.attr.contentDescription
 import android.os.Build
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.annotation.RequiresApi
@@ -45,7 +46,11 @@ import coil3.compose.AsyncImage
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.BabyBlue
+import com.ssafy.achu.core.theme.BabyYellow
 import com.ssafy.achu.core.theme.FontGray
+import com.ssafy.achu.core.theme.LightBlue
+import com.ssafy.achu.core.theme.LightPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
@@ -194,7 +199,7 @@ fun BabyListItem(babyInfo: BabyResponse, onClick: () -> Unit) {
                         modifier = Modifier
                             .size(66.dp) // 크기 지정
                             .clip(CircleShape) // 원형 이미지
-                            .border(1.dp, birthTextColor, CircleShape) // 성별에 맞는 색상으로 원형 띠 적용
+                            .border(1.dp, birthTextColor, CircleShape)
                     ) {
                         val imageUrl = babyInfo.imgUrl
 
@@ -202,12 +207,17 @@ fun BabyListItem(babyInfo: BabyResponse, onClick: () -> Unit) {
                         if (imageUrl.isNullOrEmpty()) {
                             // 기본 이미지를 painter로 설정
                             Image(
-                                painter = painterResource(id = R.drawable.img_baby_profile),
+                                painter = painterResource(id =  if (babyInfo.gender == "MALE")
+                                    R.drawable.img_profile_baby_boy
+                                else
+                                    R.drawable.img_profile_baby_girl) ,
                                 contentDescription = "Profile",
                                 modifier = Modifier
                                     .size(60.dp)
                                     .clip(CircleShape)
-                                    .align(Alignment.Center),
+                                    .align(Alignment.Center).background(
+                                        if(babyInfo.gender == "MALE") BabyBlue else BabyYellow
+                                    ),
                                 contentScale = ContentScale.Crop
                             )
                         } else {

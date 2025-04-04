@@ -27,6 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.LightPink
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.mypage.userinfo.UserInfoViewModel
@@ -86,10 +87,11 @@ fun MyPageScreen(
                         modifier = Modifier
                             .size(100.dp) // 크기 지정
                             .shadow(elevation = 4.dp, shape = CircleShape) // 그림자 적용
-                            .clip(CircleShape) // 원형 이미지 적용
+                            .clip(CircleShape)
+                            .background(color = LightPink)// 원형 이미지 적용
                     ) {
                         Image(
-                            painter = painterResource(R.drawable.img_profile_test),//로딩 이미지
+                            painter = painterResource(R.drawable.img_profile_basic2),//로딩 이미지
                             contentDescription = "Profile",
                             modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
                             contentScale = ContentScale.Crop
@@ -99,7 +101,7 @@ fun MyPageScreen(
                         }
                         if (user?.profileImageUrl.isNullOrEmpty()) {
                             Image(
-                                painter = painterResource(R.drawable.img_profile_test),//디폴트 이미지
+                                painter = painterResource(R.drawable.img_profile_basic2),//디폴트 이미지
                                 contentDescription = "Profile",
                                 modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
                                 contentScale = ContentScale.Crop

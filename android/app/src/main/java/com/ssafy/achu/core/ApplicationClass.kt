@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder
 import com.ssafy.achu.data.database.SharedPreferencesUtil
 import com.ssafy.achu.data.repository.AuthRepository
 import com.ssafy.achu.data.repository.BabyRepository
+import com.ssafy.achu.data.repository.FcmRepository
 import com.ssafy.achu.data.repository.MemoryRepository
 import com.ssafy.achu.data.repository.ProductRepository
 import com.ssafy.achu.data.repository.UserRepository
@@ -59,6 +60,7 @@ class ApplicationClass : Application() {
         lateinit var productRepository: ProductRepository
         lateinit var memoryRepository: MemoryRepository
         lateinit var babyRepository: BabyRepository
+        lateinit var fcmRepository: FcmRepository
     }
 
 
@@ -93,7 +95,7 @@ class ApplicationClass : Application() {
         productRepository = ProductRepository()
         memoryRepository = MemoryRepository()
         babyRepository = BabyRepository()
-
+        fcmRepository = FcmRepository()
 
     }
 

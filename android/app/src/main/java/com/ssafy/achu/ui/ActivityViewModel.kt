@@ -6,11 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
+import com.ssafy.achu.core.ApplicationClass.Companion.fcmRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
+import com.ssafy.achu.data.model.Token
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.UploadProductRequest
@@ -81,7 +83,7 @@ class ActivityViewModel : ViewModel() {
                 }
                 Log.d(TAG, "getBabyList: ${it}")
                 Log.d(TAG, "getBabyList: ${uiState.value.babyList}")
-                if(uiState.value.babyList.isEmpty()){
+                if (uiState.value.babyList.isEmpty()) {
                     updateShowCreateDialog(true)
                 }
 
@@ -155,6 +157,32 @@ class ActivityViewModel : ViewModel() {
 
     fun hideBottomNav() {
         isBottomNavVisible.value = false
+    }
+
+
+    fun updateFcmToken(token: String) {
+        viewModelScope.launch {
+            fcmRepository.updateToken(Token(token)).onSuccess {
+                Log.d(TAG, "updateFcmToken: ${it}, 등록성공")
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "updateFcmToken: ${it}")
+            }
+        }
+
+    }
+
+
+    fun deleteFcmToken() {
+        viewModelScope.launch {
+            fcmRepository.deleteToken().onSuccess {
+                Log.d(TAG, "deleteFcmToken: ${it}, 삭제성공")
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "deleteFcmToken: ${it}")
+            }
+        }
+
     }
 
 
