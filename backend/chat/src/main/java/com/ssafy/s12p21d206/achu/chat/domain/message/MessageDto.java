@@ -4,7 +4,6 @@ import com.ssafy.s12p21d206.achu.chat.domain.Message;
 import com.ssafy.s12p21d206.achu.chat.domain.MessageType;
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public record MessageDto(
     Long id,
@@ -23,9 +22,5 @@ public record MessageDto(
         message.timestamp(),
         isMine,
         message.sender().id());
-  }
-
-  public static List<MessageDto> listFrom(List<Message> messages, ChatUser currentUser) {
-    return messages.stream().map(message -> from(message, currentUser)).toList();
   }
 }
