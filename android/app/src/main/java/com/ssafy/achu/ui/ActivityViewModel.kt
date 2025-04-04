@@ -8,12 +8,16 @@ import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
+import com.ssafy.achu.core.ApplicationClass.Companion.stompService
 import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.UploadProductRequest
+import com.ssafy.achu.data.network.StompService
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -37,8 +41,20 @@ class ActivityViewModel : ViewModel() {
     private val _errorMessage = MutableSharedFlow<String>()
     val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
 
+    private var backgroundJobToken: Job? = null
+    private val backgroundTimeoutMs = 60000L // 1분 후 연결 解制
+
     init {
         getUserinfo()
+        // 앱이 시작될 때 STOMP 연결 시작
+        connectToStompServer()
+    }
+
+    // STOMP 서버에 연결
+    private fun connectToStompServer() {
+        viewModelScope.launch {
+            stompService.connect()
+        }
     }
 
     fun updateSelectedBaby(baby: BabyResponse) {
@@ -81,7 +97,7 @@ class ActivityViewModel : ViewModel() {
                 }
                 Log.d(TAG, "getBabyList: ${it}")
                 Log.d(TAG, "getBabyList: ${uiState.value.babyList}")
-                if(uiState.value.babyList.isEmpty()){
+                if (uiState.value.babyList.isEmpty()) {
                     updateShowCreateDialog(true)
                 }
 
@@ -157,5 +173,28 @@ class ActivityViewModel : ViewModel() {
         isBottomNavVisible.value = false
     }
 
+    fun onAppForeground() {
+        // 백그라운드 작업 취소
+        backgroundJobToken?.cancel()
+        backgroundJobToken = null
 
+        // 앱이 포그라운드로 돌아올 때 처리
+        viewModelScope.launch {
+            if (stompService.connectionState.value !is StompService.ConnectionState.Connected) {
+                stompService.connect()
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // 이미 실행 중인 백그라운드 작업 취소
+        backgroundJobToken?.cancel()
+
+        // 새 백그라운드 작업 시작 - 일정 시간 후 연결 해제
+        backgroundJobToken = viewModelScope.launch {
+            delay(backgroundTimeoutMs)
+            stompService.cleanup()
+        }
+    }
 }
