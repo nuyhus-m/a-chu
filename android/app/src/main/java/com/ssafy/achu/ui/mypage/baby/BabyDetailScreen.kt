@@ -55,10 +55,12 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
+import com.ssafy.achu.core.components.BasicDeleteTopAppBar
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
 import com.ssafy.achu.core.components.PointPinkLineBtn
 import com.ssafy.achu.core.components.SmallLineBtn
+import com.ssafy.achu.core.components.dialog.BasicDialog
 import com.ssafy.achu.core.components.textfield.ClearTextField
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
@@ -222,11 +224,25 @@ fun BabyDetailScreen(
                         false
                     )
                 }
-            } else {
+            } else if(type == "등록"){
                 BasicTopAppBar(
                     title = titleText,
                     onBackClick = {
                         backPressedDispatcher?.onBackPressed()
+                    }
+                )
+            }else{
+                BasicDeleteTopAppBar(
+                    title = titleText,
+                    onBackClick = {
+                        backPressedDispatcher?.onBackPressed()
+                    },
+                    onDeleteClick = {
+                        if (uiState.babyList.size> 1){
+                            babyViewModel.deleteBaby(babyUiState.selectedBaby!!.id)
+                        }else{
+                            Toast.makeText(context,"이용을 위해 한명 이상의 아이 정보가 필요합니다." , Toast.LENGTH_SHORT).show()
+                        }
                     }
                 )
             }
@@ -425,17 +441,6 @@ fun BabyDetailScreen(
 
                     PointPinkBtn("등록하기", onClick = {
                        babyViewModel.registerBaby()
-                    })
-                } else {
-                    PointPinkBtn("아이삭제", onClick = {
-                        if (uiState.babyList.size>0){
-                            babyViewModel.deleteBaby(babyUiState.selectedBaby!!.id)
-
-                        }else{
-                            Toast.makeText(context,"이용을 위해 한명 이상의 아이 정보가 필요합니다." , Toast.LENGTH_SHORT).show()
-
-                        }
-
                     })
                 }
                 Spacer(modifier = Modifier.height(40.dp))

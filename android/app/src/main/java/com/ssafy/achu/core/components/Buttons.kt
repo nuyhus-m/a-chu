@@ -173,7 +173,7 @@ fun SmallLineBtn(buttonText: String, color: Color, onClick: () -> Unit) {
 //핑크색 기본 포인트 버튼
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PointPinkBtn(buttonText: String, onClick: () -> Unit) {
+fun PointPinkBtn(buttonText: String, onClick:() -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -192,7 +192,9 @@ fun PointPinkBtn(buttonText: String, onClick: () -> Unit) {
                 .height(50.dp)
                 .clip(RoundedCornerShape(30.dp))
                 .background(PointPink)
-                .clickable(onClick = onClick),
+                .clickable( ){
+                    onClick()
+                },
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -205,6 +207,7 @@ fun PointPinkBtn(buttonText: String, onClick: () -> Unit) {
 }
 
 //글씨 크기에 맞춰 지는 핑크 버튼
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PointPinkFlexibleBtn(buttonText: String, onClick: () -> Unit) {
     Box(
