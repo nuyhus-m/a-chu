@@ -1,9 +1,8 @@
-package com.ssafy.s12p21d206.achu.auth.api.support;
+package com.ssafy.s12p21d206.achu.api.controller.support;
 
 import com.ssafy.s12p21d206.achu.api.controller.ApiUser;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -22,9 +21,20 @@ public class ApiUserArgumentResolver implements HandlerMethodArgumentResolver {
       ModelAndViewContainer mavContainer,
       NativeWebRequest webRequest,
       WebDataBinderFactory binderFactory) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+    Object userIdObj = request.getAttribute("userId");
 
-    Long id = (Long) authentication.getPrincipal();
-    return new ApiUser(id);
+    if (userIdObj == null) {
+      throw new IllegalArgumentException("User ID not found in request attributes");
+    }
+
+    Long userId;
+    try {
+      userId = (Long) userIdObj;
+    } catch (ClassCastException e) {
+      throw new IllegalArgumentException("Invalid userId type in request attributes", e);
+    }
+
+    return new ApiUser(userId);
   }
 }

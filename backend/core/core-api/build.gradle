@@ -15,6 +15,7 @@ dependencies {
     implementation project(':support:monitoring')
 
     runtimeOnly project(':auth-user')
+    runtimeOnly project(':chat')
 
     testImplementation project(":tests:api-docs")
 }

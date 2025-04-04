@@ -1,7 +1,6 @@
-package com.ssafy.s12p21d206.achu.auth.api.config;
+package com.ssafy.s12p21d206.achu.api.config;
 
-import com.ssafy.s12p21d206.achu.auth.api.support.ApiUserArgumentResolver;
-import com.ssafy.s12p21d206.achu.auth.api.support.AuthApiUserArgumentResolver;
+import com.ssafy.s12p21d206.achu.api.controller.support.ApiUserArgumentResolver;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -13,6 +12,5 @@ public class WebConfig implements WebMvcConfigurer {
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
     resolvers.add(new ApiUserArgumentResolver());
-    resolvers.add(new AuthApiUserArgumentResolver());
   }
 }

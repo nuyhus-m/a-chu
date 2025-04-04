@@ -134,3 +134,6 @@ include::modules/core-api/baby.adoc[]
 include::modules/core-api/goods.adoc[]
 include::modules/core-api/like.adoc[]
 include::modules/core-api/memory.adoc[]
+
+:snippets: +{project-root}+/build/generated-snippets/chat
+include::modules/chat/chat.adoc[]

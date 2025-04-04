@@ -1,5 +1,6 @@
-package com.ssafy.s12p21d206.achu.storage.db.core;
+package com.ssafy.s12p21d206.achu.storage.db.core.support;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -9,57 +10,50 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
-public abstract class BaseEntity {
+public abstract class ChatBaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Enumerated(EnumType.STRING)
-  private EntityStatus entityStatus = EntityStatus.ACTIVE;
+  @Column(name = "entityStatus", columnDefinition = "VARCHAR")
+  private ChatEntityStatus entityStatus = ChatEntityStatus.ACTIVE;
 
   @CreationTimestamp
   private LocalDateTime createdAt;
 
-  @UpdateTimestamp
-  private LocalDateTime updatedAt;
+  protected ChatBaseEntity() {}
 
-  protected BaseEntity() {}
-
-  protected BaseEntity(Long id) {
+  protected ChatBaseEntity(Long id) {
     this.id = id;
-  }
-
-  public void active() {
-    this.entityStatus = EntityStatus.ACTIVE;
-  }
-
-  public void delete() {
-    this.entityStatus = EntityStatus.DELETED;
-  }
-
-  public boolean isActive() {
-    return this.entityStatus == EntityStatus.ACTIVE;
-  }
-
-  public boolean isDeleted() {
-    return this.entityStatus == EntityStatus.DELETED;
   }
 
   public Long getId() {
     return id;
   }
 
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
+  public void active() {
+    this.entityStatus = ChatEntityStatus.ACTIVE;
   }
 
-  public LocalDateTime getUpdatedAt() {
-    return updatedAt;
+  public void delete() {
+    this.entityStatus = ChatEntityStatus.DELETED;
+  }
+
+  public boolean isActive() {
+    return this.entityStatus == ChatEntityStatus.ACTIVE;
+  }
+
+  public boolean isDeleted() {
+    return this.entityStatus == ChatEntityStatus.DELETED;
+  }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
   }
 }
