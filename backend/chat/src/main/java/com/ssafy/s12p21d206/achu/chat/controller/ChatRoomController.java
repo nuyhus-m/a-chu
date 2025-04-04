@@ -1,11 +1,16 @@
 package com.ssafy.s12p21d206.achu.chat.controller;
 
 import com.ssafy.s12p21d206.achu.chat.controller.response.ChatApiResponse;
-import com.ssafy.s12p21d206.achu.chat.domain.ChatRoomDetail;
+import com.ssafy.s12p21d206.achu.chat.domain.ChatRoom;
 import com.ssafy.s12p21d206.achu.chat.domain.ChatRoomFacade;
 import com.ssafy.s12p21d206.achu.chat.domain.ChatRoomService;
+import com.ssafy.s12p21d206.achu.chat.domain.Message;
+import com.ssafy.s12p21d206.achu.chat.domain.MessageService;
+import com.ssafy.s12p21d206.achu.chat.domain.UnreadCount;
 import java.util.List;
+import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,30 +20,45 @@ public class ChatRoomController {
 
   private final ChatRoomFacade chatRoomFacade;
   private final ChatRoomService chatRoomService;
+  private final MessageService messageService;
 
-  public ChatRoomController(ChatRoomFacade chatRoomFacade, ChatRoomService chatRoomService) {
+  public ChatRoomController(
+      ChatRoomFacade chatRoomFacade,
+      ChatRoomService chatRoomService,
+      MessageService messageService) {
     this.chatRoomFacade = chatRoomFacade;
     this.chatRoomService = chatRoomService;
+    this.messageService = messageService;
   }
 
   @PostMapping("/chat/rooms")
-  public ChatApiResponse<ChatRoomResponse> appendChatRoom(
+  public ChatApiResponse<DefaultIdResponse> appendChatRoom(
       ChatApiUser apiUser, @RequestBody AppendChatRoomRequest request) {
-    ChatRoomDetail chatRoomDetail = chatRoomFacade.append(
+    Long chatRoomId = chatRoomFacade.append(
         apiUser.toChatUser(), request.toNewChatRoom(), request.toNewMessage());
-    return ChatApiResponse.success(ChatRoomResponse.from(apiUser.toChatUser(), chatRoomDetail));
+    return ChatApiResponse.success(DefaultIdResponse.of(chatRoomId));
   }
 
   @GetMapping("/chat/rooms")
   public ChatApiResponse<List<ChatRoomResponse>> findChatRooms(ChatApiUser apiUser) {
-    List<ChatRoomDetail> chatRoomDetails = chatRoomFacade.findChatRoomDetails(apiUser.toChatUser());
-    return ChatApiResponse.success(ChatRoomResponse.from(apiUser.toChatUser(), chatRoomDetails));
+    List<ChatRoom> chatRooms = chatRoomService.findChatRooms(apiUser.toChatUser());
+    Map<Long, UnreadCount> unreadCountMap = chatRoomService.findUnreadCounts(
+        apiUser.toChatUser(), chatRooms.stream().map(ChatRoom::id).toList());
+    return ChatApiResponse.success(
+        ChatRoomResponse.from(apiUser.toChatUser(), chatRooms, unreadCountMap));
   }
 
   @GetMapping("/chat/unread-count")
   public ChatApiResponse<UnreadCountResponse> unreadCount(ChatApiUser apiUser) {
-    Long unreadCount = chatRoomService.countUnreadMessages(apiUser.toChatUser());
-    UnreadCountResponse response = new UnreadCountResponse(unreadCount);
+    UnreadCount unreadCount = chatRoomService.countUnreadMessages(apiUser.toChatUser());
+    UnreadCountResponse response = UnreadCountResponse.of(unreadCount);
     return ChatApiResponse.success(response);
+  }
+
+  @GetMapping("/chat/rooms/{roomId}/messages")
+  public ChatApiResponse<List<MessageResponse>> getMessages(
+      ChatApiUser apiUser, @PathVariable Long roomId) {
+    List<Message> messages = messageService.getMessagesByChatRoomId(apiUser.toChatUser(), roomId);
+    return ChatApiResponse.success(MessageResponse.listFrom(messages, apiUser.toChatUser()));
   }
 }

@@ -26,6 +26,13 @@ public class ChatUserCoreRepository implements ChatUserRepository {
   }
 
   @Override
+  public Optional<ChatUserProfile> findProfileById(Long userId) {
+    return chatUserJpaRepository
+        .findByIdAndEntityStatus(userId, ChatEntityStatus.ACTIVE)
+        .map(ChatUserEntity::toProfile);
+  }
+
+  @Override
   public boolean exists(ChatUser chatUser) {
     return chatUserJpaRepository.existsById(chatUser.id());
   }

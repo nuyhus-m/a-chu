@@ -1,4 +1,4 @@
-package com.ssafy.s12p21d206.achu.chat.controller;
+package com.ssafy.s12p21d206.achu.chat.domain.message;
 
 import com.ssafy.s12p21d206.achu.chat.domain.Message;
 import com.ssafy.s12p21d206.achu.chat.domain.MessageType;
@@ -6,7 +6,7 @@ import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record MessageResponse(
+public record MessageDto(
     Long id,
     String content,
     MessageType type,
@@ -14,9 +14,9 @@ public record MessageResponse(
     boolean isMine,
     Long senderId) {
 
-  public static MessageResponse from(Message message, ChatUser currentUser) {
+  public static MessageDto from(Message message, ChatUser currentUser) {
     boolean isMine = message.sender().id().equals(currentUser.id());
-    return new MessageResponse(
+    return new MessageDto(
         message.id(),
         message.content(),
         message.type(),
@@ -25,7 +25,7 @@ public record MessageResponse(
         message.sender().id());
   }
 
-  public static List<MessageResponse> listFrom(List<Message> messages, ChatUser currentUser) {
+  public static List<MessageDto> listFrom(List<Message> messages, ChatUser currentUser) {
     return messages.stream().map(message -> from(message, currentUser)).toList();
   }
 }

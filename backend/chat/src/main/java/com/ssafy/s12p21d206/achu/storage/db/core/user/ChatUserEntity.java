@@ -2,7 +2,11 @@ package com.ssafy.s12p21d206.achu.storage.db.core.user;
 
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUserProfile;
 import com.ssafy.s12p21d206.achu.storage.db.core.support.ChatBaseEntity;
+import com.ssafy.s12p21d206.achu.storage.db.core.support.ChatEntityStatus;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.Immutable;
 
@@ -18,6 +22,10 @@ public class ChatUserEntity extends ChatBaseEntity {
   private String nickname;
 
   private String profileImageUrl;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "entityStatus", columnDefinition = "VARCHAR")
+  private ChatEntityStatus entityStatus = ChatEntityStatus.ACTIVE;
 
   protected ChatUserEntity() {}
 

@@ -8,4 +8,6 @@ public interface MessageRepository {
   Message save(ChatUser sender, ChatRoom chatRoom, NewMessage newMessage);
 
   List<Message> readLastMessagesIn(List<ChatRoom> chatRooms);
+
+  List<Message> findMessagesByChatRoomId(Long chatRoomId);
 }

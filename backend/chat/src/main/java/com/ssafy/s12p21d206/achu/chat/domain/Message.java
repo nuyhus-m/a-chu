@@ -9,4 +9,8 @@ public record Message(
     String content,
     ChatUser sender,
     MessageType type,
-    LocalDateTime timestamp) {}
+    LocalDateTime timestamp) {
+  public boolean isUserMessage() {
+    return type.isUserMessage();
+  }
+}

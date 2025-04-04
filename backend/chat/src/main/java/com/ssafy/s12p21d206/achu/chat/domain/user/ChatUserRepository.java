@@ -8,6 +8,8 @@ public interface ChatUserRepository {
 
   Optional<ChatUserProfile> findProfile(ChatUser user);
 
+  Optional<ChatUserProfile> findProfileById(Long userId);
+
   boolean exists(ChatUser chatUser);
 
   List<ChatUserProfile> findProfilesIn(Set<ChatUser> chatUsers);

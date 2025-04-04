@@ -36,4 +36,11 @@ public class MessageCoreRepository implements MessageRepository {
         .map(MessageEntity::toMessage)
         .toList();
   }
+
+  @Override
+  public List<Message> findMessagesByChatRoomId(Long chatRoomId) {
+    return messageJpaRepository.findAllByChatRoomId(chatRoomId).stream()
+        .map(MessageEntity::toMessage)
+        .toList();
+  }
 }
