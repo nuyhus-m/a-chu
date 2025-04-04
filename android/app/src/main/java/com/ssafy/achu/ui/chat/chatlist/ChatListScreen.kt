@@ -1,7 +1,11 @@
 package com.ssafy.achu.ui.chat.chatlist
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,15 +23,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.Divider
@@ -35,9 +45,17 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatChatRoomTime
+import com.ssafy.achu.data.model.chat.ChatRoomResponse
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChatListScreen(modifier: Modifier = Modifier, onNavigateToChat: () -> Unit = {}) {
+fun ChatListScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ChatListViewModel = viewModel(),
+    onNavigateToChat: (Int) -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = modifier
@@ -54,32 +72,56 @@ fun ChatListScreen(modifier: Modifier = Modifier, onNavigateToChat: () -> Unit =
             )
         }
 
-        // 채팅 목록
-        val chats = listOf(
-            Chat(
-                imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                title = "덕윤맘",
-                productName = "미피 인형",
-                lastMessage = "사진 추가로 볼 수 있을까요?",
-                time = "오후 7:59",
-                unreadCount = 1
-            ),
-            Chat(
-                imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                title = "덕윤맘",
-                productName = "미피 인형",
-                lastMessage = "사진 추가로 볼 수 있을까요?",
-                time = "오후 7:59",
-                unreadCount = 1
-            ),
-        )
-        ChatList(items = chats, onNavigateToChat = onNavigateToChat)
+        if (uiState.chatList.isEmpty()) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .background(color = White),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+
+                Image(
+                    painter = painterResource(id = R.drawable.img_crying_face),
+                    contentDescription = "Profile",
+                    modifier = Modifier
+                        .size(90.dp)
+                )
+
+                Spacer(Modifier.height(24.dp))
+                Text(
+                    text = "마음에 드는 상품이 있나요?\n지금 바로 채팅해보세요!",
+                    style = AchuTheme.typography.semiBold18,
+                    color = FontGray,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 30.sp
+                )
+            }
+        } else {
+            // 채팅 목록
+            ChatList(items = uiState.chatList, onNavigateToChat = onNavigateToChat)
+        }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun ChatList(items: List<ChatRoomResponse>, onNavigateToChat: (Int) -> Unit) {
+    LazyColumn {
+        items(items) { item ->
+            ChatItem(
+                chatRoom = item,
+                onNavigateToChat = { onNavigateToChat(item.id) }
+            )
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ChatItem(
-    onNavigateToChat: () -> Unit = {}
+    chatRoom: ChatRoomResponse,
+    onNavigateToChat: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -93,14 +135,13 @@ fun ChatItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = "https://www.cheonyu.com/_DATA/product/70900/70983_1705645848.jpg",
+                model = chatRoom.goods.thumbnailUrl,
                 contentDescription = stringResource(R.string.product_img),
                 modifier = Modifier
                     .fillMaxWidth(0.2f)
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop,
-                error = painterResource(id = R.drawable.img_miffy_doll)
+                contentScale = ContentScale.Crop
             )
             Column(
                 modifier = Modifier
@@ -111,12 +152,12 @@ fun ChatItem(
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Text(
-                        text = "덕윤맘",
+                        text = chatRoom.partner.nickname,
                         style = AchuTheme.typography.semiBold18
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "미피 인형",
+                        text = chatRoom.goods.title,
                         style = AchuTheme.typography.semiBold16.copy(color = PointBlue),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -124,7 +165,7 @@ fun ChatItem(
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "사진 추가로 볼 수 있을까요?",
+                    text = chatRoom.lastMessage.content,
                     style = AchuTheme.typography.regular16.copy(color = FontGray),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -135,7 +176,7 @@ fun ChatItem(
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = "오후 7:59",
+                    text = formatChatRoomTime(chatRoom.lastMessage.timestamp),
                     style = AchuTheme.typography.regular14.copy(color = FontGray)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -152,32 +193,14 @@ fun ChatItem(
     }
 }
 
-@Composable
-fun ChatList(items: List<Chat>, onNavigateToChat: () -> Unit) {
-    LazyColumn {
-        items(items) { item ->
-            ChatItem(
-                onNavigateToChat = onNavigateToChat
-            )
-        }
-    }
-}
-
-// 임시 데이터 클래스
-data class Chat(
-    val imgUrl: String,
-    val title: String,
-    val productName: String,
-    val lastMessage: String,
-    val time: String,
-    val unreadCount: Int,
-)
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun ChatListScreenPreview() {
     AchuTheme {
-        ChatListScreen()
+        ChatListScreen(
+            onNavigateToChat = {}
+        )
     }
 }
 
@@ -185,6 +208,6 @@ fun ChatListScreenPreview() {
 @Composable
 fun ChatItemPreview() {
     AchuTheme {
-        ChatItem()
+//        ChatItem()
     }
 }
