@@ -525,7 +525,7 @@ GET /chat/unread-count
 {
   "success": true,
   "data": {
-    "unreadMessageCount": 5
+    "unreadCount": 5
   }
 }
 ----
@@ -542,7 +542,7 @@ GET /chat/unread-count
 |OBJECT
 |응답 데이터 객체
 
-|data.unreadMessageCount
+|data.unreadCount
 |NUMBER
 |안 읽은 메시지 총 개수
 
