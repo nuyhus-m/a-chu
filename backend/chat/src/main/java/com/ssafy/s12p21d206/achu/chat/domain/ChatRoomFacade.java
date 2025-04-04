@@ -19,6 +19,6 @@ public class ChatRoomFacade {
   public Long append(ChatUser buyer, NewChatRoom newChatRoom, NewMessage newMessage) {
     ChatRoom chatRoom = chatRoomService.append(buyer, newChatRoom);
     Message message = messageService.append(buyer, chatRoom, newMessage);
-    return chatRoom.id();
+    return chatRoom.updateLastMessage(message).id();
   }
 }

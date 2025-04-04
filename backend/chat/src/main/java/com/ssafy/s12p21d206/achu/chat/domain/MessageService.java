@@ -39,10 +39,6 @@ public class MessageService {
     return this.append(sender, chatRoom, newMessage);
   }
 
-  public List<Message> readLastMessagesIn(List<ChatRoom> chatRooms) {
-    return messageReader.readLastMessagesIn(chatRooms);
-  }
-
   public void updateRead(ChatUser chatUser, Long roomId, Long lastReadMessageId) {
     messageReadHandler.updateRead(chatUser, roomId, lastReadMessageId);
   }
