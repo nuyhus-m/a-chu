@@ -4,6 +4,7 @@ import com.ssafy.s12p21d206.achu.chat.controller.response.ChatApiResponse;
 import com.ssafy.s12p21d206.achu.chat.domain.ChatRoomDetail;
 import com.ssafy.s12p21d206.achu.chat.domain.ChatRoomFacade;
 import com.ssafy.s12p21d206.achu.chat.domain.ChatRoomService;
+import com.ssafy.s12p21d206.achu.chat.domain.UnreadCount;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,8 +38,8 @@ public class ChatRoomController {
 
   @GetMapping("/chat/unread-count")
   public ChatApiResponse<UnreadCountResponse> unreadCount(ChatApiUser apiUser) {
-    Long unreadCount = chatRoomService.countUnreadMessages(apiUser.toChatUser());
-    UnreadCountResponse response = new UnreadCountResponse(unreadCount);
+    UnreadCount unreadCount = chatRoomService.countUnreadMessages(apiUser.toChatUser());
+    UnreadCountResponse response = UnreadCountResponse.of(unreadCount);
     return ChatApiResponse.success(response);
   }
 }

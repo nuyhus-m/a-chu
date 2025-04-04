@@ -50,7 +50,7 @@ public class ChatRoomService {
         .toList();
   }
 
-  public Long countUnreadMessages(ChatUser user) {
+  public UnreadCount countUnreadMessages(ChatUser user) {
     return chatRoomReader.countUnreadMessages(user);
   }
 }

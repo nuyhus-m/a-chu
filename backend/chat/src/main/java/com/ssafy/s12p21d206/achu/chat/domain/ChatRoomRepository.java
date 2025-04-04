@@ -18,5 +18,5 @@ public interface ChatRoomRepository {
 
   void updateRead(ChatUser user, Long roomId, Long lastReadMessageId);
 
-  Long countUnreadMessages(ChatUser user);
+  UnreadCount countUnreadMessages(ChatUser user);
 }

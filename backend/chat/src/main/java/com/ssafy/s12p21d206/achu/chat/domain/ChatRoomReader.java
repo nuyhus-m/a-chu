@@ -25,7 +25,7 @@ public class ChatRoomReader {
         .orElseThrow(() -> new ChatException(ChatErrorType.CHAT_ROOM_NOT_FOUND));
   }
 
-  public Long countUnreadMessages(ChatUser user) {
+  public UnreadCount countUnreadMessages(ChatUser user) {
     return chatRoomRepository.countUnreadMessages(user);
   }
 }

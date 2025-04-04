@@ -3,6 +3,7 @@ package com.ssafy.s12p21d206.achu.storage.db.core.chat;
 import com.ssafy.s12p21d206.achu.chat.domain.ChatRoom;
 import com.ssafy.s12p21d206.achu.chat.domain.ChatRoomRepository;
 import com.ssafy.s12p21d206.achu.chat.domain.NewChatRoom;
+import com.ssafy.s12p21d206.achu.chat.domain.UnreadCount;
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
 import com.ssafy.s12p21d206.achu.storage.db.core.support.ChatEntityStatus;
 import java.util.List;
@@ -63,7 +64,7 @@ public class ChatRoomCoreRepository implements ChatRoomRepository {
   }
 
   @Override
-  public Long countUnreadMessages(ChatUser user) {
-    return chatRoomJpaRepository.countUnreadMessagesByUserId(user.id());
+  public UnreadCount countUnreadMessages(ChatUser user) {
+    return new UnreadCount(chatRoomJpaRepository.countUnreadMessagesByUserId(user.id()));
   }
 }

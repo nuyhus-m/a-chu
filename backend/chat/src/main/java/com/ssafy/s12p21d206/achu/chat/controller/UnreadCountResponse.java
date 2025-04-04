@@ -1,3 +1,9 @@
 package com.ssafy.s12p21d206.achu.chat.controller;
 
-public record UnreadCountResponse(Long unreadMessageCount) {}
+import com.ssafy.s12p21d206.achu.chat.domain.UnreadCount;
+
+public record UnreadCountResponse(Long unreadMessageCount) {
+  public static UnreadCountResponse of(UnreadCount unreadCount) {
+    return new UnreadCountResponse(unreadCount.unreadCount());
+  }
+}
