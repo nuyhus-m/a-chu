@@ -11,6 +11,7 @@ class SharedPreferencesUtil(context: Context) {
 
     companion object {
         private const val SHARED_PREFERENCES_NAME = "achu_preference"
+        private const val KEY_IS_AUTO_LOGIN = "is_auto_login"
     }
 
     private var preferences: SharedPreferences =
@@ -64,6 +65,7 @@ class SharedPreferencesUtil(context: Context) {
         }
     }
 
+
     fun clearTokensInfo() {
         preferences.edit {
             remove("token_data")
@@ -71,4 +73,15 @@ class SharedPreferencesUtil(context: Context) {
             remove("refresh_issued_at")
         }
     }
+
+    fun saveIsAutoLogin(isEnabled: Boolean) {
+        preferences.edit {
+            putBoolean(KEY_IS_AUTO_LOGIN, isEnabled)
+        }
+    }
+
+    fun isAutoLogin(): Boolean {
+        return preferences.getBoolean(KEY_IS_AUTO_LOGIN, true)
+    }
+
 }

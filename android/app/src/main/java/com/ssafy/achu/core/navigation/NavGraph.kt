@@ -62,7 +62,14 @@ fun NavGraph(
                             isPreview = false
                         )
                     )
+                },
+                onNavigateToBabyDetail = {
+                    navController.navigate(
+                        route = Route.BabyDetail(-1)
+                    )
+
                 }
+
             )
         }
         composable<BottomNavRoute.ProductList> {

@@ -55,10 +55,12 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
+import com.ssafy.achu.core.components.BasicDeleteTopAppBar
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
 import com.ssafy.achu.core.components.PointPinkLineBtn
 import com.ssafy.achu.core.components.SmallLineBtn
+import com.ssafy.achu.core.components.dialog.BasicDialog
 import com.ssafy.achu.core.components.textfield.ClearTextField
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
@@ -66,6 +68,7 @@ import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.compressImage
+import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.ui.ActivityViewModel
 import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -90,10 +93,10 @@ fun BabyDetailScreen(
 
     val babyUiState by babyViewModel.babyUiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
-    var pointColor:Color = PointPink
+    val pointColor: Color = PointPink
 
 
-    if (babyId != 0) {
+    if (babyId > 0 ) {
         babyViewModel.getBaby(babyId)
     }
 
@@ -119,6 +122,7 @@ fun BabyDetailScreen(
     var showNickNameUpdateDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     var dateList: List<Int>
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
     fun showDatePicker(defaultDate: String) {
         Log.d(TAG, "showDatePicker: 실행합니다")
@@ -159,12 +163,20 @@ fun BabyDetailScreen(
         babyViewModel.isChanged.collectLatest { isChanged ->
             viewModel.getBabyList()
             Toast.makeText(context, babyUiState.toastString, Toast.LENGTH_SHORT).show()
-        }
+
+                if (isChanged == "등록" && babyId == -1) {
+                    backPressedDispatcher?.onBackPressed()
+                }else if(isChanged =="삭제"){
+                    backPressedDispatcher?.onBackPressed()
+
+                }
+            }
+        
     }
 
     LaunchedEffect(Unit) {
         babyViewModel.isSelectedBabyChanged.collectLatest { isChanged ->
-            if (uiState.selectedBaby != null){
+            if (uiState.selectedBaby != null) {
                 if (uiState.selectedBaby!!.id == babyUiState.selectedBaby!!.id) {
                     viewModel.updateSelectedBaby(babyUiState.selectedBaby!!)
                 }
@@ -174,45 +186,16 @@ fun BabyDetailScreen(
     }
 
 
-
-
-    fun uriToMultipart(context: Context, uri: Uri): MultipartBody.Part? {
-        val contentResolver = context.contentResolver
-
-        // 실제 파일의 MIME 타입 가져오기
-        val mimeType = contentResolver.getType(uri) ?: return null
-
-        // MIME 타입에 맞는 확장자 추출
-        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
-
-        // 이미지 압축
-        val byteArray = compressImage(uri, context) ?: return null
-
-        if (byteArray.isEmpty()) {
-            Log.e(TAG, "⚠️ 변환된 바이트 배열이 비어있음! 이미지 손실 가능성 있음!")
-            return null
-        }
-
-        Log.d(TAG, "✅ 변환된 바이트 배열 크기: ${byteArray.size}, MIME: $mimeType, 확장자: $extension")
-
-        // 파일명을 실제 MIME 타입에 맞게 설정
-        val fileName = "upload_${System.currentTimeMillis()}.$extension"
-
-        // 올바른 MIME 타입 적용
-        val requestBody = byteArray.toRequestBody(mimeType.toMediaTypeOrNull())
-        return MultipartBody.Part.createFormData("profileImage", fileName, requestBody)
-    }
-
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
             uri?.let {
-                val multipartFile = uriToMultipart(context, it)
+                val multipartFile = uriToMultipart(context, it, "profileImage")
                 if (multipartFile != null) {
-                    if (type == "등록"){
+                    if (type == "등록") {
                         imgUrl = it.toString()
                         babyViewModel.updateBabyPhoto(multipartFile)
-                    }else{
+                    } else {
                         babyViewModel.updateBabyProfile(multipartFile)
                     }
                 }
@@ -220,7 +203,6 @@ fun BabyDetailScreen(
         }
     )
 
-    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
 
     Box(
@@ -231,12 +213,40 @@ fun BabyDetailScreen(
 
     ) {
         Column {
-            BasicTopAppBar(
-                title = titleText,
-                onBackClick = {
-                    backPressedDispatcher?.onBackPressed()
+
+            if (babyId == -1) {
+                Box(modifier = Modifier.padding(horizontal = 24.dp)) {
+                    BasicTopAppBar(
+                        title = "아이등록",
+                        onBackClick = {
+                            backPressedDispatcher?.onBackPressed()
+                        },
+                        false
+                    )
                 }
-            )
+            } else if(type == "등록"){
+                BasicTopAppBar(
+                    title = titleText,
+                    onBackClick = {
+                        backPressedDispatcher?.onBackPressed()
+                    }
+                )
+            }else{
+                BasicDeleteTopAppBar(
+                    title = titleText,
+                    onBackClick = {
+                        backPressedDispatcher?.onBackPressed()
+                    },
+                    onDeleteClick = {
+                        if (uiState.babyList.size> 1){
+                            babyViewModel.deleteBaby(babyUiState.selectedBaby!!.id)
+                        }else{
+                            Toast.makeText(context,"이용을 위해 한명 이상의 아이 정보가 필요합니다." , Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                )
+            }
+
 
             Column(
                 modifier = Modifier
@@ -428,13 +438,9 @@ fun BabyDetailScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
                 if (type == "등록") {
-                    PointPinkBtn("등록하기", onClick = {
-                        babyViewModel.registerBaby()
-                    })
-                } else {
-                    PointPinkBtn("아이삭제", onClick = {
-                        babyViewModel.deleteBaby(babyUiState.selectedBaby!!.id)
 
+                    PointPinkBtn("등록하기", onClick = {
+                       babyViewModel.registerBaby()
                     })
                 }
                 Spacer(modifier = Modifier.height(40.dp))
@@ -447,6 +453,7 @@ fun BabyDetailScreen(
 
     if (showNickNameUpdateDialog) {
         if (type == "등록") {
+
             BabyNicknameDialog(
                 onDismiss = { showNickNameUpdateDialog = false },
                 onConfirm = {
@@ -479,8 +486,10 @@ fun BabyDetailScreen(
 @Composable
 fun BabyDetailScreenPreview() {
     AchuTheme {
-        BabyDetailScreen(viewModel = viewModel(),
-            babyId = 0)
+        BabyDetailScreen(
+            viewModel = viewModel(),
+            babyId = -1
+        )
     }
 
 }

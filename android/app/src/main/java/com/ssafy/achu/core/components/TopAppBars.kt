@@ -1,6 +1,7 @@
 package com.ssafy.achu.core.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,26 +28,62 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 
 @Composable
-fun BasicTopAppBar(title: String, onBackClick: () -> Unit) {
+fun BasicTopAppBar(title: String, onBackClick: () -> Unit, ableBack: Boolean = true) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = { onBackClick() }) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_back),
-                contentDescription = stringResource(R.string.back),
-                modifier = Modifier.size(28.dp)
-            )
+        if (ableBack) {
+            IconButton(onClick = { onBackClick() }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_back),
+                    contentDescription = stringResource(R.string.back),
+                    modifier = Modifier.size(28.dp)
+                )
+            }
         }
         Text(
             text = title,
             style = AchuTheme.typography.semiBold24
+        )
+    }
+}
+
+@Composable
+fun BasicDeleteTopAppBar(title: String, onBackClick: () -> Unit, ableBack: Boolean = true, onDeleteClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 24.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (ableBack) {
+            IconButton(onClick = { onBackClick() }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_back),
+                    contentDescription = stringResource(R.string.back),
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+        }
+        Text(
+            text = title,
+            style = AchuTheme.typography.semiBold24,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = "삭제",
+            style = AchuTheme.typography.semiBold18,
+            color = PointPink,
+            modifier = Modifier.padding(end = 24.dp).clickable{
+                onDeleteClick()
+            }
         )
     }
 }

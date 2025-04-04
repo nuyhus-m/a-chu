@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.memory.memoryupload
+package com.ssafy.achu.core
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -22,7 +23,6 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.NewPink
-import com.ssafy.achu.core.theme.PointPink
 
 @Composable
 fun LoadingScreen(text: String) {
@@ -73,14 +73,8 @@ fun LoadingScreen(text: String) {
             Text(
                 text = text,
                 style = AchuTheme.typography.semiBold20,
-                color = NewPink,)
-
-            Text(
-                text = "추억업로드중...\n잠시만 기다려주세요",
-                style = AchuTheme.typography.semiBold18,
-                color = PointPink,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-            )
+                color = NewPink,
+                textAlign = TextAlign.Center)
         }
     }
 }

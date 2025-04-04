@@ -3,6 +3,7 @@ package com.ssafy.achu.ui
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,11 +13,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ssafy.achu.core.components.BottomNavBar
 import com.ssafy.achu.core.navigation.NavGraph
 import com.ssafy.achu.core.theme.AchuTheme
+
+private const val TAG = "MainActivity_안주현"
 
 class MainActivity : ComponentActivity() {
 
@@ -25,8 +30,15 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()
         requestFcmToken()
+
+        if (intent?.extras != null) {
+            for (key in intent.extras!!.keySet()) {
+                Log.d(TAG, "Key: $key, Value: ${intent.extras!!.get(key)}")
+            }
+        }
 
         setContent {
             AchuTheme {
@@ -58,9 +70,10 @@ fun requestFcmToken() {
 fun AchuApp(viewModel: ActivityViewModel) {
     val navController = rememberNavController()
 
+
     Scaffold(
         bottomBar = {
-            BottomNavBar(navController)
+            BottomNavBar(navController, viewModel)
         },
     ) { innerPadding ->
         NavGraph(

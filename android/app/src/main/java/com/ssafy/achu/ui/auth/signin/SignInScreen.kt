@@ -31,12 +31,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.ui.MainActivity
 import com.ssafy.achu.R
+import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
 import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.textfield.BasicTextField
 import com.ssafy.achu.core.components.textfield.PasswordTextField
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.data.database.SharedPreferencesUtil
 import kotlinx.coroutines.flow.collectLatest
 
 private const val TAG = "SignInScreen"
@@ -61,10 +63,12 @@ fun SignInScreen(
 
     // 로그인 성공 시 MainActivity로 이동
     LaunchedEffect(uiState.signInSuccess) {
+        sharedPreferencesUtil.saveIsAutoLogin(false)
         if (uiState.signInSuccess) {
             val options = ActivityOptions.makeCustomAnimation(context, 0, 0)
             Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
             }.also { intent ->
                 context.startActivity(intent, options.toBundle())
             }

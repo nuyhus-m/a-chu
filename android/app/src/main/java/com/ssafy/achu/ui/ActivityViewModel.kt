@@ -2,6 +2,7 @@ package com.ssafy.achu.ui
 
 import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
@@ -68,8 +69,9 @@ class ActivityViewModel : ViewModel() {
         }
     }
 
-
+    val isBabyListLoading = MutableStateFlow("로딩전")
     fun getBabyList() {
+        isBabyListLoading.value = "로딩중"
         viewModelScope.launch {
             babyRepository.getBabyList().onSuccess {
                 _uiState.update { currentState ->
@@ -79,8 +81,13 @@ class ActivityViewModel : ViewModel() {
                 }
                 Log.d(TAG, "getBabyList: ${it}")
                 Log.d(TAG, "getBabyList: ${uiState.value.babyList}")
+                if(uiState.value.babyList.isEmpty()){
+                    updateShowCreateDialog(true)
+                }
+
             }.onFailure {
                 Log.d(TAG, "getBabyList: ${it.message}")
+
             }
         }
     }
@@ -130,5 +137,25 @@ class ActivityViewModel : ViewModel() {
             )
         }
     }
+
+    fun updateShowCreateDialog(boolean: Boolean) {
+        _uiState.update {
+            it.copy(
+                showCreateDialog = boolean
+            )
+        }
+    }
+
+    var isBottomNavVisible = mutableStateOf(true)
+        private set
+
+    fun showBottomNav() {
+        isBottomNavVisible.value = true
+    }
+
+    fun hideBottomNav() {
+        isBottomNavVisible.value = false
+    }
+
 
 }

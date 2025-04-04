@@ -41,4 +41,6 @@ data class ActivityUIState(
     val uploadProductRequest: UploadProductRequest? = null,
     val multiPartImages: List<MultipartBody.Part> = emptyList(),
     val uploadBabyName: String = "",
+
+    val showCreateDialog: Boolean = false,
 )
