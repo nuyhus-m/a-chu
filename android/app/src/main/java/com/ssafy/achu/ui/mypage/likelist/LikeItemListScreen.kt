@@ -112,7 +112,7 @@ fun LikeItemListScreen(
                             contentDescription = "Crying Face",
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(100.dp)
+                                .height(60.dp)
                         )
                         Spacer(modifier = Modifier.height(24.dp))
                         Text(

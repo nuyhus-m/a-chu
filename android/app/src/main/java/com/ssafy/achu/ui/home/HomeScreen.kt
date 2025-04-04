@@ -366,7 +366,7 @@ fun HomeScreen(
             if (likeItemList.isNullOrEmpty()) {
                 Column(
                     Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth().padding(bottom = 40.dp)
                         .height(100.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally

@@ -1,5 +1,7 @@
 package com.ssafy.achu.ui.memory
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -56,11 +58,14 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatBirthDate
+import com.ssafy.achu.core.util.formatDate
 import com.ssafy.achu.data.model.memory.MemoryResponse
 import com.ssafy.achu.ui.ActivityUIState
 import com.ssafy.achu.ui.ActivityViewModel
 import kotlin.String
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MemoryListScreen(
     modifier: Modifier = Modifier,
@@ -125,6 +130,7 @@ fun MemoryListScreen(
                     modifier = Modifier
                         .size(90.dp)
                         .shadow(elevation = 4.dp, shape = CircleShape)
+                        .background(White)
                         .border(
                             1.5.dp,
                             if (uiState.selectedBaby!!.gender == "MALE") PointBlue else PointPink,
@@ -136,8 +142,9 @@ fun MemoryListScreen(
                         painter = painterResource(id =   if (uiState.selectedBaby!!.gender == "MALE") R.drawable.img_profile_baby_boy else R.drawable.img_profile_baby_girl,),
                         contentDescription = "Profile",
                         modifier = Modifier
-                            .size(80.dp)
-                            .clip(CircleShape).background(  if (uiState.selectedBaby!!.gender == "MALE") BabyBlue else BabyYellow,),
+                            .size(82.dp)
+                            .clip(CircleShape)
+                            .background(if (uiState.selectedBaby!!.gender == "MALE") BabyBlue else BabyYellow,),
                         contentScale = ContentScale.Crop
                     )
                     if (!uiState.selectedBaby?.imgUrl.isNullOrEmpty()) {
@@ -145,7 +152,7 @@ fun MemoryListScreen(
                             model = uiState.selectedBaby?.imgUrl,
                             contentDescription = "Profile",
                             modifier = Modifier
-                                .size(80.dp)
+                                .size(82.dp)
                                 .clip(CircleShape),
                             contentScale = ContentScale.Crop
                         )
@@ -213,7 +220,6 @@ fun MemoryListScreen(
                                     viewModel.updateSelectedBaby(
                                         baby)
                                     expanded = false
-                                    //클릭되면 바꿔라이
                                 }
                             )
                         }
@@ -223,14 +229,15 @@ fun MemoryListScreen(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "${uiState.selectedBaby?.birth}",
+                    text = formatBirthDate(uiState.selectedBaby!!.birth),
                     style = AchuTheme.typography.semiBold16,
                     color = if (uiState.selectedBaby!!.gender == "MALE") PointBlue else PointPink
-
                 )
                 if (memoryUIState.memoryList.isEmpty()) {
                     Column(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 40.dp),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -238,7 +245,8 @@ fun MemoryListScreen(
                             painter = painterResource(id = R.drawable.img_smiling_face),
                             contentDescription = "Profile",
                             modifier = Modifier
-                                .size(80.dp).clickable {
+                                .size(60.dp)
+                                .clickable {
                                     onNavigateToMemoryDetail(0, uiState.selectedBaby!!.id)
                                 }
                         )
@@ -261,7 +269,7 @@ fun MemoryListScreen(
                             MemoryListItem(
                                 img = memoryUIState.memoryList[index].imgUrl,
                                 title = memoryUIState.memoryList[index].title,
-                                date = memoryUIState.memoryList[index].createdAt,
+                                date = formatDate( memoryUIState.memoryList[index].createdAt),
                                 onClick = {
                                     onNavigateToMemoryDetail(memoryUIState.memoryList[index].id, memoryUIState.babyId)
                                 }

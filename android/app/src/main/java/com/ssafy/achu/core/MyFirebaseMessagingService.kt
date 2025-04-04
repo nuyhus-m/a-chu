@@ -43,8 +43,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     @SuppressLint("MissingFirebaseInstanceTokenRefresh")
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
 
-        Log.d(TAG, "onMessageReceived: 메세지온다")
-        remoteMessage.data?.let { data ->
+        Log.d(TAG, "onMessageReceived: 메세지온다${remoteMessage}")
+        remoteMessage.data.let { data ->
             val targetFragment = data["targetFragment"] ?: return
             val requestId = data["requestId"] ?: ""
             val type = data["type"] ?: ""

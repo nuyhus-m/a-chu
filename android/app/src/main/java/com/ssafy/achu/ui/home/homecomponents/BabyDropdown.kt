@@ -42,6 +42,7 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatBirthDate
 import com.ssafy.achu.data.model.auth.UserInfoResponse
 import com.ssafy.achu.data.model.baby.BabyResponse
 import kotlin.collections.forEach
@@ -84,7 +85,7 @@ fun BabyDropdown(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { expanded = true }
-            .padding(horizontal = 24.dp)
+            .padding(start =24.dp, end = 24.dp)
             .height(66.dp)
     ) {
         Box(
@@ -179,8 +180,8 @@ fun BabyDropdown(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = selectedBaby.birth,
-                style = AchuTheme.typography.semiBold16.copy(color = birthTextColor)
+                text = formatBirthDate(selectedBaby.birth),
+                style = AchuTheme.typography.semiBold14PointBlue.copy(color = birthTextColor)
             )
         }
     }

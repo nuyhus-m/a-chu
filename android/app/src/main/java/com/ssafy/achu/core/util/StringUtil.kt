@@ -3,6 +3,7 @@ package com.ssafy.achu.core.util
 import android.os.Build
 import androidx.annotation.RequiresApi
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -75,4 +76,15 @@ fun formatDate(input: String): String {
 fun formatPrice(price: Int): String {
     val formattedPrice = NumberFormat.getNumberInstance(Locale.KOREA).format(price)
     return "${formattedPrice}원"
+}
+
+fun formatBirthDate(dateString: String): String {
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("yyyy년 MM월 dd일생", Locale.getDefault())
+        val date = inputFormat.parse(dateString)  // 문자열 → Date 객체 변환
+        outputFormat.format(date!!)  // Date 객체 → 원하는 형식으로 변환
+    } catch (e: Exception) {
+        dateString  // 변환 실패 시 원본 반환
+    }
 }

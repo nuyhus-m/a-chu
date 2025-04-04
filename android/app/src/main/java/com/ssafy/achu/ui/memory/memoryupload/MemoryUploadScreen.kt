@@ -90,8 +90,15 @@ fun MemoryUploadScreen(
 
     LaunchedEffect(Unit) {
         memoryViewModel.isChanged.collectLatest { isChanged ->
-            Toast.makeText(context, memoryUIState.toastString, Toast.LENGTH_SHORT).show()
-            onNavigateToMemoryDetail(memoryUIState.selectedMemory.id, babyId)
+            if (isChanged){
+                Toast.makeText(context, memoryUIState.toastString, Toast.LENGTH_SHORT).show()
+                onNavigateToMemoryDetail(memoryUIState.selectedMemory.id, babyId)
+
+            }else{
+                Toast.makeText(context, memoryUIState.toastString, Toast.LENGTH_SHORT).show()
+                }
+
+
         }
     }
 
