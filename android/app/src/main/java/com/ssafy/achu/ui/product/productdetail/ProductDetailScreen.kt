@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
+import com.ssafy.achu.core.LoadingImgScreen
 import com.ssafy.achu.core.components.Divider
 import com.ssafy.achu.core.components.TopBarWithMenu
 import com.ssafy.achu.core.components.dialog.BasicDialog
@@ -60,6 +65,7 @@ import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.LightGray
+import com.ssafy.achu.core.theme.LightPink
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.Constants.SOLD
 import com.ssafy.achu.core.util.formatDate
@@ -465,15 +471,28 @@ private fun ProfileInfo(
             .padding(top = 24.dp, bottom = 16.dp, start = 24.dp, end = 24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AsyncImage(
-            model = seller.imgUrl,
-            contentDescription = stringResource(R.string.profile),
-            modifier = Modifier
-                .fillMaxWidth(0.16f)
-                .aspectRatio(1f)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
+        Box() {
+            Image(
+                painter = painterResource(R.drawable.img_profile_basic2),
+                contentDescription = stringResource(R.string.profile),
+                modifier = Modifier
+                    .fillMaxWidth(0.16f)
+                    .aspectRatio(1f)
+                    .clip(CircleShape)
+                    .background(color = LightPink),
+                contentScale = ContentScale.Crop
+            )
+            AsyncImage(
+                model = seller.imgUrl,
+                contentDescription = stringResource(R.string.profile),
+                modifier = Modifier
+                    .fillMaxWidth(0.16f)
+                    .aspectRatio(1f)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+        }
+
         Spacer(modifier = Modifier.width(16.dp))
         Column {
             Text(
@@ -573,12 +592,28 @@ fun ImageUriPager(images: List<Uri>) {
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
-            AsyncImage(
-                model = images[page],
-                contentDescription = "이미지 ${page + 1}",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+            var isImageLoading by remember { mutableStateOf(true) }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                if (isImageLoading) {
+                    LoadingImgScreen("이미지 로딩중...", Modifier.align(Alignment.Center), 16)
+                }
+
+                AsyncImage(
+                    model = images[page],
+                    contentDescription = "이미지 ${page + 1}",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White),
+                    contentScale = ContentScale.Crop,
+                    onSuccess = {
+                        isImageLoading = false
+                    },
+                    onError = {
+                        isImageLoading = false
+                    }
+                )
+            }
         }
 
         // 페이지 인디케이터

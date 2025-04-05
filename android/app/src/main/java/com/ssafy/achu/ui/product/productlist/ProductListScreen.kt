@@ -4,6 +4,7 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,12 +54,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
+import com.ssafy.achu.core.LoadingImg
 import com.ssafy.achu.core.components.Divider
 import com.ssafy.achu.core.components.PointBlueLineBtn
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlue
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
+import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.formatPrice
@@ -291,16 +294,25 @@ fun ProductItem(
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min)
         ) {
-            AsyncImage(
-                model = productResponse.imgUrl,
-                contentDescription = null,
-                modifier = Modifier
-                    .weight(0.4f)
-                    .clip(RoundedCornerShape(16.dp))
-                    .aspectRatio(1f),
-                contentScale = ContentScale.Crop,
-                error = painterResource(R.drawable.img_miffy_doll)
-            )
+            Box(Modifier.weight(0.4f)){
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp)).border(0.5.dp, LightGray, RoundedCornerShape(16.dp))
+                        .aspectRatio(1f),
+                ){
+                    LoadingImg("이미지 로드중..",Modifier.fillMaxWidth(),14 ,70)
+                }
+                AsyncImage(
+                    model = productResponse.imgUrl,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .aspectRatio(1f),
+                    contentScale = ContentScale.Crop,
+                    error = painterResource(R.drawable.img_miffy_doll)
+                )
+
+            }
 
             Column(
                 modifier = Modifier
