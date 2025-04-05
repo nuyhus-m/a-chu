@@ -62,7 +62,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             )
 
             val notification = NotificationCompat.Builder(this, "channel_id")
-                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(remoteMessage.notification?.title ?: "새로운 알림")
                 .setContentText(remoteMessage.notification?.body ?: "확인해 주세요")
                 .setContentIntent(pendingIntent)

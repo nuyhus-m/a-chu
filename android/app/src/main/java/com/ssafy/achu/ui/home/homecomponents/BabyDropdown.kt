@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -84,7 +85,10 @@ fun BabyDropdown(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { expanded = true }
+            .clickable (
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { expanded = true }
             .padding(start =24.dp, end = 24.dp)
             .height(66.dp)
     ) {
@@ -176,8 +180,6 @@ fun BabyDropdown(
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = formatBirthDate(selectedBaby.birth),

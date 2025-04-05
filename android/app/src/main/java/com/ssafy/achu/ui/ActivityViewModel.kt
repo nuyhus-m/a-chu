@@ -14,6 +14,7 @@ import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.Token
 import com.ssafy.achu.data.model.baby.BabyResponse
+import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.UploadProductRequest
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -38,6 +39,24 @@ class ActivityViewModel : ViewModel() {
 
     private val _errorMessage = MutableSharedFlow<String>()
     val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
+
+    private val _categoryList = MutableStateFlow<List<CategoryResponse>>(emptyList())
+    val categoryList: StateFlow<List<CategoryResponse>> = _categoryList
+
+
+    fun getCategoryList(){
+        viewModelScope.launch {
+            productRepository.getCategoryList().onSuccess { result ->
+                Log.d(TAG, "getCategoryList: ${result}")
+                _categoryList.value = result.data
+
+            }.onFailure { error ->
+                val errorResponse = error.getErrorResponse(retrofit)
+                Log.d(TAG, "getCategoryList: ${errorResponse}")
+            }
+        }
+    }
+
 
     init {
         getUserinfo()
