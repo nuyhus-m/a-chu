@@ -3,6 +3,7 @@ package com.ssafy.achu.ui
 import android.net.Uri
 import com.ssafy.achu.data.model.auth.UserInfoResponse
 import com.ssafy.achu.data.model.baby.BabyResponse
+import com.ssafy.achu.data.model.chat.Partner
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.Seller
@@ -37,6 +38,7 @@ data class ActivityUIState(
         )
     ),
     val previewImgUris: List<Uri> = emptyList(),
+    val partner: Partner? = null,
 
     val uploadProductRequest: UploadProductRequest? = null,
     val multiPartImages: List<MultipartBody.Part> = emptyList(),

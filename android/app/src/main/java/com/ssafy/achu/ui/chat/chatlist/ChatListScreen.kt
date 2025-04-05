@@ -49,6 +49,7 @@ import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.formatChatRoomTime
 import com.ssafy.achu.data.model.chat.ChatRoomResponse
 import com.ssafy.achu.ui.ActivityViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -63,6 +64,17 @@ fun ChatListScreen(
     LaunchedEffect(Unit) {
         activityViewModel.uiState.value.user?.let {
             viewModel.subscribeToChatRooms(it.id)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        activityViewModel.getProductSuccess.collectLatest { success ->
+            if (success) {
+                uiState.selectedItem?.let {
+                    activityViewModel.updatePartner(it.partner)
+                    onNavigateToChat(it.id, it.goodsId, it.partner.id)
+                }
+            }
         }
     }
 
@@ -108,19 +120,30 @@ fun ChatListScreen(
             }
         } else {
             // 채팅 목록
-            ChatList(items = uiState.chatRooms, onNavigateToChat = onNavigateToChat)
+            ChatList(
+                items = uiState.chatRooms,
+                viewModel,
+                activityViewModel
+            )
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChatList(items: List<ChatRoomResponse>, onNavigateToChat: (Int, Int, Int) -> Unit) {
+fun ChatList(
+    items: List<ChatRoomResponse>,
+    viewModel: ChatListViewModel,
+    activityViewModel: ActivityViewModel
+) {
     LazyColumn {
         items(items) { item ->
             ChatItem(
                 chatRoom = item,
-                onNavigateToChat = { onNavigateToChat(item.id, item.goodsId, item.partner.id) }
+                onNavigateToChat = {
+                    viewModel.updateSelectedItem(item)
+                    activityViewModel.getProductDetail(item.goodsId)
+                }
             )
         }
     }

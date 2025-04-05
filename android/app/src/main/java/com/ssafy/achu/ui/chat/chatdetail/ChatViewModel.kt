@@ -18,8 +18,10 @@ import com.ssafy.achu.data.model.chat.ChatRoomRequest
 import com.ssafy.achu.data.model.chat.Message
 import com.ssafy.achu.data.model.chat.MessageIdRequest
 import com.ssafy.achu.data.model.chat.MessageIdResponse
+import com.ssafy.achu.data.model.chat.Partner
 import com.ssafy.achu.data.model.chat.SendChatRequest
 import com.ssafy.achu.data.model.product.BuyerIdRequest
+import com.ssafy.achu.data.model.product.ProductDetailResponse
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -37,8 +39,6 @@ class ChatViewModel(
 
     private val chat = savedStateHandle.toRoute<Route.Chat>()
     private var roomId = chat.roomId
-    val productId = chat.productId
-    private val partnerId = chat.partnerId
 
     private val _uiState = MutableStateFlow(ChatUiState())
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
@@ -47,7 +47,6 @@ class ChatViewModel(
     val toastMessage: SharedFlow<String> = _toastMessage.asSharedFlow()
 
     init {
-        getProductDetail(productId)
         if (roomId == -1) {
             checkChatRoomExistence()
         } else {
@@ -80,7 +79,10 @@ class ChatViewModel(
     // 채팅방 존재 여부 확인
     private fun checkChatRoomExistence() {
         viewModelScope.launch {
-            chatRepository.checkChatRoomExistence(productId, partnerId)
+            chatRepository.checkChatRoomExistence(
+                uiState.value.product?.id ?: 0,
+                uiState.value.partner?.id ?: 0
+            )
                 .onSuccess { response ->
                     Log.d(TAG, "checkChatRoomExistence: $response")
                     if (response.result == SUCCESS) {
@@ -109,8 +111,8 @@ class ChatViewModel(
         viewModelScope.launch {
             chatRepository.createChatRoom(
                 ChatRoomRequest(
-                    goodsId = productId,
-                    sellerId = partnerId,
+                    goodsId = uiState.value.product?.id ?: 0,
+                    sellerId = uiState.value.partner?.id ?: 0,
                     content = uiState.value.inputText
                 )
             ).onSuccess { response ->
@@ -153,14 +155,34 @@ class ChatViewModel(
         }
     }
 
+    fun updateProduct(product: ProductDetailResponse) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                product = product
+            )
+        }
+    }
+
+    fun updatePartner(partner: Partner) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                partner = partner
+            )
+        }
+    }
+
     fun completeTrade() {
         viewModelScope.launch {
-            productRepository.completeTrade(productId, BuyerIdRequest(partnerId))
+            productRepository.completeTrade(
+                uiState.value.product?.id ?: 0,
+                BuyerIdRequest(uiState.value.partner?.id ?: 0)
+            )
                 .onSuccess { response ->
                     Log.d(TAG, "completeTrade: $response")
                     if (response.result == SUCCESS) {
                         showSoldDialog(false)
                         _toastMessage.emit("거래가 완료되었습니다.")
+                        getProductDetail(uiState.value.product?.id ?: 0)
                     }
                 }.onFailure {
                     val errorResponse = it.getErrorResponse(retrofit)
@@ -256,7 +278,7 @@ class ChatViewModel(
                             val data =
                                 json.decodeFromString<MessageIdResponse>(it.bodyAsText)
                             Log.d(TAG, "subscribeToMessageRead: $data")
-                            if (data.userId == partnerId) {
+                            if (data.userId == (uiState.value.partner?.id ?: 0)) {
                                 _uiState.update { currentState ->
                                     currentState.copy(
                                         lastReadMessageId = data.lastUnreadMessageId

@@ -1,8 +1,8 @@
 package com.ssafy.achu.ui.chat.chatdetail
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -39,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,8 +63,10 @@ import com.ssafy.achu.core.util.Constants.TEXT
 import com.ssafy.achu.core.util.formatChatRoomTime
 import com.ssafy.achu.core.util.formatPrice
 import com.ssafy.achu.data.model.chat.Message
+import com.ssafy.achu.data.model.chat.Partner
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.ui.ActivityViewModel
+import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -74,8 +78,22 @@ fun ChatScreen(
     activityViewModel: ActivityViewModel,
     onBackClick: () -> Unit
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
     val activityUiState by activityViewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.updateProduct(activityUiState.product)
+        activityUiState.partner?.let {
+            viewModel.updatePartner(it)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.toastMessage.collectLatest { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     val listState = rememberLazyListState()
 
@@ -85,9 +103,13 @@ fun ChatScreen(
             .background(color = White)
     ) {
         CustomChatTopBar(
+            partner = uiState.partner ?: Partner(
+                id = 0,
+                nickname = "",
+                profileImageUrl = ""
+            ),
             onBackClick = onBackClick,
-            onLeaveClick = { /* 나가기 동작 */ },
-            userName = "덕윤맘"
+            onLeaveClick = { /* 나가기 동작 */ }
         )
         uiState.product?.let {
             ChatProduct(
@@ -439,9 +461,9 @@ fun ChatTextField(
 
 @Composable
 fun CustomChatTopBar(
+    partner: Partner,
     onBackClick: () -> Unit,
-    onLeaveClick: () -> Unit,
-    userName: String
+    onLeaveClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -466,8 +488,8 @@ fun CustomChatTopBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 프로필 이미지
-            Image(
-                painter = painterResource(R.drawable.img_profile_test),
+            AsyncImage(
+                model = partner.profileImageUrl, // 여기에 실제 이미지 URL 입력
                 contentDescription = stringResource(R.string.profile_img),
                 modifier = Modifier
                     .size(40.dp)
@@ -477,7 +499,7 @@ fun CustomChatTopBar(
             Spacer(modifier = Modifier.width(8.dp))
             // 사용자 이름
             Text(
-                text = userName,
+                text = partner.nickname,
                 style = AchuTheme.typography.bold24
             )
         }
@@ -513,9 +535,13 @@ fun CustomChatTopBar(
 fun PreviewCustomChatTopBar() {
     AchuTheme {
         CustomChatTopBar(
+            partner = Partner(
+                id = 0,
+                nickname = "홍길동",
+                profileImageUrl = ""
+            ),
             onBackClick = { /* 뒤로가기 동작 */ },
-            onLeaveClick = { /* 나가기 동작 */ },
-            userName = "홍길동"
+            onLeaveClick = { /* 나가기 동작 */ }
         )
     }
 }

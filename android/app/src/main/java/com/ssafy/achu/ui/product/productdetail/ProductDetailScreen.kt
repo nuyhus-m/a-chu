@@ -64,6 +64,7 @@ import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.Constants.SOLD
 import com.ssafy.achu.core.util.formatDate
 import com.ssafy.achu.core.util.formatPrice
+import com.ssafy.achu.data.model.chat.Partner
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.data.model.product.Seller
@@ -200,11 +201,19 @@ fun ProductDetailScreen(
             onLikeClick = { viewModel.likeProduct(activityUiState.product.id) },
             onUnLikeClick = { viewModel.unlikeProduct(activityUiState.product.id) },
             onButtonClick = {
-                if (!isPreview) onNavigateToChat(
-                    activityViewModel.uiState.value.product.id,
-                    activityUiState.product.seller.id
-                )
-                else viewModel.updateShowUploadDialog(true)
+                if (!isPreview) {
+                    onNavigateToChat(
+                        activityViewModel.uiState.value.product.id,
+                        activityUiState.product.seller.id
+                    )
+                    activityViewModel.updatePartner(
+                        Partner(
+                            id = activityUiState.product.seller.id,
+                            nickname = activityUiState.product.seller.nickname,
+                            profileImageUrl = activityUiState.product.seller.imgUrl
+                        )
+                    )
+                } else viewModel.updateShowUploadDialog(true)
             }
         )
     }
