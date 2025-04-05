@@ -46,7 +46,6 @@ class StompService {
     private var reconnectJob: Job? = null
     private var reconnectAttempts = 0
     private val isReconnecting = AtomicBoolean(false)
-    private val activeSubscriptions = mutableMapOf<String, Flow<StompFrame.Message>?>()
 
     // 연결 상태
     sealed class ConnectionState {
@@ -114,9 +113,6 @@ class StompService {
             _connectionState.value = ConnectionState.Connected
             reconnectAttempts = 0  // 연결 성공 시 재시도 횟수 초기화
             Log.d(TAG, "connect: STOMP 연결 성공")
-
-            // 기존 구독 복구
-            restoreSubscriptions()
         }.onFailure { e ->
             _connectionState.value = ConnectionState.Error(e.message ?: "Unknown error")
             Log.d(TAG, "connect error: ${e.message}")
@@ -176,17 +172,6 @@ class StompService {
         }
     }
 
-    // 기존 구독 복구
-    private suspend fun restoreSubscriptions() {
-        if (activeSubscriptions.isNotEmpty()) {
-            Log.d(TAG, "Restoring ${activeSubscriptions.size} subscriptions")
-            activeSubscriptions.forEach { (roomId, _) ->
-                subscribeToMessage(roomId)
-                subscribeToReadStatus(roomId)
-            }
-        }
-    }
-
     // 메시지 전송
     suspend fun sendMessage(
         roomId: String,
@@ -212,7 +197,7 @@ class StompService {
         return runCatching {
             val currentSession =
                 session ?: throw IllegalStateException("STOMP session is not initialized")
-            val subscription = currentSession.subscribe(
+            currentSession.subscribe(
                 StompSubscribeHeaders(
                     destination = "/read/chat/rooms/$roomId/messages",
                     customHeaders = mapOf(
@@ -220,9 +205,6 @@ class StompService {
                     )
                 )
             )
-            // 구독 정보 저장
-            activeSubscriptions[roomId] = subscription
-            subscription
         }
     }
 
@@ -262,6 +244,22 @@ class StompService {
         }
     }
 
+    // 새로운 메시지 수신
+    suspend fun subscribeToNewMessage(userId: String): Result<Flow<StompFrame.Message>?> {
+        return runCatching {
+            val currentSession =
+                session ?: throw IllegalStateException("STOMP session is not initialized")
+            currentSession.subscribe(
+                StompSubscribeHeaders(
+                    destination = "/read/chat/users/$userId/message-arrived",
+                    customHeaders = mapOf(
+                        "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+                    )
+                )
+            )
+        }
+    }
+
     // 연결 종료
     private suspend fun disconnect() {
         runCatching {
@@ -273,9 +271,6 @@ class StompService {
             // 재연결 작업 취소
             reconnectJob?.cancel()
             isReconnecting.set(false)
-
-            // 모든 구독 정보 초기화
-            activeSubscriptions.clear()
 
             session?.disconnect()
             session = null

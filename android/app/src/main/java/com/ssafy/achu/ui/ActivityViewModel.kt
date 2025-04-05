@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import okhttp3.MultipartBody
 
 
@@ -50,7 +51,6 @@ class ActivityViewModel : ViewModel() {
 
     init {
         getUserinfo()
-        // 앱이 시작될 때 STOMP 연결 시작
         connectToStompServer()
         getUnreadCount()
     }
@@ -83,6 +83,7 @@ class ActivityViewModel : ViewModel() {
                         }
                         Log.d(TAG, "getUserinfo: ${it}")
                         getBabyList()
+                        subscribeToNewMessage()
                     }
                 }.onFailure {
                     Log.d(TAG, "getUserinfo: ${it.message}")
@@ -190,6 +191,26 @@ class ActivityViewModel : ViewModel() {
                     val errorResponse = it.getErrorResponse(retrofit)
                     Log.d(TAG, "getUnreadCount errorResponse: $errorResponse")
                     Log.d(TAG, "getUnreadCount error: ${it.message}")
+                }
+        }
+    }
+
+    private fun subscribeToNewMessage() {
+        viewModelScope.launch {
+            stompService.subscribeToNewMessage(uiState.value.user!!.id.toString())
+                .onSuccess { response ->
+                    Log.d(TAG, "subscribeToNewMessage: $response")
+                    response?.let { data ->
+                        data.collect() {
+                            val newMessageConstant = Json.decodeFromString<String>(it.bodyAsText)
+                            Log.d(TAG, "subscribeToNewMessage: $newMessageConstant")
+                            if (newMessageConstant == "NEW_MESSAGE_ARRIVED") {
+                                _unreadCount.value++
+                            }
+                        }
+                    }
+                }.onFailure {
+                    Log.d(TAG, "subscribeToNewMessage: ${it.message}")
                 }
         }
     }
