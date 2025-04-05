@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.ssafy.achu.core.ApplicationClass.Companion.chatRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.json
+import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.ApplicationClass.Companion.stompService
 import com.ssafy.achu.core.navigation.Route
@@ -17,8 +18,12 @@ import com.ssafy.achu.data.model.chat.Message
 import com.ssafy.achu.data.model.chat.MessageIdRequest
 import com.ssafy.achu.data.model.chat.MessageIdResponse
 import com.ssafy.achu.data.model.chat.SendChatRequest
+import com.ssafy.achu.data.model.product.BuyerIdRequest
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -37,7 +42,11 @@ class ChatViewModel(
     private val _uiState = MutableStateFlow(ChatUiState())
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
 
+    private val _toastMessage = MutableSharedFlow<String>()
+    val toastMessage: SharedFlow<String> = _toastMessage.asSharedFlow()
+
     init {
+        getProductDetail(productId)
         if (roomId == -1) {
             // 채팅방 존재 여부 확인
         } else {
@@ -52,6 +61,54 @@ class ChatViewModel(
             currentState.copy(
                 inputText = newText
             )
+        }
+    }
+
+    fun showSoldDialog(isShow: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                isShowSoldDialog = isShow
+            )
+        }
+    }
+
+    // 물품 정보 조회
+    private fun getProductDetail(productId: Int) {
+        viewModelScope.launch {
+            productRepository.getProductDetail(productId)
+                .onSuccess { response ->
+                    Log.d(TAG, "getProductDetail: $response")
+                    if (response.result == SUCCESS) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                product = response.data
+                            )
+                        }
+                    }
+                }.onFailure {
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "getProductDetail errorResponse: $errorResponse")
+                    Log.d(TAG, "getProductDetail error: ${it.message}")
+                }
+        }
+    }
+
+    fun completeTrade() {
+        viewModelScope.launch {
+            productRepository.completeTrade(productId, BuyerIdRequest(partnerId))
+                .onSuccess { response ->
+                    Log.d(TAG, "completeTrade: $response")
+                    if (response.result == SUCCESS) {
+                        showSoldDialog(false)
+                        _toastMessage.emit("거래가 완료되었습니다.")
+                    }
+                }.onFailure {
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "completeTrade errorResponse: $errorResponse")
+                    Log.d(TAG, "completeTrade error: ${it.message}")
+                    showSoldDialog(false)
+                    _toastMessage.emit("거래가 완료되지 않았습니다.")
+                }
         }
     }
 

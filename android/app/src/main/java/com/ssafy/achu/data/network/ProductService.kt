@@ -2,6 +2,7 @@ package com.ssafy.achu.data.network
 
 import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.IdResponse
+import com.ssafy.achu.data.model.product.BuyerIdRequest
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.LikeProduct
 import com.ssafy.achu.data.model.product.ModifyProductRequest
@@ -103,5 +104,11 @@ interface ProductService {
         @Path("goodsId") productId: Int,
         @Body request: ModifyProductRequest
     ): ApiResult<Unit>
+
+    @POST("/goods/{goodsId}/trade/complete")
+    suspend fun completeTrade(
+        @Path("goodsId") productId: Int,
+        @Body request: BuyerIdRequest
+    ): ApiResult<IdResponse>
 }
 

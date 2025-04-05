@@ -47,6 +47,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.SmallLineBtn
+import com.ssafy.achu.core.components.dialog.BasicDialog
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
@@ -54,9 +55,13 @@ import com.ssafy.achu.core.theme.LightBlue
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.Constants.SOLD
 import com.ssafy.achu.core.util.Constants.TEXT
 import com.ssafy.achu.core.util.formatChatRoomTime
+import com.ssafy.achu.core.util.formatPrice
 import com.ssafy.achu.data.model.chat.Message
+import com.ssafy.achu.data.model.product.ProductDetailResponse
+import com.ssafy.achu.ui.ActivityViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -65,9 +70,11 @@ import java.util.Locale
 @Composable
 fun ChatScreen(
     viewModel: ChatViewModel = viewModel(),
+    activityViewModel: ActivityViewModel,
     onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val activityUiState by activityViewModel.uiState.collectAsState()
 
     val listState = rememberLazyListState()
 
@@ -81,7 +88,13 @@ fun ChatScreen(
             onLeaveClick = { /* 나가기 동작 */ },
             userName = "덕윤맘"
         )
-        ChatProduct()
+        uiState.product?.let {
+            ChatProduct(
+                product = it,
+                isSeller = it.seller.id == activityUiState.user?.id,
+                isSold = it.tradeStatus == SOLD
+            )
+        }
 
         // 채팅 메시지 목록
         LazyColumn(
@@ -114,11 +127,19 @@ fun ChatScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
     }
+
+    if (uiState.isShowSoldDialog) {
+        BasicDialog(
+            text = "거래를 완료하시겠습니까?",
+            onDismiss = { viewModel.showSoldDialog(false) },
+            onConfirm = { viewModel.completeTrade() }
+        )
+    }
 }
 
 
 @Composable
-fun ChatProduct() {
+fun ChatProduct(product: ProductDetailResponse, isSeller: Boolean, isSold: Boolean) {
     Column(
         modifier = Modifier
             .padding(horizontal = 24.dp)
@@ -132,14 +153,13 @@ fun ChatProduct() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = "imgUrl",
+                model = product.imgUrls[0],
                 contentDescription = null,
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(8.dp))
                     .aspectRatio(1f),
                 contentScale = ContentScale.Crop,
-                error = painterResource(R.drawable.img_miffy_doll)
             )
 
             Column(
@@ -149,25 +169,32 @@ fun ChatProduct() {
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "미피 인형",
+                    text = product.title,
                     style = AchuTheme.typography.regular18
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "5,000원",
+                    text = formatPrice(product.price),
                     style = AchuTheme.typography.semiBold18.copy(color = FontPink)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "판매중",
+                    text = if (isSold) stringResource(R.string.sold)
+                    else stringResource(R.string.selling),
                     style = AchuTheme.typography.semiBold16.copy(color = PointPink)
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.weight(1f))
-            SmallLineBtn("거래 완료", PointPink) { }
+            if (isSeller) {
+                SmallLineBtn(
+                    buttonText = "거래 완료",
+                    color = if (isSold) FontGray else PointPink,
+                    onClick = {},
+                    enabled = !isSold
+                )
+            }
         }
-
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
@@ -458,16 +485,16 @@ fun CustomChatTopBar(
 }
 
 // 여기서부터 Preview 코드 시작
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun ChatScreenPreview() {
-    AchuTheme {
-        ChatScreen(
-            onBackClick = { /* 뒤로가기 동작 */ }
-        )
-    }
-}
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview(showBackground = true)
+//@Composable
+//fun ChatScreenPreview() {
+//    AchuTheme {
+//        ChatScreen(
+//            onBackClick = { /* 뒤로가기 동작 */ }
+//        )
+//    }
+//}
 
 // 사용 예시 프리뷰
 @Preview(showBackground = true)
@@ -482,13 +509,13 @@ fun PreviewCustomChatTopBar() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ChatProductPreview() {
-    AchuTheme {
-        ChatProduct()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ChatProductPreview() {
+//    AchuTheme {
+//        ChatProduct()
+//    }
+//}
 
 @Preview(showBackground = true)
 @Composable

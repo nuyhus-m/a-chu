@@ -137,7 +137,7 @@ fun PointBlueLineBtn(buttonText: String, isSelected: Boolean, onClick: () -> Uni
 
 
 @Composable
-fun SmallLineBtn(buttonText: String, color: Color, onClick: () -> Unit) {
+fun SmallLineBtn(buttonText: String, color: Color, enabled: Boolean = true, onClick: () -> Unit) {
     var isClicked by remember { mutableStateOf(false) }
 
     Box(
@@ -155,7 +155,8 @@ fun SmallLineBtn(buttonText: String, color: Color, onClick: () -> Unit) {
                     onClick = {
                         isClicked = !isClicked
                         onClick()
-                    }
+                    },
+                    enabled = enabled
                 )
                 .height(40.dp)
                 .padding(horizontal = 16.dp),
@@ -173,7 +174,7 @@ fun SmallLineBtn(buttonText: String, color: Color, onClick: () -> Unit) {
 //핑크색 기본 포인트 버튼
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PointPinkBtn(buttonText: String, onClick:() -> Unit) {
+fun PointPinkBtn(buttonText: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -192,7 +193,7 @@ fun PointPinkBtn(buttonText: String, onClick:() -> Unit) {
                 .height(50.dp)
                 .clip(RoundedCornerShape(30.dp))
                 .background(PointPink)
-                .clickable( ){
+                .clickable() {
                     onClick()
                 },
             contentAlignment = Alignment.Center
