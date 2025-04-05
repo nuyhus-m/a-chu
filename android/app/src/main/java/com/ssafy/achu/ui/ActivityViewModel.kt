@@ -196,6 +196,7 @@ class ActivityViewModel : ViewModel() {
     }
 
     private fun subscribeToNewMessage() {
+        if (uiState.value.user == null) return
         viewModelScope.launch {
             stompService.subscribeToNewMessage(uiState.value.user!!.id.toString())
                 .onSuccess { response ->
@@ -224,6 +225,8 @@ class ActivityViewModel : ViewModel() {
         viewModelScope.launch {
             if (stompService.connectionState.value !is StompService.ConnectionState.Connected) {
                 stompService.connect()
+                getUnreadCount()
+                subscribeToNewMessage()
             }
         }
     }
