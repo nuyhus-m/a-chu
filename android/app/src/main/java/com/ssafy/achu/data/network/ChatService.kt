@@ -1,6 +1,7 @@
 package com.ssafy.achu.data.network
 
 import com.ssafy.achu.data.model.ApiResult
+import com.ssafy.achu.data.model.IdResponse
 import com.ssafy.achu.data.model.chat.ChatRoomRequest
 import com.ssafy.achu.data.model.chat.ChatRoomResponse
 import com.ssafy.achu.data.model.chat.Message
@@ -9,13 +10,14 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ChatService {
 
     @POST("/chat/rooms")
     suspend fun createChatRoom(
         @Body chatRoomRequest: ChatRoomRequest
-    ): ApiResult<ChatRoomResponse>
+    ): ApiResult<IdResponse>
 
     @GET("/chat/rooms")
     suspend fun getChatRooms(): ApiResult<List<ChatRoomResponse>>
@@ -27,5 +29,11 @@ interface ChatService {
     suspend fun getMessages(
         @Path("roomId") roomId: Int
     ): ApiResult<List<Message>>
+
+    @GET("/chat/rooms/existence")
+    suspend fun checkChatRoomExistence(
+        @Query("goodsId") productId: Int,
+        @Query("sellerId") sellerId: Int
+    ): ApiResult<IdResponse?>
 
 }

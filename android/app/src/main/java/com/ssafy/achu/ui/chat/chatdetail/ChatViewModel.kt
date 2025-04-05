@@ -14,6 +14,7 @@ import com.ssafy.achu.core.navigation.Route
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.Constants.TEXT
 import com.ssafy.achu.core.util.getErrorResponse
+import com.ssafy.achu.data.model.chat.ChatRoomRequest
 import com.ssafy.achu.data.model.chat.Message
 import com.ssafy.achu.data.model.chat.MessageIdRequest
 import com.ssafy.achu.data.model.chat.MessageIdResponse
@@ -48,12 +49,16 @@ class ChatViewModel(
     init {
         getProductDetail(productId)
         if (roomId == -1) {
-            // 채팅방 존재 여부 확인
+            checkChatRoomExistence()
         } else {
-            getMessages()
-            subscribeToMessage()
-            subscribeToMessageRead()
+            setMessages()
         }
+    }
+
+    private fun setMessages() {
+        getMessages()
+        subscribeToMessage()
+        subscribeToMessageRead()
     }
 
     fun updateInputText(newText: String) {
@@ -69,6 +74,61 @@ class ChatViewModel(
             currentState.copy(
                 isShowSoldDialog = isShow
             )
+        }
+    }
+
+    // 채팅방 존재 여부 확인
+    private fun checkChatRoomExistence() {
+        viewModelScope.launch {
+            chatRepository.checkChatRoomExistence(productId, partnerId)
+                .onSuccess { response ->
+                    Log.d(TAG, "checkChatRoomExistence: $response")
+                    if (response.result == SUCCESS) {
+                        if (response.data == null) {
+                            _uiState.update {
+                                it.copy(
+                                    hasChatRoom = false
+                                )
+                            }
+                        } else {
+                            _uiState.update {
+                                it.copy(
+                                    hasChatRoom = true
+                                )
+                            }
+                            roomId = response.data.id
+                            setMessages()
+                        }
+                    }
+                }
+        }
+    }
+
+    // 채팅방 생성
+    fun createChatRoom() {
+        viewModelScope.launch {
+            chatRepository.createChatRoom(
+                ChatRoomRequest(
+                    goodsId = productId,
+                    sellerId = partnerId,
+                    content = uiState.value.inputText
+                )
+            ).onSuccess { response ->
+                Log.d(TAG, "createChatRoom: $response")
+                if (response.result == SUCCESS) {
+                    roomId = response.data.id
+                    setMessages()
+                    _uiState.update {
+                        it.copy(
+                            isFirst = false
+                        )
+                    }
+                }
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "createChatRoom errorResponse: $errorResponse")
+                Log.d(TAG, "createChatRoom error: ${it.message}")
+            }
         }
     }
 
@@ -193,7 +253,8 @@ class ChatViewModel(
                     Log.d(TAG, "subscribeToMessageRead: success")
                     response?.let { body ->
                         body.collect {
-                            val data = json.decodeFromString<MessageIdResponse>(it.bodyAsText)
+                            val data =
+                                json.decodeFromString<MessageIdResponse>(it.bodyAsText)
                             Log.d(TAG, "subscribeToMessageRead: $data")
                             if (data.userId == partnerId) {
                                 _uiState.update { currentState ->

@@ -8,5 +8,7 @@ data class ChatUiState(
     val messages: List<Message> = emptyList(),
     val lastReadMessageId: Int = -1,
     val product: ProductDetailResponse? = null,
-    val isShowSoldDialog: Boolean = false
+    val isShowSoldDialog: Boolean = false,
+    val hasChatRoom: Boolean = true,
+    val isFirst: Boolean = true
 )

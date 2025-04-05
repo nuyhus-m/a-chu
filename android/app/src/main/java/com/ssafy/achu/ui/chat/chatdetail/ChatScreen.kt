@@ -93,7 +93,8 @@ fun ChatScreen(
             ChatProduct(
                 product = it,
                 isSeller = it.seller.id == activityUiState.user?.id,
-                isSold = it.tradeStatus == SOLD
+                isSold = it.tradeStatus == SOLD,
+                onSoldClick = { viewModel.showSoldDialog(true) }
             )
         }
 
@@ -123,7 +124,10 @@ fun ChatScreen(
         ChatInputField(
             value = uiState.inputText,
             onValueChange = { viewModel.updateInputText(it) },
-            onSendClick = { viewModel.sendMessage() }
+            onSendClick = {
+                if (!uiState.hasChatRoom && uiState.isFirst) viewModel.createChatRoom()
+                else viewModel.sendMessage()
+            }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -140,7 +144,12 @@ fun ChatScreen(
 
 
 @Composable
-fun ChatProduct(product: ProductDetailResponse, isSeller: Boolean, isSold: Boolean) {
+fun ChatProduct(
+    product: ProductDetailResponse,
+    isSeller: Boolean,
+    isSold: Boolean,
+    onSoldClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .padding(horizontal = 24.dp)
@@ -192,7 +201,7 @@ fun ChatProduct(product: ProductDetailResponse, isSeller: Boolean, isSold: Boole
                 SmallLineBtn(
                     buttonText = "거래 완료",
                     color = if (isSold) FontGray else PointPink,
-                    onClick = {},
+                    onClick = onSoldClick,
                     enabled = !isSold
                 )
             }
@@ -375,7 +384,7 @@ fun ChatInputField(
 
             // 전송 버튼
             IconButton(
-                onClick = onSendClick,
+                onClick = { if (value.isNotEmpty()) onSendClick() },
                 modifier = Modifier
                     .clip(CircleShape)
                     .background(FontPink)
