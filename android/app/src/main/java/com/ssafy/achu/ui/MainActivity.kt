@@ -30,7 +30,6 @@ import com.ssafy.achu.core.components.BottomNavBar
 import com.ssafy.achu.core.navigation.BottomNavRoute
 import com.ssafy.achu.core.navigation.NavGraph
 import com.ssafy.achu.core.theme.AchuTheme
-import com.ssafy.achu.core.theme.TransparentSystemUI
 import com.ssafy.achu.core.theme.White
 
 private const val TAG = "MainActivity_안주현"
