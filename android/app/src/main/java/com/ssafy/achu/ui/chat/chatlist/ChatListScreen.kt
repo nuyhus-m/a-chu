@@ -91,7 +91,7 @@ fun ChatListScreen(
             ) {
 
                 Image(
-                    painter = painterResource(id = R.drawable.img_crying_face),
+                    painter = painterResource(id = R.drawable.img_smiling_face),
                     contentDescription = "Profile",
                     modifier = Modifier
                         .size(90.dp)
