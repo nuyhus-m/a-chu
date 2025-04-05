@@ -101,4 +101,11 @@ public class ChatRoomCoreRepository implements ChatRoomRepository {
 
     return unreadCountMap;
   }
+
+  @Override
+  public Long findChatRoomId(Long goodsId, ChatUser seller, ChatUser buyer) {
+    return chatRoomJpaRepository
+        .findByGoodsIdAndSellerIdAndBuyerId(goodsId, seller.id(), buyer.id())
+        .orElse(null);
+  }
 }

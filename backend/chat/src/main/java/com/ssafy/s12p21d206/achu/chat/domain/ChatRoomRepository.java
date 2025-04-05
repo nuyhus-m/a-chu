@@ -24,4 +24,6 @@ public interface ChatRoomRepository {
   UnreadCount countUnreadMessages(ChatUser user, Long chatRoomId);
 
   Map<Long, UnreadCount> countUnreadMessages(ChatUser user, List<Long> chatRoomIds);
+
+  Long findChatRoomId(Long goodsId, ChatUser seller, ChatUser buyer);
 }

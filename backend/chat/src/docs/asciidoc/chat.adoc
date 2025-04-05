@@ -666,3 +666,50 @@ GET /chat/rooms/{roomId}/messages
 |메시지 발신자 ID
 
 |===
+
+=== [HTTP] 채팅방 존재 여부 확인
+특정 상품과 판매자에 대해 채팅방이 이미지 존재하는지 확인합니다.
+
+.HTTP 요청
+[source]
+GET /chat/rooms/existence?goodsId={goodsId}@sellerId={sellerId}
+
+.요청 파라미터
+|===
+|파이미터명|타입|설명
+
+|goodsId
+|NUMBER
+|상품 ID
+
+|sellerId
+|NUMBER
+|판매자 ID
+
+|===
+
+.응답 예시 (존재할 경우)
+[source,json]
+{ "result": "SUCCESS", "data": { "id": 201 } }
+
+.응답 예시 (존재하지 않을 경우)
+[source,json]
+{ "result": "SUCCESS", "data": null }
+
+.응답 필드
+|===
+|필드명|타입|설명
+
+|result
+|STRING
+|API 요청 성공 여부
+
+|data
+|OBJECT 또는 null
+|채팅방 ID를 포함한 객체, 존재하지 않을 경우 null 반환
+
+|data.id
+|NUMBER
+|채팅방 ID (존재할 경우에만 포함됨)
+
+|===
