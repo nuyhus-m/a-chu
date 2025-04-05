@@ -8,7 +8,7 @@ data class ChatRoomResponse(
     val isPartnerLeft: Boolean,
     val isBuyerLeft: Boolean,
     val isSellerLeft: Boolean,
-    val lastMessage: LastMessage,
+    val lastMessage: Message,
     val partner: Partner,
     val sellerId: Int,
     val unreadCount: Int

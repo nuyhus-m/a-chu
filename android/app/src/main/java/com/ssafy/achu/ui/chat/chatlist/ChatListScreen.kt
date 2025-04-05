@@ -56,7 +56,7 @@ fun ChatListScreen(
     modifier: Modifier = Modifier,
     viewModel: ChatListViewModel = viewModel(),
     activityViewModel: ActivityViewModel,
-    onNavigateToChat: (Int) -> Unit
+    onNavigateToChat: (Int, Int, Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -115,12 +115,12 @@ fun ChatListScreen(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChatList(items: List<ChatRoomResponse>, onNavigateToChat: (Int) -> Unit) {
+fun ChatList(items: List<ChatRoomResponse>, onNavigateToChat: (Int, Int, Int) -> Unit) {
     LazyColumn {
         items(items) { item ->
             ChatItem(
                 chatRoom = item,
-                onNavigateToChat = { onNavigateToChat(item.id) }
+                onNavigateToChat = { onNavigateToChat(item.id, item.goodsId, item.partner.id) }
             )
         }
     }
@@ -207,10 +207,10 @@ fun ChatItem(
 @Composable
 fun ChatListScreenPreview() {
     AchuTheme {
-        ChatListScreen(
-            onNavigateToChat = {},
-            activityViewModel = ActivityViewModel()
-        )
+//        ChatListScreen(
+//            activityViewModel = viewModel(),
+//            onNavigateToChat = {}
+//        )
     }
 }
 

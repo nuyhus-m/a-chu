@@ -187,11 +187,11 @@ class ActivityViewModel : ViewModel() {
             stompService.subscribeToDestination("/read/chat/users/${uiState.value.user!!.id}/message-arrived")
                 .onSuccess { response ->
                     Log.d(TAG, "subscribeToNewMessage: success")
-                    response?.let { data ->
-                        data.collect() {
-                            val newMessageConstant = json.decodeFromString<String>(it.bodyAsText)
-                            Log.d(TAG, "subscribeToNewMessage: $newMessageConstant")
-                            if (newMessageConstant == "NEW_MESSAGE_ARRIVED") {
+                    response?.let { body ->
+                        body.collect {
+                            val data = json.decodeFromString<String>(it.bodyAsText)
+                            Log.d(TAG, "subscribeToNewMessage: $data")
+                            if (data == "NEW_MESSAGE_ARRIVED") {
                                 _unreadCount.value++
                             }
                         }

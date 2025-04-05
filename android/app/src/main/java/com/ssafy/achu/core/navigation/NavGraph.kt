@@ -107,12 +107,12 @@ fun NavGraph(
             ChatListScreen(
                 modifier = modifier,
                 activityViewModel = activityViewModel,
-                onNavigateToChat = { roomId ->
+                onNavigateToChat = { roomId, productId, partnerId ->
                     navController.navigate(
                         route = Route.Chat(
                             roomId = roomId,
-                            productId = -1,
-                            sellerId = -1
+                            productId = productId,
+                            partnerId = partnerId
                         )
                     )
                 }
@@ -266,7 +266,7 @@ fun NavGraph(
                     navController.navigate(
                         route = Route.Chat(
                             productId = productId,
-                            sellerId = sellerId
+                            partnerId = sellerId
                         )
                     )
                 },
