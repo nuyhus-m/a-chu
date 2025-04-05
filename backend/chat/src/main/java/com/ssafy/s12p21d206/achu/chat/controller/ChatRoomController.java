@@ -4,8 +4,8 @@ import com.ssafy.s12p21d206.achu.chat.controller.response.ChatApiResponse;
 import com.ssafy.s12p21d206.achu.chat.domain.ChatRoom;
 import com.ssafy.s12p21d206.achu.chat.domain.ChatRoomFacade;
 import com.ssafy.s12p21d206.achu.chat.domain.ChatRoomService;
-import com.ssafy.s12p21d206.achu.chat.domain.Message;
 import com.ssafy.s12p21d206.achu.chat.domain.MessageService;
+import com.ssafy.s12p21d206.achu.chat.domain.MessagesWithParticipants;
 import com.ssafy.s12p21d206.achu.chat.domain.UnreadCount;
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
 import java.util.List;
@@ -53,10 +53,12 @@ public class ChatRoomController {
   }
 
   @GetMapping("/chat/rooms/{roomId}/messages")
-  public ChatApiResponse<List<MessageResponse>> getMessages(
+  public ChatApiResponse<MessageListResponse> getMessages(
       ChatApiUser apiUser, @PathVariable Long roomId) {
-    List<Message> messages = messageService.getMessagesByChatRoomId(apiUser.toChatUser(), roomId);
-    return ChatApiResponse.success(MessageResponse.listFrom(messages, apiUser.toChatUser()));
+    MessagesWithParticipants messagesWithParticipants =
+        messageService.getMessagesByChatRoomId(apiUser.toChatUser(), roomId);
+    return ChatApiResponse.success(
+        MessageListResponse.from(apiUser.toChatUser(), messagesWithParticipants));
   }
 
   @GetMapping("/chat/rooms/existence")

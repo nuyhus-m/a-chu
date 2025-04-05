@@ -15,10 +15,6 @@ public class MessageReader {
     this.chatRoomValidator = chatRoomValidator;
   }
 
-  public List<Message> readLastMessagesIn(List<ChatRoom> chatRooms) {
-    return messageRepository.readLastMessagesIn(chatRooms);
-  }
-
   public List<Message> readMessagesByChatRoomId(ChatUser viewer, Long chatRoomId) {
     chatRoomValidator.validateParticipant(chatRoomId, viewer);
     return messageRepository.findMessagesByChatRoomId(chatRoomId);

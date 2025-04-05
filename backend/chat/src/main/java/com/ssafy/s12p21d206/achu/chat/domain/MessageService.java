@@ -2,6 +2,7 @@ package com.ssafy.s12p21d206.achu.chat.domain;
 
 import com.ssafy.s12p21d206.achu.chat.domain.message.MessageEventNotifier;
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
+import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUserReader;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -13,18 +14,21 @@ public class MessageService {
   private final ChatRoomReader chatRoomReader;
   private final MessageReadHandler messageReadHandler;
   private final MessageEventNotifier messageEventNotifier;
+  private final ChatUserReader chatUserReader;
 
   public MessageService(
       MessageAppender messageAppender,
       MessageReader messageReader,
       ChatRoomReader chatRoomReader,
       MessageReadHandler messageReadHandler,
-      MessageEventNotifier messageEventNotifier) {
+      MessageEventNotifier messageEventNotifier,
+      ChatUserReader chatUserReader) {
     this.messageAppender = messageAppender;
     this.messageReader = messageReader;
     this.chatRoomReader = chatRoomReader;
     this.messageReadHandler = messageReadHandler;
     this.messageEventNotifier = messageEventNotifier;
+    this.chatUserReader = chatUserReader;
   }
 
   public Message append(ChatUser sender, ChatRoom chatRoom, NewMessage newMessage) {
@@ -44,7 +48,9 @@ public class MessageService {
     messageReadHandler.updateRead(chatUser, roomId, lastReadMessageId);
   }
 
-  public List<Message> getMessagesByChatRoomId(ChatUser viewer, Long chatRoomId) {
-    return messageReader.readMessagesByChatRoomId(viewer, chatRoomId);
+  public MessagesWithParticipants getMessagesByChatRoomId(ChatUser viewer, Long chatRoomId) {
+    List<Message> messages = messageReader.readMessagesByChatRoomId(viewer, chatRoomId);
+    Participants participants = chatUserReader.readParticipants(chatRoomId);
+    return new MessagesWithParticipants(messages, participants);
   }
 }

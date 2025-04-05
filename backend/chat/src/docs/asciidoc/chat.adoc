@@ -229,9 +229,6 @@ WebSocket 응답에는 `isMine` 필드가 없지만, HTTP API 응답에는 `isMi
       "isMine": true,
       "senderId": 456
     }
-  },
-  "unreadCount": {
-    "unreadCount": 3
   }
 }
 ----
@@ -316,13 +313,6 @@ WebSocket 응답에는 `isMine` 필드가 없지만, HTTP API 응답에는 `isMi
 |NUMBER
 |메시지 발신자 ID
 
-|unreadCount
-|OBJECT
-|읽지 않은 메시지 수 정보
-
-|unreadCount.unreadCount
-|NUMBER
-|읽지 않은 메시지 수
 |===
 
 
@@ -600,32 +590,39 @@ GET /chat/rooms/{roomId}/messages
 ----
 {
   "result": "SUCCESS",
-  "data": [
-    {
-      "id": 123,
-      "content": "안녕하세요! 상품 구매에 관심이 있습니다.",
-      "type": "TEXT",
-      "timestamp": "2023-05-10T14:30:45",
-      "isMine": true,
-      "senderId": 456
-    },
-    {
+  "data": {
+    "partner": {
       "id": 124,
-      "content": "네, 안녕하세요! 어떤 점이 궁금하신가요?",
-      "type": "TEXT",
-      "timestamp": "2023-05-10T14:35:20",
-      "isMine": false,
-      "senderId": 101
+      "nickname": "삼성팬",
+      "profileImageUrl": "https://example.com/profiles/user102.jpg"
     },
-    {
-      "id": 125,
-      "content": "상품 상태가 어떤지 궁금합니다.",
-      "type": "TEXT",
-      "timestamp": "2023-05-10T14:40:10",
-      "isMine": true,
-      "senderId": 456
-    }
-  ]
+    "messages": [
+      {
+        "id": 123,
+        "content": "안녕하세요! 상품 구매에 관심이 있습니다.",
+        "type": "TEXT",
+        "timestamp": "2023-05-10T14:30:45",
+        "isMine": true,
+        "senderId": 456
+      },
+      {
+        "id": 124,
+        "content": "네, 안녕하세요! 어떤 점이 궁금하신가요?",
+        "type": "TEXT",
+        "timestamp": "2023-05-10T14:35:20",
+        "isMine": false,
+        "senderId": 101
+      },
+      {
+        "id": 125,
+        "content": "상품 상태가 어떤지 궁금합니다.",
+        "type": "TEXT",
+        "timestamp": "2023-05-10T14:40:10",
+        "isMine": true,
+        "senderId": 456
+      }
+    ]
+  }
 }
 ----
 
@@ -639,77 +636,46 @@ GET /chat/rooms/{roomId}/messages
 
 |data
 |ARRAY
-|메시지 목록
+|상대방 정보 및 메시지 목록
 
-|data[].id
+|data.partner
+|OBJECT
+|상대방 정보
+
+|data.partner.id
+|NUMBER
+|상대방 ID
+
+|data.partner.nickname
+|STRING
+|상대방 닉네임
+
+|data.partner.profileImageUrl
+|STRING
+|상대방 프로필 이미지 URL
+
+|data.messages[].id
 |NUMBER
 |메시지 ID
 
-|data[].content
+|data.messages[].content
 |STRING
 |메시지 내용
 
-|data[].type
+|data.messages[].type
 |STRING
 |메시지 타입 (TEXT, IMAGE 등)
 
-|data[].timestamp
+|data.messages[].timestamp
 |STRING
 |메시지 전송 시간
 
-|data[].isMine
+|data.messages[].isMine
 |BOOLEAN
 |현재 사용자가 보낸 메시지인지 여부
 
-|data[].senderId
+|data.messages[].senderId
 |NUMBER
 |메시지 발신자 ID
-
-|===
-
-=== [HTTP] 채팅방 존재 여부 확인
-특정 상품과 판매자에 대해 채팅방이 이미지 존재하는지 확인합니다.
-
-.HTTP 요청
-[source]
-GET /chat/rooms/existence?goodsId={goodsId}@sellerId={sellerId}
-
-.요청 파라미터
-|===
-|파이미터명|타입|설명
-
-|goodsId
-|NUMBER
-|상품 ID
-
-|sellerId
-|NUMBER
-|판매자 ID
-
-|===
-
-.응답 예시 (존재할 경우)
-[source,json]
-{ "result": "SUCCESS", "data": { "id": 201 } }
-
-.응답 예시 (존재하지 않을 경우)
-[source,json]
-{ "result": "SUCCESS", "data": null }
-
-.응답 필드
-|===
-|필드명|타입|설명
-
-|result
-|STRING
-|API 요청 성공 여부
-
-|data
-|OBJECT 또는 null
-|채팅방 ID를 포함한 객체, 존재하지 않을 경우 null 반환
-
-|data.id
-|NUMBER
-|채팅방 ID (존재할 경우에만 포함됨)
 
 |===
