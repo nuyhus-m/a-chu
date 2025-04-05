@@ -12,6 +12,7 @@ import com.ssafy.achu.data.repository.ChatRepository
 import com.ssafy.achu.data.repository.MemoryRepository
 import com.ssafy.achu.data.repository.ProductRepository
 import com.ssafy.achu.data.repository.UserRepository
+import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
@@ -64,6 +65,7 @@ class ApplicationClass : Application() {
         lateinit var chatRepository: ChatRepository
 
         lateinit var stompService: StompService
+        lateinit var json: Json
     }
 
 
@@ -102,6 +104,7 @@ class ApplicationClass : Application() {
 
         stompService = StompService()
         stompService.connect()
+        json = Json { ignoreUnknownKeys = true }
     }
 
     //GSon은 엄격한 json type을 요구하는데, 느슨하게 하기 위한 설정. success, fail이 json이 아니라 단순 문자열로 리턴될 경우 처리..

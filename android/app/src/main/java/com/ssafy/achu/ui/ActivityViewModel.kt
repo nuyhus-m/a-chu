@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.chatRepository
+import com.ssafy.achu.core.ApplicationClass.Companion.json
 import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.ApplicationClass.Companion.stompService
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import okhttp3.MultipartBody
 
 
@@ -186,10 +186,10 @@ class ActivityViewModel : ViewModel() {
         viewModelScope.launch {
             stompService.subscribeToDestination("/read/chat/users/${uiState.value.user!!.id}/message-arrived")
                 .onSuccess { response ->
-                    Log.d(TAG, "subscribeToNewMessage: $response")
+                    Log.d(TAG, "subscribeToNewMessage: success")
                     response?.let { data ->
                         data.collect() {
-                            val newMessageConstant = Json.decodeFromString<String>(it.bodyAsText)
+                            val newMessageConstant = json.decodeFromString<String>(it.bodyAsText)
                             Log.d(TAG, "subscribeToNewMessage: $newMessageConstant")
                             if (newMessageConstant == "NEW_MESSAGE_ARRIVED") {
                                 _unreadCount.value++

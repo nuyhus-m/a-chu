@@ -5,5 +5,6 @@ data class LastMessage(
     val id: Int,
     val senderId: Int,
     val timestamp: String,
-    val type: String
+    val type: String,
+    val isMine: Boolean
 )

@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -47,15 +48,23 @@ import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.formatChatRoomTime
 import com.ssafy.achu.data.model.chat.ChatRoomResponse
+import com.ssafy.achu.ui.ActivityViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ChatListScreen(
     modifier: Modifier = Modifier,
     viewModel: ChatListViewModel = viewModel(),
+    activityViewModel: ActivityViewModel,
     onNavigateToChat: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        activityViewModel.uiState.value.user?.let {
+            viewModel.subscribeToChatRooms(it.id)
+        }
+    }
 
     Column(
         modifier = modifier
@@ -72,7 +81,7 @@ fun ChatListScreen(
             )
         }
 
-        if (uiState.chatList.isEmpty()) {
+        if (uiState.chatRooms.isEmpty()) {
             Column(
                 Modifier
                     .fillMaxSize()
@@ -99,7 +108,7 @@ fun ChatListScreen(
             }
         } else {
             // 채팅 목록
-            ChatList(items = uiState.chatList, onNavigateToChat = onNavigateToChat)
+            ChatList(items = uiState.chatRooms, onNavigateToChat = onNavigateToChat)
         }
     }
 }
@@ -135,7 +144,7 @@ fun ChatItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = chatRoom.goods.thumbnailUrl,
+                model = chatRoom.goods.thumbnailImageUrl,
                 contentDescription = stringResource(R.string.product_img),
                 modifier = Modifier
                     .fillMaxWidth(0.2f)
@@ -181,7 +190,7 @@ fun ChatItem(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "1",
+                    text = chatRoom.unreadCount.toString(),
                     style = AchuTheme.typography.regular16.copy(color = White),
                     modifier = Modifier
                         .background(color = FontPink, shape = CircleShape)
@@ -199,7 +208,8 @@ fun ChatItem(
 fun ChatListScreenPreview() {
     AchuTheme {
         ChatListScreen(
-            onNavigateToChat = {}
+            onNavigateToChat = {},
+            activityViewModel = ActivityViewModel()
         )
     }
 }

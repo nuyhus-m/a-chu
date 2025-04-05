@@ -106,8 +106,18 @@ fun NavGraph(
         composable<BottomNavRoute.ChatList> {
             ChatListScreen(
                 modifier = modifier,
-                onNavigateToChat = { navController.navigate(route = Route.Chat) }
+                activityViewModel = activityViewModel,
+                onNavigateToChat = { roomId ->
+                    navController.navigate(
+                        route = Route.Chat(
+                            roomId = roomId,
+                            productId = -1,
+                            sellerId = -1
+                        )
+                    )
+                }
             )
+
         }
         composable<BottomNavRoute.MyPage> {
             MyPageScreen(
