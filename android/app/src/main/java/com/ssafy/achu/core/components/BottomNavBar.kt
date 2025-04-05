@@ -3,9 +3,11 @@ package com.ssafy.achu.core.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,12 +18,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -40,16 +45,18 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.ssafy.achu.core.navigation.BottomNavRoute
+import com.ssafy.achu.core.navigation.BottomNavScreen
 import com.ssafy.achu.core.navigation.bottomNavScreens
+import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
+import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.ui.ActivityViewModel
 
-private const val TAG = "BottomNavBar"
-
 @Composable
 fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel) {
+    val unreadCount by viewModel.unreadCount.collectAsState()
     val currentBackStack by navController.currentBackStackEntryAsState()
     // 현재 화면 루트
     val currentRoute by remember {
@@ -59,7 +66,8 @@ fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel)
     }
 
     AnimatedVisibility(
-        visible = bottomNavScreens.map { it.routeName }.contains(currentRoute)&& viewModel.isBottomNavVisible.value,
+        visible = bottomNavScreens.map { it.routeName }
+            .contains(currentRoute) && viewModel.isBottomNavVisible.value,
         enter = fadeIn(),
         exit = fadeOut()
     ) {
@@ -74,7 +82,7 @@ fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel)
                 .windowInsetsPadding(WindowInsets.navigationBars)
 
 
-            ) {
+        ) {
             Row(
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -100,11 +108,20 @@ fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel)
                                 }
                             }
                     ) {
-                        Icon(
-                            painter = painterResource(screen.icon),
-                            contentDescription = null,
-                            tint = if (selected) PointBlue else FontGray
-                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        if (screen == BottomNavScreen.ChatList) {
+                            ChatBottomBarItem(
+                                icon = screen.icon,
+                                selected = selected,
+                                unreadCount = unreadCount
+                            )
+                        } else {
+                            Icon(
+                                painter = painterResource(screen.icon),
+                                contentDescription = null,
+                                tint = if (selected) PointBlue else FontGray
+                            )
+                        }
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             text = stringResource(screen.titleResId),
@@ -117,6 +134,45 @@ fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel)
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ChatBottomBarItem(icon: Int, selected: Boolean, unreadCount: Int) {
+    Box {
+        Box(
+            modifier = Modifier.padding(top = 2.dp, end = 4.dp)
+        ) {
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = null,
+                tint = if (selected) PointBlue else FontGray
+            )
+        }
+        if (unreadCount >= 1) {
+            val unreadCountStr = if (unreadCount >= 300) "300+" else unreadCount.toString()
+            Box(
+                modifier = Modifier.align(Alignment.TopEnd)
+            ) {
+                Text(
+                    text = unreadCountStr,
+                    style = AchuTheme.typography.semiBold16.copy(color = White),
+                    modifier = Modifier
+                        .background(color = FontPink, shape = CircleShape)
+                        .padding(horizontal = 5.dp, vertical = 3.dp),
+                    fontSize = 5.sp,
+                    maxLines = 1,
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChatBottomBarItemPreview() {
+    AchuTheme {
+        ChatBottomBarItem(selected = true, icon = BottomNavScreen.ChatList.icon, unreadCount = 300)
     }
 }
 

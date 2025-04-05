@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
+import com.ssafy.achu.core.ApplicationClass.Companion.chatRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.ApplicationClass.Companion.stompService
@@ -35,6 +36,9 @@ class ActivityViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ActivityUIState())
     val uiState: StateFlow<ActivityUIState> = _uiState.asStateFlow()
 
+    private val _unreadCount = MutableStateFlow(0)
+    val unreadCount: StateFlow<Int> = _unreadCount.asStateFlow()
+
     private val _getProductSuccess = MutableSharedFlow<Boolean>()
     val getProductSuccess: SharedFlow<Boolean> = _getProductSuccess.asSharedFlow()
 
@@ -48,6 +52,7 @@ class ActivityViewModel : ViewModel() {
         getUserinfo()
         // 앱이 시작될 때 STOMP 연결 시작
         connectToStompServer()
+        getUnreadCount()
     }
 
     // STOMP 서버에 연결
@@ -171,6 +176,22 @@ class ActivityViewModel : ViewModel() {
 
     fun hideBottomNav() {
         isBottomNavVisible.value = false
+    }
+
+    private fun getUnreadCount() {
+        viewModelScope.launch {
+            chatRepository.getUnreadCount()
+                .onSuccess { response ->
+                    Log.d(TAG, "getUnreadCount: $response")
+                    if (response.result == SUCCESS) {
+                        _unreadCount.value = response.data.unreadMessageCount
+                    }
+                }.onFailure {
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "getUnreadCount errorResponse: $errorResponse")
+                    Log.d(TAG, "getUnreadCount error: ${it.message}")
+                }
+        }
     }
 
     fun onAppForeground() {
