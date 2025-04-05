@@ -159,8 +159,15 @@ fun BabyDetailScreen(
             calendar.get(Calendar.DAY_OF_MONTH)
         )
 
+        val minSelectableDate = Calendar.getInstance().apply {
+            add(Calendar.YEAR, -13)
+            add(Calendar.DAY_OF_YEAR, 1) // 당일 생일은 제외하고 다음날부터 가능하게
+        }
+        datePickerDialog.datePicker.minDate = minSelectableDate.timeInMillis
+
         datePickerDialog.show()
     }
+
 
     LaunchedEffect(Unit) {
         babyViewModel.isChanged.collectLatest { isChanged ->
