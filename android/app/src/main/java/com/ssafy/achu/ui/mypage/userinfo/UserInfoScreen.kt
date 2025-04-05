@@ -90,7 +90,7 @@ fun UserInfoScreen(
         }
     }
 
-    
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
@@ -133,7 +133,8 @@ fun UserInfoScreen(
                     modifier = Modifier
                         .size(150.dp) // 크기 지정
                         .shadow(elevation = 8.dp, shape = CircleShape) // 그림자 적용
-                        .clip(CircleShape).background(LightPink) // 원형 이미지 적용
+                        .clip(CircleShape)
+                        .background(LightPink) // 원형 이미지 적용
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.img_profile_basic2),
@@ -222,19 +223,16 @@ fun UserInfoScreen(
 
                     PointBlueFlexibleBtn("인증", onClick = {
 
-                        if (userInfoUiState.phoneNumber == "") {
-                            Toast.makeText(context, "전화번호 변경 후 인증 요청해주세요", Toast.LENGTH_SHORT)
-                                .show()
-                        } else if (userInfoUiState.phoneNumber.length >= 13) {
-
+                        if (userInfoUiState.phoneNumber.length >= 13) {
                             Log.d(TAG, "UserInfoScreen: ${userInfoUiState.phoneNumber.length}")
                             Toast.makeText(context, "전화번호를 확인해주세요", Toast.LENGTH_SHORT).show()
                         } else if (userInfoUiState.phoneNumber.replace(
                                 "-",
                                 ""
-                            ) == uiState.user!!.phoneNumber
+                            ) == uiState.user!!.phoneNumber || userInfoUiState.phoneNumber == ""
                         ) {
-                            Toast.makeText(context, "이미 등록된 전화번호입니다", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "전화번호 변경 후 인증 요청해주세요", Toast.LENGTH_SHORT)
+                                .show()
                         } else {
                             userInfoViewModel.sendPhoneAuth()
 
