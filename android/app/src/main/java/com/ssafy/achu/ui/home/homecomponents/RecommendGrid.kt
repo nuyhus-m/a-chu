@@ -36,10 +36,14 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter.State.Empty.painter
 import com.ssafy.achu.R
+import com.ssafy.achu.core.LoadingImg
+import com.ssafy.achu.core.LoadingImgScreen
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontPink
+import com.ssafy.achu.core.theme.LightBlue
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatPrice
 import com.ssafy.achu.data.model.product.ProductResponse
 
 @Composable
@@ -69,6 +73,14 @@ fun RecommendGrid(
                     onClick(productResponses[0].id)
                 }
         ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize().background(LightBlue) // 박스를 꽉 채우도록 설정
+                    .align(Alignment.Center) // 이미지를 중앙에 배치
+                    .clip(RoundedCornerShape(8.dp))
+            )
+
+            LoadingImg("이미지 로딩중..", Modifier.fillMaxWidth())
             AsyncImage(
                 model = productResponses[0].imgUrl,
                 contentDescription = "$productResponses[0].title",
@@ -95,7 +107,7 @@ fun RecommendGrid(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "${productResponses[0].title}",
+                        text = productResponses[0].title,
                         style = AchuTheme.typography.regular18.copy(
                             shadow = Shadow(
                                 color = Color.Black.copy(alpha = 0.5f),
@@ -121,7 +133,7 @@ fun RecommendGrid(
 
                 }
                 Text(
-                    text = "${productResponses[0].price}원",
+                    text = formatPrice(productResponses[0].price),
                     style = AchuTheme.typography.semiBold16.copy(
                         shadow = Shadow(
                             color = Color.Black.copy(alpha = 0.5f),
@@ -156,9 +168,17 @@ fun RecommendGrid(
                         onClick(productResponses[1].id)
                     }
             ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize().background(LightBlue) // 박스를 꽉 채우도록 설정
+                        .align(Alignment.Center) // 이미지를 중앙에 배치
+                        .clip(RoundedCornerShape(8.dp))
+                )
+
+                LoadingImg("이미지 로딩중..", Modifier.fillMaxWidth().padding(top = 24.dp), 12, 50)
                 AsyncImage(
                     model = productResponses[1].imgUrl,
-                    contentDescription = "${productResponses[1].title}",
+                    contentDescription = productResponses[1].title,
                     modifier = Modifier
                         .fillMaxSize() // 박스를 꽉 채우도록 설정
                         .clip(RoundedCornerShape(8.dp)) // 이미지를 라운드 처리
@@ -181,7 +201,7 @@ fun RecommendGrid(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = "${productResponses[1].title}",
+                            text = productResponses[1].title,
                             style = AchuTheme.typography.regular16.copy(
                                 shadow = Shadow(
                                     color = Color.Black.copy(alpha = 0.5f),
@@ -206,7 +226,7 @@ fun RecommendGrid(
 
                     }
                     Text(
-                        text = "${productResponses[1].price}원",
+                        text = formatPrice(productResponses[1].price),
                         style = AchuTheme.typography.semiBold14PointBlue.copy(
                             shadow = Shadow(
                                 color = Color.Black.copy(alpha = 0.5f),
@@ -234,6 +254,16 @@ fun RecommendGrid(
                         onClick(productResponses[2].id)
                     }
             ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize().background(LightBlue) // 박스를 꽉 채우도록 설정
+                        .align(Alignment.Center) // 이미지를 중앙에 배치
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentAlignment = Alignment.Center
+                ){
+
+                    LoadingImg("이미지 로딩중..", Modifier.fillMaxWidth().padding(top = 16.dp), 12, 40)
+                }
                 AsyncImage(
                     model = productResponses[2].imgUrl,
                     contentDescription = "recommend3",
@@ -283,7 +313,7 @@ fun RecommendGrid(
 
                     }
                     Text(
-                        text = "${productResponses[2].price}원",
+                        text = formatPrice(productResponses[2].price),
                         style = AchuTheme.typography.semiBold14PointBlue.copy(
                             shadow = Shadow(
                                 color = Color.Black.copy(alpha = 0.5f),
@@ -311,7 +341,7 @@ fun preview() {
                         chatCount = 11,
                         createdAt = "3일 전",
                         id = 1,
-                        imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                        imgUrl = "",
                         likedByUser = true,
                         likedUsersCount = 18,
                         price = 5000,
@@ -322,7 +352,7 @@ fun preview() {
                         chatCount = 11,
                         createdAt = "3일 전",
                         id = 1,
-                        imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                        imgUrl = "",
                         likedByUser = false,
                         likedUsersCount = 18,
                         price = 5000,
@@ -333,7 +363,7 @@ fun preview() {
                         chatCount = 11,
                         createdAt = "3일 전",
                         id = 1,
-                        imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
+                        imgUrl = "",
                         likedByUser = false,
                         likedUsersCount = 18,
                         price = 5000,

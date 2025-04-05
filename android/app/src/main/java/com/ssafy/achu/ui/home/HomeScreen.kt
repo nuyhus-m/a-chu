@@ -89,7 +89,6 @@ fun HomeScreen(
     val context = LocalContext.current
     LaunchedEffect(Unit) {
         homeViewModel.getLikeItemList()
-        homeViewModel.getCategoryList()
     }
 
 
@@ -117,12 +116,7 @@ fun HomeScreen(
     }
 
     val likeItemList by homeViewModel.likeItemList.collectAsState()
-    val categoryList by homeViewModel.categoryList.collectAsState()
-
-
-
-
-    viewModel.getBabyList()
+    val categoryList by viewModel.categoryList.collectAsState()
 
 
     val imageList = listOf(
@@ -168,7 +162,7 @@ fun HomeScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight(),
+                    .height(66.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -281,7 +275,8 @@ fun HomeScreen(
             categoryList,
             onNavigateToProductList = {
                 onNavigateToProductList(it.toInt())
-            }
+            },
+
         )
 
 

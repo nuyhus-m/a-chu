@@ -57,16 +57,20 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.ssafy.achu.R
+import com.ssafy.achu.core.LoadingImgScreen
 import com.ssafy.achu.core.LoadingScreen
 import com.ssafy.achu.core.components.CenterTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
+import com.ssafy.achu.core.theme.LightPink
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.ui.memory.memorydetail.PageIndicator
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 private const val TAG = "MemoryUploadScreen안주현"
 
@@ -88,15 +92,17 @@ fun MemoryUploadScreen(
         mutableStateOf(memoryUIState.selectedMemory.imgUrls.map { Uri.parse(it) })
     }
 
+    var isLoading by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         memoryViewModel.isChanged.collectLatest { isChanged ->
-            if (isChanged){
+            if (isChanged) {
                 Toast.makeText(context, memoryUIState.toastString, Toast.LENGTH_SHORT).show()
                 onNavigateToMemoryDetail(memoryUIState.selectedMemory.id, babyId)
 
-            }else{
+            } else {
                 Toast.makeText(context, memoryUIState.toastString, Toast.LENGTH_SHORT).show()
-                }
+            }
 
 
         }
@@ -105,31 +111,40 @@ fun MemoryUploadScreen(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents(),
         onResult = { uris ->
-            if (uris.size + images.size <= 3) { // 최대 3장 선택
-                // 기존 이미지를 그대로 두고 새로 들어온 이미지만 추가
+            if (uris.isEmpty()) {
+                return@rememberLauncherForActivityResult
+            }
+
+            if (uris.size + images.size <= 3) {
+                isLoading = true
+
                 images = images + uris
 
-                // 디버깅 로그로 images 배열의 요소가 Uri인지 확인
                 images.forEach { uri ->
                     Log.d(TAG, "Image URI type: ${uri::class.java}")
                 }
 
-                // 모든 이미지를 멀티파트로 변환 (기존 이미지 + 새로 추가된 이미지)
                 val multipartFiles = images.mapNotNull { uri -> uriToMultipart(context, uri) }
 
-                // 멀티파트 파일들을 memoryViewModel에 전달하여 상태 업데이트
                 memoryViewModel.memoryImageUpdate(multipartFiles)
+                memoryViewModel.isImageChanged(true)
 
                 Log.d(TAG, "MemoryUploadScreen: $multipartFiles")
                 Log.d(TAG, "MemoryUploadScreen: ${memoryUIState.sendIMage}")
-
-                memoryViewModel.isImageChanged(true)
-
             } else {
                 Toast.makeText(context, "최대 3장까지만 선택 가능합니다.", Toast.LENGTH_SHORT).show()
             }
+
         }
     )
+
+    LaunchedEffect(images) {
+        if (isLoading && images.isNotEmpty()) {
+            delay(100)
+            isLoading = false
+        }
+    }
+
 
     LaunchedEffect(key1 = Unit) {
         memoryViewModel.babyIdUpdate(babyId)
@@ -157,8 +172,19 @@ fun MemoryUploadScreen(
 
                 }
             )
-            if (images.size != 0) {
-                // 이미지 슬라이드
+
+            if (isLoading  && images.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(LightPink)
+                    .height(350.dp),
+            ) {
+                LoadingImgScreen("이미지 로딩중...", Modifier.fillMaxWidth(), 16)
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }else if (images.size != 0) {
                 HorizontalPager(
                     count = images.size,
                     state = pagerState,
@@ -167,68 +193,76 @@ fun MemoryUploadScreen(
                         .height(350.dp)
 
                 ) { page ->
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        LoadingImgScreen("이미지 로딩중...", Modifier.fillMaxWidth(), 16)
+                    }
                     AsyncImage(
                         model = images[page], // Uri를 모델로 사용
                         contentDescription = "Memory Image",
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().background(color = White),
                         alignment = Alignment.Center,
                         contentScale = ContentScale.Crop
                     )
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        IconButton(
-                            onClick = {
-                                images = images.filterIndexed { index, _ -> index != page }
-
-                            },
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .background(PointPink, RoundedCornerShape(8.dp))
-                                .size(28.dp)
-
-
+                    if (memoryId == 0) {
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = "삭제하기",
-                                tint = Color.White,
-                                modifier = Modifier.padding(4.dp)
-                            )
-                        }
-                    }
+                            IconButton(
+                                onClick = {
+                                    images = images.filterIndexed { index, _ -> index != page }
 
-                    // "사진 추가하기" 텍스트를 우측 하단에 배치하려면 Box 사용
-                    if (images.size < 3 && images.isNotEmpty()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize() // 화면 전체를 차지하게 함
-                                .padding(16.dp)
-
-                        ) {
-
-
-                            Text(
-                                text = "사진 추가하기",
-                                style = AchuTheme.typography.semiBold14PointBlue.copy(
-                                    shadow = Shadow(
-                                        color = Color.Black.copy(alpha = 0.5f),
-                                        offset = Offset(2f, 2f),
-                                        blurRadius = 4f
-                                    )
-                                ),
-                                color = White,
+                                },
                                 modifier = Modifier
-                                    .clickable {
-                                        launcher.launch("image/*") // 이미지 선택
-                                    }
-
-                                    .align(Alignment.BottomEnd) // Box 내에서 우측 하단에 배치
-                            )
+                                    .padding(16.dp)
+                                    .background(PointPink, RoundedCornerShape(8.dp))
+                                    .size(28.dp)
 
 
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "삭제하기",
+                                    tint = Color.White,
+                                    modifier = Modifier.padding(4.dp)
+                                )
+                            }
                         }
+
+                        // "사진 추가하기" 텍스트를 우측 하단에 배치하려면 Box 사용
+                        if (images.size < 3 && images.isNotEmpty()) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize() // 화면 전체를 차지하게 함
+                                    .padding(16.dp)
+
+                            ) {
+
+
+                                Text(
+                                    text = "사진 추가하기",
+                                    style = AchuTheme.typography.semiBold14PointBlue.copy(
+                                        shadow = Shadow(
+                                            color = Color.Black.copy(alpha = 0.5f),
+                                            offset = Offset(2f, 2f),
+                                            blurRadius = 4f
+                                        )
+                                    ),
+                                    color = White,
+                                    modifier = Modifier
+                                        .clickable {
+                                            launcher.launch("image/*") // 이미지 선택
+                                        }
+
+                                        .align(Alignment.BottomEnd) // Box 내에서 우측 하단에 배치
+                                )
+
+
+                            }
+                        }
+
                     }
                 }
 
@@ -240,16 +274,23 @@ fun MemoryUploadScreen(
                 )
 
 
-            } else {
+            }  else {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(350.dp)
                         .background(Color.LightGray)
                         .clickable {
-                            launcher.launch("image/*") // 이 부분을 추가
+                            kotlinx.coroutines.MainScope().launch {
+                                launcher.launch("image/*")
+                                delay(300)
+                                isLoading = true
+                            }
+
                         },
                 ) {
+
+
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -282,9 +323,9 @@ fun MemoryUploadScreen(
                         )
                     }
                 }
-
                 Spacer(modifier = Modifier.height(24.dp))
             }
+
 
             Column(
                 modifier = Modifier
@@ -387,7 +428,7 @@ fun MemoryUploadScreen(
 
         }
 
-        if(memoryUIState.loading){
+        if (memoryUIState.loading) {
             LoadingScreen("추억 업로드 중...\n잠시만 기다려 주세요!")
         }
 
