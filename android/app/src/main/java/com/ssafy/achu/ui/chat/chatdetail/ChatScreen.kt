@@ -49,6 +49,7 @@ import com.ssafy.achu.R
 import com.ssafy.achu.core.components.SmallLineBtn
 import com.ssafy.achu.core.components.dialog.BasicDialog
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.FontBlue
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.LightBlue
@@ -174,8 +175,9 @@ fun ChatProduct(product: ProductDetailResponse, isSeller: Boolean, isSold: Boole
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = formatPrice(product.price),
-                    style = AchuTheme.typography.semiBold18.copy(color = FontPink)
+                    text = if (product.price == 0) stringResource(R.string.free)
+                    else formatPrice(product.price),
+                    style = AchuTheme.typography.semiBold18.copy(color = if (product.price == 0) FontBlue else FontPink)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(

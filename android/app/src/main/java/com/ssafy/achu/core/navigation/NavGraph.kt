@@ -295,6 +295,7 @@ fun NavGraph(
         // 채팅 관련 화면들
         composable<Route.Chat> {
             ChatScreen(
+                activityViewModel = activityViewModel,
                 onBackClick = { navController.popBackStack() }
             )
         }
