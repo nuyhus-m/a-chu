@@ -7,13 +7,10 @@ import com.ssafy.s12p21d206.achu.chat.domain.ChatRoomService;
 import com.ssafy.s12p21d206.achu.chat.domain.Message;
 import com.ssafy.s12p21d206.achu.chat.domain.MessageService;
 import com.ssafy.s12p21d206.achu.chat.domain.UnreadCount;
+import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
 import java.util.List;
 import java.util.Map;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ChatRoomController {
@@ -60,5 +57,14 @@ public class ChatRoomController {
       ChatApiUser apiUser, @PathVariable Long roomId) {
     List<Message> messages = messageService.getMessagesByChatRoomId(apiUser.toChatUser(), roomId);
     return ChatApiResponse.success(MessageResponse.listFrom(messages, apiUser.toChatUser()));
+  }
+
+  @GetMapping("/chat/rooms/existence")
+  public ChatApiResponse<DefaultIdResponse> checkChatRoomExistence(
+      ChatApiUser apiUser, @RequestParam Long goodsId, @RequestParam Long sellerId) {
+
+    Long chatRoomId =
+        chatRoomService.findChatRoomId(goodsId, new ChatUser(sellerId), apiUser.toChatUser());
+    return ChatApiResponse.success(chatRoomId != null ? DefaultIdResponse.of(chatRoomId) : null);
   }
 }

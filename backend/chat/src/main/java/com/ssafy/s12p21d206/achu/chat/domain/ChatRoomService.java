@@ -31,4 +31,8 @@ public class ChatRoomService {
   public Map<Long, UnreadCount> findUnreadCounts(ChatUser chatUser, List<Long> chatRoomIds) {
     return chatRoomReader.countUnreadMessages(chatUser, chatRoomIds);
   }
+
+  public Long findChatRoomId(Long goodsId, ChatUser seller, ChatUser buyer) {
+    return chatRoomReader.findChatRoomId(goodsId, seller, buyer);
+  }
 }

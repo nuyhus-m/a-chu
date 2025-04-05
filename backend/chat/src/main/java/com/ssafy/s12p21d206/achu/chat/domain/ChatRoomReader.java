@@ -37,4 +37,8 @@ public class ChatRoomReader {
   public UnreadCount countUnreadMessages(ChatUser user, Long chatRoomId) {
     return chatRoomRepository.countUnreadMessages(user, chatRoomId);
   }
+
+  public Long findChatRoomId(Long goodsId, ChatUser seller, ChatUser buyer) {
+    return chatRoomRepository.findChatRoomId(goodsId, seller, buyer);
+  }
 }

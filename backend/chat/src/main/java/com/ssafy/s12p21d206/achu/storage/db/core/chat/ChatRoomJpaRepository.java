@@ -124,4 +124,12 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoomEntity, Lon
             """)
   Optional<ChatRoomDto> findById(
       @Param("chatRoomId") Long chatRoomId, @Param("status") ChatEntityStatus status);
+
+  @Query(
+      """
+  select cr.id from ChatRoomEntity cr
+  where cr.goodsId = :goodsId and cr.sellerId = :sellerId and cr.buyerId = :buyerId
+  and cr.entityStatus = 'ACTIVE'
+  """)
+  Optional<Long> findByGoodsIdAndSellerIdAndBuyerId(Long goodsId, Long id, Long id1);
 }
