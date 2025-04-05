@@ -103,4 +103,10 @@ dependencies {
     //lottie
     implementation (libs.lottie.compose)
 
+    //status bar
+    implementation (libs.accompanist.systemuicontroller)
+    implementation (libs.accompanist.systemuicontroller.v0301)
+
+
+
 }

@@ -70,7 +70,7 @@ fun MyPageScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp),
+                .padding(start = 24.dp, end = 24.dp, top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()),
         ) {
 
             Column {
