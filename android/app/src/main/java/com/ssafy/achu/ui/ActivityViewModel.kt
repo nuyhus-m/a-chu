@@ -16,9 +16,6 @@ import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.UploadProductRequest
-import com.ssafy.achu.data.network.StompService
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -46,20 +43,9 @@ class ActivityViewModel : ViewModel() {
     private val _errorMessage = MutableSharedFlow<String>()
     val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
 
-    private var backgroundJobToken: Job? = null
-    private val backgroundTimeoutMs = 60000L // 1분
-
     init {
         getUserinfo()
-        connectToStompServer()
         getUnreadCount()
-    }
-
-    // STOMP 서버에 연결
-    private fun connectToStompServer() {
-        viewModelScope.launch {
-            stompService.connect()
-        }
     }
 
     fun updateSelectedBaby(baby: BabyResponse) {
@@ -198,7 +184,7 @@ class ActivityViewModel : ViewModel() {
     private fun subscribeToNewMessage() {
         if (uiState.value.user == null) return
         viewModelScope.launch {
-            stompService.subscribeToNewMessage(uiState.value.user!!.id.toString())
+            stompService.subscribeToDestination("/read/chat/users/${uiState.value.user!!.id}/message-arrived")
                 .onSuccess { response ->
                     Log.d(TAG, "subscribeToNewMessage: $response")
                     response?.let { data ->
@@ -213,33 +199,6 @@ class ActivityViewModel : ViewModel() {
                 }.onFailure {
                     Log.d(TAG, "subscribeToNewMessage: ${it.message}")
                 }
-        }
-    }
-
-    fun onAppForeground() {
-        // 백그라운드 작업 취소
-        backgroundJobToken?.cancel()
-        backgroundJobToken = null
-
-        // 앱이 포그라운드로 돌아올 때 처리
-        viewModelScope.launch {
-            if (stompService.connectionState.value !is StompService.ConnectionState.Connected) {
-                stompService.connect()
-                getUnreadCount()
-                subscribeToNewMessage()
-            }
-        }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        // 이미 실행 중인 백그라운드 작업 취소
-        backgroundJobToken?.cancel()
-
-        // 새 백그라운드 작업 시작 - 일정 시간 후 연결 해제
-        backgroundJobToken = viewModelScope.launch {
-            delay(backgroundTimeoutMs)
-            stompService.cleanup()
         }
     }
 }
