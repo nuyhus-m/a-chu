@@ -35,7 +35,7 @@ sealed interface Route {
     data class UploadProduct(val isModify: Boolean) : Route
 
     @Serializable
-    data class Chat(val roomId: Int = -1, val productId: Int, val partnerId: Int) : Route
+    data class Chat(val roomId: Int = -1) : Route
 
 }
 

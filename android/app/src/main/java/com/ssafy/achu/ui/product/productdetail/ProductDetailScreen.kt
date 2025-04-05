@@ -82,7 +82,7 @@ fun ProductDetailScreen(
     isPreview: Boolean = false,
     onBackClick: () -> Unit,
     onNavigateToUpload: () -> Unit,
-    onNavigateToChat: (Int, Int) -> Unit,
+    onNavigateToChat: () -> Unit,
     onNavigateToRecommend: () -> Unit,
     onNavigateToMemoryUpload: (Int, String) -> Unit,
     onNavigateToProductList: () -> Unit
@@ -202,10 +202,7 @@ fun ProductDetailScreen(
             onUnLikeClick = { viewModel.unlikeProduct(activityUiState.product.id) },
             onButtonClick = {
                 if (!isPreview) {
-                    onNavigateToChat(
-                        activityViewModel.uiState.value.product.id,
-                        activityUiState.product.seller.id
-                    )
+                    onNavigateToChat()
                     activityViewModel.updatePartner(
                         Partner(
                             id = activityUiState.product.seller.id,

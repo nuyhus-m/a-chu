@@ -57,7 +57,7 @@ fun ChatListScreen(
     modifier: Modifier = Modifier,
     viewModel: ChatListViewModel = viewModel(),
     activityViewModel: ActivityViewModel,
-    onNavigateToChat: (Int, Int, Int) -> Unit
+    onNavigateToChat: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -72,7 +72,7 @@ fun ChatListScreen(
             if (success) {
                 uiState.selectedItem?.let {
                     activityViewModel.updatePartner(it.partner)
-                    onNavigateToChat(it.id, it.goodsId, it.partner.id)
+                    onNavigateToChat(it.id)
                 }
             }
         }
