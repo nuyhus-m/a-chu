@@ -46,6 +46,7 @@ class ActivityViewModel : ViewModel() {
     val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
 
     init {
+        stompService.connect()
         getUserinfo()
         getUnreadCount()
     }

@@ -103,7 +103,6 @@ class ApplicationClass : Application() {
         chatRepository = ChatRepository()
 
         stompService = StompService()
-        stompService.connect()
         json = Json { ignoreUnknownKeys = true }
     }
 

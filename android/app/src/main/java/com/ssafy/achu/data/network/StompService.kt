@@ -2,6 +2,7 @@ package com.ssafy.achu.data.network
 
 import android.util.Log
 import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -19,6 +20,7 @@ import org.hildan.krossbow.stomp.conversions.kxserialization.json.withJsonConver
 import org.hildan.krossbow.stomp.frame.StompFrame
 import org.hildan.krossbow.stomp.headers.StompSendHeaders
 import org.hildan.krossbow.stomp.headers.StompSubscribeHeaders
+import org.hildan.krossbow.websocket.WebSocketException
 import org.hildan.krossbow.websocket.okhttp.OkHttpWebSocketClient
 
 private const val TAG = "StompService"
@@ -30,7 +32,11 @@ class StompService {
     val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
 
     var session: StompSession? = null
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val scope = CoroutineScope(
+        Dispatchers.IO + SupervisorJob() + CoroutineExceptionHandler { _, throwable ->
+            Log.e(TAG, "Coroutine 예외 발생: ${throwable.message}", throwable)
+        }
+    )
 
     // 연결 상태
     sealed class ConnectionState {
@@ -43,40 +49,71 @@ class StompService {
     // STOMP 연결
     fun connect() {
         scope.launch {
+            if (connectionState.value is ConnectionState.Connecting || connectionState.value is ConnectionState.Connected) {
+                Log.d(TAG, "이미 연결 중이거나 연결됨. 상태: ${connectionState.value}")
+                return@launch
+            }
+
+            val token = sharedPreferencesUtil.getTokens()?.accessToken
+
+            if (token.isNullOrBlank()) {
+                Log.e(TAG, "Access token이 없어서 연결 시도 중단")
+                _connectionState.value = ConnectionState.Error("Access token is missing")
+                return@launch
+            }
+
+            _connectionState.value = ConnectionState.Connecting
+            Log.d(TAG, "STOMP 연결 시도 중...")
+
             runCatching {
-                // 이미 연결 중이거나 연결된 상태면 반환
-                if (connectionState.value is ConnectionState.Connecting ||
-                    connectionState.value is ConnectionState.Connected
-                ) {
-                    return@launch
+                // OkHttpClient 설정 (WebSocket 핸드셰이크 로그)
+                val loggingInterceptor = HttpLoggingInterceptor { message ->
+                    Log.d("WS-OkHttp", message)
+                }.apply {
+                    level = HttpLoggingInterceptor.Level.BODY
                 }
 
-                _connectionState.value = ConnectionState.Connecting
-
-                // OkHttp 웹소켓 클라이언트로 STOMP 클라이언트 생성
                 val okHttpClient = OkHttpClient.Builder()
-                    .addInterceptor(
-                        HttpLoggingInterceptor().apply {
-                            level = HttpLoggingInterceptor.Level.BODY
-                        }
-                    )
+                    .addInterceptor(loggingInterceptor)
                     .build()
+
                 val wsClient = OkHttpWebSocketClient(okHttpClient)
                 val stompClient = StompClient(wsClient)
+
+                Log.d(TAG, "WebSocket 클라이언트 및 STOMP 클라이언트 초기화 완료")
 
                 // STOMP 세션 연결
                 session = stompClient.connect(
                     STOMP_URL,
                     customStompConnectHeaders = mapOf(
-                        "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+                        "Authorization" to "Bearer $token"
                     )
                 ).withJsonConversions()
-            }.onSuccess {
+
                 _connectionState.value = ConnectionState.Connected
-                Log.d(TAG, "connect: STOMP 연결 성공")
+                Log.d(TAG, "✅ STOMP 연결 성공")
+
             }.onFailure { e ->
-                _connectionState.value = ConnectionState.Error(e.message ?: "Unknown error")
-                Log.d(TAG, "connect error: ${e.message}")
+                val errorMessage = e.message ?: "Unknown error"
+                _connectionState.value = ConnectionState.Error(errorMessage)
+                Log.e(TAG, "❌ STOMP 연결 실패: $errorMessage", e)
+
+                when (e) {
+                    is WebSocketException -> {
+                        Log.e(TAG, "WebSocketException: ${e.message}")
+                        e.cause?.let { cause ->
+                            Log.e(TAG, "원인: ${cause.message}", cause)
+                        }
+                    }
+
+                    is java.io.EOFException -> {
+                        Log.e(TAG, "EOFException: 서버에서 응답 없이 연결 종료", e)
+                    }
+
+                    else -> {
+                        Log.e(TAG, "알 수 없는 예외 발생", e)
+                    }
+                }
             }
         }
     }
