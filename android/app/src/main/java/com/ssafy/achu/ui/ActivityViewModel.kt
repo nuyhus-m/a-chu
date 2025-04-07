@@ -60,6 +60,7 @@ class ActivityViewModel : ViewModel() {
 
     init {
         getUserinfo()
+        getCategoryList()
     }
 
     fun updateSelectedBaby(baby: BabyResponse) {

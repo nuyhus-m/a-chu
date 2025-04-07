@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.mypage.baby
 
+import android.R.attr.text
 import android.app.DatePickerDialog
 import android.content.Context
 import android.graphics.Bitmap
@@ -96,7 +97,7 @@ fun BabyDetailScreen(
     val babyUiState by babyViewModel.babyUiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val pointColor: Color = PointPink
-
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     if (babyId > 0) {
         babyViewModel.getBaby(babyId)
@@ -249,7 +250,7 @@ fun BabyDetailScreen(
                     },
                     onDeleteClick = {
                         if (uiState.babyList.size > 1) {
-                            babyViewModel.deleteBaby(babyUiState.selectedBaby!!.id)
+                            showDeleteDialog = true
                         } else {
                             Toast.makeText(
                                 context,
@@ -499,7 +500,23 @@ fun BabyDetailScreen(
             )
         }
     }
+
+    if(showDeleteDialog){
+        BasicDialog(
+            img = painterResource(id = R.drawable.img_crying_face),
+            text = "해당 아이를 삭제하시겠습니까?",
+            onConfirm = {
+                babyViewModel.deleteBaby(babyUiState.selectedBaby!!.id)
+                showDeleteDialog = false
+            },
+            onDismiss = {
+                showDeleteDialog = false
+            }
+        )
+    }
 }
+
+
 
 
 @RequiresApi(Build.VERSION_CODES.O)

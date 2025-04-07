@@ -37,7 +37,6 @@ import kotlin.String
 fun MyPageScreen(
     onNavigateToTradeList: () -> Unit,
     modifier: Modifier = Modifier,
-    profileImg: Int = R.drawable.img_profile_test,
     onNavigateToLikeList: () -> Unit,
     onNavigateToRecommend: () -> Unit,
     onNavigateToUserInfo: () -> Unit,
@@ -45,8 +44,6 @@ fun MyPageScreen(
     viewModel: ActivityViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
-
 
 
     val user = uiState.user
@@ -70,7 +67,11 @@ fun MyPageScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 24.dp, end = 24.dp, top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()),
+                .padding(
+                    start = 24.dp,
+                    end = 24.dp,
+                    top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+                ),
         ) {
 
             Column {
@@ -96,9 +97,7 @@ fun MyPageScreen(
                             modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
                             contentScale = ContentScale.Crop
                         )
-                        if (user == null) {
-                            CircularProgressIndicator()
-                        }
+
                         if (user?.profileImageUrl.isNullOrEmpty()) {
                             Image(
                                 painter = painterResource(R.drawable.img_profile_basic2),//디폴트 이미지
@@ -119,6 +118,24 @@ fun MyPageScreen(
                     Row(
                         verticalAlignment = Alignment.Bottom // 하단 정렬
                     ) {
+                        if (user == null) {
+                            Text(
+                                text = "사용자 정보 로딩중...",
+                                style = AchuTheme.typography.bold24.copy(
+                                    fontSize = 24.sp,
+                                    lineHeight = 30.sp,
+                                    shadow = Shadow(
+                                        color = Color.Gray, // 그림자 색상
+                                        offset = Offset(2f, 2f), // 그림자 위치 (x, y)
+                                        blurRadius = 8f // 그림자 흐림 정도
+                                    )
+                                ),
+                                color = White,
+                                modifier = Modifier
+                                    .padding(start = 24.dp)
+                                    .alignByBaseline()
+                            )
+                        }
                         user?.nickname?.let {
                             Text(
                                 text = it,
@@ -136,22 +153,24 @@ fun MyPageScreen(
                                     .padding(start = 24.dp)
                                     .alignByBaseline()
                             )
+
+                            Text(
+                                text = "님",
+                                style = AchuTheme.typography.bold24.copy(
+                                    fontSize = 24.sp,
+                                    lineHeight = 30.sp,
+                                    shadow = Shadow(
+                                        color = Color.Gray, // 그림자 색상
+                                        offset = Offset(2f, 2f), // 그림자 위치 (x, y)
+                                        blurRadius = 4f // 그림자 흐림 정도
+                                    )
+                                ),
+                                color = White,
+                                modifier = Modifier.alignByBaseline()
+                            )
                         }
 
-                        Text(
-                            text = "님",
-                            style = AchuTheme.typography.bold24.copy(
-                                fontSize = 24.sp,
-                                lineHeight = 30.sp,
-                                shadow = Shadow(
-                                    color = Color.Gray, // 그림자 색상
-                                    offset = Offset(2f, 2f), // 그림자 위치 (x, y)
-                                    blurRadius = 4f // 그림자 흐림 정도
-                                )
-                            ),
-                            color = White,
-                            modifier = Modifier.alignByBaseline()
-                        )
+
                     }
 
                 }

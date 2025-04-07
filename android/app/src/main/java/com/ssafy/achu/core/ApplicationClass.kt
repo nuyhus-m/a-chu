@@ -1,16 +1,16 @@
 package com.ssafy.achu.core
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.ssafy.achu.data.database.SharedPreferencesUtil
-import com.ssafy.achu.data.repository.AuthRepository
-import com.ssafy.achu.data.repository.BabyRepository
-import com.ssafy.achu.data.repository.FcmRepository
-import com.ssafy.achu.data.repository.MemoryRepository
-import com.ssafy.achu.data.repository.ProductRepository
-import com.ssafy.achu.data.repository.UserRepository
+import com.ssafy.achu.data.repository.*
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
@@ -23,65 +23,65 @@ import java.util.concurrent.TimeUnit
 private const val TAG = "ApplicationClass"
 
 class ApplicationClass : Application() {
+
     companion object {
-        // ipconfig를 통해 ip확인하기
-        // 핸드폰으로 접속은 같은 인터넷으로 연결 되어있어야함 (유,무선)
         const val SERVER_URL = "https://api.a-chu.dukcode.org"
-        lateinit var sharedPreferencesUtil: SharedPreferencesUtil
+
+        // Retrofit, Gson, SharedPreferences
         lateinit var retrofit: Retrofit
+        lateinit var sharedPreferencesUtil: SharedPreferencesUtil
+        val gson: Gson = GsonBuilder().setLenient().create()
 
-        private val nullOnEmptyConverterFactory = object : Converter.Factory() {
-            fun converterFactory() = this
-            override fun responseBodyConverter(
-                type: Type,
-                annotations: Array<out Annotation>,
-                retrofit: Retrofit
-            ) = object :
-                Converter<ResponseBody, Any?> {
-                val nextResponseBodyConverter =
-                    retrofit.nextResponseBodyConverter<Any?>(converterFactory(), type, annotations)
-
-                override fun convert(value: ResponseBody) = if (value.contentLength() != 0L) {
-                    try {
-                        nextResponseBodyConverter.convert(value)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        null
-                    }
-                } else {
-                    null
-                }
-            }
-        }
-
-        // repository 객체
+        // Repository
         lateinit var authRepository: AuthRepository
         lateinit var userRepository: UserRepository
         lateinit var productRepository: ProductRepository
         lateinit var memoryRepository: MemoryRepository
         lateinit var babyRepository: BabyRepository
         lateinit var fcmRepository: FcmRepository
-    }
 
+        // Null-on-empty converter
+        private val nullOnEmptyConverterFactory = object : Converter.Factory() {
+            private fun factory() = this
+            override fun responseBodyConverter(
+                type: Type,
+                annotations: Array<out Annotation>,
+                retrofit: Retrofit
+            ) = Converter<ResponseBody, Any?> { value ->
+                if (value.contentLength() != 0L) {
+                    try {
+                        val delegate = retrofit.nextResponseBodyConverter<Any?>(factory(), type, annotations)
+                        delegate.convert(value)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        null
+                    }
+                } else null
+            }
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "onCreate: 초기화")
-        //shared preference 초기화
+        Log.d(TAG, "onCreate: ApplicationClass 초기화됨")
+
+        // SharedPreferences 초기화
         sharedPreferencesUtil = SharedPreferencesUtil(applicationContext)
 
-        // 레트로핏 인스턴스를 생성하고, 레트로핏에 각종 설정값들을 지정해줍니다.
-        // 연결 타임아웃시간은 5초로 지정이 되어있고, HttpLoggingInterceptor를 붙여서 어떤 요청이 나가고 들어오는지를 보여줍니다.
+        // 알림 채널 생성 (Oreo 이상)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel()
+        }
+
+        // Retrofit 클라이언트 구성
         val okHttpClient = OkHttpClient.Builder()
-            .readTimeout(5000, TimeUnit.MILLISECONDS)
-            .connectTimeout(5000, TimeUnit.MILLISECONDS)
-            // 로그캣에 okhttp.OkHttpClient로 검색하면 http 통신 내용을 보여줍니다.
+            .readTimeout(5, TimeUnit.SECONDS)
+            .connectTimeout(5, TimeUnit.SECONDS)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .addInterceptor(TokenInterceptor())
             .authenticator(TokenAuthenticator())
             .build()
 
-        // 앱이 처음 생성되는 순간, retrofit 인스턴스를 생성
         retrofit = Retrofit.Builder()
             .baseUrl(SERVER_URL)
             .addConverterFactory(nullOnEmptyConverterFactory)
@@ -89,19 +89,26 @@ class ApplicationClass : Application() {
             .client(okHttpClient)
             .build()
 
-        // repository 초기화
+        // Repository 초기화
         authRepository = AuthRepository()
         userRepository = UserRepository()
         productRepository = ProductRepository()
         memoryRepository = MemoryRepository()
         babyRepository = BabyRepository()
         fcmRepository = FcmRepository()
-
     }
 
-    //GSon은 엄격한 json type을 요구하는데, 느슨하게 하기 위한 설정. success, fail이 json이 아니라 단순 문자열로 리턴될 경우 처리..
-    val gson: Gson = GsonBuilder()
-        .setLenient()
-        .create()
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel() {
+        val name = "알림 채널"
+        val descriptionText = "FCM 알림을 위한 채널입니다"
+        val importance = NotificationManager.IMPORTANCE_HIGH
+        val channel = NotificationChannel("channel_id", name, importance).apply {
+            description = descriptionText
+        }
 
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+    }
 }

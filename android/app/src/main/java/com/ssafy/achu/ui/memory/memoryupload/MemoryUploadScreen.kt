@@ -66,6 +66,8 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.LightPink
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.getNameWithParticle
+import com.ssafy.achu.core.util.getProductWithParticle
 import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.ui.memory.memorydetail.PageIndicator
 import kotlinx.coroutines.delay
@@ -80,7 +82,8 @@ private const val TAG = "MemoryUploadScreen안주현"
 fun MemoryUploadScreen(
     onNavigateToMemoryDetail: (memoryId: Int, babyId: Int) -> Unit,
     memoryId: Int,
-    babyId: Int
+    babyId: Int,
+    productName:String
 ) {
     val context = LocalContext.current
     val memoryViewModel: MemoryEditViewModel = viewModel()
@@ -173,18 +176,18 @@ fun MemoryUploadScreen(
                 }
             )
 
-            if (isLoading  && images.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(LightPink)
-                    .height(350.dp),
-            ) {
-                LoadingImgScreen("이미지 로딩중...", Modifier.fillMaxWidth(), 16)
-            }
+            if (isLoading && images.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(LightPink)
+                        .height(350.dp),
+                ) {
+                    LoadingImgScreen("이미지 로딩중...", Modifier.fillMaxWidth(), 16)
+                }
 
-            Spacer(modifier = Modifier.height(24.dp))
-        }else if (images.size != 0) {
+                Spacer(modifier = Modifier.height(24.dp))
+            } else if (images.size != 0) {
                 HorizontalPager(
                     count = images.size,
                     state = pagerState,
@@ -201,7 +204,9 @@ fun MemoryUploadScreen(
                     AsyncImage(
                         model = images[page], // Uri를 모델로 사용
                         contentDescription = "Memory Image",
-                        modifier = Modifier.fillMaxSize().background(color = White),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = White),
                         alignment = Alignment.Center,
                         contentScale = ContentScale.Crop
                     )
@@ -274,7 +279,7 @@ fun MemoryUploadScreen(
                 )
 
 
-            }  else {
+            } else {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -360,9 +365,19 @@ fun MemoryUploadScreen(
                     }
                 )
 
+//                Spacer(modifier = Modifier.height(4.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "${memoryUIState.memoryContent.length}/$maxContentLength",
+                    color = PointPink,
+                    style = AchuTheme.typography.regular14,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp, end = 4.dp)
+                        .align(alignment = Alignment.End)
 
+                )
 
                 Box(
                     modifier = Modifier
@@ -379,7 +394,7 @@ fun MemoryUploadScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .align(Alignment.TopStart), // 텍스트 필드 정렬
-                        placeholder = { Text("과 함께한 추억을 기록해보세요!", color = FontGray) },
+                        placeholder = { Text("${getProductWithParticle(productName)} 함께한 추억을 기록해보세요!", color = FontGray) },
                         textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
                         shape = RoundedCornerShape(16.dp),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -391,17 +406,6 @@ fun MemoryUploadScreen(
 
                 }
 
-                Text(
-                    text = "${memoryUIState.memoryContent.length}/$maxContentLength",
-                    color = PointPink,
-                    style = AchuTheme.typography.regular14,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp, end = 4.dp)
-                        .align(alignment = Alignment.End)
-
-                )
 
 
 
@@ -412,8 +416,10 @@ fun MemoryUploadScreen(
                     onClick = {
                         if (images.isEmpty()) {
                             Toast.makeText(context, "사진을 추가해주세요", Toast.LENGTH_SHORT).show()
-                        } else {
+                        } else if (memoryUIState.memoryTitle.trim() == "" || memoryUIState.memoryContent.trim() == "")  {
+                            Toast.makeText(context, "제목, 내용을 확인해 주세요", Toast.LENGTH_SHORT).show()
 
+                        } else {
                             if (memoryId == 0) {
                                 memoryViewModel.uploadMemory()
                             } else {
@@ -444,7 +450,8 @@ fun MemoryUploadScreenPreview() {
             onNavigateToMemoryDetail = { memoryId, babyId ->
             },
             memoryId = 0,
-            babyId = 0
+            babyId = 0,
+            productName = "토끼인형"
         )
     }
 }

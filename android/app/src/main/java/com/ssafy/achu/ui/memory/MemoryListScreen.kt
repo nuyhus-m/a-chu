@@ -60,6 +60,7 @@ import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.formatBirthDate
 import com.ssafy.achu.core.util.formatDate
+import com.ssafy.achu.core.util.getNameWithParticle
 import com.ssafy.achu.data.model.memory.MemoryResponse
 import com.ssafy.achu.ui.ActivityUIState
 import com.ssafy.achu.ui.ActivityViewModel
@@ -175,14 +176,14 @@ fun MemoryListScreen(
                     ) {
                         Spacer(modifier = Modifier.padding(start = 32.dp))
                         Text(
-                            text = selectedItem!!,
+                            text = getNameWithParticle(selectedItem.toString()),
                             style = AchuTheme.typography.semiBold20,
                             modifier = Modifier.alignByBaseline()  // 베이스라인 정렬
 
                         )
 
                         Text(
-                            text = "의 추억",
+                            text = " 추억",
                             style = AchuTheme.typography.semiBold16,
                             modifier = Modifier.alignByBaseline()  // 베이스라인 정렬
 
@@ -253,7 +254,7 @@ fun MemoryListScreen(
 
                         Spacer(Modifier.height(24.dp))
                         Text(
-                            text = "${selectedItem}의 추억 없습니다.\nA-Chu에서 거래하고 추억을 기록하세요! ",
+                            text = "${getNameWithParticle(selectedItem.toString())} 추억이 없습니다.\nA-Chu에서 거래하고 추억을 기록하세요! ",
                             style = AchuTheme.typography.semiBold18,
                             color = FontGray,
                             textAlign = TextAlign.Center,
@@ -343,6 +344,7 @@ fun MemoryListItem(img: String, title: String, date: String, onClick: () -> Unit
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun MemoryListScreenPreview() {

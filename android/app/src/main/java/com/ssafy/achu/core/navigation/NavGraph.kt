@@ -200,6 +200,7 @@ fun NavGraph(
                 },
                 memoryId = it.arguments?.getInt("memoryId") ?: 0,
                 babyId = it.arguments?.getInt("babyId") ?: 0,
+                productName = it.arguments?.getString("productName")?:""
             )
         }
 

@@ -333,6 +333,7 @@ fun UserInfoScreen(
             onConfirm = {
                 sharedPreferencesUtil.clearTokensInfo()
                 navigateToAuthActivity(context)
+                viewModel.deleteFcmToken()
             }
         )
     }

@@ -41,7 +41,7 @@ class TokenInterceptor : Interceptor {
             "/users/nickname/is-unique",
             "/verification/request",
             "/verification/verify",
-            "/users/password/reset"
+            "/users/password/reset",
         )
 
         val isNoTokenUrl = noTokenUrls.any {

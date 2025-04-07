@@ -65,8 +65,8 @@ class MemoryEditViewModel : ViewModel() {
                 babyId = uiState.value.babyId,
                 memoryImages = uiState.value.sendIMage,
                 request = MemoryRequest(
-                    title = uiState.value.memoryTitle,
-                    content = uiState.value.memoryContent
+                    title = uiState.value.memoryTitle.trim(),
+                    content = uiState.value.memoryContent.trim()
                 )
 
             ).onSuccess {
@@ -77,6 +77,7 @@ class MemoryEditViewModel : ViewModel() {
             }.onFailure {
                 val errorResponse = it.getErrorResponse(ApplicationClass.Companion.retrofit)
                 Log.d(TAG, "uploadMemory: ${errorResponse}")
+                updateToastString("추억 기록 실패 내용을 확인해주세요!")
                 _uiState.value = _uiState.value.copy(loading = false)
             }
 
