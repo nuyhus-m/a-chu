@@ -8,16 +8,19 @@ public class GoodsModifier {
   private final GoodsValidator goodsValidator;
   private final BabyValidator babyValidator;
   private final GoodsReader goodsReader;
+  private final GoodsEventPublisher goodsEventPublisher;
 
   public GoodsModifier(
       GoodsRepository goodsRepository,
       GoodsValidator goodsValidator,
       BabyValidator babyValidator,
-      GoodsReader goodsReader) {
+      GoodsReader goodsReader,
+      GoodsEventPublisher goodsEventPublisher) {
     this.goodsRepository = goodsRepository;
     this.goodsValidator = goodsValidator;
     this.babyValidator = babyValidator;
     this.goodsReader = goodsReader;
+    this.goodsEventPublisher = goodsEventPublisher;
   }
 
   public GoodsDetail modify(User user, Long goodsId, ModifyGoods modifyGoods) {
@@ -27,7 +30,10 @@ public class GoodsModifier {
     Goods goods = goodsReader.getGoods(goodsId);
     babyValidator.validateExists(goods.babyId());
     babyValidator.validateParent(user, goods.babyId());
-    return goodsRepository.modifyGoods(goodsId, modifyGoods);
+    GoodsDetail modifyGoodsDetail = goodsRepository.modifyGoods(goodsId, modifyGoods);
+    goodsEventPublisher.publishPriceChangeEvent(goods, modifyGoods);
+
+    return modifyGoodsDetail;
   }
 
   public Goods modifyImages(

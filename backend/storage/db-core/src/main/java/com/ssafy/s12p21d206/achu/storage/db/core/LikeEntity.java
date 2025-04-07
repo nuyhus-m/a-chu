@@ -20,4 +20,8 @@ public class LikeEntity extends BaseEntity {
   public Long getGoodsId() {
     return goodsId;
   }
+
+  public Long getUserId() {
+    return userId;
+  }
 }
