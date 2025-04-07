@@ -274,7 +274,14 @@ fun UploadProductScreen(
             Spacer(modifier = Modifier.height(smallSpace))
             PriceInputField(
                 value = uiState.price,
-                onValueChange = { viewModel.updatePrice(it) },
+                onValueChange = {
+                    if (it.length >= 9) {
+
+                        Toast.makeText(context, "가격은 10억 미만만 가능합니다", Toast.LENGTH_SHORT).show()
+                    } else {
+                        viewModel.updatePrice(it)
+                    }
+                },
                 readOnly = uiState.priceCategory == DONATION
             )
             Spacer(modifier = Modifier.height(space))

@@ -334,7 +334,7 @@ fun ProductItem(
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                if (productResponse.price != 0) {
+                if (productResponse.price != 0.toLong()) {
                     Text(
                         text = formatPrice(productResponse.price),
                         style = AchuTheme.typography.semiBold18.copy(color = FontPink),
