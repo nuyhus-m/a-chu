@@ -6,6 +6,7 @@ import com.ssafy.achu.data.model.chat.ChatRoomRequest
 import com.ssafy.achu.data.model.chat.ChatRoomResponse
 import com.ssafy.achu.data.model.chat.Message
 import com.ssafy.achu.data.model.chat.MessageCountResponse
+import com.ssafy.achu.data.model.chat.RoomIdResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -34,6 +35,6 @@ interface ChatService {
     suspend fun checkChatRoomExistence(
         @Query("goodsId") productId: Int,
         @Query("sellerId") sellerId: Int
-    ): ApiResult<IdResponse?>
+    ): ApiResult<RoomIdResponse>
 
 }

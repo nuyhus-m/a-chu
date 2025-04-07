@@ -85,7 +85,7 @@ class ChatViewModel(
             ).onSuccess { response ->
                 Log.d(TAG, "checkChatRoomExistence: $response")
                 if (response.result == SUCCESS) {
-                    if (response.data == null) {
+                    if (response.data.id == null) {
                         _uiState.update {
                             it.copy(
                                 hasChatRoom = false

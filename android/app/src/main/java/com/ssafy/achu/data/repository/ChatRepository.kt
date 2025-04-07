@@ -6,6 +6,7 @@ import com.ssafy.achu.data.model.chat.ChatRoomRequest
 import com.ssafy.achu.data.model.chat.ChatRoomResponse
 import com.ssafy.achu.data.model.chat.Message
 import com.ssafy.achu.data.model.chat.MessageCountResponse
+import com.ssafy.achu.data.model.chat.RoomIdResponse
 import com.ssafy.achu.data.network.RetrofitUtil
 
 class ChatRepository {
@@ -39,7 +40,7 @@ class ChatRepository {
     suspend fun checkChatRoomExistence(
         productId: Int,
         sellerId: Int
-    ): Result<ApiResult<IdResponse?>> {
+    ): Result<ApiResult<RoomIdResponse>> {
         return kotlin.runCatching {
             chatService.checkChatRoomExistence(productId, sellerId)
         }
