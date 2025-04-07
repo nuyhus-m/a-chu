@@ -56,7 +56,7 @@ class UploadProductViewModel(
 
     private val titleRegex = Regex("^\\S.{0,18}\\S$")
     private val descriptionRegex = Regex("^\\S.{0,198}\\S$")
-    private val priceRegex = Regex("^[0-9]*$")
+    private val priceRegex = Regex("^[0-9]{1,10}$")
     private val tempRegex = Regex("""^[^"\\]*$""")
 
     init {
@@ -93,19 +93,25 @@ class UploadProductViewModel(
     }
 
     fun updatePrice(price: String) {
+        val isNumeric = priceRegex.matches(price) && price.isNotBlank()
+        val priceValue = price.toLongOrNull()
+        val isUnderLimit = priceValue != null && priceValue <= 1_000_000_000
+
         _uiState.update { currentState ->
             currentState.copy(
                 price = price,
-                isPriceValid = priceRegex.matches(price) && price.isNotBlank(),
+                isPriceValid = isNumeric && isUnderLimit,
                 priceCategory = if (price == "0") DONATION else SALE
             )
         }
+
         if (isModify) {
             updateModifyButtonState()
         } else {
             updateButtonState()
         }
     }
+
 
     fun updatePriceCategory(priceCategory: String) {
         _uiState.update { currentState ->
@@ -130,7 +136,7 @@ class UploadProductViewModel(
                     if (!tempRegex.matches(description)) {
                         "* \" 또는 \\ 는 포함할 수 없습니다."
                     } else if (!descriptionRegex.matches(description)) {
-                        "* 앞뒤 공백 없이 2~200자로 입력해주세요."
+                        "* 앞뒤 공백 없이 2~200자"
                     } else {
                         ""
                     },
@@ -181,7 +187,7 @@ class UploadProductViewModel(
             imgUrls = emptyList(),
             likedByUser = false,
             likedUsersCount = 0,
-            price = uiState.value.price.toInt(),
+            price = uiState.value.price.toLong(),
             seller = Seller(
                 id = -1,
                 nickname = sellerName,
@@ -197,7 +203,7 @@ class UploadProductViewModel(
             babyId = uiState.value.selectedBaby?.id ?: -1,
             categoryId = uiState.value.selectedCategory?.id ?: -1,
             description = uiState.value.description,
-            price = uiState.value.price.toInt(),
+            price = uiState.value.price.toLong(),
             title = uiState.value.title
         )
     }
@@ -208,7 +214,7 @@ class UploadProductViewModel(
         val request = ModifyProductRequest(
             categoryId = uiState.value.selectedCategory!!.id,
             description = uiState.value.description,
-            price = uiState.value.price.toInt(),
+            price = uiState.value.price.toLong(),
             title = uiState.value.title
         )
         viewModelScope.launch {
