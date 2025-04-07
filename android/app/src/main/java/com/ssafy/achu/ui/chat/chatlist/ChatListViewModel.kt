@@ -27,14 +27,6 @@ class ChatListViewModel : ViewModel() {
         getChatRooms()
     }
 
-    fun updateSelectedItem(item: ChatRoomResponse) {
-        _uiState.update {
-            it.copy(
-                selectedItem = item
-            )
-        }
-    }
-
     private fun getChatRooms() {
         viewModelScope.launch {
             chatRepository.getChatRooms()

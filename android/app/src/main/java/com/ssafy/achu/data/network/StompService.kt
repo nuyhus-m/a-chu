@@ -1,6 +1,7 @@
 package com.ssafy.achu.data.network
 
 import android.util.Log
+import com.ssafy.achu.core.ApplicationClass.Companion.json
 import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -274,7 +275,7 @@ class StompService {
 
             val currentSession =
                 session ?: throw IllegalStateException("STOMP session is not initialized")
-            currentSession.withJsonConversions().convertAndSend(
+            currentSession.withJsonConversions(json).convertAndSend(
                 StompSendHeaders(
                     destination = destination,
                     customHeaders = mapOf(

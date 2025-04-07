@@ -145,14 +145,6 @@ class ActivityViewModel : ViewModel() {
         }
     }
 
-    fun updatePartner(partner: Partner) {
-        _uiState.update {
-            it.copy(
-                partner = partner
-            )
-        }
-    }
-
     fun saveProductDetail(productDetailResponse: ProductDetailResponse, imgUris: List<Uri>) {
         _uiState.update {
             it.copy(

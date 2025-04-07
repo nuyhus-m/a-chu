@@ -58,13 +58,12 @@ import com.ssafy.achu.core.theme.LightBlue
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.core.util.Constants.SOLD
 import com.ssafy.achu.core.util.Constants.TEXT
 import com.ssafy.achu.core.util.formatChatRoomTime
 import com.ssafy.achu.core.util.formatPrice
+import com.ssafy.achu.data.model.chat.Goods
 import com.ssafy.achu.data.model.chat.Message
 import com.ssafy.achu.data.model.chat.Partner
-import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.ui.ActivityViewModel
 import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
@@ -76,6 +75,7 @@ import java.util.Locale
 fun ChatScreen(
     viewModel: ChatViewModel = viewModel(),
     activityViewModel: ActivityViewModel,
+    roomId: Int,
     onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -83,9 +83,12 @@ fun ChatScreen(
     val activityUiState by activityViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.updateProduct(activityUiState.product)
-        activityUiState.partner?.let {
-            viewModel.updatePartner(it)
+        if (roomId == -1) {
+            viewModel.updateGoods(activityUiState.product)
+            viewModel.updatePartner(activityUiState.product.seller)
+            viewModel.checkChatRoomExistence()
+        } else {
+            viewModel.setMessages()
         }
     }
 
@@ -111,11 +114,11 @@ fun ChatScreen(
             onBackClick = onBackClick,
             onLeaveClick = { /* 나가기 동작 */ }
         )
-        uiState.product?.let {
+        uiState.goods?.let {
             ChatProduct(
-                product = it,
-                isSeller = it.seller.id == activityUiState.user?.id,
-                isSold = it.tradeStatus == SOLD,
+                goods = it,
+                isSeller = uiState.isSeller,
+                isSold = uiState.isSold,
                 onSoldClick = { viewModel.showSoldDialog(true) }
             )
         }
@@ -167,7 +170,7 @@ fun ChatScreen(
 
 @Composable
 fun ChatProduct(
-    product: ProductDetailResponse,
+    goods: Goods,
     isSeller: Boolean,
     isSold: Boolean,
     onSoldClick: () -> Unit
@@ -185,7 +188,7 @@ fun ChatProduct(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = product.imgUrls[0],
+                model = goods.thumbnailImageUrl,
                 contentDescription = null,
                 modifier = Modifier
                     .weight(1f)
@@ -201,14 +204,14 @@ fun ChatProduct(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = product.title,
+                    text = goods.title,
                     style = AchuTheme.typography.regular18
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = if (product.price == 0L) stringResource(R.string.free)
-                    else formatPrice(product.price),
-                    style = AchuTheme.typography.semiBold18.copy(color = if (product.price == 0L) FontBlue else FontPink)
+                    text = if (goods.price == 0L) stringResource(R.string.free)
+                    else formatPrice(goods.price),
+                    style = AchuTheme.typography.semiBold18.copy(color = if (goods.price == 0L) FontBlue else FontPink)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(

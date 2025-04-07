@@ -71,7 +71,6 @@ import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.Constants.SOLD
 import com.ssafy.achu.core.util.formatDate
 import com.ssafy.achu.core.util.formatPrice
-import com.ssafy.achu.data.model.chat.Partner
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.data.model.product.Seller
@@ -215,17 +214,6 @@ fun ProductDetailScreen(
             onButtonClick = {
                 if (!isPreview) onNavigateToChat()
                 else viewModel.updateShowUploadDialog(true)
-
-                if (!isPreview) {
-                    onNavigateToChat()
-                    activityViewModel.updatePartner(
-                        Partner(
-                            id = activityUiState.product.seller.id,
-                            nickname = activityUiState.product.seller.nickname,
-                            profileImageUrl = activityUiState.product.seller.imgUrl
-                        )
-                    )
-                } else viewModel.updateShowUploadDialog(true)
             }
         )
     }
@@ -245,7 +233,7 @@ fun ProductDetailScreen(
             productName = activityUiState.uploadProductRequest?.title ?: "",
             babyName = activityUiState.uploadBabyName,
             onUpload = {
-                isLoading  =true
+                isLoading = true
                 viewModel.uploadProduct(
                     uploadProductRequest = activityUiState.uploadProductRequest!!,
                     images = activityUiState.multiPartImages,
@@ -253,7 +241,7 @@ fun ProductDetailScreen(
                 )
             },
             onUploadWithMemory = {
-                isLoading  =true
+                isLoading = true
                 viewModel.uploadProduct(
                     uploadProductRequest = activityUiState.uploadProductRequest!!,
                     images = activityUiState.multiPartImages,
@@ -263,7 +251,7 @@ fun ProductDetailScreen(
         )
     }
 
-    if (isLoading){
+    if (isLoading) {
         LoadingScreen("물건 업로드중\n잠시만 기다려주세요!")
     }
 }

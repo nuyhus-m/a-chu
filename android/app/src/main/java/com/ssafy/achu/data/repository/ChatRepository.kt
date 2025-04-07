@@ -2,9 +2,9 @@ package com.ssafy.achu.data.repository
 
 import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.IdResponse
+import com.ssafy.achu.data.model.chat.ChatListResponse
 import com.ssafy.achu.data.model.chat.ChatRoomRequest
 import com.ssafy.achu.data.model.chat.ChatRoomResponse
-import com.ssafy.achu.data.model.chat.Message
 import com.ssafy.achu.data.model.chat.MessageCountResponse
 import com.ssafy.achu.data.model.chat.RoomIdResponse
 import com.ssafy.achu.data.network.RetrofitUtil
@@ -31,9 +31,9 @@ class ChatRepository {
         }
     }
 
-    suspend fun getMessages(roomId: Int): Result<ApiResult<List<Message>>> {
+    suspend fun getChatListInfo(roomId: Int): Result<ApiResult<ChatListResponse>> {
         return kotlin.runCatching {
-            chatService.getMessages(roomId)
+            chatService.getChatListInfo(roomId)
         }
     }
 

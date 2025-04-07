@@ -206,7 +206,7 @@ fun NavGraph(
                 },
                 memoryId = it.arguments?.getInt("memoryId") ?: 0,
                 babyId = it.arguments?.getInt("babyId") ?: 0,
-                productName = it.arguments?.getString("productName")?:""
+                productName = it.arguments?.getString("productName") ?: ""
             )
         }
 
@@ -286,8 +286,10 @@ fun NavGraph(
 
         // 채팅 관련 화면들
         composable<Route.Chat> {
+            val roomId = it.toRoute<Route.Chat>().roomId
             ChatScreen(
                 activityViewModel = activityViewModel,
+                roomId = roomId,
                 onBackClick = { navController.popBackStack() }
             )
         }

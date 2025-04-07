@@ -67,17 +67,6 @@ fun ChatListScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        activityViewModel.getProductSuccess.collectLatest { success ->
-            if (success) {
-                uiState.selectedItem?.let {
-                    activityViewModel.updatePartner(it.partner)
-                    onNavigateToChat(it.id)
-                }
-            }
-        }
-    }
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -122,8 +111,7 @@ fun ChatListScreen(
             // 채팅 목록
             ChatList(
                 items = uiState.chatRooms,
-                viewModel,
-                activityViewModel
+                onNavigateToChat
             )
         }
     }
@@ -133,15 +121,14 @@ fun ChatListScreen(
 @Composable
 fun ChatList(
     items: List<ChatRoomResponse>,
-    viewModel: ChatListViewModel,
-    activityViewModel: ActivityViewModel
+    onNavigateToChat: (Int) -> Unit
 ) {
     LazyColumn {
         items(items) { item ->
             ChatItem(
                 chatRoom = item,
                 onNavigateToChat = {
-                    viewModel.updateSelectedItem(item)
+                    onNavigateToChat(item.id)
                 }
             )
         }
