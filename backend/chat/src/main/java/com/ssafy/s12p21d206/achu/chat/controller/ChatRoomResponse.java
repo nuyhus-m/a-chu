@@ -1,5 +1,6 @@
 package com.ssafy.s12p21d206.achu.chat.controller;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ssafy.s12p21d206.achu.chat.domain.ChatRoom;
 import com.ssafy.s12p21d206.achu.chat.domain.UnreadCount;
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
@@ -13,7 +14,7 @@ public record ChatRoomResponse(
     boolean isPartnerLeft,
     UserProfileResponse partner,
     GoodsResponse goods,
-    Long unreadCount,
+    @JsonInclude(JsonInclude.Include.NON_NULL) Long unreadCount,
     MessageResponse lastMessage) {
 
   public static List<ChatRoomResponse> from(
@@ -36,6 +37,22 @@ public record ChatRoomResponse(
         UserProfileResponse.from(partner),
         GoodsResponse.from(chatRoom.goods()),
         unreadCount.unreadCount(),
+        MessageResponse.from(chatRoom.lastMessage(), viewer));
+  }
+
+  public static ChatRoomResponse from(ChatUser viewer, ChatRoom chatRoom) {
+    ChatUserProfile partner =
+        Objects.equals(viewer.id(), chatRoom.seller().id()) ? chatRoom.buyer() : chatRoom.seller();
+    boolean isPartnerLeft = Objects.equals(viewer.id(), chatRoom.seller().id())
+        ? chatRoom.participantStatus().isBuyerLeft()
+        : chatRoom.participantStatus().isSellerLeft();
+
+    return new ChatRoomResponse(
+        chatRoom.id(),
+        isPartnerLeft,
+        UserProfileResponse.from(partner),
+        GoodsResponse.from(chatRoom.goods()),
+        null,
         MessageResponse.from(chatRoom.lastMessage(), viewer));
   }
 }

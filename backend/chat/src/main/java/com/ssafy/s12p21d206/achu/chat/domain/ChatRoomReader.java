@@ -41,4 +41,10 @@ public class ChatRoomReader {
   public Long findChatRoomId(Long goodsId, ChatUser seller, ChatUser buyer) {
     return chatRoomRepository.findChatRoomId(goodsId, seller, buyer);
   }
+
+  public ChatRoom readChatRoomByRoomId(Long chatRoomId) {
+    return chatRoomRepository
+        .findById(chatRoomId)
+        .orElseThrow(() -> new ChatException(ChatErrorType.CHAT_ROOM_NOT_FOUND));
+  }
 }

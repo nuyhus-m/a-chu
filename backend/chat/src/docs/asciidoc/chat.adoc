@@ -606,17 +606,30 @@ GET /chat/rooms/{roomId}/messages
   "result": "SUCCESS",
   "data": {
     "isUserSeller": false,
-    "partner": {
-      "id": 124,
-      "nickname": "삼성팬",
-      "profileImageUrl": "https://example.com/profiles/user102.jpg"
-    },
-    "goods": {
-      "id": 790,
-      "title": "갤럭시 S23 울트라",
-      "thumbnailImageUrl": "https://example.com/images/galaxyjpg",
-      "price": 9000,
-      "tradeStatus": "SELLING"
+    "partnerLastReadMessageId": 102,
+    "chatRoom": {
+      "id": 202,
+      "isPartnerLeft": false,
+      "partner": {
+        "id": 102,
+        "nickname": "삼성팬",
+        "profileImageUrl": "https://example.com/profiles/user102.jpg"
+      },
+      "goods": {
+        "id": 790,
+        "title": "갤럭시 S23 울트라",
+        "thumbnailImageUrl": "https://example.com/images/galaxy.jpg",
+        "price": 9000,
+        "tradeStatus": "SELLING"
+      },
+      "lastMessage": {
+        "id": 145,
+        "content": "네, 아직 판매 중입니다!",
+        "type": "TEXT",
+        "timestamp": "2023-05-10T15:45:20",
+        "isMine": false,
+        "senderId": 102
+      }
     },
     "messages": [
       {
@@ -664,42 +677,85 @@ GET /chat/rooms/{roomId}/messages
 |BOOLEAN
 |조회자가 판매자인지 여부
 
+|data.partnerLastReadMessageId
+|LONG
+|상대방이 마지막으로 읽은 메세지 ID
 
-|data.partner
+|data.chatRoom.id
+|NUMBER
+|채팅방 ID
+
+|data.chatRoom.isPartnerLeft
+|BOOLEAN
+|상대방 퇴장 여부
+
+|data.chatRoom.partner
 |OBJECT
 |상대방 정보
 
-|data.partner.id
+|data.chatRoom.partner.id
 |NUMBER
 |상대방 ID
 
-|data.partner.nickname
+|data.chatRoom.partner.nickname
 |STRING
 |상대방 닉네임
 
-|data.partner.profileImageUrl
+|data.chatRoom.partner.profileImageUrl
 |STRING
 |상대방 프로필 이미지 URL
 
-|data.goods.id
+|data.chatRoom.goods
+|OBJECT
+|상품 정보
+
+|data.chatRoom.goods.id
 |NUMBER
 |상품 ID
 
-|data.goods.title
+|data.chatRoom.goods.title
 |STRING
 |상품 제목
 
-|data.goods.thumbnailImageUrl
+|data.chatRoom.goods.thumbnailImageUrl
 |STRING
 |상품 썸네일 이미지 URL
 
-|data.goods.price
+|data.chatRoom.goods.price
 |NUMBER
 |상품 가격
 
-|data.goods.tradeStatus
+|data.chatRoom.goods.tradeStatus
 |STRING
 |상품 판매 상태 (SELLING, SOLD)
+
+|data.chatRoom.lastMessage
+|OBJECT
+|마지막 메시지 정보
+
+|data.chatRoom.lastMessage.id
+|NUMBER
+|마지막 메시지 ID
+
+|data.chatRoom.lastMessage.content
+|STRING
+|마지막 메시지 내용
+
+|data.chatRoom.lastMessage.type
+|STRING
+|마지막 메시지 타입
+
+|data.chatRoom.lastMessage.timestamp
+|STRING
+|마지막 메시지 전송 시간
+
+|data.chatRoom.lastMessage.isMine
+|BOOLEAN
+|현재 사용자가 보낸 메시지인지 여부
+
+|data.chatRoom.lastMessage.senderId
+|NUMBER
+|메시지 발신자 ID
 
 |data.messages[].id
 |NUMBER

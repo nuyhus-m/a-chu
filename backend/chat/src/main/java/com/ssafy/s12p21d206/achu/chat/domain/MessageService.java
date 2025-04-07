@@ -52,9 +52,9 @@ public class MessageService {
     messageReadHandler.updateRead(chatUser, roomId, lastReadMessageId);
   }
 
-  public MessagesWithParticipants getMessagesByChatRoomId(ChatUser viewer, Long chatRoomId) {
+  public MessagesWithChatRoom getMessagesByChatRoomId(ChatUser viewer, Long chatRoomId) {
     List<Message> messages = messageReader.readMessagesByChatRoomId(viewer, chatRoomId);
-    Participants participants = chatUserReader.readParticipants(chatRoomId);
-    return new MessagesWithParticipants(messages, participants);
+    ChatRoom chatRoom = chatRoomReader.readChatRoomByRoomId(chatRoomId);
+    return new MessagesWithChatRoom(messages, chatRoom);
   }
 }
