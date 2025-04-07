@@ -25,7 +25,6 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-/notification/src/main/resources/a-chu-21442-firebase-adminsdk-fbsvc-954740a7c1.json
 
 ### NetBeans ###
 /nbproject/private/
