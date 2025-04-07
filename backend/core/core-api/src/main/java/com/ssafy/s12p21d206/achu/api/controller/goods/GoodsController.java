@@ -27,6 +27,7 @@ public class GoodsController {
   private final UserService userService;
 
   private final TradeService tradeService;
+  private final ChatRoomCountService chatRoomCountService;
 
   public GoodsController(
       GoodsImageFacade goodsImageFacade,
@@ -34,13 +35,15 @@ public class GoodsController {
       GoodsService goodsService,
       LikeService likeService,
       UserService userService,
-      TradeService tradeService) {
+      TradeService tradeService,
+      ChatRoomCountService chatRoomCountService) {
     this.goodsImageFacade = goodsImageFacade;
     this.categoryService = categoryService;
     this.goodsService = goodsService;
     this.likeService = likeService;
     this.userService = userService;
     this.tradeService = tradeService;
+    this.chatRoomCountService = chatRoomCountService;
   }
 
   @PostMapping("/goods")
@@ -98,8 +101,8 @@ public class GoodsController {
         goodsService.findCategoryGoods(apiUser.toUser(), categoryId, offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::id).toList();
     Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
-    List<ChatStatus> chatStatuses = List.of();
-    List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
+    List<ChatRoomCountStatus> chatRoomCountStatuses = chatRoomCountService.status(goodsIds);
+    List<GoodsResponse> responses = GoodsResponse.of(goods, chatRoomCountStatuses, likeStatuses);
     return ApiResponse.success(responses);
   }
 
@@ -112,8 +115,8 @@ public class GoodsController {
     List<Goods> goods = goodsService.findGoods(apiUser.toUser(), offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::id).toList();
     Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
-    List<ChatStatus> chatStatuses = List.of();
-    List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
+    List<ChatRoomCountStatus> chatRoomCountStatuses = chatRoomCountService.status(goodsIds);
+    List<GoodsResponse> responses = GoodsResponse.of(goods, chatRoomCountStatuses, likeStatuses);
     return ApiResponse.success(responses);
   }
 
@@ -145,8 +148,8 @@ public class GoodsController {
     List<Goods> goods = goodsService.searchGoods(apiUser.toUser(), keyword, offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::id).toList();
     Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
-    List<ChatStatus> chatStatuses = List.of();
-    List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
+    List<ChatRoomCountStatus> chatRoomCountStatuses = chatRoomCountService.status(goodsIds);
+    List<GoodsResponse> responses = GoodsResponse.of(goods, chatRoomCountStatuses, likeStatuses);
     return ApiResponse.success(responses);
   }
 
@@ -163,8 +166,9 @@ public class GoodsController {
         apiUser.toUser(), categoryId, keyword, offset, limit, sort);
     List<Long> goodsIds = goods.stream().map(Goods::id).toList();
     Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
-    List<ChatStatus> chatStatuses = List.of();
-    List<GoodsResponse> responses = GoodsResponse.of(goods, chatStatuses, likeStatuses);
+    List<ChatRoomCountStatus> chatRoomCountStatuses = chatRoomCountService.status(goodsIds);
+    ;
+    List<GoodsResponse> responses = GoodsResponse.of(goods, chatRoomCountStatuses, likeStatuses);
     return ApiResponse.success(responses);
   }
 

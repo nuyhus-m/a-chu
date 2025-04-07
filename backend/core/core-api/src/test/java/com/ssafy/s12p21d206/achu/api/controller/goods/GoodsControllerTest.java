@@ -38,6 +38,8 @@ class GoodsControllerTest extends RestDocsTest {
 
   private ImageService imageService;
 
+  private ChatRoomCountService chatRoomCountService;
+
   private GoodsImageFacade goodsImageFacade;
 
   @BeforeEach
@@ -47,12 +49,19 @@ class GoodsControllerTest extends RestDocsTest {
     likeService = mock(LikeService.class);
     userService = mock(UserService.class);
     tradeService = mock(TradeService.class);
+    chatRoomCountService = mock(ChatRoomCountService.class);
 
     imageService = mock(ImageService.class);
     goodsImageFacade = new GoodsImageFacade(goodsService, imageService);
 
     controller = new GoodsController(
-        goodsImageFacade, categoryService, goodsService, likeService, userService, tradeService);
+        goodsImageFacade,
+        categoryService,
+        goodsService,
+        likeService,
+        userService,
+        tradeService,
+        chatRoomCountService);
     mockMvc = mockController(controller);
   }
 
