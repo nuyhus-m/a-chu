@@ -82,27 +82,30 @@ class ChatViewModel(
             chatRepository.checkChatRoomExistence(
                 uiState.value.product?.id ?: 0,
                 uiState.value.partner?.id ?: 0
-            )
-                .onSuccess { response ->
-                    Log.d(TAG, "checkChatRoomExistence: $response")
-                    if (response.result == SUCCESS) {
-                        if (response.data == null) {
-                            _uiState.update {
-                                it.copy(
-                                    hasChatRoom = false
-                                )
-                            }
-                        } else {
-                            _uiState.update {
-                                it.copy(
-                                    hasChatRoom = true
-                                )
-                            }
-                            roomId = response.data.id
-                            setMessages()
+            ).onSuccess { response ->
+                Log.d(TAG, "checkChatRoomExistence: $response")
+                if (response.result == SUCCESS) {
+                    if (response.data == null) {
+                        _uiState.update {
+                            it.copy(
+                                hasChatRoom = false
+                            )
                         }
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                hasChatRoom = true
+                            )
+                        }
+                        roomId = response.data.id
+                        setMessages()
                     }
                 }
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "checkChatRoomExistence errorResponse: $errorResponse")
+                Log.d(TAG, "checkChatRoomExistence error: ${it.message}")
+            }
         }
     }
 
