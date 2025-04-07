@@ -14,6 +14,7 @@ public class TradeService {
   private final GoodsValidator goodsValidator;
   private final UserValidator userValidator;
   private final TradeValidator tradeValidator;
+  private final GoodsEventPublisher publishEvent;
 
   public TradeService(
       TradeAppender tradeAppender,
@@ -21,13 +22,15 @@ public class TradeService {
       GoodsReader goodsReader,
       GoodsValidator goodsValidator,
       UserValidator userValidator,
-      TradeValidator tradeValidator) {
+      TradeValidator tradeValidator,
+      GoodsEventPublisher publishEvent) {
     this.tradeAppender = tradeAppender;
     this.tradeReader = tradeReader;
     this.goodsReader = goodsReader;
     this.goodsValidator = goodsValidator;
     this.userValidator = userValidator;
     this.tradeValidator = tradeValidator;
+    this.publishEvent = publishEvent;
   }
 
   public Trade completeTrade(User user, Long goodsId, NewTrade newTrade) {
@@ -36,7 +39,9 @@ public class TradeService {
     userValidator.validateExists(newTrade.buyerId());
     goodsValidator.validateIsSelling(goodsId);
     tradeValidator.validateSellerIsNotBuyer(user.id(), newTrade.buyerId());
-    return tradeAppender.completeTrade(user, goodsId, newTrade);
+    Trade trade = tradeAppender.completeTrade(user, goodsId, newTrade);
+    publishEvent.publishTradeCompleteEvent(trade, newTrade);
+    return trade;
   }
 
   public List<Goods> findTradedGoods(

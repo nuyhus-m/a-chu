@@ -25,4 +25,8 @@ public interface LikeJpaRepository extends JpaRepository<LikeEntity, Long> {
 
   List<LikeEntity> findByUserIdAndEntityStatus(
       Long userId, EntityStatus entityStatus, Pageable pageable);
+
+  @Query(
+      "select l.userId from LikeEntity l where l.goodsId = :goodsId AND l.entityStatus = :entityStatus")
+  Set<Long> findByGoodsIdAndEntityStatus(Long goodsId, EntityStatus entityStatus);
 }

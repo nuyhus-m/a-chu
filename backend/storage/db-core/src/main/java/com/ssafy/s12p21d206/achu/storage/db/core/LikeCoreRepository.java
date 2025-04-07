@@ -81,4 +81,9 @@ public class LikeCoreRepository implements LikeRepository {
         likeJpaRepository.findByUserIdAndEntityStatus(user.id(), EntityStatus.ACTIVE, pageable);
     return likeEntities.stream().map(LikeEntity::getGoodsId).toList();
   }
+
+  @Override
+  public Set<Long> findLikerIds(Long goodsId) {
+    return likeJpaRepository.findByGoodsIdAndEntityStatus(goodsId, EntityStatus.ACTIVE);
+  }
 }

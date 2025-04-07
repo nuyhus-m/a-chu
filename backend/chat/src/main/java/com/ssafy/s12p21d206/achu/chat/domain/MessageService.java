@@ -15,6 +15,7 @@ public class MessageService {
   private final MessageReadHandler messageReadHandler;
   private final MessageEventNotifier messageEventNotifier;
   private final ChatUserReader chatUserReader;
+  private final ChatFcmEventPublisher fcmEventPublisher;
 
   public MessageService(
       MessageAppender messageAppender,
@@ -22,13 +23,15 @@ public class MessageService {
       ChatRoomReader chatRoomReader,
       MessageReadHandler messageReadHandler,
       MessageEventNotifier messageEventNotifier,
-      ChatUserReader chatUserReader) {
+      ChatUserReader chatUserReader,
+      ChatFcmEventPublisher fcmEventPublisher) {
     this.messageAppender = messageAppender;
     this.messageReader = messageReader;
     this.chatRoomReader = chatRoomReader;
     this.messageReadHandler = messageReadHandler;
     this.messageEventNotifier = messageEventNotifier;
     this.chatUserReader = chatUserReader;
+    this.fcmEventPublisher = fcmEventPublisher;
   }
 
   public Message append(ChatUser sender, ChatRoom chatRoom, NewMessage newMessage) {
@@ -36,6 +39,7 @@ public class MessageService {
     ChatUser partner = chatRoom.findPartner(sender);
     messageEventNotifier.notifyMessageArrived(partner, message);
     messageEventNotifier.notifyChatRoomUpdate(sender, partner, chatRoom, message);
+    fcmEventPublisher.publishNewChatMessageEvent(sender, partner, chatRoom, message);
     return message;
   }
 
