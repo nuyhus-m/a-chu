@@ -58,6 +58,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.LoadingImgScreen
+import com.ssafy.achu.core.LoadingScreen
 import com.ssafy.achu.core.components.Divider
 import com.ssafy.achu.core.components.TopBarWithMenu
 import com.ssafy.achu.core.components.dialog.BasicDialog
@@ -101,6 +102,10 @@ fun ProductDetailScreen(
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 
+    var isLoading by remember { mutableStateOf(false) }
+
+
+
     LaunchedEffect(Unit) {
         viewModel.toastMessage.collectLatest { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -130,6 +135,7 @@ fun ProductDetailScreen(
     }
 
     LaunchedEffect(Unit) {
+        isLoading = false
         viewModel.navigateEvents.collectLatest {
             if (it) {
                 onNavigateToMemoryUpload(
@@ -208,6 +214,7 @@ fun ProductDetailScreen(
             onButtonClick = {
                 if (!isPreview) onNavigateToChat()
                 else viewModel.updateShowUploadDialog(true)
+
             }
         )
     }
@@ -227,6 +234,7 @@ fun ProductDetailScreen(
             productName = activityUiState.uploadProductRequest?.title ?: "",
             babyName = activityUiState.uploadBabyName,
             onUpload = {
+                isLoading  =true
                 viewModel.uploadProduct(
                     uploadProductRequest = activityUiState.uploadProductRequest!!,
                     images = activityUiState.multiPartImages,
@@ -234,6 +242,7 @@ fun ProductDetailScreen(
                 )
             },
             onUploadWithMemory = {
+                isLoading  =true
                 viewModel.uploadProduct(
                     uploadProductRequest = activityUiState.uploadProductRequest!!,
                     images = activityUiState.multiPartImages,
@@ -242,13 +251,17 @@ fun ProductDetailScreen(
             }
         )
     }
+
+    if (isLoading){
+        LoadingScreen("물건 업로드중\n잠시만 기다려주세요!")
+    }
 }
 
 @Composable
 private fun BottomBar(
     likeCount: Int,
     likedByUser: Boolean,
-    price: Int,
+    price: Long,
     isSeller: Boolean,
     isSold: Boolean,
     isPreview: Boolean,
@@ -259,7 +272,7 @@ private fun BottomBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .padding(horizontal = 16.dp, vertical = 16.dp)
             .navigationBarsPadding(),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -282,7 +295,7 @@ private fun BottomBar(
                 modifier = Modifier.padding(start = 8.dp)
             )
         }
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         Box(
             modifier = Modifier
                 .width(1.dp)
@@ -292,7 +305,7 @@ private fun BottomBar(
         Text(
             text = formatPrice(price),
             style = AchuTheme.typography.semiBold20.copy(color = FontPink),
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(start = 8.dp)
         )
         Spacer(modifier = Modifier.weight(1f))
         Button(
