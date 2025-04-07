@@ -51,7 +51,7 @@ fun LargeLikeItem(
     productLike: () -> Unit,
     productUnlike: () -> Unit,
     productName: String,
-    price: Int,
+    price: Long,
     img: Uri?
 ) {
 

@@ -49,7 +49,7 @@ fun BasicLikeItem(
     unlikeClicked: () -> Unit,
     productName: String,
     state: String,
-    price: Int,
+    price: Long,
     img: String,
 ) {
 
