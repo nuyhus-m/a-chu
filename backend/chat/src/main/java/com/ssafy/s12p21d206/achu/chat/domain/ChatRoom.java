@@ -13,9 +13,12 @@ public record ChatRoom(
     ParticipantStatus participantStatus,
     Message lastMessage) {
 
-  public ChatRoom updateFirstMessage(Message message) {
-    return new ChatRoom(
-        id, goods, seller, buyer, participantStatus.updateFirstMessageStatus(message), message);
+  public ChatRoom updateMessage(ChatUser sender, Message message) {
+    ParticipantStatus newStatus = Objects.equals(sender, buyer)
+        ? participantStatus.updateBuyerStatus(message)
+        : participantStatus.updateSellerStatus(message);
+
+    return new ChatRoom(id, goods, seller, buyer, newStatus, message);
   }
 
   public ChatUser findPartner(ChatUser user) {

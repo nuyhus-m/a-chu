@@ -6,8 +6,13 @@ public record ParticipantStatus(
     boolean isSellerLeft,
     boolean isBuyerLeft) {
 
-  public ParticipantStatus updateFirstMessageStatus(Message message) {
+  public ParticipantStatus updateBuyerStatus(Message message) {
     return new ParticipantStatus(
         this.sellerLastReadMessageId, message.id(), this.isSellerLeft, this.isBuyerLeft);
+  }
+
+  public ParticipantStatus updateSellerStatus(Message message) {
+    return new ParticipantStatus(
+        message.id(), this.buyerLastReadMessageId, this.isSellerLeft, this.isBuyerLeft);
   }
 }

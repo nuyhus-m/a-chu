@@ -5,6 +5,7 @@ import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUserReader;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MessageService {
@@ -34,9 +35,11 @@ public class MessageService {
     this.fcmEventPublisher = fcmEventPublisher;
   }
 
+  @Transactional
   public Message append(ChatUser sender, ChatRoom chatRoom, NewMessage newMessage) {
     Message message = messageAppender.append(sender, chatRoom, newMessage);
     ChatUser partner = chatRoom.findPartner(sender);
+    updateRead(sender, chatRoom.id(), message.id());
     messageEventNotifier.notifyMessageArrived(partner, message);
     messageEventNotifier.notifyChatRoomUpdate(sender, partner, chatRoom, message);
     fcmEventPublisher.publishNewChatMessageEvent(sender, partner, chatRoom, message);

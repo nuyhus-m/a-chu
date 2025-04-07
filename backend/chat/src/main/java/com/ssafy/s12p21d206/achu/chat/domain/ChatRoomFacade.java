@@ -21,10 +21,10 @@ public class ChatRoomFacade {
   }
 
   @Transactional
-  public Long append(ChatUser buyer, NewChatRoom newChatRoom, NewMessage newMessage) {
-    ChatRoom chatRoom = chatRoomService.append(buyer, newChatRoom);
-    Message message = messageService.append(buyer, chatRoom, newMessage);
+  public Long append(ChatUser sender, NewChatRoom newChatRoom, NewMessage newMessage) {
+    ChatRoom chatRoom = chatRoomService.append(sender, newChatRoom);
+    Message message = messageService.append(sender, chatRoom, newMessage);
     chatFcmEventPublisher.publishChatRoomCreateEvent(chatRoom);
-    return chatRoom.updateFirstMessage(message).id();
+    return chatRoom.updateMessage(sender, message).id();
   }
 }
