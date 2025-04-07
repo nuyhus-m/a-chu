@@ -46,7 +46,7 @@ public class MessageEventNotifier {
       return;
     }
 
-    chatRoom = chatRoom.updateLastMessage(message);
+    chatRoom = chatRoom.updateFirstMessage(message);
     UnreadCount partnerUnreadCount = chatRoomReader.countUnreadMessages(partner, chatRoom.id());
     UnreadCount userUnreadCount = chatRoomReader.countUnreadMessages(user, chatRoom.id());
 

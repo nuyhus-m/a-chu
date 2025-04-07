@@ -4,6 +4,7 @@ import com.ssafy.s12p21d206.achu.chat.domain.ChatRoom;
 import com.ssafy.s12p21d206.achu.chat.domain.Message;
 import com.ssafy.s12p21d206.achu.chat.domain.MessageType;
 import com.ssafy.s12p21d206.achu.chat.domain.ParticipantStatus;
+import com.ssafy.s12p21d206.achu.chat.domain.goods.ChatGoodsTradeStatus;
 import com.ssafy.s12p21d206.achu.chat.domain.goods.Goods;
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUserProfile;
@@ -20,6 +21,8 @@ public class ChatRoomDto {
   private final boolean isBuyerLeft;
   private final String goodsTitle;
   private final String goodsThumbnailImageUrl;
+  private final Long goodsPrice;
+  private final ChatGoodsTradeStatus goodsTradeStatus;
   private final String sellerNickname;
   private final String sellerProfileImageUrl;
   private final String buyerNickname;
@@ -41,6 +44,8 @@ public class ChatRoomDto {
       boolean isBuyerLeft,
       String goodsTitle,
       String goodsThumbnailImageUrl,
+      Long goodsPrice,
+      ChatGoodsTradeStatus goodsTradeStatus,
       String sellerNickname,
       String sellerProfileImageUrl,
       String buyerNickname,
@@ -60,6 +65,8 @@ public class ChatRoomDto {
     this.isBuyerLeft = isBuyerLeft;
     this.goodsTitle = goodsTitle;
     this.goodsThumbnailImageUrl = goodsThumbnailImageUrl;
+    this.goodsPrice = goodsPrice;
+    this.goodsTradeStatus = goodsTradeStatus;
     this.sellerNickname = sellerNickname;
     this.sellerProfileImageUrl = sellerProfileImageUrl;
     this.buyerNickname = buyerNickname;
@@ -73,7 +80,8 @@ public class ChatRoomDto {
 
   public ChatRoom toChatRoom() {
     // 상품 정보 생성
-    Goods goods = new Goods(goodsId, goodsTitle, goodsThumbnailImageUrl);
+    Goods goods =
+        new Goods(goodsId, goodsTitle, goodsThumbnailImageUrl, goodsPrice, goodsTradeStatus);
 
     // 판매자 프로필 생성
     ChatUserProfile sellerProfile =

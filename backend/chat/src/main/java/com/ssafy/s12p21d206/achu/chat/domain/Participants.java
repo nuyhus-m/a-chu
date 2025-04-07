@@ -7,12 +7,20 @@ import java.util.Objects;
 public record Participants(ChatUserProfile seller, ChatUserProfile buyer) {
 
   public ChatUserProfile getPartner(ChatUser user) {
-    if (Objects.equals(user.id(), seller.id())) {
+    if (isSeller(user)) {
       return buyer;
-    } else if (Objects.equals(user.id(), buyer.id())) {
+    } else if (isBuyer(user)) {
       return seller;
     }
 
     throw new IllegalArgumentException("user가 참여자가 아닙니다.");
+  }
+
+  public boolean isSeller(ChatUser user) {
+    return Objects.equals(user.id(), seller.id());
+  }
+
+  public boolean isBuyer(ChatUser user) {
+    return Objects.equals(user.id(), buyer.id());
   }
 }

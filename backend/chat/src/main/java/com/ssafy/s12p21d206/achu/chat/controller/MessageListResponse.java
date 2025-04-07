@@ -7,7 +7,8 @@ import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUser;
 import com.ssafy.s12p21d206.achu.chat.domain.user.ChatUserProfile;
 import java.util.List;
 
-public record MessageListResponse(List<MessageResponse> messages, UserProfileResponse partner) {
+public record MessageListResponse(
+    List<MessageResponse> messages, UserProfileResponse partner, boolean isUserSeller) {
 
   public static MessageListResponse from(
       ChatUser user, MessagesWithParticipants messagesWithParticipants) {
@@ -15,6 +16,8 @@ public record MessageListResponse(List<MessageResponse> messages, UserProfileRes
     Participants participants = messagesWithParticipants.participants();
     ChatUserProfile partner = participants.getPartner(user);
     return new MessageListResponse(
-        MessageResponse.listFrom(messages, user), UserProfileResponse.from(partner));
+        MessageResponse.listFrom(messages, user),
+        UserProfileResponse.from(partner),
+        participants.isSeller(user));
   }
 }

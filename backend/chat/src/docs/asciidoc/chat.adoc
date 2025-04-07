@@ -218,7 +218,9 @@ WebSocket 응답에는 `isMine` 필드가 없지만, HTTP API 응답에는 `isMi
     "goods": {
       "id": 789,
       "title": "아이폰 14 프로 맥스",
-      "thumbnailImageUrl": "https://example.com/images/iphone.jpg"
+      "thumbnailImageUrl": "https://example.com/images/iphone.jpg",
+      "price": 9000,
+      "tradeStatus": "SELLING"
     },
     "unreadCount": 3,
     "lastMessage": {
@@ -410,7 +412,9 @@ GET /chat/rooms
       "goods": {
         "id": 789,
         "title": "아이폰 14 프로 맥스",
-        "thumbnailImageUrl": "https://example.com/images/iphone.jpg"
+        "thumbnailImageUrl": "https://example.com/images/iphone.jpg",
+        "price": 9000,
+        "tradeStatus": "SELLING"
       },
       "unreadCount": 3,
       "lastMessage": {
@@ -433,7 +437,9 @@ GET /chat/rooms
       "goods": {
         "id": 790,
         "title": "갤럭시 S23 울트라",
-        "thumbnailImageUrl": "https://example.com/images/galaxy.jpg"
+        "thumbnailImageUrl": "https://example.com/images/galaxy.jpg",
+        "price": 9000,
+        "tradeStatus": "SELLING"
       },
       "unreadCount": 1,
       "lastMessage": {
@@ -501,6 +507,14 @@ GET /chat/rooms
 |data[].goods.thumbnailImageUrl
 |STRING
 |상품 썸네일 이미지 URL
+
+|data[].goods.price
+|NUMBER
+|상품 가격
+
+|data[].goods.tradeStatus
+|STRING
+|상품 판매 상태 (SELLING, SOLD)
 
 |data[].unreadCount
 |NUMBER
@@ -591,10 +605,18 @@ GET /chat/rooms/{roomId}/messages
 {
   "result": "SUCCESS",
   "data": {
+    "isUserSeller": false,
     "partner": {
       "id": 124,
       "nickname": "삼성팬",
       "profileImageUrl": "https://example.com/profiles/user102.jpg"
+    },
+    "goods": {
+      "id": 790,
+      "title": "갤럭시 S23 울트라",
+      "thumbnailImageUrl": "https://example.com/images/galaxyjpg",
+      "price": 9000,
+      "tradeStatus": "SELLING"
     },
     "messages": [
       {
@@ -638,6 +660,11 @@ GET /chat/rooms/{roomId}/messages
 |ARRAY
 |상대방 정보 및 메시지 목록
 
+|data.isUserSeller
+|BOOLEAN
+|조회자가 판매자인지 여부
+
+
 |data.partner
 |OBJECT
 |상대방 정보
@@ -653,6 +680,26 @@ GET /chat/rooms/{roomId}/messages
 |data.partner.profileImageUrl
 |STRING
 |상대방 프로필 이미지 URL
+
+|data.goods.id
+|NUMBER
+|상품 ID
+
+|data.goods.title
+|STRING
+|상품 제목
+
+|data.goods.thumbnailImageUrl
+|STRING
+|상품 썸네일 이미지 URL
+
+|data.goods.price
+|NUMBER
+|상품 가격
+
+|data.goods.tradeStatus
+|STRING
+|상품 판매 상태 (SELLING, SOLD)
 
 |data.messages[].id
 |NUMBER

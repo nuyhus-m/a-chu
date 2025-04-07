@@ -4,4 +4,10 @@ public record ParticipantStatus(
     Long sellerLastReadMessageId,
     Long buyerLastReadMessageId,
     boolean isSellerLeft,
-    boolean isBuyerLeft) {}
+    boolean isBuyerLeft) {
+
+  public ParticipantStatus updateFirstMessageStatus(Message message) {
+    return new ParticipantStatus(
+        this.sellerLastReadMessageId, message.id(), this.isSellerLeft, this.isBuyerLeft);
+  }
+}

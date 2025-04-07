@@ -13,8 +13,9 @@ public record ChatRoom(
     ParticipantStatus participantStatus,
     Message lastMessage) {
 
-  public ChatRoom updateLastMessage(Message message) {
-    return new ChatRoom(id, goods, seller, buyer, participantStatus, message);
+  public ChatRoom updateFirstMessage(Message message) {
+    return new ChatRoom(
+        id, goods, seller, buyer, participantStatus.updateFirstMessageStatus(message), message);
   }
 
   public ChatUser findPartner(ChatUser user) {

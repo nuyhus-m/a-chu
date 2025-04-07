@@ -25,6 +25,6 @@ public class ChatRoomFacade {
     ChatRoom chatRoom = chatRoomService.append(buyer, newChatRoom);
     Message message = messageService.append(buyer, chatRoom, newMessage);
     chatFcmEventPublisher.publishChatRoomCreateEvent(chatRoom);
-    return chatRoom.updateLastMessage(message).id();
+    return chatRoom.updateFirstMessage(message).id();
   }
 }

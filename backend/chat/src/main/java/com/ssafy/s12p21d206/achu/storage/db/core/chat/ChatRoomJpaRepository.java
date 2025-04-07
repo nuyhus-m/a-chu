@@ -73,7 +73,7 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoomEntity, Lon
             SELECT new com.ssafy.s12p21d206.achu.storage.db.core.chat.ChatRoomDto(
                 cr.id, cr.goodsId, cr.sellerId, cr.buyerId,
                 cr.sellerLastReadMessageId, cr.buyerLastReadMessageId, cr.isSellerLeft, cr.isBuyerLeft,
-                g.title, g.thumbnailImageUrl,
+                g.title, g.thumbnailImageUrl, g.price, g.tradeStatus,
                 seller.nickname, seller.profileImageUrl,
                 buyer.nickname, buyer.profileImageUrl,
                 m.id, m.content, m.senderId, m.type, m.createdAt)
@@ -102,7 +102,7 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoomEntity, Lon
             SELECT new com.ssafy.s12p21d206.achu.storage.db.core.chat.ChatRoomDto(
                 cr.id, cr.goodsId, cr.sellerId, cr.buyerId,
                 cr.sellerLastReadMessageId, cr.buyerLastReadMessageId, cr.isSellerLeft, cr.isBuyerLeft,
-                g.title, g.thumbnailImageUrl,
+                g.title, g.thumbnailImageUrl, g.price, g.tradeStatus,
                 seller.nickname, seller.profileImageUrl,
                 buyer.nickname, buyer.profileImageUrl,
                 m.id, m.content, m.senderId, m.type, m.createdAt)
