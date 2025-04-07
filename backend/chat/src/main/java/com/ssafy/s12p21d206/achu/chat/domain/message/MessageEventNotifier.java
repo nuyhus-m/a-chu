@@ -31,7 +31,7 @@ public class MessageEventNotifier {
    * 메시지 도착 이벤트를 전송합니다.
    */
   public void notifyMessageArrived(ChatUser user, Message message) {
-    if (message.isUserMessage()) {
+    if (!message.isUserMessage()) {
       return;
     }
 
