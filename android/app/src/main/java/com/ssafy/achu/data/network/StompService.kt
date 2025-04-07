@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,9 +23,12 @@ import org.hildan.krossbow.stomp.headers.StompSendHeaders
 import org.hildan.krossbow.stomp.headers.StompSubscribeHeaders
 import org.hildan.krossbow.websocket.WebSocketException
 import org.hildan.krossbow.websocket.okhttp.OkHttpWebSocketClient
+import java.util.concurrent.TimeUnit
 
 private const val TAG = "StompService"
 private const val STOMP_URL = "wss://api.a-chu.dukcode.org/chat-ws/websocket"
+private const val MAX_RETRY_ATTEMPTS = 5
+private const val INITIAL_RETRY_DELAY_MS = 1000L
 
 class StompService {
 
@@ -38,12 +42,20 @@ class StompService {
         }
     )
 
+    private var retryCount = 0
+    private var isRetrying = false
+
     // 연결 상태
     sealed class ConnectionState {
         data object Connected : ConnectionState()
         data object Connecting : ConnectionState()
         data object Disconnected : ConnectionState()
         data class Error(val message: String) : ConnectionState()
+    }
+
+    // 세션 활성 상태 확인 함수
+    fun isSessionActive(): Boolean {
+        return session != null && connectionState.value is ConnectionState.Connected
     }
 
     // STOMP 연결
@@ -62,57 +74,147 @@ class StompService {
                 return@launch
             }
 
-            _connectionState.value = ConnectionState.Connecting
-            Log.d(TAG, "STOMP 연결 시도 중...")
+            connectWithRetry(token)
+        }
+    }
 
-            runCatching {
-                // OkHttpClient 설정 (WebSocket 핸드셰이크 로그)
-                val loggingInterceptor = HttpLoggingInterceptor { message ->
-                    Log.d("WS-OkHttp", message)
-                }.apply {
-                    level = HttpLoggingInterceptor.Level.BODY
+    private suspend fun connectWithRetry(token: String, attempt: Int = 0) {
+        if (attempt >= MAX_RETRY_ATTEMPTS) {
+            Log.e(TAG, "최대 재시도 횟수에 도달했습니다. 연결 시도를 중단합니다.")
+            _connectionState.value = ConnectionState.Error("Maximum retry attempts reached")
+            isRetrying = false
+            retryCount = 0
+            return
+        }
+
+        if (attempt > 0) {
+            val delayTime = INITIAL_RETRY_DELAY_MS * (1 shl (attempt - 1)) // 지수 백오프
+            Log.d(TAG, "재연결 시도 $attempt 전 ${delayTime}ms 대기")
+            delay(delayTime)
+        }
+
+        _connectionState.value = ConnectionState.Connecting
+        Log.d(TAG, "STOMP 연결 시도 중... (시도 ${attempt + 1}/${MAX_RETRY_ATTEMPTS})")
+
+        runCatching {
+            // OkHttpClient 설정 (WebSocket 핸드셰이크 로그 및 타임아웃 설정)
+            val loggingInterceptor = HttpLoggingInterceptor { message ->
+                Log.d("WS-OkHttp", message)
+            }.apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            }
+
+            val okHttpClient = OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .pingInterval(20, TimeUnit.SECONDS) // Keep-alive ping 설정
+                .build()
+
+            val wsClient = OkHttpWebSocketClient(okHttpClient)
+            val stompClient = StompClient(wsClient)
+
+            Log.d(TAG, "WebSocket 클라이언트 및 STOMP 클라이언트 초기화 완료")
+
+            // STOMP 세션 연결
+            session = stompClient.connect(
+                STOMP_URL,
+                customStompConnectHeaders = mapOf(
+                    "Authorization" to "Bearer $token"
+                )
+            ).withJsonConversions()
+
+            // 연결 성공 시 상태 업데이트 및 재시도 카운터 초기화
+            _connectionState.value = ConnectionState.Connected
+            retryCount = 0
+            isRetrying = false
+            Log.d(TAG, "✅ STOMP 연결 성공")
+
+            // 연결 상태 모니터링
+            monitorConnection()
+
+        }.onFailure { e ->
+            val errorMessage = e.message ?: "Unknown error"
+            _connectionState.value = ConnectionState.Error(errorMessage)
+            Log.e(TAG, "❌ STOMP 연결 실패 (시도 ${attempt + 1}): $errorMessage", e)
+
+            when (e) {
+                is WebSocketException -> {
+                    Log.e(TAG, "WebSocketException: ${e.message}")
+                    e.cause?.let { cause ->
+                        Log.e(TAG, "원인: ${cause.message}", cause)
+                    }
                 }
 
-                val okHttpClient = OkHttpClient.Builder()
-                    .addInterceptor(loggingInterceptor)
-                    .build()
+                is java.io.EOFException -> {
+                    Log.e(TAG, "EOFException: 서버에서 응답 없이 연결 종료", e)
+                }
 
-                val wsClient = OkHttpWebSocketClient(okHttpClient)
-                val stompClient = StompClient(wsClient)
+                else -> {
+                    Log.e(TAG, "알 수 없는 예외 발생", e)
+                }
+            }
 
-                Log.d(TAG, "WebSocket 클라이언트 및 STOMP 클라이언트 초기화 완료")
+            // 자동 재시도
+            connectWithRetry(token, attempt + 1)
+        }
+    }
 
-                // STOMP 세션 연결
-                session = stompClient.connect(
-                    STOMP_URL,
-                    customStompConnectHeaders = mapOf(
-                        "Authorization" to "Bearer $token"
-                    )
-                ).withJsonConversions()
-
-                _connectionState.value = ConnectionState.Connected
-                Log.d(TAG, "✅ STOMP 연결 성공")
-
-            }.onFailure { e ->
-                val errorMessage = e.message ?: "Unknown error"
-                _connectionState.value = ConnectionState.Error(errorMessage)
-                Log.e(TAG, "❌ STOMP 연결 실패: $errorMessage", e)
-
-                when (e) {
-                    is WebSocketException -> {
-                        Log.e(TAG, "WebSocketException: ${e.message}")
-                        e.cause?.let { cause ->
-                            Log.e(TAG, "원인: ${cause.message}", cause)
-                        }
+    // 연결 상태 모니터링
+    private fun monitorConnection() {
+        scope.launch {
+            while (session != null && connectionState.value is ConnectionState.Connected) {
+                try {
+                    // 연결 상태 확인을 위한 PING 메시지 전송 대신 상태 확인
+                    // 연결 끊어짐이 감지되면 재연결 시도
+                    if (connectionState.value !is ConnectionState.Connected) {
+                        Log.w(TAG, "연결 상태가 Connected가 아님, 재연결 시도")
+                        reconnect()
+                        break
                     }
 
-                    is java.io.EOFException -> {
-                        Log.e(TAG, "EOFException: 서버에서 응답 없이 연결 종료", e)
+                    // 간단한 STOMP 프레임 테스트
+                    try {
+                        val pingDestination = "/app/ping"
+                        val pingResult = session?.withJsonConversions()?.convertAndSend(
+                            StompSendHeaders(destination = pingDestination),
+                            "ping"
+                        )
+
+                        // ping 성공 시 로그만 남김
+                        Log.d(TAG, "연결 상태 확인 ping 성공")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "연결 상태 확인 중 오류 발생: ${e.message}", e)
+                        reconnect()
+                        break
                     }
 
-                    else -> {
-                        Log.e(TAG, "알 수 없는 예외 발생", e)
-                    }
+                    delay(30000) // 30초마다 확인
+                } catch (e: Exception) {
+                    Log.e(TAG, "연결 모니터링 중 오류 발생: ${e.message}", e)
+                    reconnect()
+                    break
+                }
+            }
+        }
+    }
+
+    // 재연결 함수
+    fun reconnect() {
+        scope.launch {
+            if (!isRetrying) {
+                isRetrying = true
+                session = null
+                _connectionState.value = ConnectionState.Disconnected
+
+                val token = sharedPreferencesUtil.getTokens()?.accessToken
+                if (!token.isNullOrBlank()) {
+                    connectWithRetry(token)
+                } else {
+                    _connectionState.value =
+                        ConnectionState.Error("Access token is missing for reconnection")
+                    isRetrying = false
                 }
             }
         }
@@ -121,6 +223,21 @@ class StompService {
     // 구독 함수
     suspend fun subscribeToDestination(destination: String): Result<Flow<StompFrame.Message>?> {
         return runCatching {
+            // 세션이 없거나 연결이 끊어진 경우 먼저 연결 시도
+            if (!isSessionActive()) {
+                reconnect()
+                // 연결이 완료될 때까지 대기
+                var retryAttempts = 0
+                while (connectionState.value !is ConnectionState.Connected && retryAttempts < 5) {
+                    delay(1000)
+                    retryAttempts++
+                }
+
+                if (connectionState.value !is ConnectionState.Connected) {
+                    throw IllegalStateException("Could not establish STOMP connection for subscription")
+                }
+            }
+
             val currentSession =
                 session ?: throw IllegalStateException("STOMP session is not initialized")
             currentSession.subscribe(
@@ -140,9 +257,24 @@ class StompService {
         request: T
     ): Result<Unit> {
         return runCatching {
+            // 세션이 없거나 연결이 끊어진 경우 먼저 연결 시도
+            if (!isSessionActive()) {
+                reconnect()
+                // 연결이 완료될 때까지 대기
+                var retryAttempts = 0
+                while (connectionState.value !is ConnectionState.Connected && retryAttempts < 5) {
+                    delay(1000)
+                    retryAttempts++
+                }
+
+                if (connectionState.value !is ConnectionState.Connected) {
+                    throw IllegalStateException("Could not establish STOMP connection for sending request")
+                }
+            }
+
             val currentSession =
                 session ?: throw IllegalStateException("STOMP session is not initialized")
-            val a = currentSession.withJsonConversions().convertAndSend(
+            currentSession.withJsonConversions().convertAndSend(
                 StompSendHeaders(
                     destination = destination,
                     customHeaders = mapOf(
