@@ -86,7 +86,7 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.PATCH, "/users/password/reset")
         .permitAll()
         .anyRequest()
-        .permitAll());
+        .authenticated());
 
     http.exceptionHandling(exceptionHandling ->
         exceptionHandling.authenticationEntryPoint(authenticationEntryPoint()));
