@@ -6,7 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
+import com.ssafy.achu.core.ApplicationClass.Companion.chatRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.fcmRepository
+import com.ssafy.achu.core.ApplicationClass.Companion.json
 import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.ApplicationClass.Companion.stompService
@@ -15,12 +17,10 @@ import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.Token
 import com.ssafy.achu.data.model.baby.BabyResponse
+import com.ssafy.achu.data.model.chat.Partner
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.UploadProductRequest
-import com.ssafy.achu.data.network.StompService
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -38,6 +38,9 @@ class ActivityViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ActivityUIState())
     val uiState: StateFlow<ActivityUIState> = _uiState.asStateFlow()
 
+    private val _unreadCount = MutableStateFlow(0)
+    val unreadCount: StateFlow<Int> = _unreadCount.asStateFlow()
+
     private val _getProductSuccess = MutableSharedFlow<Boolean>()
     val getProductSuccess: SharedFlow<Boolean> = _getProductSuccess.asSharedFlow()
 
@@ -47,23 +50,12 @@ class ActivityViewModel : ViewModel() {
     private val _categoryList = MutableStateFlow<List<CategoryResponse>>(emptyList())
     val categoryList: StateFlow<List<CategoryResponse>> = _categoryList
 
-    private var backgroundJobToken: Job? = null
-    private val backgroundTimeoutMs = 60000L // 1분 후 연결 解制
-
     init {
-        connectToStompServer()
         getUserinfo()
         getCategoryList()
+        stompService.connect()
+        getUnreadCount()
     }
-
-
-    // STOMP 서버에 연결
-    private fun connectToStompServer() {
-        viewModelScope.launch {
-            stompService.connect()
-        }
-    }
-
 
     fun getCategoryList() {
         viewModelScope.launch {
@@ -99,6 +91,7 @@ class ActivityViewModel : ViewModel() {
                         }
                         Log.d(TAG, "getUserinfo: ${it}")
                         getBabyList()
+                        subscribeToNewMessage()
                     }
                 }.onFailure {
                     Log.d(TAG, "getUserinfo: ${it.message}")
@@ -152,6 +145,14 @@ class ActivityViewModel : ViewModel() {
         }
     }
 
+    fun updatePartner(partner: Partner) {
+        _uiState.update {
+            it.copy(
+                partner = partner
+            )
+        }
+    }
+
     fun saveProductDetail(productDetailResponse: ProductDetailResponse, imgUris: List<Uri>) {
         _uiState.update {
             it.copy(
@@ -194,29 +195,41 @@ class ActivityViewModel : ViewModel() {
         isBottomNavVisible.value = false
     }
 
-    fun onAppForeground() {
-        // 백그라운드 작업 취소
-        backgroundJobToken?.cancel()
-        backgroundJobToken = null
-
-
-        // 앱이 포그라운드로 돌아올 때 처리
+    // 앱이 포그라운드로 돌아올 때 처리
+    private fun getUnreadCount() {
         viewModelScope.launch {
-            if (stompService.connectionState.value !is StompService.ConnectionState.Connected) {
-                stompService.connect()
-            }
+            chatRepository.getUnreadCount()
+                .onSuccess { response ->
+                    Log.d(TAG, "getUnreadCount: $response")
+                    if (response.result == SUCCESS) {
+                        _unreadCount.value = response.data.unreadMessageCount
+                    }
+                }.onFailure {
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "getUnreadCount errorResponse: $errorResponse")
+                    Log.d(TAG, "getUnreadCount error: ${it.message}")
+                }
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        // 이미 실행 중인 백그라운드 작업 취소
-        backgroundJobToken?.cancel()
-
-        // 새 백그라운드 작업 시작 - 일정 시간 후 연결 해제
-        backgroundJobToken = viewModelScope.launch {
-            delay(backgroundTimeoutMs)
-            stompService.cleanup()
+    private fun subscribeToNewMessage() {
+        if (uiState.value.user == null) return
+        viewModelScope.launch {
+            stompService.subscribeToDestination("/read/chat/users/${uiState.value.user!!.id}/message-arrived")
+                .onSuccess { response ->
+                    Log.d(TAG, "subscribeToNewMessage: success")
+                    response?.let { body ->
+                        body.collect {
+                            val data = json.decodeFromString<String>(it.bodyAsText)
+                            Log.d(TAG, "subscribeToNewMessage: $data")
+                            if (data == "NEW_MESSAGE_ARRIVED") {
+                                _unreadCount.value++
+                            }
+                        }
+                    }
+                }.onFailure {
+                    Log.d(TAG, "subscribeToNewMessage: ${it.message}")
+                }
         }
     }
 

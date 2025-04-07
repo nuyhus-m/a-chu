@@ -18,7 +18,14 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -26,9 +33,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -39,7 +43,6 @@ import com.ssafy.achu.core.navigation.NavGraph
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.White
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity_안주현"
 
@@ -69,12 +72,6 @@ class MainActivity : ComponentActivity() {
 
         when (targetRoute) {
             "ProductDetail" -> activityViewModel.getProductDetail(requestId.toInt())
-        }
-
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                activityViewModel.onAppForeground()
-            }
         }
 
         setContent {

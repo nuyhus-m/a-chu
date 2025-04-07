@@ -7,24 +7,18 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.getSystemService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.ssafy.achu.core.ApplicationClass.Companion.SERVER_URL
-import com.ssafy.achu.core.ApplicationClass.Companion.authRepository
-import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
-import com.ssafy.achu.core.ApplicationClass.Companion.chatRepository
-import com.ssafy.achu.core.ApplicationClass.Companion.fcmRepository
-import com.ssafy.achu.core.ApplicationClass.Companion.gson
-import com.ssafy.achu.core.ApplicationClass.Companion.memoryRepository
-import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
-import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
-import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
-import com.ssafy.achu.core.ApplicationClass.Companion.stompService
-import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
 import com.ssafy.achu.data.database.SharedPreferencesUtil
 import com.ssafy.achu.data.network.StompService
-import com.ssafy.achu.data.repository.*
+import com.ssafy.achu.data.repository.AuthRepository
+import com.ssafy.achu.data.repository.BabyRepository
+import com.ssafy.achu.data.repository.ChatRepository
+import com.ssafy.achu.data.repository.FcmRepository
+import com.ssafy.achu.data.repository.MemoryRepository
+import com.ssafy.achu.data.repository.ProductRepository
+import com.ssafy.achu.data.repository.UserRepository
+import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
@@ -55,8 +49,7 @@ class ApplicationClass : Application() {
         lateinit var chatRepository: ChatRepository
         lateinit var fcmRepository: FcmRepository
         lateinit var stompService: StompService
-
-
+        lateinit var json: Json
 
         // Null-on-empty converter
         private val nullOnEmptyConverterFactory = object : Converter.Factory() {
@@ -68,7 +61,8 @@ class ApplicationClass : Application() {
             ) = Converter<ResponseBody, Any?> { value ->
                 if (value.contentLength() != 0L) {
                     try {
-                        val delegate = retrofit.nextResponseBodyConverter<Any?>(factory(), type, annotations)
+                        val delegate =
+                            retrofit.nextResponseBodyConverter<Any?>(factory(), type, annotations)
                         delegate.convert(value)
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -114,9 +108,11 @@ class ApplicationClass : Application() {
         memoryRepository = MemoryRepository()
         babyRepository = BabyRepository()
         chatRepository = ChatRepository()
-        stompService = StompService()
         fcmRepository = FcmRepository()
 
+        stompService = StompService()
+
+        json = Json { ignoreUnknownKeys = true }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -132,4 +128,10 @@ class ApplicationClass : Application() {
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
     }
+
+    override fun onTerminate() {
+        super.onTerminate()
+        stompService.disconnect()
+    }
+
 }

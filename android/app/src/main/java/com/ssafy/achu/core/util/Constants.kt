@@ -9,5 +9,5 @@ object Constants {
     const val SALE = "SALE"
     const val DONATION = "DONATION"
     const val TEXT = "TEXT"
-    const val IMAGE = "IMAGE"
+    const val LEFT = "LEFT"
 }

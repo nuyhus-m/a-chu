@@ -1,6 +1,8 @@
 package com.ssafy.achu.ui.chat.chatdetail
 
-import androidx.compose.foundation.Image
+import android.os.Build
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,163 +30,72 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.components.SmallLineBtn
+import com.ssafy.achu.core.components.dialog.BasicDialog
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.FontBlue
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.LightBlue
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
-import kotlinx.coroutines.launch
+import com.ssafy.achu.core.util.Constants.SOLD
+import com.ssafy.achu.core.util.Constants.TEXT
+import com.ssafy.achu.core.util.formatChatRoomTime
+import com.ssafy.achu.core.util.formatPrice
+import com.ssafy.achu.data.model.chat.Message
+import com.ssafy.achu.data.model.chat.Partner
+import com.ssafy.achu.data.model.product.ProductDetailResponse
+import com.ssafy.achu.ui.ActivityViewModel
+import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-// 메시지 타입 열거형
-enum class MessageType {
-    SENT, RECEIVED, SYSTEM, DATE
-}
-
-// 메시지 데이터 클래스
-data class ChatMessage(
-    val id: String,
-    val content: String,
-    val timestamp: Long,
-    val type: MessageType,
-    val sender: String = "" // 발신자 이름 (시스템 메시지에는 사용 안 함)
-)
-
-// 채팅 미리보기용 파라미터 제공자
-class ChatMessagePreviewProvider : PreviewParameterProvider<ChatMessage> {
-    override val values = sequenceOf(
-        ChatMessage(
-            id = "1",
-            content = "안녕하세요! 좋은 하루 보내세요.",
-            timestamp = System.currentTimeMillis(),
-            type = MessageType.RECEIVED,
-            sender = "홍길동"
-        ),
-        ChatMessage(
-            id = "2",
-            content = "네! 감사합니다. 좋은 하루 되세요.",
-            timestamp = System.currentTimeMillis(),
-            type = MessageType.SENT
-        ),
-        ChatMessage(
-            id = "3",
-            content = "홍길동님이 나갔습니다.",
-            timestamp = System.currentTimeMillis(),
-            type = MessageType.SYSTEM
-        )
-    )
-}
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChatScreen(onBackClick: () -> Unit = {}) {
-    // 메시지 상태 관리
-    var messageText by remember { mutableStateOf("") }
+fun ChatScreen(
+    viewModel: ChatViewModel = viewModel(),
+    activityViewModel: ActivityViewModel,
+    onBackClick: () -> Unit
+) {
+    val context = LocalContext.current
+    val uiState by viewModel.uiState.collectAsState()
+    val activityUiState by activityViewModel.uiState.collectAsState()
 
-    // 샘플 데이터 준비 (실제로는 ViewModel에서 관리하는 것이 좋습니다)
-    val calendar = Calendar.getInstance()
-    val today = calendar.timeInMillis
+    LaunchedEffect(Unit) {
+        viewModel.updateProduct(activityUiState.product)
+        activityUiState.partner?.let {
+            viewModel.updatePartner(it)
+        }
+    }
 
-    // 어제 날짜 설정
-    calendar.add(Calendar.DAY_OF_YEAR, -1)
-    val yesterday = calendar.timeInMillis
-
-    var messages by remember {
-        mutableStateOf(
-            listOf(
-                // 날짜 구분선 (어제)
-                ChatMessage("1", "", yesterday, MessageType.DATE),
-
-                // 어제 메시지들
-                ChatMessage("2", "안녕하세요!", yesterday + 1000, MessageType.RECEIVED, "홍길동"),
-                ChatMessage("3", "반갑습니다!", yesterday + 2000, MessageType.SENT),
-                ChatMessage("4", "오늘 날씨가 좋네요.", yesterday + 3000, MessageType.RECEIVED, "홍길동"),
-                ChatMessage("5", "네, 정말 좋은 날씨입니다.", yesterday + 4000, MessageType.SENT),
-
-                // 시스템 메시지
-                ChatMessage("6", "홍길동님이 나갔습니다.", yesterday + 5000, MessageType.SYSTEM),
-
-                // 날짜 구분선 (오늘)
-                ChatMessage("7", "", today, MessageType.DATE),
-
-                // 오늘 메시지들
-                ChatMessage("8", "다시 접속했습니다.", today + 1000, MessageType.RECEIVED, "홍길동"),
-                ChatMessage("9", "어제 대화 이어서 할까요?", today + 2000, MessageType.RECEIVED, "홍길동"),
-                ChatMessage("10", "좋아요!", today + 3000, MessageType.SENT)
-            )
-        )
+    LaunchedEffect(Unit) {
+        viewModel.toastMessage.collectLatest { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-
-    // 메시지 추가 기능
-    fun sendMessage() {
-        if (messageText.isNotBlank()) {
-            val currentTime = System.currentTimeMillis()
-
-            // 날짜가 바뀌었는지 확인
-            val lastMessage = messages.lastOrNull()
-            val lastMessageDate = lastMessage?.let {
-                val date = Date(it.timestamp)
-                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date)
-            }
-
-            val currentDate =
-                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(currentTime))
-
-            // 날짜가 바뀌었으면 날짜 구분선 추가
-            if (lastMessageDate != currentDate) {
-                messages = messages + ChatMessage(
-                    id = "date_${currentTime}",
-                    content = "",
-                    timestamp = currentTime,
-                    type = MessageType.DATE
-                )
-            }
-
-            // 새 메시지 추가
-            val newMessage = ChatMessage(
-                id = "msg_${currentTime}",
-                content = messageText,
-                timestamp = currentTime,
-                type = MessageType.SENT
-            )
-
-            messages = messages + newMessage
-            messageText = ""
-
-            // 스크롤을 맨 아래로 이동
-            coroutineScope.launch {
-                listState.animateScrollToItem(messages.size - 1)
-            }
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -192,11 +103,22 @@ fun ChatScreen(onBackClick: () -> Unit = {}) {
             .background(color = White)
     ) {
         CustomChatTopBar(
+            partner = uiState.partner ?: Partner(
+                id = 0,
+                nickname = "",
+                profileImageUrl = ""
+            ),
             onBackClick = onBackClick,
-            onLeaveClick = { /* 나가기 동작 */ },
-            userName = "덕윤맘"
+            onLeaveClick = { /* 나가기 동작 */ }
         )
-        ChatProduct()
+        uiState.product?.let {
+            ChatProduct(
+                product = it,
+                isSeller = it.seller.id == activityUiState.user?.id,
+                isSold = it.tradeStatus == SOLD,
+                onSoldClick = { viewModel.showSoldDialog(true) }
+            )
+        }
 
         // 채팅 메시지 목록
         LazyColumn(
@@ -208,29 +130,48 @@ fun ChatScreen(onBackClick: () -> Unit = {}) {
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(vertical = 8.dp)
         ) {
-            items(messages) { message ->
+            items(uiState.messages) { message ->
                 when (message.type) {
-                    MessageType.DATE -> DateDivider(timestamp = message.timestamp)
-                    MessageType.SYSTEM -> SystemMessage(message = message)
-                    else -> ChatMessageItem(message = message)
+                    TEXT -> ChatMessageItem(
+                        message = message,
+                        lastReadMessageId = uiState.lastReadMessageId
+                    )
+
+                    else -> SystemMessage(message = message)
                 }
             }
         }
 
         // 입력 필드
         ChatInputField(
-            value = messageText,
-            onValueChange = { messageText = it },
-            onSendClick = { sendMessage() }
+            value = uiState.inputText,
+            onValueChange = { viewModel.updateInputText(it) },
+            onSendClick = {
+                if (!uiState.hasChatRoom && uiState.isFirst) viewModel.createChatRoom()
+                else viewModel.sendMessage()
+            }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
+    }
+
+    if (uiState.isShowSoldDialog) {
+        BasicDialog(
+            text = "거래를 완료하시겠습니까?",
+            onDismiss = { viewModel.showSoldDialog(false) },
+            onConfirm = { viewModel.completeTrade() }
+        )
     }
 }
 
 
 @Composable
-fun ChatProduct() {
+fun ChatProduct(
+    product: ProductDetailResponse,
+    isSeller: Boolean,
+    isSold: Boolean,
+    onSoldClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .padding(horizontal = 24.dp)
@@ -244,14 +185,13 @@ fun ChatProduct() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = "imgUrl",
+                model = product.imgUrls[0],
                 contentDescription = null,
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(8.dp))
                     .aspectRatio(1f),
                 contentScale = ContentScale.Crop,
-                error = painterResource(R.drawable.img_miffy_doll)
             )
 
             Column(
@@ -261,25 +201,33 @@ fun ChatProduct() {
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "미피 인형",
+                    text = product.title,
                     style = AchuTheme.typography.regular18
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "5,000원",
-                    style = AchuTheme.typography.semiBold18.copy(color = FontPink)
+                    text = if (product.price == 0L) stringResource(R.string.free)
+                    else formatPrice(product.price),
+                    style = AchuTheme.typography.semiBold18.copy(color = if (product.price == 0L) FontBlue else FontPink)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "판매중",
+                    text = if (isSold) stringResource(R.string.sold)
+                    else stringResource(R.string.selling),
                     style = AchuTheme.typography.semiBold16.copy(color = PointPink)
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.weight(1f))
-            SmallLineBtn("거래 완료", PointPink) { }
+            if (isSeller) {
+                SmallLineBtn(
+                    buttonText = "거래 완료",
+                    color = if (isSold) FontGray else PointPink,
+                    onClick = onSoldClick,
+                    enabled = !isSold
+                )
+            }
         }
-
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
@@ -316,7 +264,7 @@ fun DateDivider(timestamp: Long) {
 }
 
 @Composable
-fun SystemMessage(message: ChatMessage) {
+fun SystemMessage(message: Message) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -331,9 +279,11 @@ fun SystemMessage(message: ChatMessage) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChatMessageItem(message: ChatMessage) {
-    val isSent = message.type == MessageType.SENT
+fun ChatMessageItem(message: Message, lastReadMessageId: Int) {
+    val isSent = message.isMine
+    val isUnread = message.id > lastReadMessageId
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -342,7 +292,7 @@ fun ChatMessageItem(message: ChatMessage) {
         // 발신자 이름 (내가 보낸 메시지가 아닐 때만 표시)
         if (!isSent) {
             Text(
-                text = message.sender,
+                text = "덕윤맘",
                 style = AchuTheme.typography.semiBold14PointBlue.copy(color = FontGray),
                 modifier = Modifier.padding(start = 12.dp, bottom = 4.dp)
             )
@@ -355,7 +305,11 @@ fun ChatMessageItem(message: ChatMessage) {
         ) {
             // 타임스탬프 (보낸 메시지면 왼쪽, 받은 메시지면 오른쪽)
             if (isSent) {
-                MessageTimestamp(timestamp = message.timestamp)
+                MessageTimestamp(
+                    isSent = true,
+                    timestamp = formatChatRoomTime(message.timestamp),
+                    isUnread = isUnread
+                )
                 Spacer(modifier = Modifier.width(4.dp))
             }
 
@@ -387,7 +341,11 @@ fun ChatMessageItem(message: ChatMessage) {
             // 타임스탬프 (보낸 메시지면 오른쪽, 받은 메시지면 왼쪽)
             if (!isSent) {
                 Spacer(modifier = Modifier.width(4.dp))
-                MessageTimestamp(timestamp = message.timestamp)
+                MessageTimestamp(
+                    isSent = false,
+                    timestamp = formatChatRoomTime(message.timestamp),
+                    isUnread = false
+                )
             }
         }
     }
@@ -396,16 +354,23 @@ fun ChatMessageItem(message: ChatMessage) {
 }
 
 @Composable
-fun MessageTimestamp(timestamp: Long) {
-    val date = Date(timestamp)
-    val formatter = SimpleDateFormat("a h:mm", Locale.KOREA)
-    val formattedTime = formatter.format(date)
-
-    Text(
-        text = formattedTime,
-        style = AchuTheme.typography.regular14.copy(color = FontGray),
-        color = MaterialTheme.colorScheme.onSurfaceVariant
-    )
+fun MessageTimestamp(isSent: Boolean, timestamp: String, isUnread: Boolean) {
+    Column(
+        horizontalAlignment = if (isSent) Alignment.End else Alignment.Start
+    ) {
+        if (isUnread) {
+            Text(
+                text = "1",
+                style = AchuTheme.typography.regular14.copy(color = FontGray),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Text(
+            text = timestamp,
+            style = AchuTheme.typography.regular14.copy(color = FontGray),
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
 }
 
 @Composable
@@ -441,7 +406,7 @@ fun ChatInputField(
 
             // 전송 버튼
             IconButton(
-                onClick = onSendClick,
+                onClick = { if (value.isNotEmpty()) onSendClick() },
                 modifier = Modifier
                     .clip(CircleShape)
                     .background(FontPink)
@@ -482,37 +447,23 @@ fun ChatTextField(
             unfocusedBorderColor = pointColor,
             cursorColor = Color.Black
         ),
-        trailingIcon = {
-            IconButton(onClick = { }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_gallery),
-                    tint = FontGray,
-                    contentDescription = stringResource(R.string.add_img)
-                )
-            }
-        }
+//        trailingIcon = {
+//            IconButton(onClick = { }) {
+//                Icon(
+//                    painter = painterResource(id = R.drawable.ic_gallery),
+//                    tint = FontGray,
+//                    contentDescription = stringResource(R.string.add_img)
+//                )
+//            }
+//        }
     )
-}
-
-// 시스템 메시지 추가 함수 (ViewModel에서 사용)
-fun addSystemMessage(messages: List<ChatMessage>, content: String): List<ChatMessage> {
-    val currentTime = System.currentTimeMillis()
-
-    val systemMessage = ChatMessage(
-        id = "system_${currentTime}",
-        content = content,
-        timestamp = currentTime,
-        type = MessageType.SYSTEM
-    )
-
-    return messages + systemMessage
 }
 
 @Composable
 fun CustomChatTopBar(
+    partner: Partner,
     onBackClick: () -> Unit,
-    onLeaveClick: () -> Unit,
-    userName: String
+    onLeaveClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -537,8 +488,8 @@ fun CustomChatTopBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 프로필 이미지
-            Image(
-                painter = painterResource(R.drawable.img_profile_test),
+            AsyncImage(
+                model = partner.profileImageUrl, // 여기에 실제 이미지 URL 입력
                 contentDescription = stringResource(R.string.profile_img),
                 modifier = Modifier
                     .size(40.dp)
@@ -548,7 +499,7 @@ fun CustomChatTopBar(
             Spacer(modifier = Modifier.width(8.dp))
             // 사용자 이름
             Text(
-                text = userName,
+                text = partner.nickname,
                 style = AchuTheme.typography.bold24
             )
         }
@@ -567,13 +518,16 @@ fun CustomChatTopBar(
 }
 
 // 여기서부터 Preview 코드 시작
-@Preview(showBackground = true)
-@Composable
-fun ChatScreenPreview() {
-    AchuTheme {
-        ChatScreen()
-    }
-}
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview(showBackground = true)
+//@Composable
+//fun ChatScreenPreview() {
+//    AchuTheme {
+//        ChatScreen(
+//            onBackClick = { /* 뒤로가기 동작 */ }
+//        )
+//    }
+//}
 
 // 사용 예시 프리뷰
 @Preview(showBackground = true)
@@ -581,74 +535,24 @@ fun ChatScreenPreview() {
 fun PreviewCustomChatTopBar() {
     AchuTheme {
         CustomChatTopBar(
+            partner = Partner(
+                id = 0,
+                nickname = "홍길동",
+                profileImageUrl = ""
+            ),
             onBackClick = { /* 뒤로가기 동작 */ },
-            onLeaveClick = { /* 나가기 동작 */ },
-            userName = "홍길동"
+            onLeaveClick = { /* 나가기 동작 */ }
         )
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ChatProductPreview() {
-    AchuTheme {
-        ChatProduct()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DateDividerPreview() {
-    AchuTheme {
-        DateDivider(timestamp = System.currentTimeMillis())
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SystemMessagePreview() {
-    AchuTheme {
-        SystemMessage(
-            message = ChatMessage(
-                id = "system_1",
-                content = "홍길동님이 나갔습니다.",
-                timestamp = System.currentTimeMillis(),
-                type = MessageType.SYSTEM
-            )
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ChatMessagePreview_Sent() {
-    AchuTheme {
-        ChatMessageItem(
-            message = ChatMessage(
-                id = "msg_1",
-                content = "안녕하세요! 반갑습니다.",
-                timestamp = System.currentTimeMillis(),
-                type = MessageType.SENT
-            )
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ChatMessagePreview_Received() {
-    AchuTheme {
-        ChatMessageItem(
-            message = ChatMessage(
-                id = "msg_2",
-                content = "네, 반갑습니다. 오늘 날씨가 정말 좋네요.",
-                timestamp = System.currentTimeMillis(),
-                type = MessageType.RECEIVED,
-                sender = "홍길동"
-            )
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ChatProductPreview() {
+//    AchuTheme {
+//        ChatProduct()
+//    }
+//}
 
 @Preview(showBackground = true)
 @Composable
@@ -662,12 +566,56 @@ fun ChatInputFieldPreview() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 360, heightDp = 640)
-@Composable
-fun FullChatPreview() {
-    AchuTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            ChatScreen()
-        }
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun DateDividerPreview() {
+//    AchuTheme {
+//        DateDivider(timestamp = System.currentTimeMillis())
+//    }
+//}
+
+//@Preview(showBackground = true)
+//@Composable
+//fun SystemMessagePreview() {
+//    AchuTheme {
+//        SystemMessage(
+//            message = ChatMessage(
+//                id = "system_1",
+//                content = "홍길동님이 나갔습니다.",
+//                timestamp = System.currentTimeMillis(),
+//                type = MessageType.SYSTEM
+//            )
+//        )
+//    }
+//}
+
+//@Preview(showBackground = true)
+//@Composable
+//fun ChatMessagePreview_Sent() {
+//    AchuTheme {
+//        ChatMessageItem(
+//            message = ChatMessage(
+//                id = "msg_1",
+//                content = "안녕하세요! 반갑습니다.",
+//                timestamp = System.currentTimeMillis(),
+//                type = MessageType.SENT
+//            )
+//        )
+//    }
+//}
+
+//@Preview(showBackground = true)
+//@Composable
+//fun ChatMessagePreview_Received() {
+//    AchuTheme {
+//        ChatMessageItem(
+//            message = ChatMessage(
+//                id = "msg_2",
+//                content = "네, 반갑습니다. 오늘 날씨가 정말 좋네요.",
+//                timestamp = System.currentTimeMillis(),
+//                type = MessageType.RECEIVED,
+//                sender = "홍길동"
+//            )
+//        )
+//    }
+//}

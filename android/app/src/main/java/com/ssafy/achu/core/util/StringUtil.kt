@@ -73,6 +73,40 @@ fun formatDate(input: String): String {
     return dateTime.format(outputFormatter)
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
+fun formatChatRoomTime(timestamp: String): String {
+    val formatter = DateTimeFormatter.ISO_DATE_TIME
+    val parsedDateTime = LocalDateTime.parse(timestamp, formatter)
+    val zonedDateTime = parsedDateTime.atZone(ZoneId.of("Asia/Seoul"))
+    val now = ZonedDateTime.now(ZoneId.of("Asia/Seoul"))
+
+    val timeFormatter = DateTimeFormatter.ofPattern("a h:mm", Locale.KOREAN)
+    val monthDayFormatter = DateTimeFormatter.ofPattern("M월 d일", Locale.KOREAN)
+    val fullDateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.KOREAN)
+
+    return when {
+        zonedDateTime.toLocalDate() == now.toLocalDate() -> {
+            // 같은 날이면 "오전/오후 h:mm"
+            zonedDateTime.format(timeFormatter)
+        }
+
+        zonedDateTime.toLocalDate() == now.minusDays(1).toLocalDate() -> {
+            // 어제면 "어제"
+            "어제"
+        }
+
+        zonedDateTime.year == now.year -> {
+            // 같은 연도면 "M월 d일"
+            zonedDateTime.format(monthDayFormatter)
+        }
+
+        else -> {
+            // 다른 연도면 "yyyy.MM.dd"
+            zonedDateTime.format(fullDateFormatter)
+        }
+    }
+}
+
 fun formatPrice(price: Long): String {
     val formattedPrice = NumberFormat.getNumberInstance(Locale.KOREA).format(price)
     return "${formattedPrice}원"

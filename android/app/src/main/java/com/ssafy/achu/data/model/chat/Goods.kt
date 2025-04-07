@@ -2,7 +2,8 @@ package com.ssafy.achu.data.model.chat
 
 data class Goods(
     val id: Int,
-    val price: Int,
-    val thumbnailUrl: String,
-    val title: String
+    val thumbnailImageUrl: String,
+    val title: String,
+    val price: Long,
+    val tradeStatus: String,
 )

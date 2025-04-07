@@ -106,8 +106,14 @@ fun NavGraph(
         composable<BottomNavRoute.ChatList> {
             ChatListScreen(
                 modifier = modifier,
-                onNavigateToChat = { navController.navigate(route = Route.Chat) }
+                activityViewModel = activityViewModel,
+                onNavigateToChat = { roomId ->
+                    navController.navigate(
+                        route = Route.Chat(roomId = roomId)
+                    )
+                }
             )
+
         }
         composable<BottomNavRoute.MyPage> {
             MyPageScreen(
@@ -253,7 +259,9 @@ fun NavGraph(
                         )
                     )
                 },
-                onNavigateToChat = { navController.navigate(route = Route.Chat) },
+                onNavigateToChat = {
+                    navController.navigate(route = Route.Chat())
+                },
                 onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) },
                 onNavigateToMemoryUpload = { babyId, productName ->
                     navController.navigate(
@@ -279,6 +287,7 @@ fun NavGraph(
         // 채팅 관련 화면들
         composable<Route.Chat> {
             ChatScreen(
+                activityViewModel = activityViewModel,
                 onBackClick = { navController.popBackStack() }
             )
         }

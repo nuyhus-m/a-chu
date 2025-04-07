@@ -2,6 +2,7 @@ package com.ssafy.achu.data.repository
 
 import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.IdResponse
+import com.ssafy.achu.data.model.product.BuyerIdRequest
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.LikeProduct
 import com.ssafy.achu.data.model.product.ModifyProductRequest
@@ -156,4 +157,12 @@ class ProductRepository {
         }
     }
 
+    suspend fun completeTrade(
+        productId: Int,
+        request: BuyerIdRequest
+    ): Result<ApiResult<IdResponse>> {
+        return runCatching {
+            productService.completeTrade(productId, request)
+        }
+    }
 }
