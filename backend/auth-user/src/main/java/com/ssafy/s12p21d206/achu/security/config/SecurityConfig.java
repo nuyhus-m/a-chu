@@ -85,6 +85,8 @@ public class SecurityConfig {
         .permitAll()
         .requestMatchers(HttpMethod.PATCH, "/users/password/reset")
         .permitAll()
+        .requestMatchers("/chat-ws/**")
+        .permitAll()
         .anyRequest()
         .authenticated());
 
