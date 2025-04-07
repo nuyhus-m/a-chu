@@ -49,7 +49,6 @@ import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.formatChatRoomTime
 import com.ssafy.achu.data.model.chat.ChatRoomResponse
 import com.ssafy.achu.ui.ActivityViewModel
-import kotlinx.coroutines.flow.collectLatest
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -198,13 +197,15 @@ fun ChatItem(
                     style = AchuTheme.typography.regular14.copy(color = FontGray)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = chatRoom.unreadCount.toString(),
-                    style = AchuTheme.typography.regular16.copy(color = White),
-                    modifier = Modifier
-                        .background(color = FontPink, shape = CircleShape)
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
-                )
+                if (chatRoom.unreadCount > 0) {
+                    Text(
+                        text = chatRoom.unreadCount.toString(),
+                        style = AchuTheme.typography.regular16.copy(color = White),
+                        modifier = Modifier
+                            .background(color = FontPink, shape = CircleShape)
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    )
+                }
             }
         }
         Divider()

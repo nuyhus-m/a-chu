@@ -10,6 +10,7 @@ import com.ssafy.achu.core.ApplicationClass.Companion.stompService
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.chat.ChatRoomResponse
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +23,8 @@ class ChatListViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(ChatListUiState())
     val uiState: StateFlow<ChatListUiState> = _uiState.asStateFlow()
+
+    private var chatRoomJob: Job? = null
 
     init {
         getChatRooms()
@@ -48,7 +51,7 @@ class ChatListViewModel : ViewModel() {
     }
 
     fun subscribeToChatRooms(userId: Int) {
-        viewModelScope.launch {
+        chatRoomJob = viewModelScope.launch {
             stompService.subscribeToDestination(
                 "/read/chat/users/$userId/rooms/update"
             ).onSuccess { response ->
@@ -71,5 +74,10 @@ class ChatListViewModel : ViewModel() {
                 Log.d(TAG, "subscribeToChatRooms: ${it.message}")
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        chatRoomJob?.cancel()
     }
 }

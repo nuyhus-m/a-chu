@@ -17,7 +17,6 @@ import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.Token
 import com.ssafy.achu.data.model.baby.BabyResponse
-import com.ssafy.achu.data.model.chat.Partner
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.UploadProductRequest
@@ -50,10 +49,14 @@ class ActivityViewModel : ViewModel() {
     private val _categoryList = MutableStateFlow<List<CategoryResponse>>(emptyList())
     val categoryList: StateFlow<List<CategoryResponse>> = _categoryList
 
+    private var activeSubscription: Boolean = false
+
     init {
         getUserinfo()
         getCategoryList()
-        stompService.connect()
+        viewModelScope.launch {
+            stompService.connect()
+        }
         getUnreadCount()
     }
 
@@ -205,12 +208,13 @@ class ActivityViewModel : ViewModel() {
     }
 
     private fun subscribeToNewMessage() {
-        if (uiState.value.user == null) return
+        if (uiState.value.user == null || activeSubscription) return
         viewModelScope.launch {
             stompService.subscribeToDestination("/read/chat/users/${uiState.value.user!!.id}/message-arrived")
                 .onSuccess { response ->
                     Log.d(TAG, "subscribeToNewMessage: success")
-                    response?.let { body ->
+                    activeSubscription = true
+                    response.let { body ->
                         body.collect {
                             val data = json.decodeFromString<String>(it.bodyAsText)
                             Log.d(TAG, "subscribeToNewMessage: $data")

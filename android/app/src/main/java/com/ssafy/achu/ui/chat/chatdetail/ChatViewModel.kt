@@ -122,7 +122,8 @@ class ChatViewModel(
                     _uiState.update {
                         it.copy(
                             hasChatRoom = true,
-                            isFirst = false
+                            isFirst = false,
+                            inputText = ""
                         )
                     }
                 }
@@ -219,7 +220,12 @@ class ChatViewModel(
                     type = TEXT
                 )
             ).onSuccess {
-                Log.d(TAG, "sendMessage: success")
+                Log.d(TAG, "sendMessage success: ${it?.id}")
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        inputText = ""
+                    )
+                }
             }.onFailure {
                 Log.d(TAG, "sendMessage: ${it.message}")
             }
@@ -232,7 +238,7 @@ class ChatViewModel(
             stompService.subscribeToDestination("/read/chat/rooms/$roomId/messages")
                 .onSuccess { response ->
                     Log.d(TAG, "subscribeToMessage: success")
-                    response?.let { body ->
+                    response.let { body ->
                         body.collect {
                             val data = json.decodeFromString<Message>(it.bodyAsText)
                             Log.d(TAG, "subscribeToMessage: $data")
@@ -268,7 +274,7 @@ class ChatViewModel(
             stompService.subscribeToDestination("/read/chat/rooms/$roomId/messages/read")
                 .onSuccess { response ->
                     Log.d(TAG, "subscribeToMessageRead: success")
-                    response?.let { body ->
+                    response.let { body ->
                         body.collect {
                             val data =
                                 json.decodeFromString<MessageIdResponse>(it.bodyAsText)

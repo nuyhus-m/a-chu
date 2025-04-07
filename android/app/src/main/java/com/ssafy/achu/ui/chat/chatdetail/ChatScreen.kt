@@ -137,7 +137,8 @@ fun ChatScreen(
                 when (message.type) {
                     TEXT -> ChatMessageItem(
                         message = message,
-                        lastReadMessageId = uiState.lastReadMessageId
+                        lastReadMessageId = uiState.lastReadMessageId,
+                        userId = activityUiState.user!!.id
                     )
 
                     else -> SystemMessage(message = message)
@@ -284,16 +285,16 @@ fun SystemMessage(message: Message) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChatMessageItem(message: Message, lastReadMessageId: Int) {
-    val isSent = message.isMine
+fun ChatMessageItem(message: Message, lastReadMessageId: Int, userId: Int) {
+    val isMine = message.senderId == userId
     val isUnread = message.id > lastReadMessageId
 
     Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = if (isSent) Alignment.End else Alignment.Start
+        horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
     ) {
         // 발신자 이름 (내가 보낸 메시지가 아닐 때만 표시)
-        if (!isSent) {
+        if (!isMine) {
             Text(
                 text = "덕윤맘",
                 style = AchuTheme.typography.semiBold14PointBlue.copy(color = FontGray),
@@ -303,15 +304,15 @@ fun ChatMessageItem(message: Message, lastReadMessageId: Int) {
 
         Row(
             verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = if (isSent) Arrangement.End else Arrangement.Start,
+            horizontalArrangement = if (isMine) Arrangement.End else Arrangement.Start,
             modifier = Modifier.fillMaxWidth()
         ) {
             // 타임스탬프 (보낸 메시지면 왼쪽, 받은 메시지면 오른쪽)
-            if (isSent) {
+            if (isMine) {
                 MessageTimestamp(
                     isSent = true,
                     timestamp = formatChatRoomTime(message.timestamp),
-                    isUnread = isUnread
+                    isUnread = false
                 )
                 Spacer(modifier = Modifier.width(4.dp))
             }
@@ -324,30 +325,30 @@ fun ChatMessageItem(message: Message, lastReadMessageId: Int) {
                         RoundedCornerShape(
                             topStart = 16.dp,
                             topEnd = 16.dp,
-                            bottomStart = if (isSent) 16.dp else 0.dp,
-                            bottomEnd = if (isSent) 0.dp else 16.dp
+                            bottomStart = if (isMine) 16.dp else 0.dp,
+                            bottomEnd = if (isMine) 0.dp else 16.dp
                         )
                     )
                     .background(
-                        if (isSent) PointPink
+                        if (isMine) PointPink
                         else LightBlue
                     )
                     .padding(12.dp)
             ) {
                 Text(
                     text = message.content,
-                    color = if (isSent) Color.White else Color.Black,
+                    color = if (isMine) Color.White else Color.Black,
                     style = AchuTheme.typography.regular16
                 )
             }
 
             // 타임스탬프 (보낸 메시지면 오른쪽, 받은 메시지면 왼쪽)
-            if (!isSent) {
+            if (!isMine) {
                 Spacer(modifier = Modifier.width(4.dp))
                 MessageTimestamp(
                     isSent = false,
                     timestamp = formatChatRoomTime(message.timestamp),
-                    isUnread = false
+                    isUnread = isUnread
                 )
             }
         }
