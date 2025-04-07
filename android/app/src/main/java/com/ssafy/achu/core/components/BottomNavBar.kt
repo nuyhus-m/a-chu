@@ -64,6 +64,13 @@ fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel)
             currentBackStack?.destination?.route ?: BottomNavRoute.Home::class.qualifiedName
         }
     }
+    val endPadding = when {
+        unreadCount > 300 -> 12
+        unreadCount > 99 -> 16
+        unreadCount > 9 -> 20
+        unreadCount > 0 -> 24
+        else -> 0
+    }
 
     AnimatedVisibility(
         visible = bottomNavScreens.map { it.routeName }
@@ -89,13 +96,10 @@ fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel)
             ) {
                 bottomNavScreens.forEach { screen ->
                     val selected = currentRoute == screen.routeName
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
+                    Box(
                         modifier = Modifier
-                            .weight(1f)
                             .fillMaxHeight()
+                            .weight(1f)
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = ripple(color = PointBlue),
@@ -106,30 +110,48 @@ fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel)
                                     }
                                     launchSingleTop = true
                                 }
-                            }
+                            },
+                        contentAlignment = Alignment.Center,
                     ) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        if (screen == BottomNavScreen.ChatList) {
-                            ChatBottomBarItem(
-                                icon = screen.icon,
-                                selected = selected,
-                                unreadCount = unreadCount
-                            )
-                        } else {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Spacer(modifier = Modifier.height(4.dp))
                             Icon(
                                 painter = painterResource(screen.icon),
                                 contentDescription = null,
                                 tint = if (selected) PointBlue else FontGray
                             )
+
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = stringResource(screen.titleResId),
+                                color = if (selected) PointBlue else FontGray,
+                                fontSize = 12.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = stringResource(screen.titleResId),
-                            color = if (selected) PointBlue else FontGray,
-                            fontSize = 12.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        if (screen == BottomNavScreen.ChatList && unreadCount >= 1) {
+                            val unreadCountStr =
+                                if (unreadCount > 300) "300+" else unreadCount.toString()
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(top = 8.dp, end = endPadding.dp)
+                            ) {
+                                Text(
+                                    text = unreadCountStr,
+                                    style = AchuTheme.typography.semiBold16.copy(color = White),
+                                    modifier = Modifier
+                                        .background(color = FontPink, shape = CircleShape)
+                                        .padding(horizontal = 5.dp, vertical = 3.dp),
+                                    fontSize = 8.sp,
+                                    maxLines = 1,
+                                )
+                            }
+                        }
                     }
                 }
             }
