@@ -20,6 +20,7 @@ import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.chat.Partner
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
+import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.data.model.product.UploadProductRequest
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,6 +51,10 @@ class ActivityViewModel : ViewModel() {
     private val _categoryList = MutableStateFlow<List<CategoryResponse>>(emptyList())
     val categoryList: StateFlow<List<CategoryResponse>> = _categoryList
 
+    private val _recommendItemList = MutableStateFlow<List<ProductResponse>>(emptyList())
+    val recommendItemList: StateFlow<List<ProductResponse>> = _recommendItemList
+
+
     init {
         getUserinfo()
         getCategoryList()
@@ -76,6 +81,7 @@ class ActivityViewModel : ViewModel() {
                 selectedBaby = baby
             )
         }
+        getRecommendItemList(baby.id)
     }
 
     fun getUserinfo() {
@@ -257,5 +263,20 @@ class ActivityViewModel : ViewModel() {
         }
 
     }
+
+    fun getRecommendItemList(babyId: Int){
+        viewModelScope.launch {
+            productRepository.getRecommendedItems(babyId).onSuccess {
+                _recommendItemList.value = it.data
+                Log.d(TAG, "getRecommendItemList: ${it}")
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "getRecommendItemList: ${errorResponse}")
+            }
+
+        }
+
+    }
+
 
 }

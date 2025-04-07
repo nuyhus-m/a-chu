@@ -110,5 +110,11 @@ interface ProductService {
         @Path("goodsId") productId: Int,
         @Body request: BuyerIdRequest
     ): ApiResult<IdResponse>
+
+
+    @GET("/babies/{id}/recommend")
+    suspend fun getRecommendedItems(
+        @Path("id") babyId: Int
+    ): ApiResult<List<ProductResponse>>
 }
 

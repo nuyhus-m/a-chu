@@ -115,7 +115,9 @@ fun MemoryUploadScreen(
         contract = ActivityResultContracts.GetMultipleContents(),
         onResult = { uris ->
             if (uris.isEmpty()) {
+                isLoading = false
                 return@rememberLauncherForActivityResult
+
             }
 
             if (uris.size + images.size <= 3) {

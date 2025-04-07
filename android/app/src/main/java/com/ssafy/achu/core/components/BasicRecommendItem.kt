@@ -15,37 +15,39 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.ssafy.achu.R
+import com.ssafy.achu.core.LoadingImg
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
-import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatPrice
+import com.ssafy.achu.data.model.product.ProductResponse
 
 @Composable
 fun BasicRecommendItem(
-    isLiked: Boolean,
-    onClickItem: () -> Unit, // 아이템 전체 클릭 시 동작
-    onClickHeart: () -> Unit, // 하트 클릭 시 동작
-    productName: String,
-    state: String,
-    price: String,
-    img: Painter? = null,
+    product: ProductResponse,
+    onClickItem: (Int) -> Unit, // 아이템 전체 클릭 시 동작
+    onLikeClick: (Int) -> Unit,
+    onUnLikeClick: (Int) -> Unit,
 ) {
+
+    var isLiked: Boolean by remember { mutableStateOf(product.likedByUser) }
 
     Box(
         modifier = Modifier
@@ -63,7 +65,7 @@ fun BasicRecommendItem(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = onClickItem
+                    onClick = { onClickItem(product.id) }
                 ) // 아이템 전체 클릭 시 동작
         ) {
 
@@ -76,42 +78,43 @@ fun BasicRecommendItem(
                         .fillMaxWidth()
                         .aspectRatio(1f) // 정사각형
                         .clip(RoundedCornerShape(8.dp))
+
                 ) {
-                    // 상품 이미지
-                    img?.let {
-                        Image(
-                            painter = img,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(1f) // 정사각형
-                                .clip(RoundedCornerShape(8.dp)),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
+
+                    LoadingImg("이미지로딩중", Modifier.fillMaxWidth(), 12, 40)
+                    AsyncImage(
+                        model = product.imgUrl,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f) // 정사각형
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+
 
                     // 🔹 거래 완료 오버레이 추가
-                    if (state == "거래완료") {
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .background(Color.Black.copy(alpha = 0.4f)) // 반투명 배경
-                                .clip(RoundedCornerShape(8.dp)), // 모서리 둥글게
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "거래완료",
-                                color = White,
-                                style = AchuTheme.typography.semiBold16Pink
-                            )
-                        }
-                    }
+                    //if (product.Stat == "거래완료") {
+                    //   Box(
+                    //      modifier = Modifier
+                    //          .matchParentSize()
+                    //          .background(Color.Black.copy(alpha = 0.4f)) // 반투명 배경
+                    //          .clip(RoundedCornerShape(8.dp)), // 모서리 둥글게
+                    //       contentAlignment = Alignment.Center
+                    //   ) {
+                    //        Text(
+                    //             text = "거래완료",
+                    //             color = White,
+                    //              style = AchuTheme.typography.semiBold16Pink
+                    //           )
+                    // //       }
+                    //    }
                 }
 
 
 
                 Text(
-                    text = productName,
+                    text = product.title,
                     style = AchuTheme.typography.regular18,
                     modifier = Modifier.padding(top = 8.dp, start = 4.dp),
                     maxLines = 1, // 한 줄만 표시
@@ -129,7 +132,7 @@ fun BasicRecommendItem(
                 ) {
                     // 가격 텍스트
                     Text(
-                        text = price,
+                        text = formatPrice(product.price),
                         style = AchuTheme.typography.semiBold16Pink,
                         modifier = Modifier
                             .padding(top = 8.dp) // 오른쪽 여백 추가
@@ -151,9 +154,18 @@ fun BasicRecommendItem(
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
-                                onClick = onClickHeart
-                            )
-                            .padding(end = 4.dp) // 우측 여백 추가
+                                onClick = {
+                                    if (isLiked) {
+                                        onUnLikeClick(product.id)
+                                        isLiked = false
+                                    } else {
+                                        onLikeClick(product.id)
+                                        isLiked = true
+                                    }
+                                },
+
+                                )
+                            .padding(end = 4.dp)
                     )
                 }
 
@@ -169,20 +181,6 @@ fun BasicRecommendItem(
 fun preItem2() {
     AchuTheme {
         Row(Modifier.padding(4.dp)) {
-            BasicRecommendItem(
-                isLiked = true,
-                onClickItem = {
-                    // 아이템 전체 클릭 시 동작
-                    println("아이템 클릭됨")
-                },
-                onClickHeart = {
-                    println("하트 클릭됨")
-                },
-                productName = "유아fsdhkjhgdhflhg;;rioejdfivpiojbh;ktlf식기",
-                state = "거래완료", // 거래완료 상태
-                price = "50,000,000원",
-                img = ColorPainter(LightGray)
-            )
 
         }
     }

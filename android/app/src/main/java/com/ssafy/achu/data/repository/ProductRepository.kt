@@ -165,4 +165,13 @@ class ProductRepository {
             productService.completeTrade(productId, request)
         }
     }
+
+
+    suspend fun getRecommendedItems(
+        babyId: Int
+    ): Result<ApiResult<List<ProductResponse>>> {
+        return runCatching {
+            productService.getRecommendedItems(babyId)
+        }
+    }
 }
