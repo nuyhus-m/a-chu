@@ -316,9 +316,9 @@ fun UserInfoScreen(
                 userInfoViewModel.updateLogoutDialog(false)
             },
             onConfirm = {
-                sharedPreferencesUtil.clearTokensInfo()
                 viewModel.deleteFcmToken()
                 navigateToAuthActivity(context)
+                sharedPreferencesUtil.clearTokensInfo()
             }
         )
     }

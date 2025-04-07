@@ -2,6 +2,7 @@ package com.ssafy.achu.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -33,6 +34,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -40,6 +42,9 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.ssafy.achu.core.components.BottomNavBar
 import com.ssafy.achu.core.navigation.BottomNavRoute
 import com.ssafy.achu.core.navigation.NavGraph
+import com.ssafy.achu.core.navigation.Route
+import com.ssafy.achu.core.navigation.Route.Chat
+import com.ssafy.achu.core.navigation.toRoute
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.White
 import kotlinx.coroutines.delay
@@ -126,15 +131,27 @@ fun AchuApp(viewModel: ActivityViewModel, targetRoute: String?, requestId: Strin
     } else {
         SetStatusBarColor(color = Color.White, darkIcons = true)
     }
-
     LaunchedEffect(targetRoute) {
-        if (!targetRoute.isNullOrEmpty()) {
+        if (targetRoute != null) {
             isNavigating = true
-            navController.navigate(targetRoute)
+            when (targetRoute) {
+                "ProductDetail" -> {
+                    navController.navigate(Route.ProductDetail(false))
+                }
+                "TradeList" -> {
+                    navController.navigate(Route.TradeList)
+                }
+                "Chat" -> {
+                    val route = Route.Chat(roomId = requestId.toInt())
+                    navController.navigate(route)
+                }
+            }
             delay(300)
             isNavigating = false
         }
     }
+
+
 
     val currentDestination by navController.currentBackStackEntryFlow.collectAsState(initial = null)
     LaunchedEffect(currentDestination) {

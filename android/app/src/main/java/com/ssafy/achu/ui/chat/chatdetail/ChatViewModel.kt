@@ -46,6 +46,12 @@ class ChatViewModel(
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage: SharedFlow<String> = _toastMessage.asSharedFlow()
 
+
+    object ChatStateHolder {
+        var currentRoomId: Int? = null
+    }
+
+
     init {
         if (roomId == -1) {
             checkChatRoomExistence()

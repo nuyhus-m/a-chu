@@ -32,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -66,6 +67,7 @@ import com.ssafy.achu.data.model.chat.Message
 import com.ssafy.achu.data.model.chat.Partner
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.ui.ActivityViewModel
+import com.ssafy.achu.ui.chat.chatdetail.ChatViewModel.ChatStateHolder
 import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -92,6 +94,17 @@ fun ChatScreen(
     LaunchedEffect(Unit) {
         viewModel.toastMessage.collectLatest { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        val roomId = null
+        ChatStateHolder.currentRoomId = roomId
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            ChatStateHolder.currentRoomId = null // 화면 나갈 때 초기화
         }
     }
 
