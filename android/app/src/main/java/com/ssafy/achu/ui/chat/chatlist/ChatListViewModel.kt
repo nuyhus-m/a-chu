@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.chatRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.json
+import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.ApplicationClass.Companion.stompService
 import com.ssafy.achu.core.util.Constants.SUCCESS
+import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.chat.ChatRoomResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,6 +39,7 @@ class ChatListViewModel : ViewModel() {
         viewModelScope.launch {
             chatRepository.getChatRooms()
                 .onSuccess { response ->
+                    Log.d(TAG, "getChatRooms: $response")
                     if (response.result == SUCCESS) {
                         _uiState.update { currentState ->
                             currentState.copy(
@@ -44,6 +47,10 @@ class ChatListViewModel : ViewModel() {
                             )
                         }
                     }
+                }.onFailure {
+                    val errorResponse = it.getErrorResponse(retrofit)
+                    Log.d(TAG, "getChatRooms errorResponse: $errorResponse")
+                    Log.d(TAG, "getChatRooms error: ${it.message}")
                 }
         }
     }
