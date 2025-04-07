@@ -67,6 +67,6 @@ public class ChatRoomController {
 
     Long chatRoomId =
         chatRoomService.findChatRoomId(goodsId, new ChatUser(sellerId), apiUser.toChatUser());
-    return ChatApiResponse.success(chatRoomId != null ? DefaultIdResponse.of(chatRoomId) : null);
+    return ChatApiResponse.success(DefaultIdResponse.of(chatRoomId));
   }
 }
