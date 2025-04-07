@@ -131,5 +131,5 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoomEntity, Lon
   where cr.goodsId = :goodsId and cr.sellerId = :sellerId and cr.buyerId = :buyerId
   and cr.entityStatus = 'ACTIVE'
   """)
-  Optional<Long> findByGoodsIdAndSellerIdAndBuyerId(Long goodsId, Long id, Long id1);
+  Optional<Long> findByGoodsIdAndSellerIdAndBuyerId(Long goodsId, Long sellerId, Long buyerId);
 }
