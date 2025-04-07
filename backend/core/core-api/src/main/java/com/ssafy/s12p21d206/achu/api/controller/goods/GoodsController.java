@@ -202,4 +202,15 @@ public class GoodsController {
     List<TradeResponse> responses = TradeResponse.of(goods);
     return ApiResponse.success(responses);
   }
+
+  @GetMapping("/babies/{babyId}/recommend")
+  public ApiResponse<List<GoodsResponse>> findRecommendGoods(
+      ApiUser apiUser, @PathVariable Long babyId) {
+    List<Goods> goods = goodsService.recommendGoods(apiUser.toUser(), babyId);
+    List<Long> goodsIds = goods.stream().map(Goods::id).toList();
+    Map<Long, LikeStatus> likeStatuses = likeService.status(apiUser.toUser(), goodsIds);
+    List<ChatRoomCountStatus> chatRoomCountStatuses = chatRoomCountService.status(goodsIds);
+    List<GoodsResponse> responses = GoodsResponse.of(goods, chatRoomCountStatuses, likeStatuses);
+    return ApiResponse.success(responses);
+  }
 }

@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.ssafy.s12p21d206.achu.recommend.RecommendClientAutoConfiguration 

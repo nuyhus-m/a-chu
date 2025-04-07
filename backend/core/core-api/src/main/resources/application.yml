@@ -10,6 +10,7 @@ spring:
       - sms.yml
       - security.yml
       - file.yml
+      - recommend.yml
   web.resources.add-mappings: false
   servlet:
     multipart:

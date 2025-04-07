@@ -66,4 +66,8 @@ public class GoodsService {
       User user, Long goodsId, ImageUrlsWithThumbnail imageUrlsWithThumbnail) {
     return goodsModifier.modifyImages(user, goodsId, imageUrlsWithThumbnail);
   }
+
+  public List<Goods> recommendGoods(User user, Long babyId) {
+    return goodsReader.readRecommendGoods(user, babyId);
+  }
 }

@@ -39,3 +39,5 @@ operation::find-liked[snippets='http-request,query-parameters,http-response,resp
 === 거래 완료
 operation::complete-trade[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
 
+=== 아기별 물건 추천
+operation::find-recommend-goods[snippets='http-request,http-response,response-fields']

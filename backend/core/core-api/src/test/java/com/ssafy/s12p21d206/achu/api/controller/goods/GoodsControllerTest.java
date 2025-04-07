@@ -530,4 +530,44 @@ class GoodsControllerTest extends RestDocsTest {
                     .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
                 fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("생성된 거래내역 id"))));
   }
+
+  @Test
+  void findRecommendGoods() {
+    when(goodsService.recommendGoods(any(User.class), anyLong())).thenReturn(List.of(goods));
+
+    when(likeService.status(any(User.class), anyList()))
+        .thenReturn(Map.of(goods.id(), new LikeStatus(5, true)));
+
+    when(chatRoomCountService.status(anyList()))
+        .thenReturn(List.of(new ChatRoomCountStatus(goods.id(), 3L)));
+
+    given()
+        .contentType(ContentType.JSON)
+        .get("/babies/{babyId}/recommend", 1L)
+        .then()
+        .status(HttpStatus.OK)
+        .apply(document(
+            "find-recommend-goods",
+            pathParameters(parameterWithName("babyId").description("추천 상품을 받을 아기의 id")),
+            responseFields(
+                fieldWithPath("result")
+                    .type(JsonFieldType.STRING)
+                    .description("성공 여부 (예: SUCCESS 혹은 ERROR)"),
+                fieldWithPath("data.[].id").type(JsonFieldType.NUMBER).description("물건 id"),
+                fieldWithPath("data.[].title").type(JsonFieldType.STRING).description("물건 제목"),
+                fieldWithPath("data.[].imgUrl").type(JsonFieldType.STRING).description("물건 대표 이미지"),
+                fieldWithPath("data.[].price").type(JsonFieldType.NUMBER).description("물건 가격"),
+                fieldWithPath("data.[].createdAt")
+                    .type(JsonFieldType.STRING)
+                    .description("물건 생성 시간"),
+                fieldWithPath("data.[].chatCount")
+                    .type(JsonFieldType.NUMBER)
+                    .description("채팅 건 사람 수"),
+                fieldWithPath("data.[].likedUsersCount")
+                    .type(JsonFieldType.NUMBER)
+                    .description("찜 누른 사람 수"),
+                fieldWithPath("data.[].likedByUser")
+                    .type(JsonFieldType.BOOLEAN)
+                    .description("로그인한 사용자가 해당 상품을 찜했는지 여부 (true: 찜함, false: 찜 안 함)"))));
+  }
 }
