@@ -16,6 +16,7 @@ dependencies {
 
     runtimeOnly project(':auth-user')
     runtimeOnly project(':chat')
-
+    runtimeOnly project(':notification')
+    runtimeOnly project(':event:event-core')
     testImplementation project(":tests:api-docs")
 }

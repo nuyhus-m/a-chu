@@ -25,3 +25,5 @@ include 'support:restdocs'
 
 include 'auth-user'
 include 'chat'
+include 'notification'
+include 'event:event-core'
