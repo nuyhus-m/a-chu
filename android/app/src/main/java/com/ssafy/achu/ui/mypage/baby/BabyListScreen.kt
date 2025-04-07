@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.mypage.baby
 
+import android.R.attr.contentDescription
 import android.os.Build
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.annotation.RequiresApi
@@ -45,10 +46,15 @@ import coil3.compose.AsyncImage
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.BabyBlue
+import com.ssafy.achu.core.theme.BabyYellow
 import com.ssafy.achu.core.theme.FontGray
+import com.ssafy.achu.core.theme.LightBlue
+import com.ssafy.achu.core.theme.LightPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatBirthDate
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.mypage.recommendlist.BabyListItem
@@ -80,8 +86,7 @@ fun BabyListScreen(
                 }
             )
 
-            // 아이 리스트가 있을 때와 없을 때 구분
-            if (uiState.babyList.isNotEmpty()) {
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -101,33 +106,7 @@ fun BabyListScreen(
                         }
                     }
                 }
-            } else {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.img_smiling_face),
-                        contentDescription = "smile",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .align(Alignment.CenterHorizontally)
-                    )
-                    Spacer(Modifier.height(24.dp))
-                    Text(
-                        text = "등록된 아이가 없습니다.\n아이별 추천, 추억기록을 위해 \n 아이를 등록해보세요!",
-                        style = AchuTheme.typography.semiBold18,
-                        color = FontGray,
-                        lineHeight = 30.sp,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(bottom = 60.dp),
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
+
         }
 
         // 아이 정보 추가 버튼을 화면 하단에 고정
@@ -194,7 +173,7 @@ fun BabyListItem(babyInfo: BabyResponse, onClick: () -> Unit) {
                         modifier = Modifier
                             .size(66.dp) // 크기 지정
                             .clip(CircleShape) // 원형 이미지
-                            .border(1.dp, birthTextColor, CircleShape) // 성별에 맞는 색상으로 원형 띠 적용
+                            .border(1.dp, birthTextColor, CircleShape)
                     ) {
                         val imageUrl = babyInfo.imgUrl
 
@@ -202,12 +181,17 @@ fun BabyListItem(babyInfo: BabyResponse, onClick: () -> Unit) {
                         if (imageUrl.isNullOrEmpty()) {
                             // 기본 이미지를 painter로 설정
                             Image(
-                                painter = painterResource(id = R.drawable.img_baby_profile),
+                                painter = painterResource(id =  if (babyInfo.gender == "MALE")
+                                    R.drawable.img_profile_baby_boy
+                                else
+                                    R.drawable.img_profile_baby_girl) ,
                                 contentDescription = "Profile",
                                 modifier = Modifier
                                     .size(60.dp)
                                     .clip(CircleShape)
-                                    .align(Alignment.Center),
+                                    .align(Alignment.Center).background(
+                                        if(babyInfo.gender == "MALE") BabyBlue else BabyYellow
+                                    ),
                                 contentScale = ContentScale.Crop
                             )
                         } else {
@@ -233,15 +217,15 @@ fun BabyListItem(babyInfo: BabyResponse, onClick: () -> Unit) {
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "${babyInfo.nickname}",
+                            text = babyInfo.nickname,
                             style = AchuTheme.typography.semiBold18
 
                         )
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
-                            text = "${babyInfo.birth}",
-                            style = AchuTheme.typography.semiBold16.copy(color = birthTextColor)
+                            text = formatBirthDate(babyInfo.birth) ,
+                            style = AchuTheme.typography.semiBold14PointBlue.copy(color = birthTextColor)
                         )
                     }
 

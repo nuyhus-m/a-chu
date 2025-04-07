@@ -8,7 +8,7 @@ data class ProductDetailResponse(
     val imgUrls: List<String>,
     val likedByUser: Boolean,
     val likedUsersCount: Int,
-    val price: Int,
+    val price: Long,
     val seller: Seller,
     val title: String,
     val tradeStatus: String

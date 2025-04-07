@@ -1,6 +1,7 @@
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -31,14 +32,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
+import com.ssafy.achu.core.LoadingImg
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.formatPrice
+import java.net.URI
 
 @Composable
 fun LargeLikeItem(
@@ -47,8 +51,8 @@ fun LargeLikeItem(
     productLike: () -> Unit,
     productUnlike: () -> Unit,
     productName: String,
-    price: Int,
-    img: Uri
+    price: Long,
+    img: Uri?
 ) {
 
     var isLiked by remember { mutableStateOf(true) } // 하트 상태 관리
@@ -83,15 +87,14 @@ fun LargeLikeItem(
                         .aspectRatio(1f)
                         .clip(RoundedCornerShape(8.dp))
                 ) {
-                    Image(
-                        painter = painterResource(R.drawable.img_miffy_doll), //기본이미지 설정
-                        contentDescription = null,
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(1f) // 정사각형
-                            .clip(RoundedCornerShape(8.dp)),
-                        contentScale = ContentScale.Crop
-                    )
+                            .clip(RoundedCornerShape(8.dp)).border(0.5.dp, Color.LightGray, RoundedCornerShape(8.dp)),
+                    ){
+                        LoadingImg("이미지로딩중..", Modifier.fillMaxWidth(), 14, 60 )
+                    }
 
                     AsyncImage(
                         model = img,
@@ -178,42 +181,23 @@ fun LargeLikeItem(
 }
 
 
-//@Preview
-//@Composable
-//fun preItem2() {
-//    AchuTheme {
-//        Row(modifier = Modifier.padding(24.dp)) {
-////            LargeLikeItem(
-////                isLiked = true,
-////                state = "판매중",
-////                onClickItem = {
-////                    // 아이템 전체 클릭 시 동작
-////                    println("아이템 클릭됨")
-////                },
-////                onClickHeart = {
-////                    println("하트 클릭됨")
-////                },
-////                productName = "유아식기",
-////                price = "500,000,000원",
-////            )
-////
-////            Spacer(Modifier.width(16.dp))
-////
-////            LargeLikeItem(
-////                isLiked = false,
-////                state = "판매중",
-////                onClickItem = {
-////                    // 아이템 전체 클릭 시 동작
-////                    println("아이템 클릭됨")
-////                },
-////                onClickHeart = {
-////                    println("하트 클릭됨")
-////                },
-////                productName = "유아식기",
-////                price = "5,000",
-////            )
-////
-////        }
-//
-////    }
-//}
+@Preview
+@Composable
+fun preItem5() {
+    AchuTheme {
+        Row(modifier = Modifier.padding(24.dp)) {
+            LargeLikeItem(
+                state = "거래중",
+                onClickItem = {},
+                productLike = {},
+                productUnlike = {},
+                productName = "유아식기",
+                price = 50000,
+                null
+                )
+
+
+        }
+
+    }
+}

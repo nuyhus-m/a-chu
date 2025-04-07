@@ -6,13 +6,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
+import com.ssafy.achu.core.ApplicationClass.Companion.fcmRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.ApplicationClass.Companion.stompService
 import com.ssafy.achu.core.ApplicationClass.Companion.userRepository
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
+import com.ssafy.achu.data.model.Token
 import com.ssafy.achu.data.model.baby.BabyResponse
+import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.UploadProductRequest
 import com.ssafy.achu.data.network.StompService
@@ -41,19 +44,37 @@ class ActivityViewModel : ViewModel() {
     private val _errorMessage = MutableSharedFlow<String>()
     val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
 
+    private val _categoryList = MutableStateFlow<List<CategoryResponse>>(emptyList())
+    val categoryList: StateFlow<List<CategoryResponse>> = _categoryList
+
     private var backgroundJobToken: Job? = null
     private val backgroundTimeoutMs = 60000L // 1분 후 연결 解制
 
     init {
-        getUserinfo()
-        // 앱이 시작될 때 STOMP 연결 시작
         connectToStompServer()
+        getUserinfo()
+        getCategoryList()
     }
+
 
     // STOMP 서버에 연결
     private fun connectToStompServer() {
         viewModelScope.launch {
             stompService.connect()
+        }
+    }
+
+
+    fun getCategoryList() {
+        viewModelScope.launch {
+            productRepository.getCategoryList().onSuccess { result ->
+                Log.d(TAG, "getCategoryList: ${result}")
+                _categoryList.value = result.data
+
+            }.onFailure { error ->
+                val errorResponse = error.getErrorResponse(retrofit)
+                Log.d(TAG, "getCategoryList: ${errorResponse}")
+            }
         }
     }
 
@@ -178,6 +199,7 @@ class ActivityViewModel : ViewModel() {
         backgroundJobToken?.cancel()
         backgroundJobToken = null
 
+
         // 앱이 포그라운드로 돌아올 때 처리
         viewModelScope.launch {
             if (stompService.connectionState.value !is StompService.ConnectionState.Connected) {
@@ -197,4 +219,30 @@ class ActivityViewModel : ViewModel() {
             stompService.cleanup()
         }
     }
+
+    fun updateFcmToken(token: String) {
+        viewModelScope.launch {
+            fcmRepository.updateToken(Token(token)).onSuccess {
+                Log.d(TAG, "updateFcmToken: ${it}, 등록성공")
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "updateFcmToken: ${it}")
+            }
+        }
+
+    }
+
+
+    fun deleteFcmToken() {
+        viewModelScope.launch {
+            fcmRepository.deleteToken().onSuccess {
+                Log.d(TAG, "deleteFcmToken: ${it}, 삭제성공")
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "deleteFcmToken: ${it}")
+            }
+        }
+
+    }
+
 }

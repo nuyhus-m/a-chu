@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,12 +49,14 @@ import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
+import com.ssafy.achu.core.LoadingImg
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontBlue
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
+import com.ssafy.achu.core.theme.LightBlue
 import com.ssafy.achu.core.theme.LightGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
@@ -188,7 +191,7 @@ fun TradeListScreen(
                                 contentDescription = "Crying Face",
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(100.dp)
+                                    .height(60.dp)
                             )
                             Spacer(modifier = Modifier.height(24.dp))
                             Text(
@@ -214,7 +217,7 @@ fun TradeListScreen(
                                 contentDescription = "Crying Face",
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(100.dp)
+                                    .height(60.dp)
                             )
                             Spacer(modifier = Modifier.height(24.dp))
                             Text(
@@ -297,17 +300,29 @@ fun ListItem(
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Box() {
+                Box(
+                    modifier = Modifier
+                        .background(LightBlue, shape = RoundedCornerShape(8.dp))
+                        .border(0.5.dp, LightGray, RoundedCornerShape(8.dp))
+                        .width(100.dp)
+                        .height(100.dp)
+                        .clip(shape = RoundedCornerShape(8.dp))
+                ) {
+                    LoadingImg("이미지 로드중..", Modifier.fillMaxWidth(), 14, 60)
+                }
+                AsyncImage(
+                    model = img,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .background(color = White, shape = RoundedCornerShape(8.dp))
+                        .width(100.dp)
+                        .height(100.dp)
+                        .clip(shape = RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
 
-            AsyncImage(
-                model = img,
-                contentDescription = null,
-                modifier = Modifier
-                    .background(color = LightGray, shape = RoundedCornerShape(8.dp))
-                    .width(100.dp)
-                    .height(100.dp)
-                    .clip(shape = RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
+            }
 
 
             Spacer(modifier = Modifier.width(16.dp))

@@ -7,6 +7,6 @@ data class ProductResponse(
     val imgUrl: String,
     var likedByUser: Boolean,
     val likedUsersCount: Int,
-    val price: Int,
+    val price: Long,
     val title: String
 )

@@ -49,8 +49,8 @@ fun CreateBabyDialog(
                     painter = painterResource(id = com.ssafy.achu.R.drawable.img_smiling_face),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(80.dp)
-                        .height(80.dp)
+                        .width(60.dp)
+                        .height(60.dp)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))

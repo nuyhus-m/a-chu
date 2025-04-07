@@ -10,5 +10,7 @@ class RetrofitUtil {
         val memoryService: MemoryService = ApplicationClass.retrofit.create(MemoryService::class.java)
         val babyService: BabyService = ApplicationClass.retrofit.create(BabyService::class.java)
         val chatService: ChatService = ApplicationClass.retrofit.create(ChatService::class.java)
+        val fcmService: FcmService = ApplicationClass.retrofit.create(FcmService::class.java)
+
     }
 }

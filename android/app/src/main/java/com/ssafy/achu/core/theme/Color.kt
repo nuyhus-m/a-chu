@@ -20,3 +20,7 @@ val FontGray = Color(0xFF79787B)
 val FontBlack = Color(0xFF141318)
 
 
+val BabyYellow = Color(0xFFFFE6E8)
+val BabyBlue = Color(0xFFEBF8FF)
+
+

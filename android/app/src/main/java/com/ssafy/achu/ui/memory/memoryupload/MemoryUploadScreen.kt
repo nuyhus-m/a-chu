@@ -57,16 +57,22 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.ssafy.achu.R
+import com.ssafy.achu.core.LoadingImgScreen
 import com.ssafy.achu.core.LoadingScreen
 import com.ssafy.achu.core.components.CenterTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
+import com.ssafy.achu.core.theme.LightPink
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.getNameWithParticle
+import com.ssafy.achu.core.util.getProductWithParticle
 import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.ui.memory.memorydetail.PageIndicator
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 private const val TAG = "MemoryUploadScreen안주현"
 
@@ -76,7 +82,8 @@ private const val TAG = "MemoryUploadScreen안주현"
 fun MemoryUploadScreen(
     onNavigateToMemoryDetail: (memoryId: Int, babyId: Int) -> Unit,
     memoryId: Int,
-    babyId: Int
+    babyId: Int,
+    productName:String
 ) {
     val context = LocalContext.current
     val memoryViewModel: MemoryEditViewModel = viewModel()
@@ -88,41 +95,59 @@ fun MemoryUploadScreen(
         mutableStateOf(memoryUIState.selectedMemory.imgUrls.map { Uri.parse(it) })
     }
 
+    var isLoading by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         memoryViewModel.isChanged.collectLatest { isChanged ->
-            Toast.makeText(context, memoryUIState.toastString, Toast.LENGTH_SHORT).show()
-            onNavigateToMemoryDetail(memoryUIState.selectedMemory.id, babyId)
+            if (isChanged) {
+                Toast.makeText(context, memoryUIState.toastString, Toast.LENGTH_SHORT).show()
+                onNavigateToMemoryDetail(memoryUIState.selectedMemory.id, babyId)
+
+            } else {
+                Toast.makeText(context, memoryUIState.toastString, Toast.LENGTH_SHORT).show()
+            }
+
+
         }
     }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents(),
         onResult = { uris ->
-            if (uris.size + images.size <= 3) { // 최대 3장 선택
-                // 기존 이미지를 그대로 두고 새로 들어온 이미지만 추가
+            if (uris.isEmpty()) {
+                return@rememberLauncherForActivityResult
+            }
+
+            if (uris.size + images.size <= 3) {
+                isLoading = true
+
                 images = images + uris
 
-                // 디버깅 로그로 images 배열의 요소가 Uri인지 확인
                 images.forEach { uri ->
                     Log.d(TAG, "Image URI type: ${uri::class.java}")
                 }
 
-                // 모든 이미지를 멀티파트로 변환 (기존 이미지 + 새로 추가된 이미지)
                 val multipartFiles = images.mapNotNull { uri -> uriToMultipart(context, uri) }
 
-                // 멀티파트 파일들을 memoryViewModel에 전달하여 상태 업데이트
                 memoryViewModel.memoryImageUpdate(multipartFiles)
+                memoryViewModel.isImageChanged(true)
 
                 Log.d(TAG, "MemoryUploadScreen: $multipartFiles")
                 Log.d(TAG, "MemoryUploadScreen: ${memoryUIState.sendIMage}")
-
-                memoryViewModel.isImageChanged(true)
-
             } else {
                 Toast.makeText(context, "최대 3장까지만 선택 가능합니다.", Toast.LENGTH_SHORT).show()
             }
+
         }
     )
+
+    LaunchedEffect(images) {
+        if (isLoading && images.isNotEmpty()) {
+            delay(100)
+            isLoading = false
+        }
+    }
+
 
     LaunchedEffect(key1 = Unit) {
         memoryViewModel.babyIdUpdate(babyId)
@@ -150,8 +175,19 @@ fun MemoryUploadScreen(
 
                 }
             )
-            if (images.size != 0) {
-                // 이미지 슬라이드
+
+            if (isLoading && images.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(LightPink)
+                        .height(350.dp),
+                ) {
+                    LoadingImgScreen("이미지 로딩중...", Modifier.fillMaxWidth(), 16)
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+            } else if (images.size != 0) {
                 HorizontalPager(
                     count = images.size,
                     state = pagerState,
@@ -160,68 +196,78 @@ fun MemoryUploadScreen(
                         .height(350.dp)
 
                 ) { page ->
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        LoadingImgScreen("이미지 로딩중...", Modifier.fillMaxWidth(), 16)
+                    }
                     AsyncImage(
                         model = images[page], // Uri를 모델로 사용
                         contentDescription = "Memory Image",
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = White),
                         alignment = Alignment.Center,
                         contentScale = ContentScale.Crop
                     )
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        IconButton(
-                            onClick = {
-                                images = images.filterIndexed { index, _ -> index != page }
-
-                            },
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .background(PointPink, RoundedCornerShape(8.dp))
-                                .size(28.dp)
-
-
+                    if (memoryId == 0) {
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = "삭제하기",
-                                tint = Color.White,
-                                modifier = Modifier.padding(4.dp)
-                            )
-                        }
-                    }
+                            IconButton(
+                                onClick = {
+                                    images = images.filterIndexed { index, _ -> index != page }
 
-                    // "사진 추가하기" 텍스트를 우측 하단에 배치하려면 Box 사용
-                    if (images.size < 3 && images.isNotEmpty()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize() // 화면 전체를 차지하게 함
-                                .padding(16.dp)
-
-                        ) {
-
-
-                            Text(
-                                text = "사진 추가하기",
-                                style = AchuTheme.typography.semiBold14PointBlue.copy(
-                                    shadow = Shadow(
-                                        color = Color.Black.copy(alpha = 0.5f),
-                                        offset = Offset(2f, 2f),
-                                        blurRadius = 4f
-                                    )
-                                ),
-                                color = White,
+                                },
                                 modifier = Modifier
-                                    .clickable {
-                                        launcher.launch("image/*") // 이미지 선택
-                                    }
-
-                                    .align(Alignment.BottomEnd) // Box 내에서 우측 하단에 배치
-                            )
+                                    .padding(16.dp)
+                                    .background(PointPink, RoundedCornerShape(8.dp))
+                                    .size(28.dp)
 
 
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "삭제하기",
+                                    tint = Color.White,
+                                    modifier = Modifier.padding(4.dp)
+                                )
+                            }
                         }
+
+                        // "사진 추가하기" 텍스트를 우측 하단에 배치하려면 Box 사용
+                        if (images.size < 3 && images.isNotEmpty()) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize() // 화면 전체를 차지하게 함
+                                    .padding(16.dp)
+
+                            ) {
+
+
+                                Text(
+                                    text = "사진 추가하기",
+                                    style = AchuTheme.typography.semiBold14PointBlue.copy(
+                                        shadow = Shadow(
+                                            color = Color.Black.copy(alpha = 0.5f),
+                                            offset = Offset(2f, 2f),
+                                            blurRadius = 4f
+                                        )
+                                    ),
+                                    color = White,
+                                    modifier = Modifier
+                                        .clickable {
+                                            launcher.launch("image/*") // 이미지 선택
+                                        }
+
+                                        .align(Alignment.BottomEnd) // Box 내에서 우측 하단에 배치
+                                )
+
+
+                            }
+                        }
+
                     }
                 }
 
@@ -240,9 +286,16 @@ fun MemoryUploadScreen(
                         .height(350.dp)
                         .background(Color.LightGray)
                         .clickable {
-                            launcher.launch("image/*") // 이 부분을 추가
+                            kotlinx.coroutines.MainScope().launch {
+                                launcher.launch("image/*")
+                                delay(300)
+                                isLoading = true
+                            }
+
                         },
                 ) {
+
+
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -275,9 +328,9 @@ fun MemoryUploadScreen(
                         )
                     }
                 }
-
                 Spacer(modifier = Modifier.height(24.dp))
             }
+
 
             Column(
                 modifier = Modifier
@@ -312,9 +365,19 @@ fun MemoryUploadScreen(
                     }
                 )
 
+//                Spacer(modifier = Modifier.height(4.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "${memoryUIState.memoryContent.length}/$maxContentLength",
+                    color = PointPink,
+                    style = AchuTheme.typography.regular14,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp, end = 4.dp)
+                        .align(alignment = Alignment.End)
 
+                )
 
                 Box(
                     modifier = Modifier
@@ -331,7 +394,7 @@ fun MemoryUploadScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .align(Alignment.TopStart), // 텍스트 필드 정렬
-                        placeholder = { Text("과 함께한 추억을 기록해보세요!", color = FontGray) },
+                        placeholder = { Text("${getProductWithParticle(productName)} 함께한 추억을 기록해보세요!", color = FontGray) },
                         textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
                         shape = RoundedCornerShape(16.dp),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -343,17 +406,6 @@ fun MemoryUploadScreen(
 
                 }
 
-                Text(
-                    text = "${memoryUIState.memoryContent.length}/$maxContentLength",
-                    color = PointPink,
-                    style = AchuTheme.typography.regular14,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp, end = 4.dp)
-                        .align(alignment = Alignment.End)
-
-                )
 
 
 
@@ -364,8 +416,10 @@ fun MemoryUploadScreen(
                     onClick = {
                         if (images.isEmpty()) {
                             Toast.makeText(context, "사진을 추가해주세요", Toast.LENGTH_SHORT).show()
-                        } else {
+                        } else if (memoryUIState.memoryTitle.trim() == "" || memoryUIState.memoryContent.trim() == "")  {
+                            Toast.makeText(context, "제목, 내용을 확인해 주세요", Toast.LENGTH_SHORT).show()
 
+                        } else {
                             if (memoryId == 0) {
                                 memoryViewModel.uploadMemory()
                             } else {
@@ -380,7 +434,7 @@ fun MemoryUploadScreen(
 
         }
 
-        if(memoryUIState.loading){
+        if (memoryUIState.loading) {
             LoadingScreen("추억 업로드 중...\n잠시만 기다려 주세요!")
         }
 
@@ -396,7 +450,8 @@ fun MemoryUploadScreenPreview() {
             onNavigateToMemoryDetail = { memoryId, babyId ->
             },
             memoryId = 0,
-            babyId = 0
+            babyId = 0,
+            productName = "토끼인형"
         )
     }
 }

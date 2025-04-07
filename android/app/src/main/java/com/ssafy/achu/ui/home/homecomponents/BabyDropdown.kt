@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,12 +35,15 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.BabyBlue
+import com.ssafy.achu.core.theme.BabyYellow
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontBlue
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.formatBirthDate
 import com.ssafy.achu.data.model.auth.UserInfoResponse
 import com.ssafy.achu.data.model.baby.BabyResponse
 import kotlin.collections.forEach
@@ -59,17 +63,33 @@ fun BabyDropdown(
         else -> FontGray
     }
 
+    val backColor = when (selectedBaby.gender) {
+        "MALE" -> BabyBlue
+        "FEMALE" -> BabyYellow
+        else -> FontGray
+    }
+
+    val profileImg = when (selectedBaby.gender) {
+        "MALE" -> R.drawable.img_profile_baby_boy
+        else -> R.drawable.img_profile_baby_girl
+    }
+
+
     val NicknameTextColor = when (selectedBaby.gender) {
         "MALE" -> FontBlue
         "FEMALE" -> PointPink
         else -> FontGray
     }
 
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { expanded = true }
-            .padding(horizontal = 24.dp)
+            .clickable (
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { expanded = true }
+            .padding(start =24.dp, end = 24.dp)
             .height(66.dp)
     ) {
         Box(
@@ -84,11 +104,11 @@ fun BabyDropdown(
             if (imageUrl.isNullOrEmpty()) {
                 // 기본 이미지를 painter로 설정
                 Image(
-                    painter = painterResource(id = R.drawable.img_baby_profile),
+                    painter = painterResource(id = profileImg),
                     contentDescription = "Profile",
                     modifier = Modifier
                         .size(60.dp)
-                        .clip(CircleShape)
+                        .clip(CircleShape).background(color = backColor)
                         .align(Alignment.Center),
                     contentScale = ContentScale.Crop
                 )
@@ -161,11 +181,9 @@ fun BabyDropdown(
                 }
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
-
             Text(
-                text = selectedBaby.birth,
-                style = AchuTheme.typography.semiBold16.copy(color = birthTextColor)
+                text = formatBirthDate(selectedBaby.birth),
+                style = AchuTheme.typography.semiBold14PointBlue.copy(color = birthTextColor)
             )
         }
     }

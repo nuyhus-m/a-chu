@@ -99,7 +99,13 @@ dependencies {
     implementation(libs.google.firebase.messaging.ktx)
 
     //lottie
-    implementation ("com.airbnb.android:lottie-compose:6.1.0")
+    implementation (libs.lottie.compose)
+
+    //status bar
+    implementation (libs.accompanist.systemuicontroller)
+    implementation (libs.accompanist.systemuicontroller.v0301)
+
+
 
     // Krossbow - 코틀린 코루틴 기반 STOMP 클라이언트
     implementation(libs.krossbow.stomp.core)

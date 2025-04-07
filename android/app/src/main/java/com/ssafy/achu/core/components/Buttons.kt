@@ -93,7 +93,7 @@ fun PointBlueFlexibleBtn(buttonText: String, buttonEnabled: Boolean = true, onCl
             Text(
                 text = buttonText,
                 color = Color.White,
-                style = AchuTheme.typography.semiBold18White // 원하는 글씨 스타일
+                style = AchuTheme.typography.semiBold16White // 원하는 글씨 스타일
             )
         }
     }
@@ -228,7 +228,7 @@ fun PointPinkFlexibleBtn(buttonText: String, onClick: () -> Unit) {
             Text(
                 text = buttonText,
                 color = Color.White,
-                style = AchuTheme.typography.semiBold18White // 원하는 글씨 스타일
+                style = AchuTheme.typography.semiBold16White // 원하는 글씨 스타일
             )
         }
     }
@@ -261,7 +261,7 @@ fun PointPinkLineBtn(buttonText: String, isSelected: Boolean, onClick: () -> Uni
             Text(
                 text = buttonText,
                 color = textColor,
-                style = AchuTheme.typography.semiBold18White
+                style = AchuTheme.typography.semiBold16White
             )
         }
     }

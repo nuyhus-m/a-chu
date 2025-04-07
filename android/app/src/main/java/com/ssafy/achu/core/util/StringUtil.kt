@@ -3,6 +3,7 @@ package com.ssafy.achu.core.util
 import android.os.Build
 import androidx.annotation.RequiresApi
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -72,7 +73,56 @@ fun formatDate(input: String): String {
     return dateTime.format(outputFormatter)
 }
 
-fun formatPrice(price: Int): String {
+fun formatPrice(price: Long): String {
     val formattedPrice = NumberFormat.getNumberInstance(Locale.KOREA).format(price)
     return "${formattedPrice}원"
+}
+
+fun formatBirthDate(dateString: String): String {
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("yyyy년 MM월 dd일생", Locale.getDefault())
+        val date = inputFormat.parse(dateString)  // 문자열 → Date 객체 변환
+        outputFormat.format(date!!)  // Date 객체 → 원하는 형식으로 변환
+    } catch (e: Exception) {
+        dateString  // 변환 실패 시 원본 반환
+    }
+}
+
+fun getNameWithParticle(name: String): String {
+    if (name.isBlank()) return name
+
+    val lastChar = name.last()
+    val baseCode = lastChar.code - 0xAC00
+
+    // 한글 범위 체크
+    if (baseCode < 0 || baseCode > 11171) {
+        return "${name}의" // 한글이 아닐 경우 그냥 "의"
+    }
+
+    val jongSungIndex = baseCode % 28
+    return if (jongSungIndex == 0) {
+        "${name}의"  // 받침 없음
+    } else {
+        "${name}이의" // 받침 있음
+    }
+}
+
+fun getProductWithParticle(name: String): String {
+    if (name.isBlank()) return name
+
+    val lastChar = name.last()
+    val baseCode = lastChar.code - 0xAC00
+
+    // 한글 범위 체크
+    if (baseCode < 0 || baseCode > 11171) {
+        return "${name}과" // 한글이 아닐 경우 그냥 "의"
+    }
+
+    val jongSungIndex = baseCode % 28
+    return if (jongSungIndex == 0) {
+        "${name}와"  // 받침 없음
+    } else {
+        "${name}과" // 받침 있음
+    }
 }

@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.mypage.baby
 
+import android.R.attr.text
 import android.app.DatePickerDialog
 import android.content.Context
 import android.graphics.Bitmap
@@ -63,6 +64,8 @@ import com.ssafy.achu.core.components.SmallLineBtn
 import com.ssafy.achu.core.components.dialog.BasicDialog
 import com.ssafy.achu.core.components.textfield.ClearTextField
 import com.ssafy.achu.core.theme.AchuTheme
+import com.ssafy.achu.core.theme.BabyBlue
+import com.ssafy.achu.core.theme.BabyYellow
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
@@ -94,9 +97,9 @@ fun BabyDetailScreen(
     val babyUiState by babyViewModel.babyUiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val pointColor: Color = PointPink
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
-
-    if (babyId > 0 ) {
+    if (babyId > 0) {
         babyViewModel.getBaby(babyId)
     }
 
@@ -123,6 +126,7 @@ fun BabyDetailScreen(
     val context = LocalContext.current
     var dateList: List<Int>
     val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
 
     fun showDatePicker(defaultDate: String) {
         Log.d(TAG, "showDatePicker: 실행합니다")
@@ -156,22 +160,29 @@ fun BabyDetailScreen(
             calendar.get(Calendar.DAY_OF_MONTH)
         )
 
+        val minSelectableDate = Calendar.getInstance().apply {
+            add(Calendar.YEAR, -13)
+            add(Calendar.DAY_OF_YEAR, 1) // 당일 생일은 제외하고 다음날부터 가능하게
+        }
+        datePickerDialog.datePicker.minDate = minSelectableDate.timeInMillis
+
         datePickerDialog.show()
     }
+
 
     LaunchedEffect(Unit) {
         babyViewModel.isChanged.collectLatest { isChanged ->
             viewModel.getBabyList()
             Toast.makeText(context, babyUiState.toastString, Toast.LENGTH_SHORT).show()
 
-                if (isChanged == "등록" && babyId == -1) {
-                    backPressedDispatcher?.onBackPressed()
-                }else if(isChanged =="삭제"){
-                    backPressedDispatcher?.onBackPressed()
+            if (isChanged == "등록" && babyId == -1) {
+                backPressedDispatcher?.onBackPressed()
+            } else if (isChanged == "삭제") {
+                backPressedDispatcher?.onBackPressed()
 
-                }
             }
-        
+        }
+
     }
 
     LaunchedEffect(Unit) {
@@ -224,24 +235,28 @@ fun BabyDetailScreen(
                         false
                     )
                 }
-            } else if(type == "등록"){
+            } else if (type == "등록") {
                 BasicTopAppBar(
                     title = titleText,
                     onBackClick = {
                         backPressedDispatcher?.onBackPressed()
                     }
                 )
-            }else{
+            } else {
                 BasicDeleteTopAppBar(
                     title = titleText,
                     onBackClick = {
                         backPressedDispatcher?.onBackPressed()
                     },
                     onDeleteClick = {
-                        if (uiState.babyList.size> 1){
-                            babyViewModel.deleteBaby(babyUiState.selectedBaby!!.id)
-                        }else{
-                            Toast.makeText(context,"이용을 위해 한명 이상의 아이 정보가 필요합니다." , Toast.LENGTH_SHORT).show()
+                        if (uiState.babyList.size > 1) {
+                            showDeleteDialog = true
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "이용을 위해 한명 이상의 아이 정보가 필요합니다.",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 )
@@ -259,7 +274,7 @@ fun BabyDetailScreen(
                 Box(
                     modifier = Modifier
                         .size(150.dp) // 크기 지정
-                        .shadow(elevation = 4.dp, shape = CircleShape) // 그림자 적용
+                        .shadow(elevation = 2.dp, shape = CircleShape).background(color = White) // 그림자 적용
                         .clip(CircleShape), // 원형 이미지 적용
                     contentAlignment = Alignment.Center // 내부 컨텐츠 중앙 정렬
                 ) {
@@ -283,8 +298,7 @@ fun BabyDetailScreen(
                         Box(
                             modifier = Modifier
                                 .size(150.dp)
-                                .border(1.5.dp, PointPink, CircleShape) // 성별에 맞는 색상으로 원형 띠 적용
-                                .background(color = Color.LightGray),
+                                .border(1.5.dp, PointPink, CircleShape)  ,
                             contentAlignment = Alignment.Center // 내부 컨텐츠 중앙 정렬
                         ) {
 
@@ -293,11 +307,19 @@ fun BabyDetailScreen(
                             if (imgUrl.isEmpty()) {
                                 // 기본 이미지를 painter로 설정
                                 Image(
-                                    painter = painterResource(id = R.drawable.img_baby_profile),
+                                    painter = painterResource(
+                                        id =
+                                            if (babyUiState.selectedBaby!!.gender == "MALE") R.drawable.img_profile_baby_boy
+                                            else R.drawable.img_profile_baby_girl
+                                    ),
                                     contentDescription = "Profile",
                                     modifier = Modifier
                                         .size(142.dp)
-                                        .clip(CircleShape), // Box 크기에 맞추기
+                                        .clip(CircleShape)
+                                        .background(
+                                            if (babyUiState.selectedBaby!!.gender == "MALE") BabyBlue
+                                            else BabyYellow
+                                        ), // Box 크기에 맞추기
                                     contentScale = ContentScale.Crop
                                 )
                             } else {
@@ -440,7 +462,7 @@ fun BabyDetailScreen(
                 if (type == "등록") {
 
                     PointPinkBtn("등록하기", onClick = {
-                       babyViewModel.registerBaby()
+                        babyViewModel.registerBaby()
                     })
                 }
                 Spacer(modifier = Modifier.height(40.dp))
@@ -478,7 +500,23 @@ fun BabyDetailScreen(
             )
         }
     }
+
+    if(showDeleteDialog){
+        BasicDialog(
+            img = painterResource(id = R.drawable.img_crying_face),
+            text = "해당 아이를 삭제하시겠습니까?",
+            onConfirm = {
+                babyViewModel.deleteBaby(babyUiState.selectedBaby!!.id)
+                showDeleteDialog = false
+            },
+            onDismiss = {
+                showDeleteDialog = false
+            }
+        )
+    }
 }
+
+
 
 
 @RequiresApi(Build.VERSION_CODES.O)

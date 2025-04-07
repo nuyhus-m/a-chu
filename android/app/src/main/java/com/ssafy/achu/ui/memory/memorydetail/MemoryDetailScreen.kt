@@ -42,6 +42,8 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.ssafy.achu.R
+import com.ssafy.achu.core.LoadingImgScreen
+import com.ssafy.achu.core.components.TopBarWithMenu
 import com.ssafy.achu.core.components.dialog.BasicDialog
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontBlack
@@ -54,10 +56,11 @@ import kotlinx.coroutines.flow.collectLatest
 
 
 private const val TAG = "MemoryDetailScreen 안주현"
+
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MemoryDetailScreen(
-    onNavigateToMemoryUpload: (memoryID:Int, babyId:Int) -> Unit,
+    onNavigateToMemoryUpload: (memoryID: Int, babyId: Int) -> Unit,
     memoryViewModel: MemoryDetailViewModel = viewModel(),
     memoryId: Int,
     babyId: Int,
@@ -85,140 +88,114 @@ fun MemoryDetailScreen(
             .background(color = White)
             .navigationBarsPadding()
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 56.dp, start = 24.dp, end = 24.dp, bottom = 16.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_arrow_back_),
-                    contentDescription = "Arrow",
-                    modifier = Modifier
-                        .size(30.dp)
-                        .alignByBaseline()
-                        .clickable {
-                            backPressedDispatcher?.onBackPressed()
-                        },
-                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(FontBlack)
-                )
 
-                Spacer(modifier = Modifier.weight(1.0F))
-                Image(
-                    painter = painterResource(id = R.drawable.ic_edit_square),
-                    contentDescription = "Arrow",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .alignByBaseline()
-                        .clickable {
-                            onNavigateToMemoryUpload(
-                                memoryUIState.selectedMemory.id,
-                                babyId
-                            )
-
-                        },
-                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(PointBlue)
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Image(
-                    painter = painterResource(id = R.drawable.ic_delete),
-                    contentDescription = "Arrow",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .alignByBaseline()
-                        .clickable {
-                            memoryViewModel.showDeleteDialog(true)
-                        },
-                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(PointBlue)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // 이미지 슬라이드
-            HorizontalPager(
-                count = memoryUIState.selectedMemory.imgUrls.size,
-                state = pagerState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(350.dp)
-            ) { page ->
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = LightPink), // 기본 배경 설정
-                    contentAlignment = Alignment.Center // 가운데 정렬
-                ) {
-                    AsyncImage(
-                        model = memoryUIState.selectedMemory.imgUrls[page],
-                        contentDescription = "Memory Image",
-                        modifier = Modifier.fillMaxSize(),
-                        alignment = Alignment.Center,
-                        contentScale = ContentScale.Crop,
-                        placeholder = ColorPainter(LightPink) // 로딩 중일 때 배경 유지
+        Column {
+            TopBarWithMenu(
+                title = "",
+                onBackClick = {
+                    backPressedDispatcher?.onBackPressed()
+                },
+                menuFirstText = "수정",
+                menuSecondText = "삭제",
+                onMenuFirstItemClick = {
+                    onNavigateToMemoryUpload(
+                        memoryUIState.selectedMemory.id,
+                        babyId
                     )
+                },
+                onMenuSecondItemClick = {
+                    memoryViewModel.showDeleteDialog(true)
+                },
+            )
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // 이미지 슬라이드
+                HorizontalPager(
+                    count = memoryUIState.selectedMemory.imgUrls.size,
+                    state = pagerState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(350.dp)
+                ) { page ->
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = White), // 기본 배경 설정
+                        contentAlignment = Alignment.Center // 가운데 정렬
+                    ) {
+
+                        LoadingImgScreen("이미지 로딩중",  modifier = Modifier.fillMaxWidth(), 18)
+
+                        AsyncImage(
+                            model = memoryUIState.selectedMemory.imgUrls[page],
+                            contentDescription = "Memory Image",
+                            modifier = Modifier.fillMaxSize(),
+                            alignment = Alignment.Center,
+                            contentScale = ContentScale.Crop,
+                        )
+                    }
                 }
-            }
 
-            PageIndicator(
-                totalPages = memoryUIState.selectedMemory.imgUrls.size,
-                currentPage = pagerState.currentPage
-            )
-
-
-
-            Text(
-                text = memoryUIState.selectedMemory.title,
-                style = AchuTheme.typography.semiBold20
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text =  memoryUIState.selectedMemory.createdAt.substringBefore("T"),
-                style = AchuTheme.typography.semiBold14PointBlue,
-                color = FontGray
-
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = memoryUIState.selectedMemory.content,
-                style = AchuTheme.typography.regular18,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                textAlign = TextAlign.Center,
-                lineHeight = 28.sp,
-
+                PageIndicator(
+                    totalPages = memoryUIState.selectedMemory.imgUrls.size,
+                    currentPage = pagerState.currentPage
                 )
 
 
+
+                Text(
+                    text = memoryUIState.selectedMemory.title,
+                    style = AchuTheme.typography.semiBold20
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = memoryUIState.selectedMemory.createdAt.substringBefore("T"),
+                    style = AchuTheme.typography.semiBold14PointBlue,
+                    color = FontGray
+
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = memoryUIState.selectedMemory.content,
+                    style = AchuTheme.typography.regular18,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
+                    textAlign = TextAlign.Center,
+                    lineHeight = 28.sp,
+
+                    )
+
+
+            }
+        }
+
+        if (memoryUIState.showDeleteDialog) {
+            BasicDialog(
+                img = painterResource(id = R.drawable.img_crying_face),
+                text = "추억을 삭제하시겠습니까?",
+                onDismiss = {
+                    memoryViewModel.showDeleteDialog(false)
+                },
+                onConfirm = {
+                    memoryViewModel.deleteMemory()
+                    memoryViewModel.showDeleteDialog(false)
+                }
+            )
         }
     }
-
-if (memoryUIState.showDeleteDialog){
-    BasicDialog(
-        img = painterResource(id = R.drawable.img_crying_face),
-        "A - Chu",
-        "의",
-        text = "추억을 삭제하시겠습니까?",
-        onDismiss = {
-            memoryViewModel.showDeleteDialog(false)
-        },
-        onConfirm = {
-            memoryViewModel.deleteMemory()
-            memoryViewModel.showDeleteDialog(false)
-        }
-    )
-}
 }
 
 @Composable
@@ -245,19 +222,16 @@ fun PageIndicator(totalPages: Int, currentPage: Int) {
 }
 
 
-
-
-
 @Preview
 @Composable
 fun MemoryDetailScreenPreview() {
-    AchuTheme { MemoryDetailScreen(
-        onNavigateToMemoryUpload = {
-                memoryId: Int, babyId: Int ->
-        },
-        memoryId = 0,
-        babyId = 0,
+    AchuTheme {
+        MemoryDetailScreen(
+            onNavigateToMemoryUpload = { memoryId: Int, babyId: Int ->
+            },
+            memoryId = 1,
+            babyId = 0,
 
-    )
+            )
     }
 }

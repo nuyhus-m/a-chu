@@ -19,8 +19,6 @@ private const val TAG = "HomeViewModel_안주현"
 class HomeViewModel: ViewModel() {
     private val _likeItemList = MutableStateFlow<List<LikeProduct>>(emptyList())
     val likeItemList: StateFlow<List<LikeProduct>> = _likeItemList
-    private val _categoryList = MutableStateFlow<List<CategoryResponse>>(emptyList())
-    val categoryList: StateFlow<List<CategoryResponse>> = _categoryList
 
 
     // 상태 변수들
@@ -101,17 +99,6 @@ class HomeViewModel: ViewModel() {
         }
     }
 
-    fun getCategoryList(){
-        viewModelScope.launch {
-            productRepository.getCategoryList().onSuccess { result ->
-                Log.d(TAG, "getCategoryList: ${result}")
-                _categoryList.value = result.data
 
-            }.onFailure { error ->
-                val errorResponse = error.getErrorResponse(retrofit)
-                Log.d(TAG, "getCategoryList: ${errorResponse}")
-            }
-        }
-    }
 
 }
