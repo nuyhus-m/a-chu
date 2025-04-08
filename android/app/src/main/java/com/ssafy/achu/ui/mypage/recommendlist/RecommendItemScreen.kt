@@ -2,6 +2,7 @@ package com.ssafy.achu.ui.mypage.recommendlist
 
 import BasicRecommendItem
 import RecommendViewModel
+import android.R.attr.x
 import android.widget.Toast
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
@@ -117,7 +118,7 @@ fun RecommendItemScreen(
                         BabyListItem(
                             babyInfo = babyInfo,
                             list = recommendList,
-                            onClick = { activityViewModel.getProductDetail(1) },
+                            onClick = { activityViewModel.getProductDetail(it)},
                             viewModel = recommendViewModel
                         )
                     }
@@ -133,7 +134,7 @@ fun RecommendItemScreen(
 fun BabyListItem(
     babyInfo: BabyResponse,
     list: List<ProductResponse>,
-    onClick: () -> Unit,
+    onClick: (Int) -> Unit,
     viewModel: RecommendViewModel
 ) {
     val birthTextColor = when (babyInfo.gender) {
@@ -252,7 +253,7 @@ fun BabyListItem(
                     itemsIndexed(list) { index, item -> // 리스트와 함께 사용해야 함
                         BasicRecommendItem(
                             product = item,
-                            onClickItem = { onClick() }, // 클릭 시 ViewModel에서 Detail 요청
+                            onClickItem = {onClick(it) }, // 클릭 시 ViewModel에서 Detail 요청
                             onLikeClick = { productId ->
                                 viewModel.likeItem(productId, babyInfo.id)
                             },
