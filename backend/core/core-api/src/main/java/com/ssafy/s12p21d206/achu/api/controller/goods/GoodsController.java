@@ -8,6 +8,7 @@ import com.ssafy.s12p21d206.achu.domain.*;
 import com.ssafy.s12p21d206.achu.domain.TradeType;
 import com.ssafy.s12p21d206.achu.domain.image.File;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 import java.util.Map;
 import org.springframework.validation.annotation.Validated;
@@ -50,7 +51,7 @@ public class GoodsController {
   public ApiResponse<DefaultIdResponse> appendGoods(
       ApiUser apiUser,
       @RequestPart("request") @Validated AppendGoodsRequest request,
-      @RequestPart("images") List<MultipartFile> multipartFiles) {
+      @RequestPart("images") @Size(max = 3) @Validated List<MultipartFile> multipartFiles) {
     NewGoods newGoods = request.toNewGoods();
     List<File> imageFiles = multipartFiles.stream().map(FileConverter::convert).toList();
     GoodsDetail goodsDetail = goodsImageFacade.append(apiUser.toUser(), newGoods, imageFiles);

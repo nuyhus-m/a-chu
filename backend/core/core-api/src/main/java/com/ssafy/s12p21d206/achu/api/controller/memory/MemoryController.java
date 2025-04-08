@@ -10,6 +10,7 @@ import com.ssafy.s12p21d206.achu.domain.MemoryService;
 import com.ssafy.s12p21d206.achu.domain.NewMemory;
 import com.ssafy.s12p21d206.achu.domain.image.File;
 import com.ssafy.s12p21d206.achu.domain.support.SortType;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,7 +39,8 @@ public class MemoryController {
   public ApiResponse<DefaultIdResponse> appendMemory(
       ApiUser apiUser,
       @PathVariable Long babyId,
-      @RequestPart(name = "memoryImages") List<MultipartFile> multipartFiles,
+      @RequestPart(name = "memoryImages") @Size(max = 3) @Validated
+          List<MultipartFile> multipartFiles,
       @RequestPart(name = "request") @Validated AppendMemoryRequest request) {
     NewMemory newMemory = request.toNewMemory();
     List<File> imageFiles = multipartFiles.stream().map(FileConverter::convert).toList();

@@ -19,6 +19,7 @@ public abstract class AuthMetaEntity {
   private AuthEntityStatus entityStatus = AuthEntityStatus.ACTIVE;
 
   @CreationTimestamp
+  @Column(updatable = false)
   private LocalDateTime createdAt;
 
   @UpdateTimestamp

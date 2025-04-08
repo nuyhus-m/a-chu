@@ -25,6 +25,7 @@ public abstract class ChatBaseEntity {
   private ChatEntityStatus entityStatus = ChatEntityStatus.ACTIVE;
 
   @CreationTimestamp
+  @Column(updatable = false)
   private LocalDateTime createdAt;
 
   protected ChatBaseEntity() {}
