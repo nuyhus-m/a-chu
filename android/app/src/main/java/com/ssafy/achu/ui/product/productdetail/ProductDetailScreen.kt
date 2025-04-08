@@ -1,6 +1,7 @@
 package com.ssafy.achu.ui.product.productdetail
 
 import BasicRecommendItem
+import RecommendViewModel
 import android.net.Uri
 import android.os.Build
 import android.widget.Toast
@@ -96,6 +97,8 @@ fun ProductDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val activityUiState by activityViewModel.uiState.collectAsState()
+    val recommendViewModel: RecommendViewModel = viewModel()
+    val recommendUiState by recommendViewModel.recommendMap.collectAsState()
 
     val isSeller = activityUiState.user?.nickname == activityUiState.product.seller.nickname
     val isSold = activityUiState.product.tradeStatus == SOLD
@@ -149,6 +152,10 @@ fun ProductDetailScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        recommendViewModel.getRecommendList(activityUiState.selectedBaby!!.id)
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -195,10 +202,15 @@ fun ProductDetailScreen(
                 date = if (!isPreview) formatDate(activityUiState.product.createdAt) else activityUiState.product.createdAt
             )
 
+            val recommendMap by recommendViewModel.recommendMap.collectAsState()
+            val recommendList = recommendMap[activityUiState.selectedBaby!!.id] ?: emptyList()
             // 추천 리스트
             if (!isPreview) {
                 RecommendList(
-                    onNavigateToRecommend = onNavigateToRecommend
+                    onNavigateToRecommend = onNavigateToRecommend,
+                    activityViewModel = activityViewModel,
+                    recommendList = recommendList,
+                    babyId = activityUiState.selectedBaby!!.id
                 )
             }
         }
@@ -210,7 +222,7 @@ fun ProductDetailScreen(
             isSold = isSold,
             isPreview = isPreview,
             likedByUser = activityUiState.product.likedByUser,
-            onLikeClick = { viewModel.likeProduct(activityUiState.product.id) },
+            onLikeClick = { viewModel.likeProduct(activityUiState.product.id, activityUiState.selectedBaby!!.id) },
             onUnLikeClick = { viewModel.unlikeProduct(activityUiState.product.id) },
             onButtonClick = {
                 if (!isPreview) onNavigateToChat()
@@ -226,7 +238,8 @@ fun ProductDetailScreen(
                         )
                     )
                 } else viewModel.updateShowUploadDialog(true)
-            }
+            },
+            babyId = activityUiState.selectedBaby!!.id
         )
     }
 
@@ -245,7 +258,7 @@ fun ProductDetailScreen(
             productName = activityUiState.uploadProductRequest?.title ?: "",
             babyName = activityUiState.uploadBabyName,
             onUpload = {
-                isLoading  =true
+                isLoading = true
                 viewModel.uploadProduct(
                     uploadProductRequest = activityUiState.uploadProductRequest!!,
                     images = activityUiState.multiPartImages,
@@ -253,7 +266,7 @@ fun ProductDetailScreen(
                 )
             },
             onUploadWithMemory = {
-                isLoading  =true
+                isLoading = true
                 viewModel.uploadProduct(
                     uploadProductRequest = activityUiState.uploadProductRequest!!,
                     images = activityUiState.multiPartImages,
@@ -263,7 +276,7 @@ fun ProductDetailScreen(
         )
     }
 
-    if (isLoading){
+    if (isLoading) {
         LoadingScreen("물건 업로드중\n잠시만 기다려주세요!")
     }
 }
@@ -278,7 +291,8 @@ private fun BottomBar(
     isPreview: Boolean,
     onLikeClick: () -> Unit,
     onUnLikeClick: () -> Unit,
-    onButtonClick: () -> Unit
+    onButtonClick: () -> Unit,
+    babyId: Int
 ) {
     Row(
         modifier = Modifier
@@ -335,8 +349,12 @@ private fun BottomBar(
 
 @Composable
 private fun RecommendList(
-    onNavigateToRecommend: () -> Unit
-) {
+    onNavigateToRecommend: () -> Unit,
+    activityViewModel: ActivityViewModel,
+    recommendList: List<ProductResponse>,
+    babyId: Int
+
+    ) {
     Row(
         modifier = Modifier
             .wrapContentHeight()
@@ -355,83 +373,16 @@ private fun RecommendList(
             modifier = Modifier.clickable(onClick = onNavigateToRecommend)
         )
     }
-    val productResponses = listOf(
-        ProductResponse(
-            chatCount = 11,
-            createdAt = "3일 전",
-            id = 1,
-            imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-            likedByUser = false,
-            likedUsersCount = 18,
-            price = 5000,
-            title = "미피 인형"
-        ),
-        ProductResponse(
-            chatCount = 11,
-            createdAt = "3일 전",
-            id = 1,
-            imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-            likedByUser = true,
-            likedUsersCount = 18,
-            price = 5000,
-            title = "미피 인형"
-        ),
-        ProductResponse(
-            chatCount = 11,
-            createdAt = "3일 전",
-            id = 1,
-            imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-            likedByUser = true,
-            likedUsersCount = 18,
-            price = 5000,
-            title = "미피 인형"
-        ),
-        ProductResponse(
-            chatCount = 11,
-            createdAt = "3일 전",
-            id = 1,
-            imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-            likedByUser = true,
-            likedUsersCount = 18,
-            price = 5000,
-            title = "미피 인형"
-        ),
-        ProductResponse(
-            chatCount = 11,
-            createdAt = "3일 전",
-            id = 1,
-            imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-            likedByUser = true,
-            likedUsersCount = 18,
-            price = 5000,
-            title = "미피 인형"
-        ),
-        ProductResponse(
-            chatCount = 11,
-            createdAt = "3일 전",
-            id = 1,
-            imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-            likedByUser = true,
-            likedUsersCount = 18,
-            price = 5000,
-            title = "미피 인형"
-        ),
-        ProductResponse(
-            chatCount = 11,
-            createdAt = "3일 전",
-            id = 1,
-            imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-            likedByUser = true,
-            likedUsersCount = 18,
-            price = 5000,
-            title = "미피 인형"
-        ),
-    )
+
     Row(
         modifier = Modifier.padding(start = 24.dp)
     ) {
         RecommendList(
-            items = productResponses
+            items = recommendList,
+            onClick = { productId -> activityViewModel.getProductDetail(productId) },
+            viewModel = RecommendViewModel(),
+            babyId = babyId
+
         )
     }
     Spacer(modifier = Modifier.height(24.dp))
@@ -535,17 +486,23 @@ private fun ProfileInfo(
 }
 
 @Composable
-fun RecommendList(items: List<ProductResponse>) {
+fun RecommendList(
+    items: List<ProductResponse>,
+    onClick: (Int) -> Unit,
+    viewModel: RecommendViewModel,
+    babyId: Int
+) {
     LazyRow {
         items(items) { item ->
             BasicRecommendItem(
-                isLiked = item.likedByUser,
-                onClickItem = {},
-                onClickHeart = {},
-                productName = item.title,
-                state = "판매중",
-                price = "${item.price}원",
-                img = ColorPainter(LightGray)
+                product = item,
+                onClickItem = { onClick(it) }, // 클릭 시 ViewModel에서 Detail 요청
+                onLikeClick = { productId ->
+                    viewModel.likeItem(productId, babyId)
+                },
+                onUnLikeClick = { productId ->
+                    viewModel.unlikeItem(productId)
+                }
             )
             Spacer(modifier = Modifier.width(16.dp))
         }
@@ -701,7 +658,8 @@ fun PreviewBottomBar() {
             onLikeClick = {},
             onButtonClick = {},
             isPreview = false,
-            onUnLikeClick = {}
+            onUnLikeClick = {},
+            babyId = 1
         )
     }
 }

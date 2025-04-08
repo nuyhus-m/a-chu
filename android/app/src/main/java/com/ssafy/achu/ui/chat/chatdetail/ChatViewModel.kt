@@ -46,6 +46,12 @@ class ChatViewModel(
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage: SharedFlow<String> = _toastMessage.asSharedFlow()
 
+
+    object ChatStateHolder {
+        var currentRoomId: Int? = null
+    }
+
+
     init {
         if (roomId == -1) {
             checkChatRoomExistence()
@@ -138,9 +144,9 @@ class ChatViewModel(
     }
 
     // 물품 정보 조회
-    private fun getProductDetail(productId: Int) {
+    private fun getProductDetail(productId: Int, babyId: Int) {
         viewModelScope.launch {
-            productRepository.getProductDetail(productId)
+            productRepository.getProductDetail(productId, babyId)
                 .onSuccess { response ->
                     Log.d(TAG, "getProductDetail: $response")
                     if (response.result == SUCCESS) {
@@ -174,7 +180,7 @@ class ChatViewModel(
         }
     }
 
-    fun completeTrade() {
+    fun completeTrade(babyId: Int) {
         viewModelScope.launch {
             productRepository.completeTrade(
                 uiState.value.product?.id ?: 0,
@@ -185,7 +191,7 @@ class ChatViewModel(
                     if (response.result == SUCCESS) {
                         showSoldDialog(false)
                         _toastMessage.emit("거래가 완료되었습니다.")
-                        getProductDetail(uiState.value.product?.id ?: 0)
+                        getProductDetail(uiState.value.product?.id ?: 0, babyId)
                     }
                 }.onFailure {
                     val errorResponse = it.getErrorResponse(retrofit)

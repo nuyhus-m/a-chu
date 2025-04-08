@@ -3,7 +3,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -12,12 +11,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
@@ -49,15 +46,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
+import com.ssafy.achu.core.LoadingImg
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.home.HomeViewModel
 import com.ssafy.achu.ui.home.homecomponents.BabyDropdown
@@ -100,6 +96,9 @@ fun HomeScreen(
             viewModel.showBottomNav()
         }
     }
+
+
+
 
     LaunchedEffect(Unit) {
         viewModel.errorMessage.collectLatest {
@@ -277,7 +276,7 @@ fun HomeScreen(
                 onNavigateToProductList(it.toInt())
             },
 
-        )
+            )
 
 
         Column(Modifier.padding(horizontal = 24.dp)) {
@@ -311,43 +310,25 @@ fun HomeScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            RecommendGrid(
-                listOf(
-                    ProductResponse(
-                        chatCount = 11,
-                        createdAt = "3일 전",
-                        id = 1,
-                        imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                        likedByUser = false,
-                        likedUsersCount = 18,
-                        price = 5000,
-                        title = "미피 인형"
-                    ),
-                    ProductResponse(
-                        chatCount = 11,
-                        createdAt = "3일 전",
-                        id = 1,
-                        imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                        likedByUser = true,
-                        likedUsersCount = 18,
-                        price = 5000,
-                        title = "미피 인형"
-                    ),
-                    ProductResponse(
-                        chatCount = 11,
-                        createdAt = "3일 전",
-                        id = 1,
-                        imgUrl = "https://www.cheonyu.com/_DATA/product/70900/70982_1705645864.jpg",
-                        likedByUser = true,
-                        likedUsersCount = 18,
-                        price = 5000,
-                        title = "미피 인형"
-                    ),
-                ), onClick = {},//아이템 클릭시
-                onHeartClick = {
 
-                }//하트 클릭시
-            )
+            val recommendItems by viewModel.recommendItemList.collectAsState()
+
+            if (recommendItems.isEmpty()) {
+                Column(Modifier.height(278.dp)) {
+                    LoadingImg(
+                        "추천리스트 불러오는 중..",
+                        Modifier.fillMaxWidth(),16, 80
+                    )
+                }
+            } else {
+                RecommendGrid(
+                    recommendItems,
+                    onClick = { viewModel.getProductDetail(it) },
+                    onLikeClick = { homeViewModel.likeItem(it, uiState.selectedBaby!!.id) },
+                    onUnLikeClick = { homeViewModel.unlikeItem(it) }
+                )
+            }
+
 
             Spacer(Modifier.height(24.dp))
 
@@ -361,8 +342,9 @@ fun HomeScreen(
             if (likeItemList.isNullOrEmpty()) {
                 Column(
                     Modifier
-                        .fillMaxWidth().padding(bottom = 40.dp)
-                        .height(100.dp),
+                        .fillMaxWidth()
+                        .padding(bottom = 40.dp)
+                        .height(220.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -396,7 +378,7 @@ fun HomeScreen(
                                 viewModel.getProductDetail(likeItem.id)
                             },
                             likeCLicked = {
-                                homeViewModel.likeItem(likeItem.id)
+                                homeViewModel.likeItem(likeItem.id, uiState.selectedBaby!!.id)
                             },
                             unlikeClicked = {
                                 homeViewModel.unlikeItem(likeItem.id)

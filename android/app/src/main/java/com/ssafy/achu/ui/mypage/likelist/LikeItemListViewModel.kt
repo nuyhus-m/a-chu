@@ -70,9 +70,9 @@ class LikeItemListViewModel: ViewModel() {
         loadMoreItems()
     }
 
-    fun likeItem(productId: Int){
+    fun likeItem(productId: Int, babyId: Int){
         viewModelScope.launch {
-            productRepository.likeProduct(productId).onSuccess {
+            productRepository.likeProduct(productId, babyId).onSuccess {
                 Log.d(TAG, "likeItem: ${it}")
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)

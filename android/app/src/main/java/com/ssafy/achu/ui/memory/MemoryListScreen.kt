@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -49,12 +50,14 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
+import com.ssafy.achu.core.LoadingImgScreen
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.BabyBlue
 import com.ssafy.achu.core.theme.BabyYellow
 import com.ssafy.achu.core.theme.FontBlack
 import com.ssafy.achu.core.theme.FontBlue
 import com.ssafy.achu.core.theme.FontGray
+import com.ssafy.achu.core.theme.LightPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
@@ -70,9 +73,9 @@ import kotlin.String
 @Composable
 fun MemoryListScreen(
     modifier: Modifier = Modifier,
-    onNavigateToMemoryDetail: (memoryID:Int, babyId:Int) -> Unit,
+    onNavigateToMemoryDetail: (memoryID: Int, babyId: Int) -> Unit,
     viewModel: ActivityViewModel,
-    memoryViewModel: MemoryViewModel  = viewModel()
+    memoryViewModel: MemoryViewModel = viewModel()
 ) {
 
     val uiState: ActivityUIState by viewModel.uiState.collectAsState()
@@ -140,12 +143,12 @@ fun MemoryListScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(id =   if (uiState.selectedBaby!!.gender == "MALE") R.drawable.img_profile_baby_boy else R.drawable.img_profile_baby_girl,),
+                        painter = painterResource(id = if (uiState.selectedBaby!!.gender == "MALE") R.drawable.img_profile_baby_boy else R.drawable.img_profile_baby_girl),
                         contentDescription = "Profile",
                         modifier = Modifier
                             .size(82.dp)
                             .clip(CircleShape)
-                            .background(if (uiState.selectedBaby!!.gender == "MALE") BabyBlue else BabyYellow,),
+                            .background(if (uiState.selectedBaby!!.gender == "MALE") BabyBlue else BabyYellow),
                         contentScale = ContentScale.Crop
                     )
                     if (!uiState.selectedBaby?.imgUrl.isNullOrEmpty()) {
@@ -219,7 +222,8 @@ fun MemoryListScreen(
                                 onClick = {
                                     selectedItem = baby.nickname
                                     viewModel.updateSelectedBaby(
-                                        baby)
+                                        baby
+                                    )
                                     expanded = false
                                 }
                             )
@@ -270,9 +274,12 @@ fun MemoryListScreen(
                             MemoryListItem(
                                 img = memoryUIState.memoryList[index].imgUrl,
                                 title = memoryUIState.memoryList[index].title,
-                                date = formatDate( memoryUIState.memoryList[index].createdAt),
+                                date = formatDate(memoryUIState.memoryList[index].createdAt),
                                 onClick = {
-                                    onNavigateToMemoryDetail(memoryUIState.memoryList[index].id, memoryUIState.babyId)
+                                    onNavigateToMemoryDetail(
+                                        memoryUIState.memoryList[index].id,
+                                        memoryUIState.babyId
+                                    )
                                 }
                             )
                             Spacer(modifier = Modifier.height(16.dp)) // 아이템 간 간격 추가
@@ -284,27 +291,42 @@ fun MemoryListScreen(
     }
 }
 
-
-
 @Composable
 fun MemoryListItem(img: String, title: String, date: String, onClick: () -> Unit) {
+    var isImageLoaded by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
             .clickable(onClick = onClick)
-            .shadow(4.dp, RoundedCornerShape(24.dp)) // 그림자 추가
-            .background(color = Color.LightGray, shape = RoundedCornerShape(24.dp))
+            .shadow(4.dp, RoundedCornerShape(24.dp))
+            .background(color = LightPink, shape = RoundedCornerShape(24.dp))
     ) {
-        // 이미지가 박스에 꽉 차도록 설정
+        // 로딩 중일 때만 로딩 화면 표시
+        if (!isImageLoaded) {
+            LoadingImgScreen(
+                "추억을 불러오는 중..",
+                modifier = Modifier.width(200.dp)
+            )
+        }
 
         AsyncImage(
             model = img,
             contentDescription = "Memory Image",
-            contentScale = ContentScale.Crop, // 이미지가 꽉 차도록 설정
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(24.dp)) // 박스 모양에 맞게 클립
+                .clip(RoundedCornerShape(24.dp)),
+            onSuccess = {
+                isImageLoaded = true
+            },
+            onLoading = {
+                isImageLoaded = false
+            },
+            onError = {
+                isImageLoaded = true // 에러 시에도 로딩 끄고 에러 이미지 띄우게
+            }
         )
 
         // 텍스트를 이미지 위에 오버레이
@@ -351,8 +373,7 @@ fun MemoryListScreenPreview() {
 
     AchuTheme {
         MemoryListScreen(
-            onNavigateToMemoryDetail = {
-                    memoryId, babyId ->
+            onNavigateToMemoryDetail = { memoryId, babyId ->
             }, viewModel = viewModel(),
             memoryViewModel = viewModel()
         )

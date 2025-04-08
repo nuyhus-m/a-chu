@@ -15,6 +15,7 @@ import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.Token
 import com.ssafy.achu.ui.MainActivity
+import com.ssafy.achu.ui.chat.chatdetail.ChatViewModel.ChatStateHolder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,14 +52,17 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             val requestId = data["requestId"] ?: ""
             val type = data["type"] ?: ""
 
-            // 알림 생성 (포그라운드에서도 표시되게 하기 위함)
-            sendNotification(
-                title = remoteMessage.notification?.title ?: "새로운 알림",
-                body = remoteMessage.notification?.body ?: "확인해 주세요",
-                targetFragment = targetFragment,
-                requestId = requestId,
-                type = type
-            )
+            if (!(targetFragment == "Chat" && requestId.toInt() == ChatStateHolder.currentRoomId)) {
+                sendNotification(
+                    title = remoteMessage.notification?.title ?: "새로운 알림",
+                    body = remoteMessage.notification?.body ?: "확인해 주세요",
+                    targetFragment = targetFragment,
+                    requestId = requestId,
+                    type = type
+                )
+            }
+
+
         }
 
         // 알림 메시지 로그

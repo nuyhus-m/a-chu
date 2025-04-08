@@ -84,6 +84,7 @@ fun ProductListScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
+    val activityUiState by activityViewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
     val context = LocalContext.current
 
@@ -154,7 +155,7 @@ fun ProductListScreen(
                 onLoadMore = { viewModel.loadProductList() },
                 listState = listState,
                 onItemClick = { id -> activityViewModel.getProductDetail(id) },
-                onLikeClick = { id, index -> viewModel.likeProduct(id, index) },
+                onLikeClick = { id, index -> viewModel.likeProduct(id, index, activityUiState.selectedBaby!!.id) },
                 onUnLikeClick = { id, index -> viewModel.unlikeProduct(id, index) }
             )
         }

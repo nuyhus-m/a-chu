@@ -7,6 +7,7 @@ import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.LikeProduct
 import com.ssafy.achu.data.model.product.ModifyProductRequest
 import com.ssafy.achu.data.model.product.ProductDetailResponse
+import com.ssafy.achu.data.model.product.ProductRequestBabyId
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.data.model.product.UploadProductRequest
 import okhttp3.MultipartBody
@@ -59,7 +60,8 @@ interface ProductService {
 
     @GET("/goods/{goodsId}")
     suspend fun getProductDetail(
-        @Path("goodsId") productId: Int
+        @Path("goodsId") productId: Int, @Query("babyId") babyId: Int
+
     ): ApiResult<ProductDetailResponse>
 
     @DELETE("/goods/{goodsId}")
@@ -69,7 +71,8 @@ interface ProductService {
 
     @POST("/goods/{goodsId}/like")
     suspend fun likeProduct(
-        @Path("goodsId") productId: Int
+        @Path("goodsId") productId: Int,
+        @Body request: ProductRequestBabyId
     ): ApiResult<Unit>
 
     @DELETE("/goods/{goodsId}/like")
@@ -110,5 +113,11 @@ interface ProductService {
         @Path("goodsId") productId: Int,
         @Body request: BuyerIdRequest
     ): ApiResult<IdResponse>
+
+
+    @GET("/babies/{id}/recommend")
+    suspend fun getRecommendedItems(
+        @Path("id") babyId: Int
+    ): ApiResult<List<ProductResponse>>
 }
 

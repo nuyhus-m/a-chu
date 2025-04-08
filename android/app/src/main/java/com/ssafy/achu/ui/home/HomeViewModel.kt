@@ -75,9 +75,9 @@ class HomeViewModel: ViewModel() {
         // 실제 데이터 로드는 loadMoreItems()를 활용
         loadMoreItems()
     }
-    fun likeItem(productId: Int){
+    fun likeItem(productId: Int, babyId: Int){
         viewModelScope.launch {
-            productRepository.likeProduct(productId).onSuccess {
+            productRepository.likeProduct(productId, babyId).onSuccess {
                 Log.d(TAG, "likeItem: ${it}")
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)
