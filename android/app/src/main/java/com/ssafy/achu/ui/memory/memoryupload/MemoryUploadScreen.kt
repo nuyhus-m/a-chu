@@ -196,6 +196,7 @@ fun MemoryUploadScreen(
                         .fillMaxWidth()
                         .background(LightPink)
                         .height(350.dp),
+                    contentAlignment = Alignment.Center
                 ) {
                     LoadingImgScreen("이미지 로딩중...", Modifier.fillMaxWidth(), 16, 250)
                 }

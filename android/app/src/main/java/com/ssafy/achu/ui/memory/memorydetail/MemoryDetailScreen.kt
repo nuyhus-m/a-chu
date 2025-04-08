@@ -114,8 +114,6 @@ fun MemoryDetailScreen(
             ) {
 
 
-                Spacer(modifier = Modifier.height(32.dp))
-
                 // 이미지 슬라이드
                 HorizontalPager(
                     count = memoryUIState.selectedMemory.imgUrls.size,
