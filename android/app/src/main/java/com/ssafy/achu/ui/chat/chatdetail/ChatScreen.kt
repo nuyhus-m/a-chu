@@ -333,7 +333,7 @@ fun ChatMessageItem(message: Message, lastReadMessageId: Int, userId: Int) {
                 MessageTimestamp(
                     isSent = true,
                     timestamp = formatChatRoomTime(message.timestamp),
-                    isUnread = false
+                    isUnread = isUnread
                 )
                 Spacer(modifier = Modifier.width(4.dp))
             }
@@ -369,7 +369,7 @@ fun ChatMessageItem(message: Message, lastReadMessageId: Int, userId: Int) {
                 MessageTimestamp(
                     isSent = false,
                     timestamp = formatChatRoomTime(message.timestamp),
-                    isUnread = isUnread
+                    isUnread = false
                 )
             }
         }
