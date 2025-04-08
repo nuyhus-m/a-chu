@@ -1,5 +1,7 @@
 package com.ssafy.achu.ui.memory.memoryupload
 
+import android.R.attr.maxLines
+import android.R.attr.textStyle
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
@@ -20,11 +22,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
@@ -48,6 +54,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -85,7 +92,7 @@ fun MemoryUploadScreen(
     onNavigateToMemoryDetail: (memoryId: Int, babyId: Int) -> Unit,
     memoryId: Int,
     babyId: Int,
-    productName:String
+    productName: String
 ) {
     val context = LocalContext.current
     val memoryViewModel: MemoryEditViewModel = viewModel()
@@ -204,7 +211,9 @@ fun MemoryUploadScreen(
 
                 ) { page ->
                     Box(
-                        modifier = Modifier.fillMaxWidth().height(350.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(350.dp),
                     ) {
                         LoadingImgScreen("이미지 로딩중...", Modifier.width(80.dp), 16, 200)
                     }
@@ -369,7 +378,8 @@ fun MemoryUploadScreen(
                             style = AchuTheme.typography.regular14,
                             modifier = Modifier.padding(end = 16.dp)
                         )
-                    }
+                    },
+                    maxLines = 1
                 )
 
 //                Spacer(modifier = Modifier.height(4.dp))
@@ -393,15 +403,23 @@ fun MemoryUploadScreen(
                 ) {
                     OutlinedTextField(
                         value = memoryUIState.memoryContent,
-                        onValueChange = {
-                            if (it.length <= maxContentLength) memoryViewModel.memoryContentUpdate(
-                                it
-                            )
+                        onValueChange = { newText ->
+                            val lineCount = newText.count { it == '\n' } + 1
+                            if (lineCount <= 6 && newText.length <= maxContentLength) {
+                                memoryViewModel.memoryContentUpdate(newText)
+                            }
                         },
                         modifier = Modifier
                             .fillMaxSize()
-                            .align(Alignment.TopStart), // 텍스트 필드 정렬
-                        placeholder = { Text("${getProductWithParticle(productName)} 함께한 추억을 기록해보세요!", color = FontGray) },
+                            .align(Alignment.TopStart)
+
+                            , // 텍스트 필드 정렬
+                        placeholder = {
+                            Text(
+                                "${getProductWithParticle(productName)} 함께한 추억을 기록해보세요!\n최대 6줄 입력가능",
+                                color = FontGray
+                            )
+                        },
                         textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
                         shape = RoundedCornerShape(16.dp),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -409,7 +427,10 @@ fun MemoryUploadScreen(
                             unfocusedBorderColor = PointPink,
                             cursorColor = Color.Black
                         ),
+                        maxLines = 5,
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default)
                     )
+
 
                 }
 
@@ -423,7 +444,7 @@ fun MemoryUploadScreen(
                     onClick = {
                         if (images.isEmpty()) {
                             Toast.makeText(context, "사진을 추가해주세요", Toast.LENGTH_SHORT).show()
-                        } else if (memoryUIState.memoryTitle.trim() == "" || memoryUIState.memoryContent.trim() == "")  {
+                        } else if (memoryUIState.memoryTitle.trim() == "" || memoryUIState.memoryContent.trim() == "") {
                             Toast.makeText(context, "제목, 내용을 확인해 주세요", Toast.LENGTH_SHORT).show()
 
                         } else {
