@@ -515,12 +515,18 @@ fun ImagePager(images: List<String>) {
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
-            AsyncImage(
-                model = images[page],
-                contentDescription = "이미지 ${page + 1}",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+
+            Box {
+
+                LoadingImgScreen("이미지 로딩중...", Modifier.align(Alignment.Center), 16, 250)
+
+                AsyncImage(
+                    model = images[page],
+                    contentDescription = "이미지 ${page + 1}",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
 
         // 페이지 인디케이터
@@ -566,9 +572,8 @@ fun ImageUriPager(images: List<Uri>) {
             var isImageLoading by remember { mutableStateOf(true) }
 
             Box(modifier = Modifier.fillMaxSize()) {
-                if (isImageLoading) {
-                    LoadingImgScreen("이미지 로딩중...", Modifier.align(Alignment.Center), 16)
-                }
+
+                LoadingImgScreen("이미지 로딩중...", Modifier.align(Alignment.Center), 16, 250 )
 
                 AsyncImage(
                     model = images[page],
@@ -616,7 +621,14 @@ fun ImageUriPager(images: List<Uri>) {
 @Composable
 fun PreviewProductDetailScreen() {
     AchuTheme {
-//        ProductDetailScreen()
+        ProductDetailScreen(
+            onBackClick = {},
+            onNavigateToUpload = {},
+            onNavigateToChat = {},
+            onNavigateToRecommend = {},
+            onNavigateToMemoryUpload = { _, _ -> },
+            onNavigateToProductList = {}, viewModel = viewModel(), activityViewModel = viewModel()
+        )
     }
 }
 

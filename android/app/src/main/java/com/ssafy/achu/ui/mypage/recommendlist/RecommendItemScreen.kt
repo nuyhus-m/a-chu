@@ -178,18 +178,8 @@ fun BabyListItem(
                     )
 
                     val imageUrl = babyInfo.imgUrl
-                    Image(
-                        painter = painterResource(id = R.drawable.img_baby_profile),
-                        contentDescription = "Profile",
-                        modifier = Modifier
-                            .size(50.dp) // 이미지 크기 50.dp
-                            .clip(CircleShape) // 원형 이미지
-                            .align(Alignment.Center), // 중앙에 배치
-                        contentScale = ContentScale.Crop
-                    )
 
-                    // URL이 비어 있으면 기본 이미지 리소스를 사용하고, 그렇지 않으면 네트워크 이미지를 로드합니다.
-                    if (imageUrl.isEmpty()) {
+                    if (imageUrl.isNullOrEmpty()) {
                         // 기본 이미지를 painter로 설정
                         Image(
                             painter = painterResource(id = if (babyInfo.gender == "MALE") R.drawable.img_profile_baby_boy else R.drawable.img_profile_baby_girl),
@@ -210,6 +200,7 @@ fun BabyListItem(
                                 .size(50.dp) // 이미지 크기 50.dp
                                 .clip(CircleShape) // 원형 이미지
                                 .align(Alignment.Center), // 중앙에 배치
+                            contentScale = ContentScale.Crop,
                             error = painterResource(R.drawable.img_baby_profile)
                         )
 

@@ -32,7 +32,7 @@ import com.ssafy.achu.core.theme.NewPink
 import com.ssafy.achu.core.theme.White
 
 @Composable
-fun LoadingImgScreen(text: String, modifier: Modifier, fontSize: Int = 14) {
+fun LoadingImgScreen(text: String, modifier: Modifier, fontSize: Int = 14, lottieSize: Int) {
 
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading_lottie))
@@ -45,8 +45,7 @@ fun LoadingImgScreen(text: String, modifier: Modifier, fontSize: Int = 14) {
 
 
     Box(
-        modifier = modifier
-            .fillMaxSize(),
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
 
@@ -55,14 +54,14 @@ fun LoadingImgScreen(text: String, modifier: Modifier, fontSize: Int = 14) {
             progress = { progress },
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .fillMaxSize()
+                .size(lottieSize.dp)
         )
 
 
 
         Text(
             text = text,
-            style = AchuTheme.typography.semiBold14PointBlue ,
+            style = AchuTheme.typography.semiBold14PointBlue,
             color = NewPink,
             fontSize = fontSize.sp,
             textAlign = TextAlign.Center
@@ -74,7 +73,8 @@ fun LoadingImgScreen(text: String, modifier: Modifier, fontSize: Int = 14) {
 @Composable
 fun PreviewScreen() {
     AchuTheme {
-        LoadingImgScreen("이미지 로드중...", modifier = Modifier.size(150.dp).background(White), 14)
+        LoadingImgScreen("이미지 로드중...", modifier = Modifier.fillMaxWidth(), 16, 250)
+
     }
 
 }

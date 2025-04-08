@@ -70,7 +70,7 @@
     <string name="upload_preview">업로드 미리보기</string>
     <string name="fail_get_product">데이터를 불러오는데 실패했습니다.</string>
     <string name="free">무료 나눔</string>
-    <string name="image_max_5">사진은 최대 5장까지 업로드 가능합니다.</string>
+    <string name="image_max_3">사진은 최대 3장까지 업로드 가능합니다.</string>
     <string name="selected_image">선택된 이미지</string>
     <string name="first_image">대표사진</string>
     <string name="sale">판매하기</string>

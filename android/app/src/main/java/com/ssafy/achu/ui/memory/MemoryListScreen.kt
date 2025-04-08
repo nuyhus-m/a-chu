@@ -301,14 +301,20 @@ fun MemoryListItem(img: String, title: String, date: String, onClick: () -> Unit
             .aspectRatio(1f)
             .clickable(onClick = onClick)
             .shadow(4.dp, RoundedCornerShape(24.dp))
-            .background(color = LightPink, shape = RoundedCornerShape(24.dp))
+            .background(color = LightPink, shape = RoundedCornerShape(24.dp)),
+        contentAlignment = Alignment.Center
     ) {
         // 로딩 중일 때만 로딩 화면 표시
         if (!isImageLoaded) {
-            LoadingImgScreen(
-                "추억을 불러오는 중..",
-                modifier = Modifier.width(200.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = LightPink)
+            ){
+                LoadingImgScreen(
+                    "추억을 불러오는 중..",
+                    modifier = Modifier.fillMaxWidth(), 16, 300)
+            }
         }
 
         AsyncImage(

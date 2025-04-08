@@ -76,6 +76,7 @@ import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.Constants.DONATION
 import com.ssafy.achu.core.util.Constants.SALE
+import com.ssafy.achu.core.util.isImageValid
 import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
@@ -109,12 +110,15 @@ fun UploadProductScreen(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
-        // 5장을 초과하는 이미지를 추가하지 않도록 체크
-        if (uiState.imgUris.size + uris.size <= 5) {
-            viewModel.updateImageUris(uiState.imgUris + uris)
+        val validUris = uris.filter { uri -> isImageValid(context, uri) }
+
+        // 유효한 이미지가 없으면 리턴
+        if (validUris.isEmpty()) return@rememberLauncherForActivityResult
+
+        if (uiState.imgUris.size + validUris.size <= 3) {
+            viewModel.updateImageUris(uiState.imgUris + validUris)
         } else {
-            Toast.makeText(context, context.getString(R.string.image_max_5), Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(context, context.getString(R.string.image_max_3), Toast.LENGTH_SHORT).show()
         }
     }
 

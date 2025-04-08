@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.memory.memoryupload
 
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -68,6 +69,7 @@ import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.getNameWithParticle
 import com.ssafy.achu.core.util.getProductWithParticle
+import com.ssafy.achu.core.util.isImageValid
 import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.ui.memory.memorydetail.PageIndicator
 import kotlinx.coroutines.delay
@@ -117,17 +119,20 @@ fun MemoryUploadScreen(
             if (uris.isEmpty()) {
                 isLoading = false
                 return@rememberLauncherForActivityResult
-
             }
 
-            if (uris.size + images.size <= 3) {
+            val validUris = uris.filter { uri ->
+                isImageValid(context, uri)
+            }
+
+            if (validUris.isEmpty()) {
+                isLoading = false
+                return@rememberLauncherForActivityResult
+            }
+
+            if (validUris.size + images.size <= 3) {
                 isLoading = true
-
-                images = images + uris
-
-                images.forEach { uri ->
-                    Log.d(TAG, "Image URI type: ${uri::class.java}")
-                }
+                images = images + validUris
 
                 val multipartFiles = images.mapNotNull { uri -> uriToMultipart(context, uri) }
 
@@ -135,13 +140,13 @@ fun MemoryUploadScreen(
                 memoryViewModel.isImageChanged(true)
 
                 Log.d(TAG, "MemoryUploadScreen: $multipartFiles")
-                Log.d(TAG, "MemoryUploadScreen: ${memoryUIState.sendIMage}")
             } else {
                 Toast.makeText(context, "최대 3장까지만 선택 가능합니다.", Toast.LENGTH_SHORT).show()
+                isLoading = false
             }
-
         }
     )
+
 
     LaunchedEffect(images) {
         if (isLoading && images.isNotEmpty()) {
@@ -185,7 +190,7 @@ fun MemoryUploadScreen(
                         .background(LightPink)
                         .height(350.dp),
                 ) {
-                    LoadingImgScreen("이미지 로딩중...", Modifier.fillMaxWidth(), 16)
+                    LoadingImgScreen("이미지 로딩중...", Modifier.fillMaxWidth(), 16, 200)
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -199,9 +204,9 @@ fun MemoryUploadScreen(
 
                 ) { page ->
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxWidth().height(350.dp),
                     ) {
-                        LoadingImgScreen("이미지 로딩중...", Modifier.fillMaxWidth(), 16)
+                        LoadingImgScreen("이미지 로딩중...", Modifier.width(80.dp), 16, 200)
                     }
                     AsyncImage(
                         model = images[page], // Uri를 모델로 사용

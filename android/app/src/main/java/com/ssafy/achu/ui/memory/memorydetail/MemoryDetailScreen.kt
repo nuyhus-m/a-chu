@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -130,9 +131,7 @@ fun MemoryDetailScreen(
                             .background(color = White), // 기본 배경 설정
                         contentAlignment = Alignment.Center // 가운데 정렬
                     ) {
-
-                        LoadingImgScreen("이미지 로딩중",  modifier = Modifier.fillMaxWidth(), 18)
-
+                            LoadingImgScreen("이미지 로딩중",  modifier = Modifier.fillMaxWidth(), 18, 250)
                         AsyncImage(
                             model = memoryUIState.selectedMemory.imgUrls[page],
                             contentDescription = "Memory Image",

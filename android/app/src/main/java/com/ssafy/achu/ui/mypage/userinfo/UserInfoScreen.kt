@@ -60,6 +60,7 @@ import com.ssafy.achu.core.theme.LightPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.formatPhoneNumber
+import com.ssafy.achu.core.util.isImageValid
 import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.AuthActivity
@@ -95,9 +96,11 @@ fun UserInfoScreen(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
             uri?.let {
-                val multipartFile = uriToMultipart(context, it, "profileImage")
-                if (multipartFile != null) {
-                    userInfoViewModel.changeProfile(multipartFile)
+                if (isImageValid(context, it)) {
+                    val multipartFile = uriToMultipart(context, it, "profileImage")
+                    if (multipartFile != null) {
+                        userInfoViewModel.changeProfile(multipartFile)
+                    }
                 }
             }
         }
@@ -139,7 +142,9 @@ fun UserInfoScreen(
                     Image(
                         painter = painterResource(id = R.drawable.img_profile_basic2),
                         contentDescription = "Profile",
-                        modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
+                        modifier = Modifier.fillMaxSize().clickable{
+                            launcher.launch("image/*")
+                        }, // Box 크기에 맞추기
                         contentScale = ContentScale.Crop
                     )
 
@@ -147,7 +152,9 @@ fun UserInfoScreen(
                         AsyncImage(
                             model = uiState.user!!.profileImageUrl,
                             contentDescription = "Profile",
-                            modifier = Modifier.fillMaxSize(), // Box 크기에 맞추기
+                            modifier = Modifier.fillMaxSize().clickable{
+                                launcher.launch("image/*")
+                            }, // Box 크기에 맞추기
                             contentScale = ContentScale.Crop
                         )
                     }
@@ -269,7 +276,7 @@ fun UserInfoScreen(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Text(
-                        text = "화원탈퇴",
+                        text = "회원탈퇴",
                         style = AchuTheme.typography.semiBold14PointBlue.copy(
                             textDecoration = TextDecoration.Underline
                         ),
