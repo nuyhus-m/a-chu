@@ -25,7 +25,7 @@ class TokenAuthenticator : Authenticator {
             val newRequest =
                 authRepository.refreshAccessToken(RefreshToken("$tokenType $refreshToken"))
                     .mapCatching {
-                        Log.d(TAG, "authenticate: $it")
+                        Log.d(TAG, "Authorization: $it")
                         if (it.result == SUCCESS) {
                             val accessTokenResponse = it.data
                             val issuedAt = System.currentTimeMillis() / 1000

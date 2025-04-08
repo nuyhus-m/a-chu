@@ -87,6 +87,9 @@ fun HomeScreen(
         homeViewModel.getLikeItemList()
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.subscribeToNewMessage()
+    }
 
 // showCreateDialog 상태가 변경될 때마다 실행
     LaunchedEffect(uiState.showCreateDialog) {
@@ -317,7 +320,7 @@ fun HomeScreen(
                 Column(Modifier.height(278.dp)) {
                     LoadingImg(
                         "추천리스트 불러오는 중..",
-                        Modifier.fillMaxWidth(),16, 80
+                        Modifier.fillMaxWidth(), 16, 80
                     )
                 }
             } else {
@@ -453,8 +456,7 @@ fun HomeScreenPreview() {
             onNavigateToRecommend = { },
             onNavigateToBabyList = { },
             onNavigateToProductList = { },
-            onNavigateToProductDetail = {
-            },
+            onNavigateToProductDetail = {},
             onNavigateToBabyDetail = {},
             viewModel = viewModel()
         )

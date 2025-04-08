@@ -129,9 +129,4 @@ class ApplicationClass : Application() {
         notificationManager.createNotificationChannel(channel)
     }
 
-    override fun onTerminate() {
-        super.onTerminate()
-        stompService.disconnect()
-    }
-
 }

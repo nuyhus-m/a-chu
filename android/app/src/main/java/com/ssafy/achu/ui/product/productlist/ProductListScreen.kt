@@ -295,13 +295,14 @@ fun ProductItem(
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min)
         ) {
-            Box(Modifier.weight(0.4f)){
+            Box(Modifier.weight(0.4f)) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp)).border(0.5.dp, LightGray, RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(16.dp))
+                        .border(0.5.dp, LightGray, RoundedCornerShape(16.dp))
                         .aspectRatio(1f),
-                ){
-                    LoadingImg("이미지 로드중..",Modifier.fillMaxWidth(),14 ,70)
+                ) {
+                    LoadingImg("이미지 로드중..", Modifier.fillMaxWidth(), 14, 70)
                 }
                 AsyncImage(
                     model = productResponse.imgUrl,
@@ -310,9 +311,7 @@ fun ProductItem(
                         .clip(RoundedCornerShape(16.dp))
                         .aspectRatio(1f),
                     contentScale = ContentScale.Crop,
-                    error = painterResource(R.drawable.img_miffy_doll)
                 )
-
             }
 
             Column(

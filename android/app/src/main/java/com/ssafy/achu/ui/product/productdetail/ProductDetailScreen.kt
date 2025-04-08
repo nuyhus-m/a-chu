@@ -47,7 +47,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -72,7 +71,6 @@ import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.Constants.SOLD
 import com.ssafy.achu.core.util.formatDate
 import com.ssafy.achu.core.util.formatPrice
-import com.ssafy.achu.data.model.chat.Partner
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.data.model.product.Seller
@@ -107,8 +105,6 @@ fun ProductDetailScreen(
     val context = LocalContext.current
 
     var isLoading by remember { mutableStateOf(false) }
-
-
 
     LaunchedEffect(Unit) {
         viewModel.toastMessage.collectLatest { message ->
@@ -222,22 +218,16 @@ fun ProductDetailScreen(
             isSold = isSold,
             isPreview = isPreview,
             likedByUser = activityUiState.product.likedByUser,
-            onLikeClick = { viewModel.likeProduct(activityUiState.product.id, activityUiState.selectedBaby!!.id) },
+            onLikeClick = {
+                viewModel.likeProduct(
+                    activityUiState.product.id,
+                    activityUiState.selectedBaby!!.id
+                )
+            },
             onUnLikeClick = { viewModel.unlikeProduct(activityUiState.product.id) },
             onButtonClick = {
                 if (!isPreview) onNavigateToChat()
                 else viewModel.updateShowUploadDialog(true)
-
-                if (!isPreview) {
-                    onNavigateToChat()
-                    activityViewModel.updatePartner(
-                        Partner(
-                            id = activityUiState.product.seller.id,
-                            nickname = activityUiState.product.seller.nickname,
-                            profileImageUrl = activityUiState.product.seller.imgUrl
-                        )
-                    )
-                } else viewModel.updateShowUploadDialog(true)
             },
             babyId = activityUiState.selectedBaby!!.id
         )
@@ -354,7 +344,7 @@ private fun RecommendList(
     recommendList: List<ProductResponse>,
     babyId: Int
 
-    ) {
+) {
     Row(
         modifier = Modifier
             .wrapContentHeight()

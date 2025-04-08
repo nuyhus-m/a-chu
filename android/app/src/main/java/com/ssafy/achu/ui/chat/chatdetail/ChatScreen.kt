@@ -59,13 +59,12 @@ import com.ssafy.achu.core.theme.LightBlue
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.core.util.Constants.SOLD
 import com.ssafy.achu.core.util.Constants.TEXT
 import com.ssafy.achu.core.util.formatChatRoomTime
 import com.ssafy.achu.core.util.formatPrice
+import com.ssafy.achu.data.model.chat.Goods
 import com.ssafy.achu.data.model.chat.Message
 import com.ssafy.achu.data.model.chat.Partner
-import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.chat.chatdetail.ChatViewModel.ChatStateHolder
 import kotlinx.coroutines.flow.collectLatest
@@ -78,6 +77,7 @@ import java.util.Locale
 fun ChatScreen(
     viewModel: ChatViewModel = viewModel(),
     activityViewModel: ActivityViewModel,
+    roomId: Int,
     onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -85,9 +85,12 @@ fun ChatScreen(
     val activityUiState by activityViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.updateProduct(activityUiState.product)
-        activityUiState.partner?.let {
-            viewModel.updatePartner(it)
+        if (roomId == -1) {
+            viewModel.updateGoods(activityUiState.product)
+            viewModel.updatePartner(activityUiState.product.seller)
+            viewModel.checkChatRoomExistence()
+        } else {
+            viewModel.setMessages()
         }
     }
 
@@ -110,6 +113,12 @@ fun ChatScreen(
 
     val listState = rememberLazyListState()
 
+    LaunchedEffect(uiState.messages.size) {
+        if (uiState.messages.isNotEmpty()) {
+            listState.animateScrollToItem(uiState.messages.size - 1)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -124,11 +133,11 @@ fun ChatScreen(
             onBackClick = onBackClick,
             onLeaveClick = { /* 나가기 동작 */ }
         )
-        uiState.product?.let {
+        uiState.goods?.let {
             ChatProduct(
-                product = it,
-                isSeller = it.seller.id == activityUiState.user?.id,
-                isSold = it.tradeStatus == SOLD,
+                goods = it,
+                isSeller = uiState.isSeller,
+                isSold = uiState.isSold,
                 onSoldClick = { viewModel.showSoldDialog(true) }
             )
         }
@@ -147,7 +156,8 @@ fun ChatScreen(
                 when (message.type) {
                     TEXT -> ChatMessageItem(
                         message = message,
-                        lastReadMessageId = uiState.lastReadMessageId
+                        lastReadMessageId = uiState.lastReadMessageId,
+                        userId = activityUiState.user!!.id
                     )
 
                     else -> SystemMessage(message = message)
@@ -180,7 +190,7 @@ fun ChatScreen(
 
 @Composable
 fun ChatProduct(
-    product: ProductDetailResponse,
+    goods: Goods,
     isSeller: Boolean,
     isSold: Boolean,
     onSoldClick: () -> Unit
@@ -198,7 +208,7 @@ fun ChatProduct(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = product.imgUrls[0],
+                model = goods.thumbnailImageUrl,
                 contentDescription = null,
                 modifier = Modifier
                     .weight(1f)
@@ -214,14 +224,14 @@ fun ChatProduct(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = product.title,
+                    text = goods.title,
                     style = AchuTheme.typography.regular18
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = if (product.price == 0L) stringResource(R.string.free)
-                    else formatPrice(product.price),
-                    style = AchuTheme.typography.semiBold18.copy(color = if (product.price == 0L) FontBlue else FontPink)
+                    text = if (goods.price == 0L) stringResource(R.string.free)
+                    else formatPrice(goods.price),
+                    style = AchuTheme.typography.semiBold18.copy(color = if (goods.price == 0L) FontBlue else FontPink)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -294,16 +304,16 @@ fun SystemMessage(message: Message) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChatMessageItem(message: Message, lastReadMessageId: Int) {
-    val isSent = message.isMine
+fun ChatMessageItem(message: Message, lastReadMessageId: Int, userId: Int) {
+    val isMine = message.senderId == userId
     val isUnread = message.id > lastReadMessageId
 
     Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = if (isSent) Alignment.End else Alignment.Start
+        horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
     ) {
         // 발신자 이름 (내가 보낸 메시지가 아닐 때만 표시)
-        if (!isSent) {
+        if (!isMine) {
             Text(
                 text = "덕윤맘",
                 style = AchuTheme.typography.semiBold14PointBlue.copy(color = FontGray),
@@ -313,15 +323,15 @@ fun ChatMessageItem(message: Message, lastReadMessageId: Int) {
 
         Row(
             verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = if (isSent) Arrangement.End else Arrangement.Start,
+            horizontalArrangement = if (isMine) Arrangement.End else Arrangement.Start,
             modifier = Modifier.fillMaxWidth()
         ) {
             // 타임스탬프 (보낸 메시지면 왼쪽, 받은 메시지면 오른쪽)
-            if (isSent) {
+            if (isMine) {
                 MessageTimestamp(
                     isSent = true,
                     timestamp = formatChatRoomTime(message.timestamp),
-                    isUnread = isUnread
+                    isUnread = false
                 )
                 Spacer(modifier = Modifier.width(4.dp))
             }
@@ -334,30 +344,30 @@ fun ChatMessageItem(message: Message, lastReadMessageId: Int) {
                         RoundedCornerShape(
                             topStart = 16.dp,
                             topEnd = 16.dp,
-                            bottomStart = if (isSent) 16.dp else 0.dp,
-                            bottomEnd = if (isSent) 0.dp else 16.dp
+                            bottomStart = if (isMine) 16.dp else 0.dp,
+                            bottomEnd = if (isMine) 0.dp else 16.dp
                         )
                     )
                     .background(
-                        if (isSent) PointPink
+                        if (isMine) PointPink
                         else LightBlue
                     )
                     .padding(12.dp)
             ) {
                 Text(
                     text = message.content,
-                    color = if (isSent) Color.White else Color.Black,
+                    color = if (isMine) Color.White else Color.Black,
                     style = AchuTheme.typography.regular16
                 )
             }
 
             // 타임스탬프 (보낸 메시지면 오른쪽, 받은 메시지면 왼쪽)
-            if (!isSent) {
+            if (!isMine) {
                 Spacer(modifier = Modifier.width(4.dp))
                 MessageTimestamp(
                     isSent = false,
                     timestamp = formatChatRoomTime(message.timestamp),
-                    isUnread = false
+                    isUnread = isUnread
                 )
             }
         }

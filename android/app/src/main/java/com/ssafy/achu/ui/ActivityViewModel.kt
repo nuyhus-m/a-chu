@@ -17,7 +17,6 @@ import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.Token
 import com.ssafy.achu.data.model.baby.BabyResponse
-import com.ssafy.achu.data.model.chat.Partner
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.ProductResponse
@@ -54,11 +53,12 @@ class ActivityViewModel : ViewModel() {
     private val _recommendItemList = MutableStateFlow<List<ProductResponse>>(emptyList())
     val recommendItemList: StateFlow<List<ProductResponse>> = _recommendItemList
 
-
     init {
         getUserinfo()
         getCategoryList()
-        stompService.connect()
+        viewModelScope.launch {
+            stompService.connect()
+        }
         getUnreadCount()
     }
 
@@ -97,7 +97,6 @@ class ActivityViewModel : ViewModel() {
                         }
                         Log.d(TAG, "getUserinfo: ${it}")
                         getBabyList()
-                        subscribeToNewMessage()
                     }
                 }.onFailure {
                     Log.d(TAG, "getUserinfo: ${it.message}")
@@ -148,16 +147,8 @@ class ActivityViewModel : ViewModel() {
                     _getProductSuccess.emit(false)
                     _errorMessage.emit(errorResponse.message)
                     Log.d(TAG, "getProductDetail: ${uiState.value.selectedBaby!!.id}")
-                    
-                }
-        }
-    }
 
-    fun updatePartner(partner: Partner) {
-        _uiState.update {
-            it.copy(
-                partner = partner
-            )
+                }
         }
     }
 
@@ -220,19 +211,24 @@ class ActivityViewModel : ViewModel() {
         }
     }
 
-    private fun subscribeToNewMessage() {
+    fun subscribeToNewMessage() {
         if (uiState.value.user == null) return
         viewModelScope.launch {
             stompService.subscribeToDestination("/read/chat/users/${uiState.value.user!!.id}/message-arrived")
                 .onSuccess { response ->
                     Log.d(TAG, "subscribeToNewMessage: success")
-                    response?.let { body ->
-                        body.collect {
-                            val data = json.decodeFromString<String>(it.bodyAsText)
-                            Log.d(TAG, "subscribeToNewMessage: $data")
-                            if (data == "NEW_MESSAGE_ARRIVED") {
-                                _unreadCount.value++
+                    response.let { body ->
+                        try {
+                            body.collect {
+                                val data = json.decodeFromString<String>(it.bodyAsText)
+                                Log.d(TAG, "subscribeToNewMessage: $data")
+                                if (data == "NEW_MESSAGE_ARRIVED") {
+                                    _unreadCount.value++
+                                }
                             }
+                        } catch (e: Exception) {
+                            Log.d(TAG, "subscribeToNewMessage: ${e.message}")
+                            stompService.connect()
                         }
                     }
                 }.onFailure {
@@ -266,7 +262,7 @@ class ActivityViewModel : ViewModel() {
 
     }
 
-    fun getRecommendItemList(babyId: Int){
+    fun getRecommendItemList(babyId: Int) {
         viewModelScope.launch {
             productRepository.getRecommendedItems(babyId).onSuccess {
                 _recommendItemList.value = it.data

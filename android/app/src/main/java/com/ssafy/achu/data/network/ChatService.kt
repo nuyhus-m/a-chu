@@ -2,9 +2,9 @@ package com.ssafy.achu.data.network
 
 import com.ssafy.achu.data.model.ApiResult
 import com.ssafy.achu.data.model.IdResponse
+import com.ssafy.achu.data.model.chat.ChatListResponse
 import com.ssafy.achu.data.model.chat.ChatRoomRequest
 import com.ssafy.achu.data.model.chat.ChatRoomResponse
-import com.ssafy.achu.data.model.chat.Message
 import com.ssafy.achu.data.model.chat.MessageCountResponse
 import com.ssafy.achu.data.model.chat.RoomIdResponse
 import retrofit2.http.Body
@@ -27,9 +27,9 @@ interface ChatService {
     suspend fun getUnreadCount(): ApiResult<MessageCountResponse>
 
     @GET("/chat/rooms/{roomId}/messages")
-    suspend fun getMessages(
+    suspend fun getChatListInfo(
         @Path("roomId") roomId: Int
-    ): ApiResult<List<Message>>
+    ): ApiResult<ChatListResponse>
 
     @GET("/chat/rooms/existence")
     suspend fun checkChatRoomExistence(

@@ -1,20 +1,17 @@
 package com.ssafy.achu.data.network
 
 import android.util.Log
+import com.ssafy.achu.core.ApplicationClass.Companion.json
 import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.hildan.krossbow.stomp.StompClient
+import org.hildan.krossbow.stomp.StompReceipt
 import org.hildan.krossbow.stomp.StompSession
 import org.hildan.krossbow.stomp.conversions.kxserialization.convertAndSend
 import org.hildan.krossbow.stomp.conversions.kxserialization.json.withJsonConversions
@@ -36,11 +33,6 @@ class StompService {
     val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
 
     var session: StompSession? = null
-    private val scope = CoroutineScope(
-        Dispatchers.IO + SupervisorJob() + CoroutineExceptionHandler { _, throwable ->
-            Log.e(TAG, "Coroutine 예외 발생: ${throwable.message}", throwable)
-        }
-    )
 
     private var retryCount = 0
     private var isRetrying = false
@@ -59,23 +51,17 @@ class StompService {
     }
 
     // STOMP 연결
-    fun connect() {
-        scope.launch {
-            if (connectionState.value is ConnectionState.Connecting || connectionState.value is ConnectionState.Connected) {
-                Log.d(TAG, "이미 연결 중이거나 연결됨. 상태: ${connectionState.value}")
-                return@launch
-            }
+    suspend fun connect() {
+        val token = sharedPreferencesUtil.getTokens()?.accessToken
+        Log.d(TAG, "connect: $token")
 
-            val token = sharedPreferencesUtil.getTokens()?.accessToken
-
-            if (token.isNullOrBlank()) {
-                Log.e(TAG, "Access token이 없어서 연결 시도 중단")
-                _connectionState.value = ConnectionState.Error("Access token is missing")
-                return@launch
-            }
-
-            connectWithRetry(token)
+        if (token.isNullOrBlank()) {
+            Log.e(TAG, "Access token이 없어서 연결 시도 중단")
+            _connectionState.value = ConnectionState.Error("Access token is missing")
+            return
         }
+
+        connectWithRetry(token)
     }
 
     private suspend fun connectWithRetry(token: String, attempt: Int = 0) {
@@ -123,16 +109,13 @@ class StompService {
                 customStompConnectHeaders = mapOf(
                     "Authorization" to "Bearer $token"
                 )
-            ).withJsonConversions()
+            )
 
             // 연결 성공 시 상태 업데이트 및 재시도 카운터 초기화
             _connectionState.value = ConnectionState.Connected
             retryCount = 0
             isRetrying = false
             Log.d(TAG, "✅ STOMP 연결 성공")
-
-            // 연결 상태 모니터링
-            monitorConnection()
 
         }.onFailure { e ->
             val errorMessage = e.message ?: "Unknown error"
@@ -161,68 +144,28 @@ class StompService {
         }
     }
 
-    // 연결 상태 모니터링
-    private fun monitorConnection() {
-        scope.launch {
-            while (session != null && connectionState.value is ConnectionState.Connected) {
-                try {
-                    // 연결 상태 확인을 위한 PING 메시지 전송 대신 상태 확인
-                    // 연결 끊어짐이 감지되면 재연결 시도
-                    if (connectionState.value !is ConnectionState.Connected) {
-                        Log.w(TAG, "연결 상태가 Connected가 아님, 재연결 시도")
-                        reconnect()
-                        break
-                    }
-
-                    // 간단한 STOMP 프레임 테스트
-                    try {
-                        val pingDestination = "/app/ping"
-                        val pingResult = session?.withJsonConversions()?.convertAndSend(
-                            StompSendHeaders(destination = pingDestination),
-                            "ping"
-                        )
-
-                        // ping 성공 시 로그만 남김
-                        Log.d(TAG, "연결 상태 확인 ping 성공")
-                    } catch (e: Exception) {
-                        Log.e(TAG, "연결 상태 확인 중 오류 발생: ${e.message}", e)
-                        reconnect()
-                        break
-                    }
-
-                    delay(30000) // 30초마다 확인
-                } catch (e: Exception) {
-                    Log.e(TAG, "연결 모니터링 중 오류 발생: ${e.message}", e)
-                    reconnect()
-                    break
-                }
-            }
-        }
-    }
-
     // 재연결 함수
-    fun reconnect() {
-        scope.launch {
-            if (!isRetrying) {
-                isRetrying = true
-                session = null
-                _connectionState.value = ConnectionState.Disconnected
+    suspend fun reconnect() {
+        if (!isRetrying) {
+            isRetrying = true
+            session = null
+            _connectionState.value = ConnectionState.Disconnected
 
-                val token = sharedPreferencesUtil.getTokens()?.accessToken
-                if (!token.isNullOrBlank()) {
-                    connectWithRetry(token)
-                } else {
-                    _connectionState.value =
-                        ConnectionState.Error("Access token is missing for reconnection")
-                    isRetrying = false
-                }
+            val token = sharedPreferencesUtil.getTokens()?.accessToken
+            if (!token.isNullOrBlank()) {
+                connectWithRetry(token)
+            } else {
+                _connectionState.value =
+                    ConnectionState.Error("Access token is missing for reconnection")
+                isRetrying = false
             }
         }
     }
 
     // 구독 함수
-    suspend fun subscribeToDestination(destination: String): Result<Flow<StompFrame.Message>?> {
+    suspend fun subscribeToDestination(destination: String): Result<Flow<StompFrame.Message>> {
         return runCatching {
+            Log.d(TAG, "subscribeToDestination: $destination")
             // 세션이 없거나 연결이 끊어진 경우 먼저 연결 시도
             if (!isSessionActive()) {
                 reconnect()
@@ -255,8 +198,9 @@ class StompService {
     suspend inline fun <reified T> sendRequest(
         destination: String,
         request: T
-    ): Result<Unit> {
+    ): Result<StompReceipt?> {
         return runCatching {
+            Log.d("StompService", "sendRequest: $destination")
             // 세션이 없거나 연결이 끊어진 경우 먼저 연결 시도
             if (!isSessionActive()) {
                 reconnect()
@@ -274,7 +218,7 @@ class StompService {
 
             val currentSession =
                 session ?: throw IllegalStateException("STOMP session is not initialized")
-            currentSession.withJsonConversions().convertAndSend(
+            currentSession.withJsonConversions(json).convertAndSend(
                 StompSendHeaders(
                     destination = destination,
                     customHeaders = mapOf(
@@ -287,23 +231,22 @@ class StompService {
     }
 
     // 연결 해제
-    fun disconnect() {
-        scope.launch {
-            runCatching {
-                // 이미 연결 해제된 상태면 반환
-                if (connectionState.value is ConnectionState.Disconnected) {
-                    return@launch
-                }
-
-                session?.disconnect()
-                session = null
-            }.onSuccess {
-                _connectionState.value = ConnectionState.Disconnected
-                Log.d(TAG, "disconnect: STOMP 연결 종료")
-            }.onFailure { e ->
-                _connectionState.value = ConnectionState.Error(e.message ?: "Disconnect error")
-                Log.d(TAG, "disconnect: ${e.message}")
+    suspend fun disconnect() {
+        runCatching {
+            // 이미 연결 해제된 상태면 반환
+            if (connectionState.value is ConnectionState.Disconnected) {
+                return
             }
+
+            session?.disconnect()
+            session = null
+        }.onSuccess {
+            _connectionState.value = ConnectionState.Disconnected
+            Log.d(TAG, "disconnect: STOMP 연결 종료")
+        }.onFailure { e ->
+            _connectionState.value = ConnectionState.Error(e.message ?: "Disconnect error")
+            Log.d(TAG, "disconnect: ${e.message}")
         }
     }
+
 }

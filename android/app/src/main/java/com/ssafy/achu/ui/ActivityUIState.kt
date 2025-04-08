@@ -38,7 +38,6 @@ data class ActivityUIState(
         )
     ),
     val previewImgUris: List<Uri> = emptyList(),
-    val partner: Partner? = null,
 
     val uploadProductRequest: UploadProductRequest? = null,
     val multiPartImages: List<MultipartBody.Part> = emptyList(),
