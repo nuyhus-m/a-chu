@@ -150,8 +150,13 @@ fun HomeScreen(
             LaunchedEffect(uiState.babyList) {
                 if (uiState.selectedBaby == null) {
                     viewModel.updateSelectedBaby(uiState.babyList[0])
+                    if (uiState.babyList.size == 1){
+                        sharedPreferencesUtil.saveIsAutoLogin(false)
+                    }
                 }
             }
+
+
             uiState.selectedBaby?.let {
                 BabyDropdown(
                     babyList = uiState.babyList,
