@@ -1,9 +1,11 @@
 package com.ssafy.achu.core.components.textfield
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,10 +54,10 @@ fun BasicTextField(
         placeholder = {
             Text(
                 text = placeholder,
-                style = AchuTheme.typography.regular16.copy(color = placeholderColor)
+                style = AchuTheme.typography.regular14.copy(color = placeholderColor)
             )
         },
-        textStyle = AchuTheme.typography.regular16,
+        textStyle = AchuTheme.typography.regular14,
         singleLine = true,
         shape = RoundedCornerShape(radius.dp),
         colors = OutlinedTextFieldDefaults.colors(
@@ -66,7 +68,8 @@ fun BasicTextField(
         keyboardOptions = keyboardOptions,
         readOnly = readOnly,
         visualTransformation = visualTransformation,
-        trailingIcon = trailingIcon
+        trailingIcon = trailingIcon,
+        keyboardActions = KeyboardActions.Default,
     )
 }
 
@@ -88,10 +91,10 @@ fun PasswordTextField(
             .height(50.dp),
         placeholder = {
             Text(
-                text = placeholder, style = AchuTheme.typography.regular16.copy(color = color)
+                text = placeholder, style = AchuTheme.typography.regular14.copy(color = color)
             )
         },
-        textStyle = AchuTheme.typography.regular16,
+        textStyle = AchuTheme.typography.regular14,
         singleLine = true,
         shape = RoundedCornerShape(30.dp),
         colors = OutlinedTextFieldDefaults.colors(
@@ -129,10 +132,10 @@ fun ClearTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.height(50.dp),
-        textStyle = AchuTheme.typography.regular16,
+        textStyle = AchuTheme.typography.regular14,
         placeholder = {
             Text(
-                text = placeholder, style = AchuTheme.typography.regular16.copy(color = LightGray)
+                text = placeholder, style = AchuTheme.typography.regular14.copy(color = LightGray)
             )
         },
         singleLine = true,
