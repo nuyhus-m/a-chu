@@ -3,6 +3,7 @@ package com.ssafy.achu.ui.chat.chatdetail
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,6 +57,7 @@ import com.ssafy.achu.core.theme.FontBlue
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.LightBlue
+import com.ssafy.achu.core.theme.LightPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
@@ -182,7 +184,7 @@ fun ChatScreen(
         BasicDialog(
             text = "거래를 완료하시겠습니까?",
             onDismiss = { viewModel.showSoldDialog(false) },
-            onConfirm = { viewModel.completeTrade(activityUiState.selectedBaby!!.id) }
+            onConfirm = { viewModel.completeTrade() }
         )
     }
 }
@@ -511,6 +513,15 @@ fun CustomChatTopBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 프로필 이미지
+
+            Image(
+                painter = painterResource(id = R.drawable.img_profile_basic2),
+                contentDescription = stringResource(R.string.profile_img),
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape).background(LightPink),
+                contentScale = ContentScale.Crop
+            )
             AsyncImage(
                 model = partner.profileImageUrl, // 여기에 실제 이미지 URL 입력
                 contentDescription = stringResource(R.string.profile_img),
