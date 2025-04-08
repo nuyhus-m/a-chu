@@ -57,6 +57,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
+import com.ssafy.achu.core.LoadingImg
 import com.ssafy.achu.core.LoadingScreen
 import com.ssafy.achu.core.components.BasicDeleteTopAppBar
 import com.ssafy.achu.core.components.BasicTopAppBar
@@ -187,6 +188,7 @@ fun BabyDetailScreen(
             } else {
                 viewModel.getBabyList()
 
+
                 if (isChanged == "등록" && babyId == -1) {
                     backPressedDispatcher?.onBackPressed()
                 } else if (isChanged == "삭제") {
@@ -297,6 +299,9 @@ fun BabyDetailScreen(
                         }, // 원형 이미지 적용
                     contentAlignment = Alignment.Center // 내부 컨텐츠 중앙 정렬
                 ) {
+
+                    LoadingImg("프로필\n업로드중..", Modifier.fillMaxSize())
+
                     if (type == "등록" && imgUrl.isEmpty()) {
                         Box(
                             modifier = Modifier
@@ -358,7 +363,7 @@ fun BabyDetailScreen(
 
                         }
                     }
-
+                    
                 }
 
 
@@ -450,10 +455,10 @@ fun BabyDetailScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
 
-                Row (
+                Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Start,
-                ){
+                ) {
 
                     PointPinkLineBtn(
                         buttonText = "남자",
