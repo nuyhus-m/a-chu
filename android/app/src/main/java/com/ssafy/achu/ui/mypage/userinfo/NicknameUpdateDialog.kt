@@ -1,16 +1,23 @@
 package com.ssafy.achu.ui.mypage.userinfo
 
-import android.R.attr.onClick
 import android.R.attr.radius
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -25,15 +32,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.achu.core.theme.AchuTheme
-import com.ssafy.achu.core.theme.FontBlue
 import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.PointPink
-import com.ssafy.achu.core.theme.White
 
 @Composable
 fun NicknameUpdateDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
+    onValueChange: (String) -> Unit = {},
     color: Color,
     viewModel: UserInfoViewModel = viewModel(),
 ) {
@@ -74,7 +80,7 @@ fun NicknameUpdateDialog(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "*영문,한글 2-6자",
+                    text = "영문,한글 2-6자",
                     style = AchuTheme.typography.regular16.copy(color = color)
                 )
 
@@ -82,7 +88,9 @@ fun NicknameUpdateDialog(
 
                 OutlinedTextField(
                     value = uiState.newNickname,
-                    onValueChange = { viewModel.updateNickname(it) },
+                    onValueChange = {
+                        onValueChange(it)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
@@ -103,33 +111,10 @@ fun NicknameUpdateDialog(
                     ),
                     keyboardOptions = KeyboardOptions.Default,
 
-                    // 🔹 trailingIcon에 버튼 추가
-                    trailingIcon = {
-                        Button(
-                            onClick = { viewModel.confirmNickname() },
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .size(60.dp),
-                            contentPadding = PaddingValues(0.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (uiState.isUniqueNickname =="완료") FontBlue else color, // 버튼 배경색 (원하는 색상으로 변경)
-                                contentColor = Color.White   // 텍스트 색상 (원하는 색상으로 변경)
-                            )
-                        ) {
-                            Text(
-                                text = if (uiState.isUniqueNickname =="완료"&& uiState.isCorrectNickname) "완료" else "확인",
-                                style = AchuTheme.typography.semiBold14PointBlue,
-                                color = White
-                            )
-                        }
-                    }
-
                 )
 
 
-
                 Spacer(modifier = Modifier.height(24.dp))
-
 
                 // 버튼들
                 Row(
@@ -160,8 +145,7 @@ fun NicknameUpdateDialog(
                             .weight(1.0f)
                             .background(color, shape = RoundedCornerShape(8.dp))
                             .clickable(
-                                enabled = if (uiState.isCorrectNickname && uiState.isUniqueNickname =="완료") true else false,
-                                onClick = onConfirm
+                                onClick = {onConfirm()}
                             )
                             .padding(vertical = 12.dp),
                         contentAlignment = Alignment.Center

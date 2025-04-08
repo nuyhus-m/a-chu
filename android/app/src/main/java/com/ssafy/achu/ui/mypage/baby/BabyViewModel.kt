@@ -12,6 +12,7 @@ import com.ssafy.achu.data.model.baby.BabyGenderRequest
 import com.ssafy.achu.data.model.baby.BabyNicknameRequest
 import com.ssafy.achu.data.model.baby.BabyRequest
 import com.ssafy.achu.data.model.baby.BabyResponse
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -35,10 +36,23 @@ class BabyViewModel : ViewModel() {
 
 
 
-    fun updateBabyNickname(babyNicknameInput: String) {
-        _babyUiState.value = _babyUiState.value.copy(
-            babyNickname = babyNicknameInput
-        )
+  fun updateBabyNickname(babyNicknameInput: String) {
+        if (babyNicknameInput.length <= 6) {
+            _babyUiState.value = _babyUiState.value.copy(
+                babyNickname = babyNicknameInput
+            )
+        }else{
+            updateToastString("닉네임은 6자 이하로 입력해주세요")
+        }
+
+    }
+
+    fun updateResisterNickname(babyNicknameInput: String) {
+        if (babyNicknameInput.length <= 6) {
+            _babyUiState.value = _babyUiState.value.copy(
+                resisterNickname = babyNicknameInput
+            )
+        }
     }
 
     fun updateBabyPhoto(babyPhoto: MultipartBody.Part) {
@@ -54,6 +68,12 @@ class BabyViewModel : ViewModel() {
         )
     }
 
+    fun updateButtonAble(boolean: Boolean){
+        _babyUiState.value = _babyUiState.value.copy(
+            isButtonAble = boolean
+        )
+    }
+
 
     fun getBaby(babyId: Int) {
         viewModelScope.launch {
@@ -63,20 +83,29 @@ class BabyViewModel : ViewModel() {
                 )
                 Log.d(TAG, "getBaby: ${babyUiState.value.selectedBaby}")
                 _isSelectedBabyChanged.emit(true)
+
+                delay(1000)
+                updateButtonAble(true)
+
             }.onFailure {
 
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "getBaby: ${errorResponse}")
+                updateToastString(errorResponse.message)
+                updateButtonAble(true)
+                _isSelectedBabyChanged.emit(false)
             }
         }
     }
 
     fun registerBaby() {
+        updateButtonAble(false)
+        Log.d(TAG, "registerBaby: ${babyUiState.value.babyNickname}")
         viewModelScope.launch {
             Log.d(TAG, "registerBaby: $_babyUiState.value.selectedPhoto}")
             babyRepository.registerBaby(
                 _babyUiState.value.selectedPhoto, BabyRequest(
-                    nickname = babyUiState.value.babyNickname,
+                    nickname = babyUiState.value.resisterNickname,
                     birth = babyUiState.value.babyBirth,
                     gender = babyUiState.value.babyGender,
                 )
@@ -90,6 +119,7 @@ class BabyViewModel : ViewModel() {
                 Log.d(TAG, "registerBaby: ${errorResponse}")
                 updateToastString(errorResponse.message)
                 _isChanged.emit("등록")
+                updateButtonAble(true)
             }
         }
     }

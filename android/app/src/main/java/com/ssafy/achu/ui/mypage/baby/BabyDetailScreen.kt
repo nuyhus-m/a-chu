@@ -1,6 +1,7 @@
 package com.ssafy.achu.ui.mypage.baby
 
 import android.R.attr.text
+import android.R.attr.type
 import android.app.DatePickerDialog
 import android.content.Context
 import android.graphics.Bitmap
@@ -56,6 +57,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
+import com.ssafy.achu.core.LoadingScreen
 import com.ssafy.achu.core.components.BasicDeleteTopAppBar
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.components.PointPinkBtn
@@ -73,6 +75,7 @@ import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.compressImage
 import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.ui.ActivityViewModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -112,7 +115,7 @@ fun BabyDetailScreen(
     val titleText = if (type == "등록") "아이 정보 관리" else "${babyUiState.selectedBaby!!.nickname} 정보"
     val profileBtnText = if (type == "등록") "프로필 사진 등록하기" else "프로필 사진 수정하기"
     val nicknameText =
-        if (type == "등록" && babyUiState.babyNickname == "") "닉네임"
+        if (type == "등록" && babyUiState.babyNickname == "") babyUiState.resisterNickname
         else if (babyUiState.babyNickname != "") babyUiState.babyNickname
         else babyUiState.selectedBaby!!.nickname
 
@@ -166,21 +169,33 @@ fun BabyDetailScreen(
         }
         datePickerDialog.datePicker.minDate = minSelectableDate.timeInMillis
 
+        val maxSelectableDate = Calendar.getInstance().apply {
+            add(Calendar.YEAR, 1) // 현재로부터 1년 뒤까지 선택 가능
+        }
+        datePickerDialog.datePicker.maxDate = maxSelectableDate.timeInMillis
+
         datePickerDialog.show()
     }
 
 
     LaunchedEffect(Unit) {
         babyViewModel.isChanged.collectLatest { isChanged ->
-            viewModel.getBabyList()
-            Toast.makeText(context, babyUiState.toastString, Toast.LENGTH_SHORT).show()
 
-            if (isChanged == "등록" && babyId == -1) {
-                backPressedDispatcher?.onBackPressed()
-            } else if (isChanged == "삭제") {
-                backPressedDispatcher?.onBackPressed()
+            if (isChanged == "실패") {
+                Toast.makeText(context, babyUiState.toastString, Toast.LENGTH_SHORT).show()
 
+            } else {
+                viewModel.getBabyList()
+
+                if (isChanged == "등록" && babyId == -1) {
+                    backPressedDispatcher?.onBackPressed()
+                } else if (isChanged == "삭제") {
+                    backPressedDispatcher?.onBackPressed()
+
+                }
             }
+
+
         }
 
     }
@@ -274,8 +289,12 @@ fun BabyDetailScreen(
                 Box(
                     modifier = Modifier
                         .size(150.dp) // 크기 지정
-                        .shadow(elevation = 2.dp, shape = CircleShape).background(color = White) // 그림자 적용
-                        .clip(CircleShape), // 원형 이미지 적용
+                        .shadow(elevation = 2.dp, shape = CircleShape)
+                        .background(color = White) // 그림자 적용
+                        .clip(CircleShape)
+                        .clickable {
+                            launcher.launch("image/*")
+                        }, // 원형 이미지 적용
                     contentAlignment = Alignment.Center // 내부 컨텐츠 중앙 정렬
                 ) {
                     if (type == "등록" && imgUrl.isEmpty()) {
@@ -298,7 +317,7 @@ fun BabyDetailScreen(
                         Box(
                             modifier = Modifier
                                 .size(150.dp)
-                                .border(1.5.dp, PointPink, CircleShape)  ,
+                                .border(1.5.dp, PointPink, CircleShape),
                             contentAlignment = Alignment.Center // 내부 컨텐츠 중앙 정렬
                         ) {
 
@@ -354,7 +373,8 @@ fun BabyDetailScreen(
                 Row(verticalAlignment = Alignment.Bottom) {
                     Spacer(modifier = Modifier.width(20.dp))
                     Text(
-                        text = nicknameText, style = AchuTheme.typography.bold24,
+                        text = if (nicknameText == "") "닉네임" else nicknameText,
+                        style = AchuTheme.typography.bold24,
                         fontSize = 28.sp
                     )
 
@@ -419,6 +439,7 @@ fun BabyDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
+
                 Text(
                     text = "성별",
                     style = AchuTheme.typography.semiBold18,
@@ -428,16 +449,17 @@ fun BabyDetailScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row(
+
+                Row (
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                ){
+
                     PointPinkLineBtn(
                         buttonText = "남자",
                         isSelected = selectedGender == "MALE"
                     ) {
-                        selectedGender = if (selectedGender == "FEMALE") null else "MALE"
+                        selectedGender = "MALE"
                         babyViewModel.updateBabyGender("MALE")
                         if (type != "등록") {
                             babyViewModel.changeBabyGender()
@@ -450,7 +472,7 @@ fun BabyDetailScreen(
                         buttonText = "여자",
                         isSelected = selectedGender == "FEMALE"
                     ) {
-                        selectedGender = if (selectedGender == "MALE") null else "FEMALE"
+                        selectedGender = "FEMALE"
                         babyViewModel.updateBabyGender("FEMALE")
                         if (type != "등록") {
                             babyViewModel.changeBabyGender()
@@ -459,11 +481,19 @@ fun BabyDetailScreen(
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
-                if (type == "등록") {
-
+                if (type == "등록" && babyUiState.isButtonAble) {
                     PointPinkBtn("등록하기", onClick = {
-                        babyViewModel.registerBaby()
-                    })
+                        if (uiState.babyList.size >= 15) {
+                            Toast.makeText(context, "아이는 최대 15명까지 등록 가능합니다.", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            if (nicknameText == "" || selectedGender == null || babyUiState.babyBirth.isEmpty()) {
+                                Toast.makeText(context, "모든 정보를 입력해주세요", Toast.LENGTH_SHORT).show()
+                            } else {
+                                babyViewModel.registerBaby()
+                            }
+                        }
+                    }, enable = babyUiState.isButtonAble)
                 }
                 Spacer(modifier = Modifier.height(40.dp))
 
@@ -477,22 +507,45 @@ fun BabyDetailScreen(
         if (type == "등록") {
 
             BabyNicknameDialog(
-                onDismiss = { showNickNameUpdateDialog = false },
+                onDismiss = {
+                    showNickNameUpdateDialog = false
+                    babyViewModel.updateBabyNickname(babyNicknameInput = "")
+                },
                 onConfirm = {
-                    if (babyUiState.isCorrectNickname) {
+                    if (babyViewModel.confirmNickname()) {
                         showNickNameUpdateDialog = false
+                        babyViewModel.updateResisterNickname(babyUiState.babyNickname)
+                        babyViewModel.updateBabyNickname(babyNicknameInput = "")
+                    }
+                },
+                onValueChange = {
+                    if (it.length > 6) {
+                        Toast.makeText(context, "닉네임은 6글자 이하만 가능합니다.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        babyViewModel.updateBabyNickname(babyNicknameInput = it)
                     }
                 },
                 PointPink,
                 type = "등록",
-                viewModel = babyViewModel
+                viewModel = babyViewModel,
             )
         } else {
             BabyNicknameDialog(
-                onDismiss = { showNickNameUpdateDialog = false },
+                onDismiss = {
+                    showNickNameUpdateDialog = false
+                    babyViewModel.updateBabyNickname(babyNicknameInput = "")
+                },
                 onConfirm = {
                     babyViewModel.changeBabyNickname()
                     showNickNameUpdateDialog = false
+                    babyViewModel.updateBabyNickname(babyNicknameInput = "")
+                },
+                onValueChange = {
+                    if (it.length > 6) {
+                        Toast.makeText(context, "닉네임은 6글자 이하만 가능합니다.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        babyViewModel.updateBabyNickname(babyNicknameInput = it)
+                    }
                 },
                 PointPink,
                 type = "수정",
@@ -501,7 +554,7 @@ fun BabyDetailScreen(
         }
     }
 
-    if(showDeleteDialog){
+    if (showDeleteDialog) {
         BasicDialog(
             img = painterResource(id = R.drawable.img_crying_face),
             text = "해당 아이를 삭제하시겠습니까?",
@@ -514,9 +567,11 @@ fun BabyDetailScreen(
             }
         )
     }
+
+    if (!babyUiState.isButtonAble) {
+        LoadingScreen("아이등록중!\n잠시만 기다려주세요!")
+    }
 }
-
-
 
 
 @RequiresApi(Build.VERSION_CODES.O)

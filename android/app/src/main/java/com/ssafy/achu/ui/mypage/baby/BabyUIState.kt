@@ -10,6 +10,7 @@ data class BabyUIState (
     val selectedPhoto: MultipartBody.Part? = null,
 
     val babyNickname: String = "",
+    val resisterNickname: String = "",
     val calendar: Calendar = Calendar.getInstance(),
     val babyBirth: List<Int> = emptyList<Int>(),
     val babyGender: String = "",
@@ -17,5 +18,9 @@ data class BabyUIState (
     val isCorrectNickname: Boolean = true,
 
     val toastString: String = "",
+    val isButtonAble: Boolean = true
+
+
+
 
     )
