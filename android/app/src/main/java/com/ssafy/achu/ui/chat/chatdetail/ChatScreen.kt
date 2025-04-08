@@ -159,7 +159,8 @@ fun ChatScreen(
                     TEXT -> ChatMessageItem(
                         message = message,
                         lastReadMessageId = uiState.lastReadMessageId,
-                        userId = activityUiState.user!!.id
+                        userId = activityUiState.user!!.id,
+                        partner = uiState.partner!!
                     )
 
                     else -> SystemMessage(message = message)
@@ -306,7 +307,7 @@ fun SystemMessage(message: Message) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChatMessageItem(message: Message, lastReadMessageId: Int, userId: Int) {
+fun ChatMessageItem(message: Message, lastReadMessageId: Int, userId: Int, partner: Partner) {
     val isMine = message.senderId == userId
     val isUnread = message.id > lastReadMessageId
 
@@ -317,7 +318,7 @@ fun ChatMessageItem(message: Message, lastReadMessageId: Int, userId: Int) {
         // 발신자 이름 (내가 보낸 메시지가 아닐 때만 표시)
         if (!isMine) {
             Text(
-                text = "덕윤맘",
+                text = partner.nickname,
                 style = AchuTheme.typography.semiBold14PointBlue.copy(color = FontGray),
                 modifier = Modifier.padding(start = 12.dp, bottom = 4.dp)
             )
