@@ -30,5 +30,6 @@ data class UserInfoUIState(
 
 
     val toastMessage: String = "",
+    val isProfileLoading: Boolean = false,
 
     )

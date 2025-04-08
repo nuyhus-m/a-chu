@@ -35,6 +35,12 @@ class UserInfoViewModel : ViewModel() {
         get() = _phoneAuthId
 
 
+    fun updateIsProfileLoading(isLoading: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(isProfileLoading = isLoading)
+        }
+    }
+
     fun updateToastMessage(message: String) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -301,6 +307,7 @@ class UserInfoViewModel : ViewModel() {
     }
 
     fun changeProfile(img: MultipartBody.Part) {
+        updateIsProfileLoading(true)
         Log.d(TAG, "changeProfile: ${img}")
         viewModelScope.launch {
             userRepository.uploadProfileImage(
@@ -309,14 +316,11 @@ class UserInfoViewModel : ViewModel() {
                 Log.d(TAG, "changeProfile: ${it}")
                 updateToastMessage("프로필이 변경되었습니다.")
                 _isChanged.emit(true)
-
-
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "changeProfile: ${errorResponse}")
                 _isChanged.emit(false)
                 updateToastMessage("프로필 변경실패")
-
                 Log.d(TAG, "changeProfile error: ${it.message}")
             }
         }
