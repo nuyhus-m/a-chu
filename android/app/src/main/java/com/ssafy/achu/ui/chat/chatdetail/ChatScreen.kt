@@ -100,6 +100,12 @@ fun ChatScreen(
 
     val listState = rememberLazyListState()
 
+    LaunchedEffect(uiState.messages.size) {
+        if (uiState.messages.isNotEmpty()) {
+            listState.animateScrollToItem(uiState.messages.size - 1)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
