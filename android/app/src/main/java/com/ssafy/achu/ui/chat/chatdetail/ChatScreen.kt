@@ -513,23 +513,26 @@ fun CustomChatTopBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 프로필 이미지
+            Box {
+                Image(
+                    painter = painterResource(id = R.drawable.img_profile_basic2),
+                    contentDescription = stringResource(R.string.profile_img),
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(LightPink),
+                    contentScale = ContentScale.Crop
+                )
+                AsyncImage(
+                    model = partner.profileImageUrl, // 여기에 실제 이미지 URL 입력
+                    contentDescription = stringResource(R.string.profile_img),
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            }
 
-            Image(
-                painter = painterResource(id = R.drawable.img_profile_basic2),
-                contentDescription = stringResource(R.string.profile_img),
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape).background(LightPink),
-                contentScale = ContentScale.Crop
-            )
-            AsyncImage(
-                model = partner.profileImageUrl, // 여기에 실제 이미지 URL 입력
-                contentDescription = stringResource(R.string.profile_img),
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
             Spacer(modifier = Modifier.width(8.dp))
             // 사용자 이름
             Text(
