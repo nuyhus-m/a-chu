@@ -1,7 +1,7 @@
 == 찜 관련 API
 
 === 물건 찜
-operation::like[snippets='http-request,path-parameters,http-response,response-fields']
+operation::like[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
 
 === 물건 찜 취소
 operation::delete-like[snippets='http-request,path-parameters,http-response,response-fields']

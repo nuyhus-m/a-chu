@@ -122,8 +122,8 @@ public class GoodsController {
 
   @GetMapping("/goods/{goodsId}")
   public ApiResponse<GoodsDetailResponse> findGoodsDetail(
-      ApiUser apiUser, @PathVariable Long goodsId) {
-    GoodsDetail goodsDetail = goodsService.findGoodsDetail(goodsId);
+      ApiUser apiUser, @PathVariable Long goodsId, @RequestParam Long babyId) {
+    GoodsDetail goodsDetail = goodsService.findGoodsDetail(apiUser.toUser(), babyId, goodsId);
 
     LikeStatus likeStatus = likeService.status(apiUser.toUser(), goodsId);
 

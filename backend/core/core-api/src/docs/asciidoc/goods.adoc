@@ -16,7 +16,7 @@ operation::search-goods[snippets='http-request,query-parameters,http-response,re
 operation::search-category-goods[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
 
 === 물품 상세 조회
-operation::find-goods-detail[snippets='http-request,path-parameters,http-response,response-fields']
+operation::find-goods-detail[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
 
 === 물품 생성
 operation::append-goods[snippets='http-request,request-parts,request-part-request-fields,http-response,response-fields']

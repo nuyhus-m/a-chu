@@ -293,7 +293,7 @@ class GoodsControllerTest extends RestDocsTest {
 
   @Test
   void findGoodsDetail() {
-    when(goodsService.findGoodsDetail(anyLong()))
+    when(goodsService.findGoodsDetail(any(), anyLong(), anyLong()))
         .thenReturn(new GoodsDetail(goods, new Category(1L, "카테고리명1", "category-img.jpg")));
     when(likeService.status(any(User.class), anyLong())).thenReturn(new LikeStatus(1, true));
 
@@ -301,12 +301,14 @@ class GoodsControllerTest extends RestDocsTest {
         .thenReturn(new UserDetail(1L, "닉네임", "img.jpg"));
     given()
         .contentType(ContentType.JSON)
+        .queryParam("babyId", 123L)
         .get("/goods/{goodsId}", 2L)
         .then()
         .status(HttpStatus.OK)
         .apply(document(
             "find-goods-detail",
             pathParameters(parameterWithName("goodsId").description("조회하고자 하는 goods id")),
+            queryParameters(parameterWithName("babyId").description("조회한 babyId")),
             responseFields(
                 fieldWithPath("result")
                     .type(JsonFieldType.STRING)

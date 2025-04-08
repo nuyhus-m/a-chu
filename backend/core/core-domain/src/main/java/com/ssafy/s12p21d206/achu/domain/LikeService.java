@@ -11,11 +11,17 @@ public class LikeService {
   private final LikeReader likeReader;
   private final LikeProcessor likeProcessor;
   private final GoodsReader goodsReader;
+  private final PreferenceScoreAdder preferenceScoreAdder;
 
-  public LikeService(LikeReader likeReader, LikeProcessor likeProcessor, GoodsReader goodsReader) {
+  public LikeService(
+      LikeReader likeReader,
+      LikeProcessor likeProcessor,
+      GoodsReader goodsReader,
+      PreferenceScoreAdder preferenceScoreAdder) {
     this.likeReader = likeReader;
     this.likeProcessor = likeProcessor;
     this.goodsReader = goodsReader;
+    this.preferenceScoreAdder = preferenceScoreAdder;
   }
 
   public LikeStatus status(User user, Long goodsId) {
@@ -32,8 +38,9 @@ public class LikeService {
     return likeReader.status(user, goodsId);
   }
 
-  public void like(User user, Long goodsId) {
+  public void like(User user, Long babyId, Long goodsId) {
     likeProcessor.like(user, goodsId);
+    preferenceScoreAdder.addScore(babyId, goodsId, 3L);
   }
 
   public void deleteLike(User user, Long goodsId) {

@@ -35,12 +35,15 @@ class LikeControllerTest extends RestDocsTest {
   void like() {
     given()
         .contentType(ContentType.JSON)
+        .body(new LikeRequest(123L))
         .post("/goods/{goodsId}/like", 1L)
         .then()
         .status(HttpStatus.OK)
         .apply(document(
             "like",
             pathParameters(parameterWithName("goodsId").description("찜할 물건 id")),
+            requestFields(
+                fieldWithPath("babyId").type(JsonFieldType.NUMBER).description("좋아요 시 아기 ID")),
             responseFields(fieldWithPath("result")
                 .type(JsonFieldType.STRING)
                 .description("성공 여부 (예: SUCCESS 혹은 ERROR)"))));

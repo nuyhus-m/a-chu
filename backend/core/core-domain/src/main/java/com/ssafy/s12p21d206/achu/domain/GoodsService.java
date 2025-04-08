@@ -12,18 +12,24 @@ public class GoodsService {
   private final GoodsModifier goodsModifier;
   private final GoodsDeleter goodsDeleter;
   private final GoodsSearch goodsSearch;
+  private final PreferenceScoreAdder preferenceScoreAdder;
+  private final BabyValidator babyValidator;
 
   public GoodsService(
       GoodsReader goodsReader,
       GoodsAppender goodsAppender,
       GoodsModifier goodsModifier,
       GoodsDeleter goodsDeleter,
-      GoodsSearch goodsSearch) {
+      GoodsSearch goodsSearch,
+      PreferenceScoreAdder preferenceScoreAdder,
+      BabyValidator babyValidator) {
     this.goodsReader = goodsReader;
     this.goodsAppender = goodsAppender;
     this.goodsModifier = goodsModifier;
     this.goodsDeleter = goodsDeleter;
     this.goodsSearch = goodsSearch;
+    this.preferenceScoreAdder = preferenceScoreAdder;
+    this.babyValidator = babyValidator;
   }
 
   public GoodsDetail append(
@@ -48,8 +54,11 @@ public class GoodsService {
     return goodsReader.readCategoryGoods(user, categoryId, offset, limit, sort);
   }
 
-  public GoodsDetail findGoodsDetail(Long goodsId) {
-    return goodsReader.readGoodsDetail(goodsId);
+  public GoodsDetail findGoodsDetail(User user, Long babyId, Long goodsId) {
+    babyValidator.validateParent(user, babyId);
+    GoodsDetail goodsDetail = goodsReader.readGoodsDetail(goodsId);
+    preferenceScoreAdder.addScore(babyId, goodsId, 1L);
+    return goodsDetail;
   }
 
   public List<Goods> searchGoods(

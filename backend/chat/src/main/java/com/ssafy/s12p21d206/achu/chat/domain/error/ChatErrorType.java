@@ -19,7 +19,7 @@ public enum ChatErrorType {
   MESSAGE_NOT_FOUND(
       ChatErrorKind.CLIENT_ERROR, ChatErrorCode.CE3001, "메시지를 찾을 수 없습니다.", ChatErrorLevel.ERROR),
   EMPTY_MESSAGE_CONTENT(
-      ChatErrorKind.CLIENT_ERROR, ChatErrorCode.CE3002, "메시지 내용이 비어있습니다.", ChatErrorLevel.WARN),
+      ChatErrorKind.CLIENT_ERROR, ChatErrorCode.CE3002, "메시지 내용이 없습니다.", ChatErrorLevel.WARN),
   MESSAGE_NOT_IN_CHAT_ROOM(
       ChatErrorKind.CLIENT_ERROR,
       ChatErrorCode.CE3003,
