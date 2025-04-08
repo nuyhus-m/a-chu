@@ -94,7 +94,6 @@ class ActivityViewModel : ViewModel() {
                         }
                         Log.d(TAG, "getUserinfo: ${it}")
                         getBabyList()
-                        subscribeToNewMessage()
                     }
                 }.onFailure {
                     Log.d(TAG, "getUserinfo: ${it.message}")
@@ -207,7 +206,7 @@ class ActivityViewModel : ViewModel() {
         }
     }
 
-    private fun subscribeToNewMessage() {
+    fun subscribeToNewMessage() {
         if (uiState.value.user == null || activeSubscription) return
         viewModelScope.launch {
             stompService.subscribeToDestination("/read/chat/users/${uiState.value.user!!.id}/message-arrived")
@@ -215,12 +214,17 @@ class ActivityViewModel : ViewModel() {
                     Log.d(TAG, "subscribeToNewMessage: success")
                     activeSubscription = true
                     response.let { body ->
-                        body.collect {
-                            val data = json.decodeFromString<String>(it.bodyAsText)
-                            Log.d(TAG, "subscribeToNewMessage: $data")
-                            if (data == "NEW_MESSAGE_ARRIVED") {
-                                _unreadCount.value++
+                        try {
+                            body.collect {
+                                val data = json.decodeFromString<String>(it.bodyAsText)
+                                Log.d(TAG, "subscribeToNewMessage: $data")
+                                if (data == "NEW_MESSAGE_ARRIVED") {
+                                    _unreadCount.value++
+                                }
                             }
+                        } catch (e: Exception) {
+                            Log.d(TAG, "subscribeToNewMessage: ${e.message}")
+                            stompService.connect()
                         }
                     }
                 }.onFailure {

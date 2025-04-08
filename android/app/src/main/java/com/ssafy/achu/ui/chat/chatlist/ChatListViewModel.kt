@@ -51,23 +51,28 @@ class ChatListViewModel : ViewModel() {
     }
 
     fun subscribeToChatRooms(userId: Int) {
-        chatRoomJob = viewModelScope.launch {
+        viewModelScope.launch {
             stompService.subscribeToDestination(
                 "/read/chat/users/$userId/rooms/update"
             ).onSuccess { response ->
                 Log.d(TAG, "subscribeToChatRooms: success")
-                response?.let { data ->
-                    data.collect() {
-                        val chatRoom = json.decodeFromString<ChatRoomResponse>(it.bodyAsText)
-                        Log.d(TAG, "subscribeToChatRooms: $chatRoom")
-                        val mutableChatRooms = uiState.value.chatRooms.toMutableList()
-                        mutableChatRooms.removeAll() { cr -> cr.id == chatRoom.id }
-                        mutableChatRooms.add(0, chatRoom)
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                chatRooms = mutableChatRooms
-                            )
+                response.let { data ->
+                    try {
+                        data.collect {
+                            val chatRoom = json.decodeFromString<ChatRoomResponse>(it.bodyAsText)
+                            Log.d(TAG, "subscribeToChatRooms: $chatRoom")
+                            val mutableChatRooms = uiState.value.chatRooms.toMutableList()
+                            mutableChatRooms.removeAll() { cr -> cr.id == chatRoom.id }
+                            mutableChatRooms.add(0, chatRoom)
+                            _uiState.update { currentState ->
+                                currentState.copy(
+                                    chatRooms = mutableChatRooms
+                                )
+                            }
                         }
+                    } catch (e: Exception) {
+                        Log.d(TAG, "subscribeToChatRooms: ${e.message}")
+                        stompService.connect()
                     }
                 }
             }.onFailure {

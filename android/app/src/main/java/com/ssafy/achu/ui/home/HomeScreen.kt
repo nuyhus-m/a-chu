@@ -3,7 +3,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -12,12 +11,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
@@ -49,7 +46,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
 import com.ssafy.achu.core.theme.AchuTheme
@@ -91,6 +87,9 @@ fun HomeScreen(
         homeViewModel.getLikeItemList()
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.subscribeToNewMessage()
+    }
 
 // showCreateDialog 상태가 변경될 때마다 실행
     LaunchedEffect(uiState.showCreateDialog) {
@@ -277,7 +276,7 @@ fun HomeScreen(
                 onNavigateToProductList(it.toInt())
             },
 
-        )
+            )
 
 
         Column(Modifier.padding(horizontal = 24.dp)) {
@@ -361,7 +360,8 @@ fun HomeScreen(
             if (likeItemList.isNullOrEmpty()) {
                 Column(
                     Modifier
-                        .fillMaxWidth().padding(bottom = 40.dp)
+                        .fillMaxWidth()
+                        .padding(bottom = 40.dp)
                         .height(100.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally

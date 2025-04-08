@@ -52,11 +52,6 @@ class StompService {
 
     // STOMP 연결
     suspend fun connect() {
-        if (connectionState.value is ConnectionState.Connecting || connectionState.value is ConnectionState.Connected) {
-            Log.d(TAG, "이미 연결 중이거나 연결됨. 상태: ${connectionState.value}")
-            return
-        }
-
         val token = sharedPreferencesUtil.getTokens()?.accessToken
         Log.d(TAG, "connect: $token")
 
