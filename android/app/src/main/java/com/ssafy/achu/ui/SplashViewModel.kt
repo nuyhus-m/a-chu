@@ -58,24 +58,27 @@ class SplashViewModel : ViewModel() {
 
                 // ✅ Refresh Token 갱신 가능 기간이면 Refresh Token 재발급 시도
                 currentTime in refreshTokenRenewTime..<refreshTokenExpiryTime -> {
+                    Log.d(TAG, "checkAutoLogin: 1")
                     renewTokens(RefreshToken("Bearer $refreshToken"))
                 }
 
                 // ✅ Access Token이 아직 유효하면 로그인 유지
                 currentTime < accessTokenExpiryTime -> {
+                    Log.d(TAG, "checkAutoLogin: 2")
                     _loginState.value = LoginState.Authenticated
                 }
 
                 // ✅ Access Token 만료되었고 Refresh Token이 유효하면 Access Token 갱신
                 currentTime in accessTokenExpiryTime..<refreshTokenExpiryTime -> {
+                    Log.d(TAG, "checkAutoLogin: 3")
                     refreshAccessToken(RefreshToken("Bearer $refreshToken"))
                 }
 
                 // ❌ Refresh Token도 만료됨 → 로그인 필요
                 else -> {
+                    Log.d(TAG, "checkAutoLogin: 4")
                     _loginState.value = LoginState.NotAuthenticated
                 }
-
             }
         }
     }

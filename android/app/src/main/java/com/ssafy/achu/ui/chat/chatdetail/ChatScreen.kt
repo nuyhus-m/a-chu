@@ -172,7 +172,7 @@ fun ChatScreen(
         BasicDialog(
             text = "거래를 완료하시겠습니까?",
             onDismiss = { viewModel.showSoldDialog(false) },
-            onConfirm = { viewModel.completeTrade() }
+            onConfirm = { viewModel.completeTrade(activityUiState.selectedBaby!!.id) }
         )
     }
 }

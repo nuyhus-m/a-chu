@@ -49,10 +49,7 @@ sealed class Route {
     data class UploadProduct(val isModify: Boolean) : Route()
 
     @Serializable
-    data class Chat(val roomId: Int = -1) : Route() {
-        fun toRoute(): String = "chat/$roomId"
-    }
-
+    data class Chat(val roomId: Int = -1) : Route()
 }
 
 @Serializable

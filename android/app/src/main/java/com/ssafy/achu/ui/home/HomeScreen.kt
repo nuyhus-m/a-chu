@@ -97,6 +97,9 @@ fun HomeScreen(
         }
     }
 
+
+
+
     LaunchedEffect(Unit) {
         viewModel.errorMessage.collectLatest {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -321,7 +324,7 @@ fun HomeScreen(
                 RecommendGrid(
                     recommendItems,
                     onClick = { viewModel.getProductDetail(it) },
-                    onLikeClick = { homeViewModel.likeItem(it) },
+                    onLikeClick = { homeViewModel.likeItem(it, uiState.selectedBaby!!.id) },
                     onUnLikeClick = { homeViewModel.unlikeItem(it) }
                 )
             }
@@ -375,7 +378,7 @@ fun HomeScreen(
                                 viewModel.getProductDetail(likeItem.id)
                             },
                             likeCLicked = {
-                                homeViewModel.likeItem(likeItem.id)
+                                homeViewModel.likeItem(likeItem.id, uiState.selectedBaby!!.id)
                             },
                             unlikeClicked = {
                                 homeViewModel.unlikeItem(likeItem.id)

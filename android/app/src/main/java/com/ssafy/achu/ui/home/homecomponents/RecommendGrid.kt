@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -55,9 +56,15 @@ fun RecommendGrid(
 
     if (productResponses.size < 3) return
 
-    val heartClick0 = remember { mutableStateOf(productResponses[0].likedByUser) }
-    val heartClick1 = remember { mutableStateOf(productResponses[1].likedByUser) }
-    val heartClick2 = remember { mutableStateOf(productResponses[2].likedByUser) }
+   val heartClick0 =   remember(productResponses) {
+        mutableStateOf(productResponses[0].likedByUser)
+    }
+    val heartClick1 =  remember(productResponses) {
+        mutableStateOf(productResponses[1].likedByUser)
+    }
+    val heartClick2 =  remember(productResponses) {
+        mutableStateOf(productResponses[2].likedByUser)
+    }
 
     Row(
         modifier = Modifier
@@ -109,7 +116,6 @@ fun RecommendGrid(
                     .padding(8.dp),
             ) {
                 Row(
-
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
@@ -121,14 +127,17 @@ fun RecommendGrid(
                                 blurRadius = 4f
                             )
                         ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         color = White,
+                        modifier = Modifier.weight(0.8f)
                     )
-                    Spacer(Modifier.weight(1.0f))
+                    Spacer(Modifier.width(4.dp))
 
                     Image(
                         painter = painterResource(id = if (!heartClick0.value) R.drawable.ic_favorite_line else R.drawable.ic_favorite),
                         contentDescription = "Arrow",
-                        modifier = Modifier
+                        modifier = Modifier.weight(0.2f)
                             .size(24.dp)
                             .clickable {
 
@@ -140,7 +149,7 @@ fun RecommendGrid(
                                     heartClick0.value = false
                                 }
                             },
-                        colorFilter = ColorFilter.tint(if (!productResponses[0].likedByUser) LightGray else FontPink)
+                        colorFilter = ColorFilter.tint(if (!heartClick0.value) LightGray else FontPink)
                     )
 
                 }
@@ -154,6 +163,8 @@ fun RecommendGrid(
                         )
                     ),
                     color = FontPink,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
@@ -222,14 +233,16 @@ fun RecommendGrid(
                                     blurRadius = 4f
                                 )
                             ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             color = White,
+                            modifier = Modifier.weight(0.8f)
                         )
-                        Spacer(Modifier.weight(1.0f))
-
+                        Spacer(Modifier.width(4.dp))
                         Image(
                             painter = painterResource(id = if (!heartClick1.value) R.drawable.ic_favorite_line else R.drawable.ic_favorite),
                             contentDescription = "Arrow",
-                            modifier = Modifier
+                            modifier = Modifier.weight(0.2f)
                                 .size(20.dp)
                                 .clickable {
 
@@ -241,7 +254,7 @@ fun RecommendGrid(
                                         heartClick1.value = false
                                     }
                                 },
-                            colorFilter = ColorFilter.tint(if (!productResponses[1].likedByUser) LightGray else FontPink)
+                            colorFilter = ColorFilter.tint(if (!heartClick1.value) LightGray else FontPink)
                         )
 
                     }
@@ -257,6 +270,8 @@ fun RecommendGrid(
                             )
                         ),
                         color = FontPink,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -323,14 +338,16 @@ fun RecommendGrid(
                                     blurRadius = 4f
                                 )
                             ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             color = White,
+                            modifier = Modifier.weight(0.8f)
                         )
-                        Spacer(Modifier.weight(1.0f))
-
+                        Spacer(Modifier.width(4.dp))
                         Image(
                             painter = painterResource(id = if (!heartClick2.value) R.drawable.ic_favorite_line else R.drawable.ic_favorite),
                             contentDescription = "Arrow",
-                            modifier = Modifier
+                            modifier = Modifier.weight(0.2f)
                                 .size(20.dp)
                                 .clickable {
 
@@ -342,7 +359,7 @@ fun RecommendGrid(
                                         heartClick2.value = false
                                     }
                                 },
-                            colorFilter = ColorFilter.tint(if (!productResponses[2].likedByUser) LightGray else FontPink)
+                            colorFilter = ColorFilter.tint(if (!heartClick2.value) LightGray else FontPink)
                         )
 
                     }
@@ -358,6 +375,8 @@ fun RecommendGrid(
                             )
                         ),
                         color = FontPink,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 

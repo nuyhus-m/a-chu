@@ -209,7 +209,8 @@ fun ProductDetailScreen(
                 RecommendList(
                     onNavigateToRecommend = onNavigateToRecommend,
                     activityViewModel = activityViewModel,
-                    recommendList = recommendList
+                    recommendList = recommendList,
+                    babyId = activityUiState.selectedBaby!!.id
                 )
             }
         }
@@ -221,7 +222,7 @@ fun ProductDetailScreen(
             isSold = isSold,
             isPreview = isPreview,
             likedByUser = activityUiState.product.likedByUser,
-            onLikeClick = { viewModel.likeProduct(activityUiState.product.id) },
+            onLikeClick = { viewModel.likeProduct(activityUiState.product.id, activityUiState.selectedBaby!!.id) },
             onUnLikeClick = { viewModel.unlikeProduct(activityUiState.product.id) },
             onButtonClick = {
                 if (!isPreview) onNavigateToChat()
@@ -237,7 +238,8 @@ fun ProductDetailScreen(
                         )
                     )
                 } else viewModel.updateShowUploadDialog(true)
-            }
+            },
+            babyId = activityUiState.selectedBaby!!.id
         )
     }
 
@@ -289,7 +291,8 @@ private fun BottomBar(
     isPreview: Boolean,
     onLikeClick: () -> Unit,
     onUnLikeClick: () -> Unit,
-    onButtonClick: () -> Unit
+    onButtonClick: () -> Unit,
+    babyId: Int
 ) {
     Row(
         modifier = Modifier
@@ -349,6 +352,7 @@ private fun RecommendList(
     onNavigateToRecommend: () -> Unit,
     activityViewModel: ActivityViewModel,
     recommendList: List<ProductResponse>,
+    babyId: Int
 
     ) {
     Row(
@@ -375,8 +379,10 @@ private fun RecommendList(
     ) {
         RecommendList(
             items = recommendList,
-            onClick = { it -> activityViewModel.getProductDetail(it) },
-            viewModel = RecommendViewModel()
+            onClick = { productId -> activityViewModel.getProductDetail(productId) },
+            viewModel = RecommendViewModel(),
+            babyId = babyId
+
         )
     }
     Spacer(modifier = Modifier.height(24.dp))
@@ -483,7 +489,8 @@ private fun ProfileInfo(
 fun RecommendList(
     items: List<ProductResponse>,
     onClick: (Int) -> Unit,
-    viewModel: RecommendViewModel
+    viewModel: RecommendViewModel,
+    babyId: Int
 ) {
     LazyRow {
         items(items) { item ->
@@ -491,7 +498,7 @@ fun RecommendList(
                 product = item,
                 onClickItem = { onClick(it) }, // 클릭 시 ViewModel에서 Detail 요청
                 onLikeClick = { productId ->
-                    viewModel.likeItem(productId)
+                    viewModel.likeItem(productId, babyId)
                 },
                 onUnLikeClick = { productId ->
                     viewModel.unlikeItem(productId)
@@ -651,7 +658,8 @@ fun PreviewBottomBar() {
             onLikeClick = {},
             onButtonClick = {},
             isPreview = false,
-            onUnLikeClick = {}
+            onUnLikeClick = {},
+            babyId = 1
         )
     }
 }

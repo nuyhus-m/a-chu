@@ -130,7 +130,7 @@ class ActivityViewModel : ViewModel() {
 
     fun getProductDetail(productId: Int) {
         viewModelScope.launch {
-            productRepository.getProductDetail(productId)
+            productRepository.getProductDetail(productId, uiState.value.selectedBaby!!.id)
                 .onSuccess { response ->
                     Log.d(TAG, "getProductDetail: $response")
                     if (response.result == SUCCESS) {
@@ -147,6 +147,8 @@ class ActivityViewModel : ViewModel() {
                     Log.d(TAG, "getProductDetail error: ${it.message}")
                     _getProductSuccess.emit(false)
                     _errorMessage.emit(errorResponse.message)
+                    Log.d(TAG, "getProductDetail: ${uiState.value.selectedBaby!!.id}")
+                    
                 }
         }
     }

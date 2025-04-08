@@ -53,6 +53,8 @@ fun LikeItemListScreen(
     activityViewModel: ActivityViewModel
 ) {
 
+    val uiState by activityViewModel.uiState.collectAsState()
+
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -145,7 +147,7 @@ fun LikeItemListScreen(
                                         productName = item.title,
                                         price = item.price,
                                         onClickItem = { activityViewModel.getProductDetail(item.id) },
-                                        productLike = { viewModel.likeItem(item.id) },
+                                        productLike = { viewModel.likeItem(item.id,uiState.selectedBaby!!.id) },
                                         productUnlike = { viewModel.unlikeItem(item.id) }
                                     )
                                 }

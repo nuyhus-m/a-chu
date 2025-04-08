@@ -7,6 +7,7 @@ import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.LikeProduct
 import com.ssafy.achu.data.model.product.ModifyProductRequest
 import com.ssafy.achu.data.model.product.ProductDetailResponse
+import com.ssafy.achu.data.model.product.ProductRequestBabyId
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.data.model.product.UploadProductRequest
 import com.ssafy.achu.data.network.RetrofitUtil
@@ -87,10 +88,11 @@ class ProductRepository {
     }
 
     suspend fun getProductDetail(
-        productId: Int
+        productId: Int,
+        babyId: Int
     ): Result<ApiResult<ProductDetailResponse>> {
         return runCatching {
-            productService.getProductDetail(productId)
+            productService.getProductDetail(productId, babyId)
         }
     }
 
@@ -103,10 +105,11 @@ class ProductRepository {
     }
 
     suspend fun likeProduct(
-        productId: Int
+        productId: Int,
+        babyId:Int
     ): Result<ApiResult<Unit>> {
         return runCatching {
-            productService.likeProduct(productId)
+            productService.likeProduct(productId, ProductRequestBabyId(babyId))
         }
     }
 

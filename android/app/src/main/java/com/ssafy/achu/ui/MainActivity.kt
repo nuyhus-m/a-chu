@@ -142,8 +142,7 @@ fun AchuApp(viewModel: ActivityViewModel, targetRoute: String?, requestId: Strin
                     navController.navigate(Route.TradeList)
                 }
                 "Chat" -> {
-                    val route = Route.Chat(roomId = requestId.toInt())
-                    navController.navigate(route)
+                    navController.navigate( BottomNavRoute.ChatList)
                 }
             }
             delay(300)

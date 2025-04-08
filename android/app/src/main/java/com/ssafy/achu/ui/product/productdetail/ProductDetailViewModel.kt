@@ -75,9 +75,9 @@ class ProductDetailViewModel : ViewModel() {
         }
     }
 
-    fun likeProduct(productId: Int) {
+    fun likeProduct(productId: Int, babyId: Int) {
         viewModelScope.launch {
-            productRepository.likeProduct(productId)
+            productRepository.likeProduct(productId, babyId)
                 .onSuccess { response ->
                     Log.d(TAG, "likeProduct: $response")
                     if (response.result == SUCCESS) {

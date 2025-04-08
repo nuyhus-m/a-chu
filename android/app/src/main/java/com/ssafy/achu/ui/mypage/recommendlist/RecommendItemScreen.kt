@@ -254,7 +254,7 @@ fun BabyListItem(
                             product = item,
                             onClickItem = { onClick() }, // 클릭 시 ViewModel에서 Detail 요청
                             onLikeClick = { productId ->
-                                viewModel.likeItem(productId)
+                                viewModel.likeItem(productId, babyInfo.id)
                             },
                             onUnLikeClick = { productId ->
                                 viewModel.unlikeItem(productId)

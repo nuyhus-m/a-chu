@@ -12,6 +12,7 @@ import com.ssafy.achu.core.util.Constants.LATEST
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
+import com.ssafy.achu.data.model.product.ProductRequestBabyId
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -213,9 +214,9 @@ class ProductListViewModel(
         }
     }
 
-    fun likeProduct(productId: Int, index: Int) {
+    fun likeProduct(productId: Int, index: Int, babyId: Int) {
         viewModelScope.launch {
-            productRepository.likeProduct(productId)
+            productRepository.likeProduct(productId, babyId)
                 .onSuccess { response ->
                     Log.d(TAG, "likeProduct: $response")
                     if (response.result == SUCCESS) {
