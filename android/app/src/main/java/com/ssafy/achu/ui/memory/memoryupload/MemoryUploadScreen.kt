@@ -197,7 +197,7 @@ fun MemoryUploadScreen(
                         .background(LightPink)
                         .height(350.dp),
                 ) {
-                    LoadingImgScreen("이미지 로딩중...", Modifier.fillMaxWidth(), 16, 200)
+                    LoadingImgScreen("이미지 로딩중...", Modifier.fillMaxWidth(), 16, 250)
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -374,7 +374,7 @@ fun MemoryUploadScreen(
                     trailingIcon = {
                         Text(
                             text = "${memoryUIState.memoryTitle.length}/$maxTitleLength",
-                            color = FontGray,
+                            color = PointPink,
                             style = AchuTheme.typography.regular14,
                             modifier = Modifier.padding(end = 16.dp)
                         )
@@ -416,7 +416,7 @@ fun MemoryUploadScreen(
                             , // 텍스트 필드 정렬
                         placeholder = {
                             Text(
-                                "${getProductWithParticle(productName)} 함께한 추억을 기록해보세요!\n최대 6줄 입력가능",
+                                "${getProductWithParticle(productName)} 함께한 추억을 기록해보세요!\n(최대 6줄 입력가능)",
                                 color = FontGray
                             )
                         },
@@ -474,6 +474,7 @@ fun MemoryUploadScreen(
 @Composable
 fun MemoryUploadScreenPreview() {
     AchuTheme {
+
         MemoryUploadScreen(
             onNavigateToMemoryDetail = { memoryId, babyId ->
             },

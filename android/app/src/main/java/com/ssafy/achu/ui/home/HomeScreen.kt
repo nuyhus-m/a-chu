@@ -131,6 +131,10 @@ fun HomeScreen(
     var currentIndex by remember { mutableStateOf(imageList.size) }
     val scrollState = rememberScrollState() // 스크롤 상태 저장
 
+    if (uiState.selectedBaby != null) {
+        viewModel.getRecommendItemList(uiState.selectedBaby!!.id)
+    }
+
     DisposableEffect(Unit) {
         onDispose {
             viewModel.updateShowCreateDialog(false)
@@ -150,7 +154,7 @@ fun HomeScreen(
             LaunchedEffect(uiState.babyList) {
                 if (uiState.selectedBaby == null) {
                     viewModel.updateSelectedBaby(uiState.babyList[0])
-                    if (uiState.babyList.size == 1){
+                    if (uiState.babyList.size == 1) {
                         sharedPreferencesUtil.saveIsAutoLogin(false)
                     }
                 }
@@ -332,8 +336,12 @@ fun HomeScreen(
                 RecommendGrid(
                     recommendItems,
                     onClick = { viewModel.getProductDetail(it) },
-                    onLikeClick = { homeViewModel.likeItem(it, uiState.selectedBaby!!.id) },
-                    onUnLikeClick = { homeViewModel.unlikeItem(it) }
+                    onLikeClick = {
+                        homeViewModel.likeItem(it, uiState.selectedBaby!!.id)
+                    },
+                    onUnLikeClick = {
+                        homeViewModel.unlikeItem(it)
+                    }
                 )
             }
 

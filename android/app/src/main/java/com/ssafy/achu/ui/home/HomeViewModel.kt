@@ -79,6 +79,7 @@ class HomeViewModel: ViewModel() {
         viewModelScope.launch {
             productRepository.likeProduct(productId, babyId).onSuccess {
                 Log.d(TAG, "likeItem: ${it}")
+                getLikeItemList()
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "likeItem: ${errorResponse}")
