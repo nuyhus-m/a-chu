@@ -1,7 +1,6 @@
 package com.ssafy.achu.ui.chat.chatdetail
 
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -173,8 +172,10 @@ fun ChatScreen(
             value = uiState.inputText,
             onValueChange = { if (it.length < 2001) viewModel.updateInputText(it) },
             onSendClick = {
-                if (!uiState.hasChatRoom && uiState.isFirst) viewModel.createChatRoom()
-                else viewModel.sendMessage()
+                if (uiState.buttonState) {
+                    if (!uiState.hasChatRoom && uiState.isFirst) viewModel.createChatRoom()
+                    else viewModel.sendMessage()
+                }
             }
         )
 

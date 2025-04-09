@@ -150,6 +150,11 @@ class ChatViewModel(
 
     // 채팅방 생성
     fun createChatRoom() {
+        _uiState.update {
+            it.copy(
+                buttonState = false
+            )
+        }
         viewModelScope.launch {
             chatRepository.createChatRoom(
                 ChatRoomRequest(
@@ -167,7 +172,8 @@ class ChatViewModel(
                         it.copy(
                             hasChatRoom = true,
                             isFirst = false,
-                            inputText = ""
+                            inputText = "",
+                            buttonState = true
                         )
                     }
                 }
@@ -256,6 +262,11 @@ class ChatViewModel(
 
     // 메시지 전송
     fun sendMessage() {
+        _uiState.update {
+            it.copy(
+                buttonState = false
+            )
+        }
         viewModelScope.launch {
             stompService.sendRequest(
                 "/send/chat/rooms/$roomId/messages",
@@ -264,11 +275,12 @@ class ChatViewModel(
                     type = TEXT
                 )
             )
-        }
-        _uiState.update { currentState ->
-            currentState.copy(
-                inputText = ""
-            )
+            _uiState.update { currentState ->
+                currentState.copy(
+                    inputText = "",
+                    buttonState = true
+                )
+            }
         }
     }
 
