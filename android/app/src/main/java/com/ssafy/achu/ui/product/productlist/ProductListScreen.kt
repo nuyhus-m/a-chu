@@ -88,6 +88,10 @@ fun ProductListScreen(
     val listState = rememberLazyListState()
     val context = LocalContext.current
 
+    LaunchedEffect(Unit) {
+        activityViewModel.getUnreadCount()
+    }
+
     LaunchedEffect(uiState.selectedCategoryId, uiState.query) {
         listState.scrollToItem(0)
         viewModel.updateCurrentOffset(0)

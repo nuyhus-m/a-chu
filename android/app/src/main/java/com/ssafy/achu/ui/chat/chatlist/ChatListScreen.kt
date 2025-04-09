@@ -63,6 +63,9 @@ fun ChatListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        activityViewModel.getUnreadCount()
+    }
 
     LaunchedEffect(Unit) {
         activityViewModel.uiState.value.user?.let {
