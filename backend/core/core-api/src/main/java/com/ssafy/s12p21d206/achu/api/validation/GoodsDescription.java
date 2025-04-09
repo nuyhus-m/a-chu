@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = GoodsDescriptionValidator.class)
 public @interface GoodsDescription {
-  String message() default "물건 등록 시 설명은 한글, 영어, 숫자, 특수문자, 이모지 포함 2~200자여야 하며, 앞뒤 공백은 허용되지 않습니다.";
+  String message() default "물건 등록 시 설명은 한글, 영어, 숫자, 특수문자 포함 2~200자여야 하며, 앞뒤 공백과 이모지는 허용되지 않습니다.";
 
   Class<?>[] groups() default {};
 
