@@ -27,6 +27,11 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
   public Message<?> preSend(Message<?> message, MessageChannel channel) {
     StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
+    // STOMP 명령이 없는 경우 (예: heartbeat) 처리 생략
+    if (accessor.getCommand() == null) {
+      return message; // 헤더 검증 없이 그대로 반환
+    }
+
     String authorizationHeader = accessor.getFirstNativeHeader("Authorization");
 
     if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
