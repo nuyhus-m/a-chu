@@ -17,32 +17,30 @@ public class FcmNotifier {
   }
 
   public void send(FcmMessage message, Long userId) {
-    Notification notification =
-        Notification.builder().setTitle(message.title()).setBody(message.body()).build();
+    Notification notification = Notification.builder()
+        .setTitle(message.data().get("title"))
+        .setBody(message.data().get("body"))
+        .build();
 
     Message firebaseMessage = Message.builder()
-        .setToken(message.token())
+        .setToken(message.to())
         .setNotification(notification)
         .putAllData(message.data())
         .build();
 
     try {
-      String response = firebaseMessaging.send(firebaseMessage);
-      log.info("✅ FCM 전송 성공: userId={}, token={}, message={}", userId, message.token(), message);
+      firebaseMessaging.send(firebaseMessage);
+      log.info("✅ FCM 전송 성공: userId={}, token={}, message={}", userId, message.to(), message);
     } catch (FirebaseMessagingException e) {
       var errorCode = e.getMessagingErrorCode();
 
       if (errorCode == MessagingErrorCode.UNREGISTERED
           || errorCode == MessagingErrorCode.INVALID_ARGUMENT) {
-        log.warn("❌ 유효하지 않은 FCM 토큰 → 삭제: userId={}, token={}", userId, message.token());
+        log.warn("❌ 유효하지 않은 FCM 토큰 → 삭제: userId={}, token={}", userId, message.to());
         fcmTokenDeleter.delete(new FcmUser(userId));
       } else {
         log.error(
-            "🔥 FCM 전송 실패: userId={}, token={}, error={}",
-            userId,
-            message.token(),
-            e.getMessage(),
-            e);
+            "🔥 FCM 전송 실패: userId={}, token={}, error={}", userId, message.to(), e.getMessage(), e);
       }
     }
   }
