@@ -26,5 +26,6 @@ data class UploadProductUiState(
     val isDescriptionValid: Boolean = false,
     val isBabyValid: Boolean = false,
 
-    val buttonState: Boolean = false
-)
+    val showUploadDialog: Boolean = false,
+
+    )

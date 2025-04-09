@@ -66,6 +66,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.rememberAsyncImagePainter
 import com.ssafy.achu.R
+import com.ssafy.achu.core.LoadingImg
+import com.ssafy.achu.core.LoadingScreen
 import com.ssafy.achu.core.components.CenterTopAppBar
 import com.ssafy.achu.core.components.LabelWithErrorMsg
 import com.ssafy.achu.core.components.PointBlueButton
@@ -82,6 +84,8 @@ import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.data.model.baby.BabyResponse
 import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.ui.ActivityViewModel
+import com.ssafy.achu.ui.product.productlist.UploadDialog
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 private const val TAG = "UploadProductScreen"
@@ -96,7 +100,9 @@ fun UploadProductScreen(
     activityViewModel: ActivityViewModel,
     isModify: Boolean,
     onBackClick: () -> Unit,
-    onNavigateToDetail: () -> Unit = {}
+    onNavigateToMemoryUpload: (Int, String) -> Unit,
+    onNavigateToProductList: () -> Unit
+
 ) {
 
     val context = LocalContext.current
@@ -108,18 +114,50 @@ fun UploadProductScreen(
 
     val scrollState = rememberScrollState()
 
+    var isLoading by remember { mutableStateOf(false) }
+
+    var canClick by remember { mutableStateOf(true) }
+
+        LaunchedEffect(Unit) {
+            delay(2000) // 2초 동안 클릭 막기
+            canClick = true
+        }
+
+
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
         val validUris = uris.filter { uri -> isImageValid(context, uri) }
 
-        // 유효한 이미지가 없으면 리턴
         if (validUris.isEmpty()) return@rememberLauncherForActivityResult
 
         if (uiState.imgUris.size + validUris.size <= 3) {
-            viewModel.updateImageUris(uiState.imgUris + validUris)
+            val newUris = uiState.imgUris + validUris
+            viewModel.updateImageUris(newUris)
+
+            val multipartFiles = newUris.mapNotNull { uri -> uriToMultipart(context, uri,name = "images" ) }
+            viewModel.updateSelectedImages(multipartFiles)
+
+            Log.d(TAG, "UploadProductScreen: ${viewModel.multipartImages.size}")
+
         } else {
-            Toast.makeText(context, context.getString(R.string.image_max_3), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.image_max_3), Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        isLoading = false
+        viewModel.navigateEvents.collectLatest {
+            if (it) {
+                onNavigateToMemoryUpload(
+                    activityUiState.uploadProductRequest?.babyId ?: 0,
+                    activityUiState.uploadProductRequest?.title ?: ""
+                )
+            } else {
+                onNavigateToProductList()
+            }
         }
     }
 
@@ -143,6 +181,7 @@ fun UploadProductScreen(
     LaunchedEffect(Unit) {
         viewModel.toastMessage.collectLatest { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            isLoading = false
         }
     }
 
@@ -198,6 +237,7 @@ fun UploadProductScreen(
                         onClick = { launcher.launch("image/*") }
                     )
                     Spacer(modifier = Modifier.width(8.dp))
+
 
                     LazyRow {
                         itemsIndexed(uiState.imgUris) { index, uri ->
@@ -280,7 +320,10 @@ fun UploadProductScreen(
             PriceInputField(
                 value = uiState.price,
                 onValueChange = {
-                    val filtered = it.replace(Regex("[^0-9]"), "")                    // 빈 값이면 0 처리 등 선택적으로 처리 가능
+                    val filtered = it.replace(
+                        Regex("[^0-9]"),
+                        ""
+                    )                    // 빈 값이면 0 처리 등 선택적으로 처리 가능
                     val intValue = filtered.toIntOrNull()
                     if (filtered.length >= 11 || (intValue != null && intValue < 0)) {
                         Toast.makeText(context, "가격은 0이상 10억 미만만 가능 합니다", Toast.LENGTH_SHORT).show()
@@ -350,36 +393,78 @@ fun UploadProductScreen(
             PointBlueButton(
                 buttonText = stringResource(R.string.write_complete),
                 onClick = {
-                    if (!isModify) {
-                        onNavigateToDetail()
-                        // 모든 이미지를 멀티파트로 변환
-                        val multipartFiles =
-                            uiState.imgUris.mapNotNull { uri ->
-                                uriToMultipart(
-                                    context,
-                                    uri,
-                                    "images"
-                                )
-                            }
-                        viewModel.updateSelectedImages(multipartFiles)
-                        Log.d(TAG, "UploadProductScreen: ${viewModel.multipartImages.size}")
-                        val product = viewModel.uiStateToProductDetailResponse(
-                            activityUiState.user?.nickname ?: "",
-                            activityUiState.user?.profileImageUrl ?: ""
-                        )
-                        activityViewModel.saveProductDetail(product, uiState.imgUris)
-                        activityViewModel.saveProductInfo(
-                            uploadProductRequest = viewModel.uiStateToUploadProductRequest(),
-                            multiPartImages = viewModel.multipartImages,
-                            babyName = uiState.selectedBaby?.nickname ?: ""
-                        )
-                    } else {
+                    if (isModify) {
                         viewModel.modifyProduct(activityUiState.product.id)
+
+                    } else {
+                        if (uiState.title == "" || uiState.description == "") {
+                            Toast.makeText(context, "제목과 내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                        }else if (uiState.imgUris.isEmpty()) {
+                            Toast.makeText(context, "최소 1장 이상의 사진이 필요합니다.", Toast.LENGTH_SHORT)
+                                .show()
+                        } else if (uiState.selectedCategory == null) {
+                            Toast.makeText(context, "카테고리를 선택해 주세요.", Toast.LENGTH_SHORT).show()
+                        } else if (uiState.price == "") {
+                            Toast.makeText(context, "가격을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            viewModel.updateShowUploadDialog(true)
+                            Log.d(TAG, "UploadProductScreen: ${viewModel.multipartImages.size}")
+                            val product = viewModel.uiStateToProductDetailResponse(
+                                activityUiState.user?.nickname ?: "",
+                                activityUiState.user?.profileImageUrl ?: ""
+                            )
+                            activityViewModel.saveProductDetail(product, uiState.imgUris)
+                            activityViewModel.saveProductInfo(
+                                uploadProductRequest = viewModel.uiStateToUploadProductRequest(),
+                                multiPartImages = viewModel.multipartImages,
+                                babyName = uiState.selectedBaby?.nickname ?: ""
+                            )
+
+                        }
                     }
                 },
-                enabled = uiState.buttonState
+
             )
         }
+
+    }
+
+    if (uiState.showUploadDialog) {
+
+        UploadDialog(
+            productName = activityUiState.uploadProductRequest?.title ?: "",
+            babyName = activityUiState.uploadBabyName,
+            onUpload = {
+                isLoading = true
+                if (canClick){
+                    canClick = false
+                viewModel.uploadProduct(
+                    uploadProductRequest = activityUiState.uploadProductRequest!!,
+                    images = activityUiState.multiPartImages,
+                    isWithMemory = false
+                )
+                }
+            },
+            onUploadWithMemory = {
+                isLoading = true
+                if (canClick){
+                    canClick = false
+                    viewModel.uploadProduct(
+                        uploadProductRequest = activityUiState.uploadProductRequest!!,
+                        images = activityUiState.multiPartImages,
+                        isWithMemory = true
+                    )
+                }
+
+            },
+            onBackgroundClick = {
+                viewModel.updateShowUploadDialog(false)
+            }
+        )
+    }
+
+    if (isLoading) {
+        LoadingScreen("물건 업로드중\n잠시만 기다려주세요!")
     }
 }
 
@@ -423,10 +508,14 @@ fun ImageItem(uri: Uri, onDelete: () -> Unit = {}, isFirst: Boolean = false) {
                 .align(Alignment.Center)
                 .clip(RoundedCornerShape(8.dp)),
         ) {
+
+            Box() {
+                LoadingImg("", Modifier.fillMaxSize(), 30)
+            }
             Image(
                 painter = rememberAsyncImagePainter(uri),
                 contentDescription = stringResource(R.string.selected_image),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
             )
 
             // "대표사진" 라벨 (첫 번째 아이템에만)
@@ -575,7 +664,8 @@ fun DescriptionInputField(
         value = value,
         onValueChange = onValueChange,
         modifier = Modifier
-            .fillMaxWidth().height(150.dp),
+            .fillMaxWidth()
+            .height(150.dp),
         textStyle = AchuTheme.typography.regular16,
         shape = RoundedCornerShape(8.dp),
         colors = OutlinedTextFieldDefaults.colors(
@@ -655,7 +745,9 @@ fun UploadProductScreenPreview() {
         UploadProductScreen(
             activityViewModel = viewModel(),
             isModify = false,
-            onBackClick = {}
+            onBackClick = {},
+            onNavigateToMemoryUpload = { _, _ -> },
+            onNavigateToProductList = {}
         )
     }
 }

@@ -75,6 +75,7 @@ import com.ssafy.achu.data.model.product.CategoryResponse
 import com.ssafy.achu.data.model.product.ProductResponse
 import com.ssafy.achu.data.model.product.Seller
 import com.ssafy.achu.ui.ActivityViewModel
+import com.ssafy.achu.ui.product.productlist.UploadDialog
 import kotlinx.coroutines.flow.collectLatest
 
 private const val TAG = "ProductDetailScreen"
@@ -85,18 +86,14 @@ fun ProductDetailScreen(
     modifier: Modifier = Modifier,
     viewModel: ProductDetailViewModel = viewModel(),
     activityViewModel: ActivityViewModel,
-    isPreview: Boolean = false,
     onBackClick: () -> Unit,
     onNavigateToUpload: () -> Unit,
     onNavigateToChat: () -> Unit,
     onNavigateToRecommend: () -> Unit,
-    onNavigateToMemoryUpload: (Int, String) -> Unit,
-    onNavigateToProductList: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val activityUiState by activityViewModel.uiState.collectAsState()
     val recommendViewModel: RecommendViewModel = viewModel()
-    val recommendUiState by recommendViewModel.recommendMap.collectAsState()
 
     val isSeller = activityUiState.user?.nickname == activityUiState.product.seller.nickname
     val isSold = activityUiState.product.tradeStatus == SOLD
@@ -104,7 +101,7 @@ fun ProductDetailScreen(
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 
-    var isLoading by remember { mutableStateOf(false) }
+
 
     LaunchedEffect(Unit) {
         viewModel.toastMessage.collectLatest { message ->
@@ -134,19 +131,7 @@ fun ProductDetailScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        isLoading = false
-        viewModel.navigateEvents.collectLatest {
-            if (it) {
-                onNavigateToMemoryUpload(
-                    activityUiState.uploadProductRequest?.babyId ?: 0,
-                    activityUiState.uploadProductRequest?.title ?: ""
-                )
-            } else {
-                onNavigateToProductList()
-            }
-        }
-    }
+
 
     LaunchedEffect(Unit) {
         recommendViewModel.getRecommendList(activityUiState.selectedBaby!!.id)
@@ -159,13 +144,13 @@ fun ProductDetailScreen(
     ) {
         // 탑바
         TopBarWithMenu(
-            title = if (isPreview) stringResource(R.string.upload_preview) else stringResource(R.string.product_detail),
+            title =  stringResource(R.string.product_detail),
             onBackClick = onBackClick,
             menuFirstText = stringResource(R.string.modify),
             menuSecondText = stringResource(R.string.delete),
             onMenuFirstItemClick = onNavigateToUpload,
             onMenuSecondItemClick = { viewModel.updateShowDeleteDialog(true) },
-            isMenuVisible = isSeller && !isSold && !isPreview
+            isMenuVisible = isSeller && !isSold
         )
 
         Column(
@@ -173,18 +158,12 @@ fun ProductDetailScreen(
                 .weight(1f)
                 .verticalScroll(scrollState)
         ) {
-            // 이미지 페이저
-            if (!isPreview) {
+
                 ImagePager(
                     images = activityUiState.product.imgUrls
                 )
-            } else {
-                ImageUriPager(
-                    images = activityUiState.previewImgUris
-                )
-            }
 
-            // 프로필
+
             ProfileInfo(
                 seller = activityUiState.product.seller,
                 isSold = isSold
@@ -195,20 +174,20 @@ fun ProductDetailScreen(
                 title = activityUiState.product.title,
                 description = activityUiState.product.description,
                 category = activityUiState.product.category,
-                date = if (!isPreview) formatDate(activityUiState.product.createdAt) else activityUiState.product.createdAt
+                date =  formatDate(activityUiState.product.createdAt)
             )
 
             val recommendMap by recommendViewModel.recommendMap.collectAsState()
             val recommendList = recommendMap[activityUiState.selectedBaby!!.id] ?: emptyList()
-            // 추천 리스트
-            if (!isPreview) {
+
+
                 RecommendList(
                     onNavigateToRecommend = onNavigateToRecommend,
                     activityViewModel = activityViewModel,
                     recommendList = recommendList,
                     babyId = activityUiState.selectedBaby!!.id
                 )
-            }
+
         }
 
         BottomBar(
@@ -216,7 +195,6 @@ fun ProductDetailScreen(
             price = activityUiState.product.price,
             isSeller = isSeller,
             isSold = isSold,
-            isPreview = isPreview,
             likedByUser = activityUiState.product.likedByUser,
             onLikeClick = {
                 viewModel.likeProduct(
@@ -226,8 +204,7 @@ fun ProductDetailScreen(
             },
             onUnLikeClick = { viewModel.unlikeProduct(activityUiState.product.id) },
             onButtonClick = {
-                if (!isPreview) onNavigateToChat()
-                else viewModel.updateShowUploadDialog(true)
+                onNavigateToChat()
             },
             babyId = activityUiState.selectedBaby!!.id
         )
@@ -243,32 +220,6 @@ fun ProductDetailScreen(
         )
     }
 
-    if (uiState.showUploadDialog) {
-        UploadDialog(
-            productName = activityUiState.uploadProductRequest?.title ?: "",
-            babyName = activityUiState.uploadBabyName,
-            onUpload = {
-                isLoading = true
-                viewModel.uploadProduct(
-                    uploadProductRequest = activityUiState.uploadProductRequest!!,
-                    images = activityUiState.multiPartImages,
-                    isWithMemory = false
-                )
-            },
-            onUploadWithMemory = {
-                isLoading = true
-                viewModel.uploadProduct(
-                    uploadProductRequest = activityUiState.uploadProductRequest!!,
-                    images = activityUiState.multiPartImages,
-                    isWithMemory = true
-                )
-            }
-        )
-    }
-
-    if (isLoading) {
-        LoadingScreen("물건 업로드중\n잠시만 기다려주세요!")
-    }
 }
 
 @Composable
@@ -278,7 +229,6 @@ private fun BottomBar(
     price: Long,
     isSeller: Boolean,
     isSold: Boolean,
-    isPreview: Boolean,
     onLikeClick: () -> Unit,
     onUnLikeClick: () -> Unit,
     onButtonClick: () -> Unit,
@@ -300,7 +250,6 @@ private fun BottomBar(
                 .size(32.dp)
                 .clickable(
                     onClick = if (likedByUser) onUnLikeClick else onLikeClick,
-                    enabled = !isPreview
                 ),
         )
         if (likeCount > 0) {
@@ -325,12 +274,12 @@ private fun BottomBar(
         Spacer(modifier = Modifier.weight(1f))
         Button(
             onClick = onButtonClick,
-            enabled = (!isSeller && !isSold && !isPreview) || isPreview,
+            enabled = (!isSeller && !isSold),
             modifier = Modifier
                 .height(50.dp)
         ) {
             Text(
-                text = if (isPreview) stringResource(R.string.register) else stringResource(R.string.go_chat),
+                text =  stringResource(R.string.go_chat),
                 style = AchuTheme.typography.semiBold20White
             )
         }
@@ -626,8 +575,8 @@ fun PreviewProductDetailScreen() {
             onNavigateToUpload = {},
             onNavigateToChat = {},
             onNavigateToRecommend = {},
-            onNavigateToMemoryUpload = { _, _ -> },
-            onNavigateToProductList = {}, viewModel = viewModel(), activityViewModel = viewModel()
+            activityViewModel = ActivityViewModel(),
+            viewModel = ProductDetailViewModel(),
         )
     }
 }
@@ -659,7 +608,6 @@ fun PreviewBottomBar() {
             likedByUser = true,
             onLikeClick = {},
             onButtonClick = {},
-            isPreview = false,
             onUnLikeClick = {},
             babyId = 1
         )

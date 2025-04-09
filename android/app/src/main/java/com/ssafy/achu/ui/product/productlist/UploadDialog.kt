@@ -1,4 +1,4 @@
-package com.ssafy.achu.ui.product.productdetail
+package com.ssafy.achu.ui.product.productlist
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,7 +36,8 @@ fun UploadDialog(
     productName: String,
     babyName: String,
     onUpload: () -> Unit,
-    onUploadWithMemory: () -> Unit
+    onUploadWithMemory: () -> Unit,
+    onBackgroundClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -46,7 +47,7 @@ fun UploadDialog(
             .clickable(
                 indication = null, // 리플 효과 제거
                 interactionSource = remember { MutableInteractionSource() }
-            ) { }, // 다이얼로그 주변 여백
+            ) {onBackgroundClick() }, // 다이얼로그 주변 여백
         contentAlignment = Alignment.Center
     ) {
         Box(
@@ -169,6 +170,7 @@ fun PreviewUploadDialog() {
             babyName = "두식이",
             onUpload = {},
             onUploadWithMemory = {}
+            , onBackgroundClick = {}
         )
     }
 }

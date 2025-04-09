@@ -45,13 +45,7 @@ class ProductDetailViewModel : ViewModel() {
         }
     }
 
-    fun updateShowUploadDialog(dialogState: Boolean) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                showUploadDialog = dialogState
-            )
-        }
-    }
+
 
     fun deleteProduct(productId: Int) {
         viewModelScope.launch {
@@ -109,29 +103,6 @@ class ProductDetailViewModel : ViewModel() {
         }
     }
 
-    fun uploadProduct(
-        uploadProductRequest: UploadProductRequest,
-        images: List<MultipartBody.Part>,
-        isWithMemory: Boolean
-    ) {
-        viewModelScope.launch {
-            productRepository.uploadProduct(
-                images = images,
-                request = uploadProductRequest,
-            ).onSuccess { response ->
-                Log.d(TAG, "uploadProduct: $response")
-                if (response.result == SUCCESS) {
-                    _navigateEvents.emit(isWithMemory)
-                    updateShowUploadDialog(false)
-                }
-            }.onFailure {
-                val errorResponse = it.getErrorResponse(retrofit)
-                Log.d(TAG, "uploadProduct errorResponse: $errorResponse")
-                Log.d(TAG, "uploadProduct error: ${it.message}")
-                _toastMessage.emit(errorResponse.message)
-                updateShowUploadDialog(false)
-            }
-        }
-    }
+
 }
 

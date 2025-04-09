@@ -299,37 +299,6 @@ fun NavGraph(
                 activityViewModel = activityViewModel,
                 isModify = isModify,
                 onBackClick = { navController.popBackStack() },
-                onNavigateToDetail = {
-                    navController.navigate(
-                        route = Route.ProductDetail(
-                            isPreview = true
-                        )
-                    ) {
-                        launchSingleTop = true
-                    }
-                }
-            )
-        }
-
-        composable<Route.ProductDetail> { backStackEntry ->
-            val isPreview = backStackEntry.toRoute<Route.ProductDetail>().isPreview
-            ProductDetailScreen(
-                activityViewModel = activityViewModel,
-                isPreview = isPreview,
-                onBackClick = { navController.popBackStack() },
-                onNavigateToUpload = {
-                    navController.navigate(
-                        route = Route.UploadProduct(
-                            isModify = true
-                        )
-                    ) {
-                        launchSingleTop = true
-                    }
-                },
-                onNavigateToChat = {
-                    navController.navigate(route = Route.Chat())
-                },
-                onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) },
                 onNavigateToMemoryUpload = { babyId, productName ->
                     navController.navigate(
                         route = Route.MemoryUpload(
@@ -349,6 +318,27 @@ fun NavGraph(
                         }
                     }
                 }
+            )
+        }
+
+        composable<Route.ProductDetail> { backStackEntry ->
+            ProductDetailScreen(
+                activityViewModel = activityViewModel,
+                onBackClick = { navController.popBackStack() },
+                onNavigateToUpload = {
+                    navController.navigate(
+                        route = Route.UploadProduct(
+                            isModify = true
+                        )
+                    ) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToChat = {
+                    navController.navigate(route = Route.Chat())
+                },
+                onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) },
+
             )
         }
 

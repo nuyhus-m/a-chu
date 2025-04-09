@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.text.trimmedLength
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -54,8 +55,13 @@ class UploadProductViewModel(
     private val _isModifySuccess = MutableSharedFlow<Boolean>()
     val isModifySuccess: SharedFlow<Boolean> = _isModifySuccess.asSharedFlow()
 
-    private val titleRegex = Regex("^\\S.{0,18}\\S$")
-    private val descriptionRegex = Regex("^\\S.{0,198}\\S$")
+    private val _navigateEvents = MutableSharedFlow<Boolean>()
+    val navigateEvents: SharedFlow<Boolean> = _navigateEvents.asSharedFlow()
+
+
+
+    private val titleRegex = Regex("^.{0,18}$")
+    private val descriptionRegex = Regex("^.{0,198}$")
     private val priceRegex = Regex("^[0-9]{1,10}$")
     private val tempRegex = Regex("""^[^"\\]*$""")
 
@@ -63,11 +69,19 @@ class UploadProductViewModel(
         getCategoryList()
     }
 
+
+    fun updateShowUploadDialog(dialogState: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                showUploadDialog = dialogState
+            )
+        }
+    }
+
     fun updateImageUris(uris: List<Uri>) {
         _uiState.update { currentState ->
             currentState.copy(imgUris = uris)
         }
-        updateButtonState()
     }
 
     fun updateTitle(title: String) {
@@ -77,19 +91,13 @@ class UploadProductViewModel(
                 titleErrorMessage =
                     if (!tempRegex.matches(title)) {
                         "* \" 또는 \\ 는 포함할 수 없습니다."
-                    } else if (!titleRegex.matches(title)) {
-                        "* 앞뒤 공백 없이 2~20자로 입력해주세요."
                     } else {
                         ""
                     },
                 isTitleValid = titleRegex.matches(title) && tempRegex.matches(title)
             )
         }
-        if (isModify) {
-            updateModifyButtonState()
-        } else {
-            updateButtonState()
-        }
+
     }
 
     fun updatePrice(price: String) {
@@ -99,17 +107,13 @@ class UploadProductViewModel(
 
         _uiState.update { currentState ->
             currentState.copy(
-                price = price,
+                price = price.trim(),
                 isPriceValid = isNumeric && isUnderLimit,
                 priceCategory = if (price == "0") DONATION else SALE
             )
         }
 
-        if (isModify) {
-            updateModifyButtonState()
-        } else {
-            updateButtonState()
-        }
+
     }
 
 
@@ -121,11 +125,7 @@ class UploadProductViewModel(
                 isPriceValid = priceCategory == DONATION || currentState.price.isNotBlank()
             )
         }
-        if (isModify) {
-            updateModifyButtonState()
-        } else {
-            updateButtonState()
-        }
+
     }
 
     fun updateDescription(description: String) {
@@ -135,8 +135,6 @@ class UploadProductViewModel(
                 descriptionErrorMessage =
                     if (!tempRegex.matches(description)) {
                         "* \" 또는 \\ 는 포함할 수 없습니다."
-                    } else if (!descriptionRegex.matches(description)) {
-                        "* 앞뒤 공백 없이 2~200자"
                     } else {
                         ""
                     },
@@ -145,29 +143,21 @@ class UploadProductViewModel(
                 )
             )
         }
-        if (isModify) {
-            updateModifyButtonState()
-        } else {
-            updateButtonState()
-        }
+
     }
 
     fun updateSelectedCategory(category: CategoryResponse) {
         _uiState.update { currentState ->
             currentState.copy(selectedCategory = category)
         }
-        if (isModify) {
-            updateModifyButtonState()
-        } else {
-            updateButtonState()
-        }
+
     }
 
     fun updateSelectedBaby(baby: BabyResponse) {
         _uiState.update { currentState ->
             currentState.copy(selectedBaby = baby)
         }
-        updateButtonState()
+
     }
 
     fun updateSelectedImages(images: List<MultipartBody.Part>) {
@@ -213,9 +203,9 @@ class UploadProductViewModel(
     ) {
         val request = ModifyProductRequest(
             categoryId = uiState.value.selectedCategory!!.id,
-            description = uiState.value.description,
-            price = uiState.value.price.toLong(),
-            title = uiState.value.title
+            description = uiState.value.description.trim(),
+            price = uiState.value.price.trim().toLong(),
+            title = uiState.value.title.trim()
         )
         viewModelScope.launch {
             productRepository.modifyProduct(
@@ -245,23 +235,23 @@ class UploadProductViewModel(
         return formattedDate
     }
 
-    private fun updateButtonState() {
-        _uiState.update { currentState ->
-            currentState.copy(
-                buttonState = currentState.isTitleValid && currentState.isDescriptionValid && currentState.isPriceValid
-                        && currentState.selectedCategory != null && currentState.selectedBaby != null && currentState.imgUris.isNotEmpty()
-            )
-        }
-    }
-
-    private fun updateModifyButtonState() {
-        _uiState.update { currentState ->
-            currentState.copy(
-                buttonState = currentState.isTitleValid && currentState.isDescriptionValid && currentState.isPriceValid
-                        && currentState.selectedCategory != null
-            )
-        }
-    }
+//    private fun updateButtonState() {
+//        _uiState.update { currentState ->
+//            currentState.copy(
+//                buttonState = currentState.isTitleValid && currentState.isDescriptionValid && currentState.isPriceValid
+//                        && currentState.selectedCategory != null && currentState.selectedBaby != null && currentState.imgUris.isNotEmpty()
+//            )
+//        }
+//    }
+//
+//    private fun updateModifyButtonState() {
+//        _uiState.update { currentState ->
+//            currentState.copy(
+//                buttonState = currentState.isTitleValid && currentState.isDescriptionValid && currentState.isPriceValid
+//                        && currentState.selectedCategory != null
+//            )
+//        }
+//    }
 
     private fun getCategoryList() {
         viewModelScope.launch {
@@ -278,6 +268,32 @@ class UploadProductViewModel(
                     Log.d(TAG, "getCategoryList errorResponse: $errorResponse")
                     Log.d(TAG, "getCategoryList error: ${it.message}")
                 }
+        }
+    }
+
+
+    fun uploadProduct(
+        uploadProductRequest: UploadProductRequest,
+        images: List<MultipartBody.Part>,
+        isWithMemory: Boolean
+    ) {
+        viewModelScope.launch {
+            productRepository.uploadProduct(
+                images = images,
+                request = uploadProductRequest,
+            ).onSuccess { response ->
+                Log.d(TAG, "uploadProduct: $response")
+                if (response.result == SUCCESS) {
+                    _navigateEvents.emit(isWithMemory)
+                    updateShowUploadDialog(false)
+                }
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "uploadProduct errorResponse: $errorResponse")
+                Log.d(TAG, "uploadProduct error: ${it.message}")
+                _toastMessage.emit(errorResponse.message)
+                updateShowUploadDialog(false)
+            }
         }
     }
 }
