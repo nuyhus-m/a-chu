@@ -4,7 +4,7 @@ import jakarta.validation.Payload;
 
 public @interface MemoryContent {
 
-  String message() default "추억 등록 시 내용은 한글, 영어, 숫자, 특수문자 포함 1~100자여야 하며, 앞뒤 공백과 이모지는 허용되지 않습니다.";
+  String message() default "추억 등록 시 내용은 앞뒤 공백 없는 1~100자여야 합니다.";
 
   Class<?>[] groups() default {};
 
