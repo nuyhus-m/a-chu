@@ -25,11 +25,9 @@ public class FcmMessageService {
             token -> {
               FcmMessage message = new FcmMessage(
                   token.fcmToken(),
+                  "🎉 거래가 완료되었어요!",
+                  "판매자와의 거래가 무사히 마무리되었어요 😊",
                   Map.of(
-                      "title",
-                      "🎉 거래가 완료되었어요!",
-                      "body",
-                      "판매자와의 거래가 무사히 마무리되었어요 😊",
                       "targetFragment",
                       "TradeList",
                       "requestId",
@@ -48,10 +46,6 @@ public class FcmMessageService {
     String body = "\uD83D\uDCB8 '" + goodsTitle + "'" + "의 가격이 변경되었어요. 지금 확인해보세요!";
 
     Map<String, String> data = Map.of(
-        "title",
-        title,
-        "body",
-        body,
         "targetFragment",
         "ProductDetail",
         "requestId",
@@ -60,7 +54,7 @@ public class FcmMessageService {
         "PRICE_CHANGE_LIKE");
 
     for (FcmToken token : fcmTokens) {
-      fcmNotifier.send(new FcmMessage(token.fcmToken(), data), token.userId());
+      fcmNotifier.send(new FcmMessage(token.fcmToken(), title, body, data), token.userId());
     }
   }
 
@@ -70,10 +64,6 @@ public class FcmMessageService {
     String body = "\uD83D\uDCB8 '" + goodsTitle + "'" + "의 가격이 변경되었어요. 지금 확인해보세요!";
 
     Map<String, String> data = Map.of(
-        "title",
-        title,
-        "body",
-        body,
         "targetFragment",
         "ProductDetail",
         "requestId",
@@ -82,7 +72,7 @@ public class FcmMessageService {
         "PRICE_CHANGE_CHAT");
 
     for (FcmToken token : fcmTokens) {
-      fcmNotifier.send(new FcmMessage(token.fcmToken(), data), token.userId());
+      fcmNotifier.send(new FcmMessage(token.fcmToken(), title, body, data), token.userId());
     }
   }
 
@@ -93,11 +83,9 @@ public class FcmMessageService {
             token -> {
               FcmMessage message = new FcmMessage(
                   token.fcmToken(),
+                  "\uD83D\uDCAC 새 채팅이 도착했어요!",
+                  "'" + goodsTitle + "'" + "에 관심 있는 사용자가 말을 걸었어요. 지금 바로 답장을 남겨보세요!",
                   Map.of(
-                      "title",
-                      "\uD83D\uDCAC 새 채팅이 도착했어요!",
-                      "body",
-                      "'" + goodsTitle + "'" + "에 관심 있는 사용자가 말을 걸었어요. 지금 바로 답장을 남겨보세요!",
                       "targetFragment",
                       "Chat",
                       "requestId",
@@ -115,10 +103,6 @@ public class FcmMessageService {
     String body = "비슷한 상품도 구경해보세요!";
 
     Map<String, String> data = Map.of(
-        "title",
-        title,
-        "body",
-        body,
         "targetFragment",
         "LikeList",
         "requestId",
@@ -127,7 +111,7 @@ public class FcmMessageService {
         "TRADE_COMPLETE_WISHER");
 
     for (FcmToken token : fcmTokens) {
-      fcmNotifier.send(new FcmMessage(token.fcmToken(), data), token.userId());
+      fcmNotifier.send(new FcmMessage(token.fcmToken(), title, body, data), token.userId());
     }
   }
 
@@ -141,11 +125,9 @@ public class FcmMessageService {
               String body = content.length() > 15 ? content.substring(0, 15) + "..." : content;
               FcmMessage message = new FcmMessage(
                   token.fcmToken(),
+                  title,
+                  body,
                   Map.of(
-                      "title",
-                      title,
-                      "body",
-                      body,
                       "targetFragment",
                       "Chat",
                       "requestId",
