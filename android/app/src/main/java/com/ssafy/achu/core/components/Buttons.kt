@@ -174,7 +174,7 @@ fun SmallLineBtn(buttonText: String, color: Color, enabled: Boolean = true, onCl
 //핑크색 기본 포인트 버튼
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PointPinkBtn(buttonText: String, onClick: () -> Unit) {
+fun PointPinkBtn(buttonText: String, onClick: () -> Unit, enable: Boolean = true) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -193,7 +193,9 @@ fun PointPinkBtn(buttonText: String, onClick: () -> Unit) {
                 .height(50.dp)
                 .clip(RoundedCornerShape(30.dp))
                 .background(PointPink)
-                .clickable() {
+                .clickable(
+                    enabled = enable
+                ) {
                     onClick()
                 },
             contentAlignment = Alignment.Center
@@ -317,8 +319,8 @@ fun Modifier.drawColoredShadow(
 fun basicButton() {
 
     AchuTheme {  // ✅ AchuTheme을 감싸줌
-//        PointBlueButton("수정") { }
-        PointPinkBtn("확인") { }
+
+        PointPinkBtn("확인", {})
     }
 }
 

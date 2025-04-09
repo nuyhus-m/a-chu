@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.google.gson.Gson
+import com.ssafy.achu.core.MyFirebaseMessagingService
 import com.ssafy.achu.data.model.auth.AccessTokenResponse
 import com.ssafy.achu.data.model.auth.TokenResponse
 
@@ -12,6 +13,7 @@ class SharedPreferencesUtil(context: Context) {
     companion object {
         private const val SHARED_PREFERENCES_NAME = "achu_preference"
         private const val KEY_IS_AUTO_LOGIN = "is_auto_login"
+        private const val KEY_ROOM_ID = "room_id"
     }
 
     private var preferences: SharedPreferences =
@@ -82,6 +84,22 @@ class SharedPreferencesUtil(context: Context) {
 
     fun isAutoLogin(): Boolean {
         return preferences.getBoolean(KEY_IS_AUTO_LOGIN, true)
+    }
+
+    fun saveRoomId(roomId: Int) {
+        preferences.edit {
+            putInt(KEY_ROOM_ID, roomId)
+        }
+    }
+
+    fun deleteRoomId() {
+        preferences.edit {
+            remove(KEY_ROOM_ID)
+        }
+    }
+
+    fun getRoomId(): Int {
+        return preferences.getInt(KEY_ROOM_ID, -1)
     }
 
 }

@@ -64,6 +64,7 @@ import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.Constants.TEXT
 import com.ssafy.achu.core.util.formatChatRoomTime
 import com.ssafy.achu.core.util.formatPrice
+import com.ssafy.achu.data.database.SharedPreferencesUtil
 import com.ssafy.achu.data.model.chat.Goods
 import com.ssafy.achu.data.model.chat.Message
 import com.ssafy.achu.data.model.chat.Partner
@@ -110,16 +111,12 @@ fun ChatScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        ChatStateHolder.currentRoomId = roomId
-    }
 
     DisposableEffect(Unit) {
         onDispose {
-            ChatStateHolder.currentRoomId = null // 화면 나갈 때 초기화
+            SharedPreferencesUtil(context).deleteRoomId() // ✅ context 안전하게 사용
         }
     }
-
     val listState = rememberLazyListState()
 
     LaunchedEffect(uiState.messages.size) {

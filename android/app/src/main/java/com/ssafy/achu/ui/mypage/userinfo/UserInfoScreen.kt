@@ -47,6 +47,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.ssafy.achu.R
 import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
+import com.ssafy.achu.core.LoadingImg
 import com.ssafy.achu.core.components.BasicTopAppBar
 import com.ssafy.achu.core.components.PointBlueButton
 import com.ssafy.achu.core.components.PointBlueFlexibleBtn
@@ -64,6 +65,7 @@ import com.ssafy.achu.core.util.isImageValid
 import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.AuthActivity
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 private const val TAG = "UserInfoScreen 안주현"
@@ -83,10 +85,14 @@ fun UserInfoScreen(
         userInfoViewModel.isChanged.collectLatest { isChanged ->
             if (isChanged) {
                 viewModel.getUserinfo()
+                userInfoViewModel.updateShowNickNameUpdateDialog(false)
+                userInfoViewModel.updateNickname("")
+                delay(1000)
+                userInfoViewModel.updateIsProfileLoading(false)
                 Toast.makeText(context, userInfoUiState.toastMessage, Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(context, userInfoUiState.toastMessage, Toast.LENGTH_SHORT).show()
-
+                userInfoViewModel.updateIsProfileLoading(false)
             }
         }
     }
@@ -142,9 +148,11 @@ fun UserInfoScreen(
                     Image(
                         painter = painterResource(id = R.drawable.img_profile_basic2),
                         contentDescription = "Profile",
-                        modifier = Modifier.fillMaxSize().clickable{
-                            launcher.launch("image/*")
-                        }, // Box 크기에 맞추기
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable {
+                                launcher.launch("image/*")
+                            }, // Box 크기에 맞추기
                         contentScale = ContentScale.Crop
                     )
 
@@ -152,11 +160,29 @@ fun UserInfoScreen(
                         AsyncImage(
                             model = uiState.user!!.profileImageUrl,
                             contentDescription = "Profile",
-                            modifier = Modifier.fillMaxSize().clickable{
-                                launcher.launch("image/*")
-                            }, // Box 크기에 맞추기
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clickable {
+                                    launcher.launch("image/*")
+                                }, // Box 크기에 맞추기
                             contentScale = ContentScale.Crop
                         )
+                    }
+
+                    if (userInfoUiState.isProfileLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(White)
+                                .clickable {
+                                    launcher.launch("image/*")
+                                }, // Box 크기에 맞추기
+                            contentAlignment = Alignment.Center
+                        ) {
+                            LoadingImg(
+                                "프로필\n업로드중...", modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
 
@@ -296,12 +322,17 @@ fun UserInfoScreen(
         NicknameUpdateDialog(
             onDismiss = {
                 userInfoViewModel.updateShowNickNameUpdateDialog(false)
+                userInfoViewModel.updateNickname("")
             },
             onConfirm = {
-                userInfoViewModel.changeNickname()
-                userInfoViewModel.updateShowNickNameUpdateDialog(false)
-                Toast.makeText(context, "닉네임 수정완료", Toast.LENGTH_SHORT).show()
-                viewModel.getUserinfo()
+                userInfoViewModel.confirmNickname(userInfoUiState.newNickname)
+            },
+            onValueChange = {
+                if (it.length > 6) {
+                    Toast.makeText(context, "6자 이내로 입력해주세요", Toast.LENGTH_SHORT).show()
+                } else {
+                    userInfoViewModel.updateNickname(it)
+                }
             },
             PointBlue, viewModel = userInfoViewModel
         )

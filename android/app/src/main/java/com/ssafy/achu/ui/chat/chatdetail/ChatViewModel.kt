@@ -14,6 +14,7 @@ import com.ssafy.achu.core.util.Constants.SOLD
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.Constants.TEXT
 import com.ssafy.achu.core.util.getErrorResponse
+import com.ssafy.achu.data.database.SharedPreferencesUtil
 import com.ssafy.achu.data.model.chat.ChatRoomRequest
 import com.ssafy.achu.data.model.chat.Goods
 import com.ssafy.achu.data.model.chat.MessageIdRequest
@@ -216,7 +217,9 @@ class ChatViewModel(
     }
 
     // 채팅 화면에 필요한 모든 데이터 조회
+
      fun getChatListInfo() {
+
         viewModelScope.launch {
             chatRepository.getChatListInfo(roomId)
                 .onSuccess { response ->

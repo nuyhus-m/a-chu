@@ -55,3 +55,4 @@ val bottomNavScreens =
         BottomNavScreen.ChatList,
         BottomNavScreen.MyPage
     )
+

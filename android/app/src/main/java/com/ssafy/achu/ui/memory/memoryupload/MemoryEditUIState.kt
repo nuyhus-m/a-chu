@@ -1,12 +1,13 @@
 package com.ssafy.achu.ui.memory.memoryupload
 
+import androidx.compose.ui.text.input.TextFieldValue
 import com.ssafy.achu.data.model.memory.SingleMemoryResponse
 import okhttp3.MultipartBody
 
 data class MemoryEditUIState (
     val babyId: Int = 0,
     val memoryTitle: String = "",
-    val memoryContent: String = "",
+    val memoryContent: TextFieldValue = TextFieldValue(),
     val sendIMage: List<MultipartBody.Part> = emptyList(),
     val selectedMemory : SingleMemoryResponse = SingleMemoryResponse(
         imgUrls = emptyList(),

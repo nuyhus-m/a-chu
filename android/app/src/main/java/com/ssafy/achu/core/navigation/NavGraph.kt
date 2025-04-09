@@ -45,15 +45,33 @@ fun NavGraph(
             HomeScreen(
                 modifier = modifier,
                 viewModel = activityViewModel,
-                onNavigateToLikeList = { navController.navigate(route = Route.LikeList) },
-                onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) },
-                onNavigateToBabyList = { navController.navigate(route = Route.BabyList) },
+                onNavigateToLikeList = {
+                    navController.navigate(route = Route.LikeList) {
+                        launchSingleTop = true
+                        restoreState = false
+
+                    }
+                },
+                onNavigateToRecommend = {
+                    navController.navigate(route = Route.RecommendList) {
+                        launchSingleTop = true
+
+                    }
+                },
+                onNavigateToBabyList = {
+                    navController.navigate(route = Route.BabyList) {
+                        launchSingleTop = true
+
+                    }
+                },
                 onNavigateToProductList = { categoryId ->
                     navController.navigate(route = BottomNavRoute.ProductList(categoryId)) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
                         launchSingleTop = true
+                        restoreState = true
+
                     }
                 },
                 onNavigateToProductDetail = {
@@ -61,12 +79,20 @@ fun NavGraph(
                         route = Route.ProductDetail(
                             isPreview = false
                         )
-                    )
+                    ) {
+                        launchSingleTop = true
+
+                    }
+
                 },
                 onNavigateToBabyDetail = {
                     navController.navigate(
                         route = Route.BabyDetail(-1)
-                    )
+                    ) {
+                        launchSingleTop = true
+                        restoreState = true
+
+                    }
 
                 }
 
@@ -81,14 +107,18 @@ fun NavGraph(
                         route = Route.UploadProduct(
                             isModify = false
                         )
-                    )
+                    ) {
+                        launchSingleTop = true
+                    }
                 },
                 onNavigateToProductDetail = {
                     navController.navigate(
                         route = Route.ProductDetail(
                             isPreview = false
                         )
-                    )
+                    ) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -99,7 +129,9 @@ fun NavGraph(
                 onNavigateToMemoryDetail = { memoryId, babyId ->
                     navController.navigate(
                         route = Route.MemoryDetail(memoryId = memoryId, babyId = babyId)
-                    )
+                    ) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -110,7 +142,9 @@ fun NavGraph(
                 onNavigateToChat = { roomId ->
                     navController.navigate(
                         route = Route.Chat(roomId = roomId)
-                    )
+                    ) {
+                        launchSingleTop = true
+                    }
                 }
             )
 
@@ -119,11 +153,31 @@ fun NavGraph(
             MyPageScreen(
                 modifier = modifier,
                 viewModel = activityViewModel,
-                onNavigateToTradeList = { navController.navigate(route = Route.TradeList) },
-                onNavigateToLikeList = { navController.navigate(route = Route.LikeList) },
-                onNavigateToRecommend = { navController.navigate(route = Route.RecommendList) },
-                onNavigateToBabyList = { navController.navigate(route = Route.BabyList) },
-                onNavigateToUserInfo = { navController.navigate(route = Route.UserInfo) })
+                onNavigateToTradeList = {
+                    navController.navigate(route = Route.TradeList) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToLikeList = {
+                    navController.navigate(route = Route.LikeList) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToRecommend = {
+                    navController.navigate(route = Route.RecommendList) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToBabyList = {
+                    navController.navigate(route = Route.BabyList) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToUserInfo = {
+                    navController.navigate(route = Route.UserInfo) {
+                        launchSingleTop = true
+                    }
+                })
         }
 
         // 마이페이지 화면들
@@ -136,7 +190,9 @@ fun NavGraph(
                         route = Route.ProductDetail(
                             isPreview = false
                         )
-                    )
+                    ) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -148,7 +204,9 @@ fun NavGraph(
                         route = Route.ProductDetail(
                             isPreview = false
                         )
-                    )
+                    ) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -160,7 +218,9 @@ fun NavGraph(
                         route = Route.ProductDetail(
                             isPreview = false
                         )
-                    )
+                    ) {
+                        launchSingleTop = true
+                    }
                 }
 
             )
@@ -179,7 +239,9 @@ fun NavGraph(
                 onNavigateToBabyDetail = { id ->
                     navController.navigate(
                         route = Route.BabyDetail(babyId = id)
-                    )
+                    ) {
+                        launchSingleTop = true
+                    }
 
                 }
             )
@@ -202,6 +264,7 @@ fun NavGraph(
                         popUpTo(navController.currentBackStackEntry?.destination?.route ?: "") {
                             inclusive = true
                         }
+
                     }
                 },
                 memoryId = it.arguments?.getInt("memoryId") ?: 0,
@@ -241,7 +304,9 @@ fun NavGraph(
                         route = Route.ProductDetail(
                             isPreview = true
                         )
-                    )
+                    ) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -257,7 +322,9 @@ fun NavGraph(
                         route = Route.UploadProduct(
                             isModify = true
                         )
-                    )
+                    ) {
+                        launchSingleTop = true
+                    }
                 },
                 onNavigateToChat = {
                     navController.navigate(route = Route.Chat())
@@ -272,6 +339,7 @@ fun NavGraph(
                         )
                     ) {
                         popUpTo(BottomNavRoute.ProductList(0))
+
                     }
                 },
                 onNavigateToProductList = {
@@ -290,8 +358,9 @@ fun NavGraph(
             ChatScreen(
                 activityViewModel = activityViewModel,
                 roomId = roomId,
-                onBackClick = { navController.popBackStack() }
-            )
+                onBackClick = { navController.popBackStack() },
+
+                )
         }
     }
 }

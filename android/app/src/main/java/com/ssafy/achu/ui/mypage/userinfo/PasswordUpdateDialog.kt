@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,6 +69,7 @@ fun PasswordUpdateDialog(
                     onValueChange = { viewModel.oldPwd(it) },
                     placeholder = if (uiState.isCorrectOldPWD) "●●●●●" else "비밀번호가 틀렸습니다.",
                     color = if (!uiState.isCorrectOldPWD) FontPink else PointBlue,
+                    modifier = Modifier,
 
                     )
 
@@ -93,6 +95,7 @@ fun PasswordUpdateDialog(
                     onValueChange = { viewModel.newPwd(it) },
                     placeholder = if (uiState.isCorrectPWD) "●●●●●" else "양식을 확인해주세요",
                     color = if (!uiState.isCorrectPWD) FontPink else PointBlue,
+                    modifier = Modifier,
                 )
 
 
@@ -112,6 +115,7 @@ fun PasswordUpdateDialog(
                     onValueChange = { viewModel.newPwdCheck(it) },
                     placeholder = if (!uiState.isPasswordMatch) "비밀번호 불일치" else "●●●●●",
                     color = if (!uiState.isPasswordMatch) FontPink else PointBlue,
+                    modifier = Modifier,
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))

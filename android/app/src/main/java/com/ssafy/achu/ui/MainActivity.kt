@@ -77,7 +77,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AchuTheme {
-                AchuApp(activityViewModel, targetRoute, requestId)
+                AchuApp(activityViewModel, targetRoute)
             }
         }
     }
@@ -114,7 +114,7 @@ class MainActivity : ComponentActivity() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AchuApp(viewModel: ActivityViewModel, targetRoute: String?, requestId: String) {
+fun AchuApp(viewModel: ActivityViewModel, targetRoute: String?) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -146,6 +146,7 @@ fun AchuApp(viewModel: ActivityViewModel, targetRoute: String?, requestId: Strin
             delay(300)
             isNavigating = false
         }
+
     }
 
     DisposableEffect(Unit) {
@@ -161,7 +162,7 @@ fun AchuApp(viewModel: ActivityViewModel, targetRoute: String?, requestId: Strin
     val currentDestination by navController.currentBackStackEntryFlow.collectAsState(initial = null)
     LaunchedEffect(currentDestination) {
         isNavigating = true
-        delay(350)
+        delay(300)
         isNavigating = false
     }
 

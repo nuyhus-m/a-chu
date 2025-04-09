@@ -66,8 +66,14 @@ dependencies {
     // Jetpack Navigation
     implementation(libs.androidx.navigation.compose)
 
-    //pager
-    implementation(libs.accompanist.pager)
+    // Accompanist Pager (ViewPager 같은 기능)
+    implementation ("com.google.accompanist:accompanist-pager:0.34.0")
+
+// Pager Indicators (페이지 인디케이터 점)
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.34.0")
+
+// Snapper (스냅 효과)
+    implementation ("dev.chrisbanes.snapper:snapper:0.3.0")
 
     // Coil
     implementation(libs.coil.compose)

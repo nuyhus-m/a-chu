@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,9 +17,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,10 +42,11 @@ fun BasicTextField(
     placeholderColor: Color,
     borderColor: Color,
     radius: Int = 30,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
     readOnly: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    trailingIcon: @Composable (() -> Unit)? = null
+    trailingIcon: @Composable (() -> Unit)? = null,
+    onNext: () -> Unit = {}
 ) {
     OutlinedTextField(
         value = value,
@@ -52,10 +57,10 @@ fun BasicTextField(
         placeholder = {
             Text(
                 text = placeholder,
-                style = AchuTheme.typography.regular16.copy(color = placeholderColor)
+                style = AchuTheme.typography.regular14.copy(color = placeholderColor)
             )
         },
-        textStyle = AchuTheme.typography.regular16,
+        textStyle = AchuTheme.typography.regular14,
         singleLine = true,
         shape = RoundedCornerShape(radius.dp),
         colors = OutlinedTextFieldDefaults.colors(
@@ -64,34 +69,39 @@ fun BasicTextField(
             cursorColor = Color.Black
         ),
         keyboardOptions = keyboardOptions,
+        keyboardActions = KeyboardActions(onNext = { onNext() }),
         readOnly = readOnly,
         visualTransformation = visualTransformation,
         trailingIcon = trailingIcon
     )
 }
 
+
+// 비밀번호 TextField
 // 비밀번호 TextField
 @Composable
 fun PasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String = stringResource(R.string.enter_password),
-    color: Color = PointBlue
+    color: Color = PointBlue,
+    onDone: () -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(50.dp),
         placeholder = {
             Text(
-                text = placeholder, style = AchuTheme.typography.regular16.copy(color = color)
+                text = placeholder, style = AchuTheme.typography.regular14.copy(color = color)
             )
         },
-        textStyle = AchuTheme.typography.regular16,
+        textStyle = AchuTheme.typography.regular14,
         singleLine = true,
         shape = RoundedCornerShape(30.dp),
         colors = OutlinedTextFieldDefaults.colors(
@@ -111,9 +121,13 @@ fun PasswordTextField(
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(
             '●'
         ),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(onDone = { onDone() })
     )
 }
-
 // 연필 아이콘 TextField
 @Composable
 fun ClearTextField(
@@ -129,10 +143,10 @@ fun ClearTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.height(50.dp),
-        textStyle = AchuTheme.typography.regular16,
+        textStyle = AchuTheme.typography.regular14,
         placeholder = {
             Text(
-                text = placeholder, style = AchuTheme.typography.regular16.copy(color = LightGray)
+                text = placeholder, style = AchuTheme.typography.regular14.copy(color = LightGray)
             )
         },
         singleLine = true,
@@ -174,7 +188,11 @@ fun BasicTextFieldPreview() {
 @Composable
 fun PasswordTextFieldPreview() {
     AchuTheme {
-        PasswordTextField(value = "", onValueChange = {})
+//        PasswordTextField(
+//            value = "",
+//            onValueChange = {},
+////            modifier = Modifier.focusRequester(passwordFocusRequester)
+//        )
     }
 }
 

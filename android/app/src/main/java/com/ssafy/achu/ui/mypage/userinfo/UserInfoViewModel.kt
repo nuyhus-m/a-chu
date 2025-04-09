@@ -35,6 +35,12 @@ class UserInfoViewModel : ViewModel() {
         get() = _phoneAuthId
 
 
+    fun updateIsProfileLoading(isLoading: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(isProfileLoading = isLoading)
+        }
+    }
+
     fun updateToastMessage(message: String) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -67,7 +73,7 @@ class UserInfoViewModel : ViewModel() {
         }
     }
 
-    fun updateVerifyNumber(text: String){
+    fun updateVerifyNumber(text: String) {
         _uiState.update { currentState ->
             currentState.copy(verifyNumber = text)
         }
@@ -90,10 +96,12 @@ class UserInfoViewModel : ViewModel() {
 
 
     fun updateNickname(nicknameInput: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                newNickname = nicknameInput,
-            )
+        if (nicknameInput.length <= 6) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    newNickname = nicknameInput,
+                )
+            }
         }
     }
 
@@ -208,13 +216,13 @@ class UserInfoViewModel : ViewModel() {
                     if (it.result == "SUCCESS") {
                         Log.d(TAG, "changeNickname: ${it}")
                     }
-
-                    _isChanged.emit(true)
                     updateToastMessage("닉네임이 변경되었습니다")
+                    _isChanged.emit(true)
+
                 }.onFailure {
                     Log.d(TAG, "changeNickname: ${it.message}")
-                    _isChanged.emit(false)
                     updateToastMessage("닉네임 변경 실패")
+                    _isChanged.emit(false)
 
                 }
 
@@ -230,42 +238,43 @@ class UserInfoViewModel : ViewModel() {
                 .onSuccess {
                     if (it.result == "SUCCESS") {
                         Log.d(TAG, "confirmUniqueNickname: ${it}")
-                        _uiState.update {
-                            it.copy(
-                                isUniqueNickname = "완료",
-                            )
+                        if (it.data.isUnique) {
+                            changeNickname()
+                        } else {
+                            updateToastMessage("이미 사용중인 닉네임 입니다.")
+                            _isChanged.emit(false)
                         }
 
                     }
                 }
                 .onFailure {
                     Log.d(TAG, "confirmUniqueNickname: ${it.message}")
+
+                    val errorResponse = it.getErrorResponse(retrofit)
                     _uiState.update {
                         it.copy(
-                            isUniqueNickname = "중복",
-                            newNickname = ""
+                            toastMessage = errorResponse.message,
                         )
                     }
-
+                    _isChanged.emit(false)
                 }
         }
     }
 
 
-    fun confirmNickname() {
-        val state = _uiState.value
+    fun confirmNickname(nicknameInput: String) {
         val nicknameRegex = "^[가-힣A-Za-z]{2,6}$".toRegex()
-        val isValid = nicknameRegex.matches(state.newNickname)
-
+        val isValid = nicknameRegex.matches(nicknameInput)
         if (isValid) {
             confirmUniqueNickname()
+            Log.d(TAG, "confirmNickname: ${isValid} 양식 확인")
         } else {
             _uiState.update {
                 it.copy(
                     isCorrectNickname = isValid,
-                    newNickname = if (!isValid) "" else it.newNickname,  // 비밀번호가 유효하지 않다면 초기화
+                    newNickname = if (!isValid) "" else it.newNickname,
 
-                )
+                    )
             }
         }
 
@@ -298,6 +307,7 @@ class UserInfoViewModel : ViewModel() {
     }
 
     fun changeProfile(img: MultipartBody.Part) {
+        updateIsProfileLoading(true)
         Log.d(TAG, "changeProfile: ${img}")
         viewModelScope.launch {
             userRepository.uploadProfileImage(
@@ -306,19 +316,15 @@ class UserInfoViewModel : ViewModel() {
                 Log.d(TAG, "changeProfile: ${it}")
                 updateToastMessage("프로필이 변경되었습니다.")
                 _isChanged.emit(true)
-
-
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "changeProfile: ${errorResponse}")
                 _isChanged.emit(false)
                 updateToastMessage("프로필 변경실패")
-
                 Log.d(TAG, "changeProfile error: ${it.message}")
             }
         }
     }
-
 
 
     fun sendPhoneAuth() {

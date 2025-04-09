@@ -36,6 +36,7 @@ import com.ssafy.achu.ui.mypage.userinfo.UserInfoViewModel
 fun BabyNicknameDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
+    onValueChange: (String) -> Unit,
     color: Color,
     viewModel: BabyViewModel,
     type: String = ""
@@ -85,7 +86,7 @@ fun BabyNicknameDialog(
 
                 OutlinedTextField(
                     value = uiState.babyNickname,
-                    onValueChange = { viewModel.updateBabyNickname(it) },
+                    onValueChange = { onValueChange(it) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
@@ -127,7 +128,6 @@ fun BabyNicknameDialog(
                             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
                             .clickable(onClick = {onDismiss()
                                viewModel.updateCorrectNickname(true)
-                                viewModel.updateBabyNickname("")
                             })
                             .padding(vertical = 12.dp),
                         contentAlignment = Alignment.Center
@@ -178,7 +178,8 @@ fun NicknameDialogPreview() {
             onConfirm = { /* 확인 클릭 시 동작 */ },
             color = PointPink,
             viewModel = viewModel(),
-            type = ""
+            type = "",
+            onValueChange = {}
 
             )
     }
