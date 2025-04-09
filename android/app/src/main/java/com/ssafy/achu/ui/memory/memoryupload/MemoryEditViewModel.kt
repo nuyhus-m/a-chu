@@ -2,6 +2,8 @@ package com.ssafy.achu.ui.memory.memoryupload
 
 import android.provider.SyncStateContract.Helpers.update
 import android.util.Log
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass
@@ -13,6 +15,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonNull.content
 import okhttp3.MultipartBody
 
 private const val TAG = "MemoryEditViewModel 안주현"
@@ -23,6 +26,7 @@ class MemoryEditViewModel : ViewModel() {
 
     private val _isChanged = MutableSharedFlow<Boolean>()
     val isChanged: SharedFlow<Boolean> = _isChanged
+
 
     fun isImageChanged(boolean: Boolean) {
         _uiState.value = _uiState.value.copy(ifChangedImage = boolean)
@@ -40,8 +44,12 @@ class MemoryEditViewModel : ViewModel() {
 
     }
 
-    fun memoryContentUpdate(content: String) {
-        _uiState.value = _uiState.value.copy(memoryContent = content)
+    fun memoryContentUpdate(content: TextFieldValue) {
+        _uiState.value = _uiState.value.copy(
+            memoryContent = content.copy(
+                selection = TextRange(content.text.length) // ← 커서를 맨 뒤로 이동
+            )
+        )
     }
 
     fun memoryImageUpdate(images: List<MultipartBody.Part>) {
@@ -66,8 +74,7 @@ class MemoryEditViewModel : ViewModel() {
                 memoryImages = uiState.value.sendIMage,
                 request = MemoryRequest(
                     title = uiState.value.memoryTitle.trim(),
-                    content = uiState.value.memoryContent.trim()
-                )
+                    content = uiState.value.memoryContent.text.trim()                )
 
             ).onSuccess {
                 updateToastString("추억 작성 완료!")
@@ -91,8 +98,10 @@ class MemoryEditViewModel : ViewModel() {
                 _uiState.value = _uiState.value.copy(
                     selectedMemory = it.data,
                     memoryTitle = it.data.title,
-                    memoryContent = it.data.content
-                )
+                     memoryContent = TextFieldValue(
+                        text = it.data.content,
+                        selection = TextRange(it.data.content.length) // 커서 맨 뒤로!
+                    )               )
                 Log.d(TAG, "getMemory: ${it}")
                 if(uiState.value.ifChangedMemory|| uiState.value.ifChangedImage){
                     _isChanged.emit(true)
@@ -115,7 +124,7 @@ class MemoryEditViewModel : ViewModel() {
                 memoryId = uiState.value.selectedMemory.id,
                 request = MemoryRequest(
                     title = uiState.value.memoryTitle,
-                    content = uiState.value.memoryContent
+                    content = uiState.value.memoryContent.text
                 )
             ).onSuccess {
                 isMemoryChanged(true)

@@ -58,7 +58,9 @@ import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.home.HomeViewModel
 import com.ssafy.achu.ui.home.homecomponents.BabyDropdown
 import com.ssafy.achu.ui.home.homecomponents.FixedGrid
+import com.ssafy.achu.ui.home.homecomponents.InfiniteBanner
 import com.ssafy.achu.ui.home.homecomponents.RecommendGrid
+import dev.chrisbanes.snapper.ExperimentalSnapperApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -100,9 +102,6 @@ fun HomeScreen(
         }
     }
 
-
-
-
     LaunchedEffect(Unit) {
         viewModel.errorMessage.collectLatest {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -117,29 +116,25 @@ fun HomeScreen(
         }
     }
 
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.updateShowCreateDialog(false)
+        }
+    }
+
     val likeItemList by homeViewModel.likeItemList.collectAsState()
     val categoryList by viewModel.categoryList.collectAsState()
-
-
-    val imageList = listOf(
-        R.drawable.img_banner1,
-        R.drawable.img_banner2
-    )
-
     val coroutineScope = rememberCoroutineScope()
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = imageList.size)
-    var currentIndex by remember { mutableStateOf(imageList.size) }
+
+
+
     val scrollState = rememberScrollState() // 스크롤 상태 저장
 
     if (uiState.selectedBaby != null) {
         viewModel.getRecommendItemList(uiState.selectedBaby!!.id)
     }
 
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.updateShowCreateDialog(false)
-        }
-    }
+
 
     Column(
         modifier = modifier
@@ -214,71 +209,10 @@ fun HomeScreen(
 
         Spacer(Modifier.height(16.dp))
 
-        LaunchedEffect(Unit) {
-            while (true) {
-                delay(3000) // 3초마다 이동
-                coroutineScope.launch {
-                    val nextIndex = currentIndex + 1
-                    listState.animateScrollToItem(nextIndex)
-                    currentIndex = nextIndex
-
-                    // 마지막 항목에 도달하면 인덱스 재설정
-                    if (currentIndex >= imageList.size * 2) {
-                        currentIndex = imageList.size
-                        listState.scrollToItem(currentIndex) // 순간적으로 초기화하여 자연스럽게 반복
-                    }
-                }
-            }
-        }
-
-        // LazyRow 부분을 Box로 감싸서 수정
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(horizontal = 4.dp)
-                .clip(RoundedCornerShape(8.dp))
-        ) {
-            LazyRow(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(0.dp),
-                userScrollEnabled = true
-            ) {
-                items(imageList.size * 2) { index -> // 2배로 늘려 무한 반복 느낌 구현
-                    val actualIndex = index % imageList.size // 실제 이미지 인덱스
-
-                    Box(
-                        modifier = Modifier
-                            .fillParentMaxWidth() // 부모 너비에 맞춤
-                            .wrapContentHeight()
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() }, // 리플 제거
-                                indication = null
-                            ) {
-                                when (actualIndex) {
-                                    0 -> onNavigateToBabyList()
-                                    1 -> onNavigateToRecommend()
-                                }
-                            }
-                    ) {
-                        Image(
-                            painter = painterResource(id = imageList[actualIndex]),
-                            contentDescription = "Banner $actualIndex",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(
-                                    ratio = 16f / 9f, // 이미지 비율 설정 (예: 16:9)
-                                    matchHeightConstraintsFirst = false
-                                ),
-                            contentScale = ContentScale.Crop // FillWidth 대신 Crop 사용
-                        )
-                    }
-                }
-            }
-
-        }
+        InfiniteBanner(
+            onNavigateToBabyList = onNavigateToBabyList,
+            onNavigateToRecommend = onNavigateToRecommend
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 

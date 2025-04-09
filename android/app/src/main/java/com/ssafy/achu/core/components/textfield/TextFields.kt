@@ -1,7 +1,6 @@
 package com.ssafy.achu.core.components.textfield
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,9 +17,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,10 +42,11 @@ fun BasicTextField(
     placeholderColor: Color,
     borderColor: Color,
     radius: Int = 30,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
     readOnly: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    trailingIcon: @Composable (() -> Unit)? = null
+    trailingIcon: @Composable (() -> Unit)? = null,
+    onNext: () -> Unit = {}
 ) {
     OutlinedTextField(
         value = value,
@@ -66,27 +69,31 @@ fun BasicTextField(
             cursorColor = Color.Black
         ),
         keyboardOptions = keyboardOptions,
+        keyboardActions = KeyboardActions(onNext = { onNext() }),
         readOnly = readOnly,
         visualTransformation = visualTransformation,
-        trailingIcon = trailingIcon,
-        keyboardActions = KeyboardActions.Default,
+        trailingIcon = trailingIcon
     )
 }
 
+
+// 비밀번호 TextField
 // 비밀번호 TextField
 @Composable
 fun PasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String = stringResource(R.string.enter_password),
-    color: Color = PointBlue
+    color: Color = PointBlue,
+    onDone: () -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(50.dp),
         placeholder = {
@@ -114,9 +121,13 @@ fun PasswordTextField(
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(
             '●'
         ),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(onDone = { onDone() })
     )
 }
-
 // 연필 아이콘 TextField
 @Composable
 fun ClearTextField(
@@ -177,7 +188,11 @@ fun BasicTextFieldPreview() {
 @Composable
 fun PasswordTextFieldPreview() {
     AchuTheme {
-        PasswordTextField(value = "", onValueChange = {})
+//        PasswordTextField(
+//            value = "",
+//            onValueChange = {},
+////            modifier = Modifier.focusRequester(passwordFocusRequester)
+//        )
     }
 }
 

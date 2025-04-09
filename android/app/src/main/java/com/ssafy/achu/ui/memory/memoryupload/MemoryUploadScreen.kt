@@ -11,6 +11,7 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,12 +24,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -48,11 +53,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -80,6 +88,7 @@ import com.ssafy.achu.core.util.getProductWithParticle
 import com.ssafy.achu.core.util.isImageValid
 import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.ui.memory.memorydetail.PageIndicator
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -87,7 +96,7 @@ import kotlinx.coroutines.launch
 private const val TAG = "MemoryUploadScreen안주현"
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun MemoryUploadScreen(
     onNavigateToMemoryDetail: (memoryId: Int, babyId: Int) -> Unit,
@@ -104,6 +113,11 @@ fun MemoryUploadScreen(
     var images by remember(memoryUIState.selectedMemory.imgUrls) {
         mutableStateOf(memoryUIState.selectedMemory.imgUrls.map { Uri.parse(it) })
     }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val contentFocusRequester = remember { FocusRequester() }
+
+
 
     var isLoading by remember { mutableStateOf(false) }
 
@@ -381,13 +395,19 @@ fun MemoryUploadScreen(
                             modifier = Modifier.padding(end = 16.dp)
                         )
                     },
-                    maxLines = 1
+                    maxLines = 1,
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            contentFocusRequester.requestFocus()
+                        }
+                    )
                 )
 
 //                Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "${memoryUIState.memoryContent.length}/$maxContentLength",
+                    text = "${memoryUIState.memoryContent.text.length}/$maxContentLength",
                     color = PointPink,
                     style = AchuTheme.typography.regular14,
                     textAlign = TextAlign.End,
@@ -398,6 +418,8 @@ fun MemoryUploadScreen(
 
                 )
 
+
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -406,17 +428,18 @@ fun MemoryUploadScreen(
                     OutlinedTextField(
                         value = memoryUIState.memoryContent,
                         onValueChange = { newText ->
-                            val lineCount = newText.count { it == '\n' } + 1
-                            if (lineCount <= 6 && newText.length <= maxContentLength) {
+                            val lineCount = newText.text.count { it == '\n' } + 1
+                            if (lineCount <= 6 && newText.text.length <= maxContentLength) {
                                 memoryViewModel.memoryContentUpdate(newText)
                             }
                         },
                         modifier = Modifier
                             .fillMaxSize()
-                            .align(Alignment.TopStart), // 텍스트 필드 정렬
+                            .align(Alignment.TopStart)
+                            .focusRequester(contentFocusRequester),
                         placeholder = {
                             Text(
-                                "${getProductWithParticle(productName)} 함께한 추억을 기록해보세요!\n(최대 6줄 입력가능)",
+                                if(memoryId>0)"${getProductWithParticle(productName)} 함께한 추억을 기록해보세요!\n(최대 6줄 입력가능)" else "",
                                 color = FontGray
                             )
                         },
@@ -428,7 +451,17 @@ fun MemoryUploadScreen(
                             cursorColor = Color.Black
                         ),
                         maxLines = 5,
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default)
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                keyboardController?.hide()
+                                if (memoryId <= 0) {
+                                    memoryViewModel.uploadMemory()
+                                } else {
+                                    memoryViewModel.changeMemory()
+                                }
+                            }
+                        )
                     )
 
                 }
@@ -453,7 +486,7 @@ fun MemoryUploadScreen(
 
                         if (images.isEmpty()) {
                             Toast.makeText(context, "사진을 추가해주세요", Toast.LENGTH_SHORT).show()
-                        } else if (memoryUIState.memoryTitle.trim() == "" || memoryUIState.memoryContent.trim() == "") {
+                        } else if (memoryUIState.memoryTitle.trim() == "" || memoryUIState.memoryContent.text.trim() == "") {
                             Toast.makeText(context, "제목, 내용을 확인해 주세요", Toast.LENGTH_SHORT)
                                 .show()
 

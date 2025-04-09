@@ -21,9 +21,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,7 +42,6 @@ import com.ssafy.achu.core.components.textfield.PasswordTextField
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.data.database.SharedPreferencesUtil
 import kotlinx.coroutines.flow.collectLatest
 
 private const val TAG = "SignInScreen"
@@ -53,6 +56,8 @@ fun SignInScreen(
 
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+    val focusManager = LocalFocusManager.current
+    val passwordFocusRequester = remember { FocusRequester() }
 
     // 로그인 실패 시 Toast 메시지 띄우기
     LaunchedEffect(Unit) {
@@ -137,7 +142,8 @@ fun SignInScreen(
                     onValueChange = { viewModel.updateId(it) },
                     placeholder = stringResource(R.string.enter_id),
                     placeholderColor = PointBlue,
-                    borderColor = PointBlue
+                    borderColor = PointBlue,
+                    onNext = { passwordFocusRequester.requestFocus() }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -152,6 +158,11 @@ fun SignInScreen(
                 PasswordTextField(
                     value = uiState.pwd,
                     onValueChange = { viewModel.updatePwd(it) },
+                    onDone = {
+                        focusManager.clearFocus() // 키보드 닫기
+                       viewModel.signIn()
+                    },
+                    modifier = Modifier.focusRequester(passwordFocusRequester)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
