@@ -17,12 +17,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   @Override
   public void configureMessageBroker(MessageBrokerRegistry registry) {
     ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-
     scheduler.setPoolSize(1);
     scheduler.setThreadNamePrefix("wss-heartbeat-thread-");
     scheduler.initialize();
 
-    registry.enableSimpleBroker("/read").setHeartbeatValue(new long[] {10000, 10000});
+    registry.enableSimpleBroker("/read").setTaskScheduler(scheduler).setHeartbeatValue(new long[] {
+      10000, 10000
+    });
     registry.setApplicationDestinationPrefixes("/send");
   }
 
