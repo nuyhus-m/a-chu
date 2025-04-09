@@ -48,16 +48,20 @@ class ChatListViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            stompService.chatRoomFlow.collect { chatRoom ->
-                Log.d(TAG, "subscribeToChatRooms: $chatRoom")
-                val mutableChatRooms = uiState.value.chatRooms.toMutableList()
-                mutableChatRooms.removeAll() { cr -> cr.id == chatRoom.id }
-                mutableChatRooms.add(0, chatRoom)
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        chatRooms = mutableChatRooms
-                    )
+            try {
+                stompService.chatRoomFlow.collect { chatRoom ->
+                    Log.d(TAG, "subscribeToChatRooms: $chatRoom")
+                    val mutableChatRooms = uiState.value.chatRooms.toMutableList()
+                    mutableChatRooms.removeAll() { cr -> cr.id == chatRoom.id }
+                    mutableChatRooms.add(0, chatRoom)
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            chatRooms = mutableChatRooms
+                        )
+                    }
                 }
+            } catch (e: Exception) {
+                Log.e("스톰프에러", "chatRoomFlow: ${e.message}")
             }
         }
     }

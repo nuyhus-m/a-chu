@@ -9,10 +9,15 @@ data class ChatUiState(
     val messages: List<Message> = emptyList(),
     val lastReadMessageId: Int = -1,
     val goods: Goods? = null,
-    val partner: Partner? = null,
+    val partner: Partner? = Partner(
+        id = 0,
+        nickname = "",
+        profileImageUrl = " "
+    ),
     val isSeller: Boolean = false,
     val isSold: Boolean = false,
     val isShowSoldDialog: Boolean = false,
     val hasChatRoom: Boolean = true,
-    val isFirst: Boolean = true
+    val isFirst: Boolean = true,
+    val buttonState: Boolean = true
 )
