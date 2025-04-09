@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.ssafy.achu.core.ApplicationClass.Companion.chatRepository
-import com.ssafy.achu.core.ApplicationClass.Companion.json
 import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.ApplicationClass.Companion.stompService
@@ -17,14 +16,13 @@ import com.ssafy.achu.core.util.Constants.TEXT
 import com.ssafy.achu.core.util.getErrorResponse
 import com.ssafy.achu.data.model.chat.ChatRoomRequest
 import com.ssafy.achu.data.model.chat.Goods
-import com.ssafy.achu.data.model.chat.Message
 import com.ssafy.achu.data.model.chat.MessageIdRequest
-import com.ssafy.achu.data.model.chat.MessageIdResponse
 import com.ssafy.achu.data.model.chat.Partner
 import com.ssafy.achu.data.model.chat.SendChatRequest
 import com.ssafy.achu.data.model.product.BuyerIdRequest
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.Seller
+import com.ssafy.achu.data.network.StompService
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -52,10 +50,37 @@ class ChatViewModel(
         var currentRoomId: Int? = null
     }
 
-    fun setMessages() {
-        getChatListInfo()
-        subscribeToMessage()
-        subscribeToMessageRead()
+    fun connectToStompServer() {
+        viewModelScope.launch {
+            stompService.connect()
+            stompService.subscribeToMessage("/read/chat/rooms/$roomId/messages")
+            stompService.subscribeToMessageRead("/read/chat/rooms/$roomId/messages/read")
+        }
+
+        viewModelScope.launch {
+            stompService.messageFlow.collect { message ->
+                Log.d(TAG, "subscribeToMessage: $message")
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        messages = currentState.messages + message
+                    )
+                }
+                sendMessageRead()
+            }
+        }
+
+        viewModelScope.launch {
+            stompService.messageIdFlow.collect { messageId ->
+                Log.d(TAG, "subscribeToMessageRead: $messageId")
+                if (messageId.userId == (uiState.value.partner?.id ?: 0)) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            lastReadMessageId = messageId.lastUnreadMessageId
+                        )
+                    }
+                }
+            }
+        }
     }
 
     fun updateInputText(newText: String) {
@@ -97,7 +122,8 @@ class ChatViewModel(
                                 )
                             }
                             roomId = response.data.id
-                            setMessages()
+                            connectToStompServer()
+                            getChatListInfo()
                         }
                     }
                 }.onFailure {
@@ -122,7 +148,8 @@ class ChatViewModel(
                 Log.d(TAG, "createChatRoom: $response")
                 if (response.result == SUCCESS) {
                     roomId = response.data.id
-                    setMessages()
+                    connectToStompServer()
+                    getChatListInfo()
                     _uiState.update {
                         it.copy(
                             hasChatRoom = true,
@@ -171,26 +198,25 @@ class ChatViewModel(
             productRepository.completeTrade(
                 uiState.value.goods!!.id,
                 BuyerIdRequest(uiState.value.partner?.id ?: 0)
-            )
-                .onSuccess { response ->
-                    Log.d(TAG, "completeTrade: $response")
-                    if (response.result == SUCCESS) {
-                        showSoldDialog(false)
-                        _toastMessage.emit("거래가 완료되었습니다.")
-                        getChatListInfo()
-                    }
-                }.onFailure {
-                    val errorResponse = it.getErrorResponse(retrofit)
-                    Log.d(TAG, "completeTrade errorResponse: $errorResponse")
-                    Log.d(TAG, "completeTrade error: ${it.message}")
+            ).onSuccess { response ->
+                Log.d(TAG, "completeTrade: $response")
+                if (response.result == SUCCESS) {
                     showSoldDialog(false)
-                    _toastMessage.emit("거래가 완료되지 않았습니다.")
+                    _toastMessage.emit("거래가 완료되었습니다.")
+                    getChatListInfo()
                 }
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "completeTrade errorResponse: $errorResponse")
+                Log.d(TAG, "completeTrade error: ${it.message}")
+                showSoldDialog(false)
+                _toastMessage.emit("거래가 완료되지 않았습니다.")
+            }
         }
     }
 
     // 채팅 화면에 필요한 모든 데이터 조회
-    private fun getChatListInfo() {
+     fun getChatListInfo() {
         viewModelScope.launch {
             chatRepository.getChatListInfo(roomId)
                 .onSuccess { response ->
@@ -223,38 +249,7 @@ class ChatViewModel(
                     content = uiState.value.inputText,
                     type = TEXT
                 )
-            ).onSuccess {
-                Log.d(TAG, "sendMessage success: ${it?.id}")
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        inputText = ""
-                    )
-                }
-            }.onFailure {
-                Log.d(TAG, "sendMessage: ${it.message}")
-            }
-        }
-    }
-
-    // 메시지 수신
-    private fun subscribeToMessage() {
-        viewModelScope.launch {
-            stompService.subscribeToDestination("/read/chat/rooms/$roomId/messages")
-                .onSuccess { response ->
-                    Log.d(TAG, "subscribeToMessage: success")
-                    response.let { body ->
-                        body.collect {
-                            val data = json.decodeFromString<Message>(it.bodyAsText)
-                            Log.d(TAG, "subscribeToMessage: $data")
-                            _uiState.update { currentState ->
-                                currentState.copy(
-                                    messages = currentState.messages + data
-                                )
-                            }
-                            sendMessageRead()
-                        }
-                    }
-                }
+            )
         }
     }
 
@@ -264,38 +259,13 @@ class ChatViewModel(
             stompService.sendRequest(
                 "/send/chat/rooms/$roomId/messages/read",
                 MessageIdRequest(lastReadMessageId = uiState.value.messages.last().id)
-            ).onSuccess {
-                Log.d(TAG, "sendMessageRead: success")
-            }.onFailure {
-                Log.d(TAG, "sendMessageRead: ${it.message}")
-            }
+            )
         }
     }
 
-    // 메세지 읽음 상태 수신
-    private fun subscribeToMessageRead() {
+    fun cancelStomp() {
         viewModelScope.launch {
-            stompService.subscribeToDestination("/read/chat/rooms/$roomId/messages/read")
-                .onSuccess { response ->
-                    Log.d(TAG, "subscribeToMessageRead: success")
-                    response.let { body ->
-                        body.collect {
-                            val data =
-                                json.decodeFromString<MessageIdResponse>(it.bodyAsText)
-                            Log.d(TAG, "subscribeToMessageRead: $data")
-                            if (data.userId == (uiState.value.partner?.id ?: 0)) {
-                                _uiState.update { currentState ->
-                                    currentState.copy(
-                                        lastReadMessageId = data.lastUnreadMessageId
-                                    )
-                                }
-                            }
-                        }
-
-                    }
-                }.onFailure {
-                    Log.d(TAG, "subscribeToMessageRead: ${it.message}")
-                }
+            stompService.disconnect()
         }
     }
 }

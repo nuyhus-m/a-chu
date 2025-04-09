@@ -87,10 +87,6 @@ fun HomeScreen(
         homeViewModel.getLikeItemList()
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.subscribeToNewMessage()
-    }
-
 // showCreateDialog 상태가 변경될 때마다 실행
     LaunchedEffect(uiState.showCreateDialog) {
         if (uiState.showCreateDialog) {

@@ -15,29 +15,28 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import com.ssafy.achu.R
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.White
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val SplashWaitTime: Long = 2000
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : ComponentActivity() {
 
-    private val viewModel: SplashViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
+        val viewModel: SplashViewModel by viewModels()
 
         setContent {
             AchuTheme {
@@ -78,18 +77,18 @@ fun SplashScreen(
     onNavigateToAuthActivity: () -> Unit
 ) {
 
-    val loginState by viewModel.loginState.collectAsState()
-
-    LaunchedEffect(key1 = Unit) {
-        kotlinx.coroutines.delay(SplashWaitTime)
+    LaunchedEffect(Unit) {
+        delay(SplashWaitTime)
         viewModel.checkAutoLogin()
     }
 
-    LaunchedEffect(loginState) {
-        when (loginState) {
-            SplashViewModel.LoginState.Authenticated -> onNavigateToMainActivity()
-            SplashViewModel.LoginState.NotAuthenticated -> onNavigateToAuthActivity()
-            SplashViewModel.LoginState.Loading -> {}
+    LaunchedEffect(Unit) {
+        viewModel.isAutoLogin.collect { isAutoLogin ->
+            if (isAutoLogin) {
+                onNavigateToMainActivity()
+            } else {
+                onNavigateToAuthActivity()
+            }
         }
     }
 
