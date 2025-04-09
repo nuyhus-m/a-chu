@@ -124,20 +124,28 @@ fun isImageValid(context: Context, uri: Uri): Boolean {
         val width = options.outWidth
         val height = options.outHeight
 
+        // 파일 크기 가져오기
         val fileSize = contentResolver.openFileDescriptor(uri, "r")?.statSize ?: return false
-        val fileSizeMB = fileSize / (1024 * 1024)
+        val fileSizeMB = fileSize / (1024 * 1024)  // MB로 변환
 
+        // 로그로 파일 크기 확인
+        Log.d("ImageValidation", "파일 크기: $fileSizeMB MB")
+
+        // 크기 조건
         val isValidSize = width > 100 && height > 100
-        val isValidFileSize = fileSizeMB <= 10
+        // 8MB 이하로 제한
+        val isValidFileSize = fileSizeMB < 8
 
+        // 조건에 맞지 않으면 Toast 메시지 출력
         if (!isValidSize) {
             Toast.makeText(context, "너무 작은 이미지는 업로드할 수 없습니다.", Toast.LENGTH_SHORT).show()
         }
 
         if (!isValidFileSize) {
-            Toast.makeText(context, "10MB를 초과하는 이미지는 업로드할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "8MB를 초과하는 이미지는 업로드할 수 없습니다.", Toast.LENGTH_SHORT).show()
         }
 
+        // 이미지가 유효한 경우
         return isValidSize && isValidFileSize
     } catch (e: Exception) {
         e.printStackTrace()

@@ -20,6 +20,9 @@ class HomeViewModel: ViewModel() {
     private val _likeItemList = MutableStateFlow<List<LikeProduct>>(emptyList())
     val likeItemList: StateFlow<List<LikeProduct>> = _likeItemList
 
+    private val _likeValue = MutableStateFlow<List<LikeProduct>>(emptyList())
+    val likeValues: StateFlow<List<LikeProduct>> = _likeValue
+
 
     // 상태 변수들
     private var currentOffset = 0
@@ -37,7 +40,7 @@ class HomeViewModel: ViewModel() {
         _isLoading.value = true
 
         viewModelScope.launch {
-         
+
                 productRepository.getLikedGoods(
                     offset = currentOffset,
                     limit =10,
@@ -50,7 +53,9 @@ class HomeViewModel: ViewModel() {
                         hasMoreData = false
                     } else {
                         val currentList = _likeItemList.value ?: emptyList()
+                        val currentLikeList = _likeValue.value ?: emptyList()
                         _likeItemList.value = currentList + newItems
+                        _likeValue.value = currentLikeList + newItems
 
                         // 다음 페이지를 위해 오프셋 업데이트
                         currentOffset ++

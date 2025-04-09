@@ -105,11 +105,14 @@ fun BabyDetailScreen(
     var showDeleteDialog by remember { mutableStateOf(false) }
     var isClickable by remember { mutableStateOf(true) }
     val context = LocalContext.current
+    var isCalendar by remember { mutableStateOf(false) }
+
 
 
     LaunchedEffect(Unit) {
         delay(500) // 500ms (원하시는 시간으로 조정)
         isClickable = true
+
 
     }
 
@@ -123,6 +126,7 @@ fun BabyDetailScreen(
     LaunchedEffect(babyUiState.selectedBaby) {
         selectedGender = if (type == "등록") null else babyUiState.selectedBaby?.gender
     }
+    var isGallery by remember { mutableStateOf(false) }
     val titleText = if (type == "등록") "아이 정보 관리" else "${babyUiState.selectedBaby!!.nickname} 정보"
     val profileBtnText = if (type == "등록") "프로필 사진 등록하기" else "프로필 사진 수정하기"
     val nicknameText =
@@ -157,6 +161,8 @@ fun BabyDetailScreen(
             } catch (e: Exception) {
                 Log.e(TAG, "날짜 변환 오류: $e")
             }
+
+
         }
 
         val datePickerDialog = DatePickerDialog(
@@ -184,7 +190,13 @@ fun BabyDetailScreen(
         }
         datePickerDialog.datePicker.maxDate = maxSelectableDate.timeInMillis
 
+        datePickerDialog.setOnDismissListener {
+         isClickable = false
+        }
+
+
         datePickerDialog.show()
+
     }
 
 
@@ -225,6 +237,7 @@ fun BabyDetailScreen(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
+            isGallery = false
             uri?.let {
                 val multipartFile = uriToMultipart(context, it, "profileImage")
                 if (multipartFile != null) {
@@ -303,7 +316,10 @@ fun BabyDetailScreen(
                         .background(color = White) // 그림자 적용
                         .clip(CircleShape)
                         .clickable {
-                            launcher.launch("image/*")
+                            if (!isGallery) {
+                                isGallery = true
+                                launcher.launch("image/*") // 이미지 선택
+                            }
                         }, // 원형 이미지 적용
                     contentAlignment = Alignment.Center // 내부 컨텐츠 중앙 정렬
                 ) {
@@ -378,7 +394,10 @@ fun BabyDetailScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 SmallLineBtn(profileBtnText, pointColor, onClick = {
-                    launcher.launch("image/*")
+                    if (!isGallery) {
+                        isGallery = true
+                        launcher.launch("image/*") // 이미지 선택
+                    }
                 })
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -430,13 +449,10 @@ fun BabyDetailScreen(
                             .fillMaxWidth(),
                         icon = R.drawable.ic_calendar,
                         onIconClick = {
-
-                            if (isClickable) {
-                                isClickable = false
+                            if (!isCalendar) {
+                                isClickable = true
                                 showDatePicker("")
-
                             }
-
                         },
                         redOnly = true
                     )
@@ -449,7 +465,10 @@ fun BabyDetailScreen(
                             .fillMaxWidth(),
                         icon = R.drawable.ic_calendar,
                         onIconClick = {
-                            showDatePicker(babyUiState.selectedBaby!!.birth)
+                            if (!isCalendar) {
+                                isClickable = true
+                                showDatePicker(babyUiState.selectedBaby!!.birth)
+                            }
                         },
                         redOnly = true
                     )

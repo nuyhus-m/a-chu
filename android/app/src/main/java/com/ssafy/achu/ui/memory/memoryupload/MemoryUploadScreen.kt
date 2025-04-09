@@ -83,6 +83,7 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.LightPink
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
+import com.ssafy.achu.core.util.containsEmoji
 import com.ssafy.achu.core.util.getNameWithParticle
 import com.ssafy.achu.core.util.getProductWithParticle
 import com.ssafy.achu.core.util.isImageValid
@@ -110,11 +111,12 @@ fun MemoryUploadScreen(
     val pagerState = rememberPagerState()
     val maxTitleLength = 15
     val maxContentLength = 100
+    var isGallery by remember { mutableStateOf(false) }
+
     var images by remember(memoryUIState.selectedMemory.imgUrls) {
         mutableStateOf(memoryUIState.selectedMemory.imgUrls.map { Uri.parse(it) })
     }
 
-    val keyboardController = LocalSoftwareKeyboardController.current
     val contentFocusRequester = remember { FocusRequester() }
 
 
@@ -138,6 +140,7 @@ fun MemoryUploadScreen(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents(),
         onResult = { uris ->
+            isGallery = false
             if (uris.isEmpty()) {
                 isLoading = false
                 return@rememberLauncherForActivityResult
@@ -290,7 +293,10 @@ fun MemoryUploadScreen(
                                     color = White,
                                     modifier = Modifier
                                         .clickable {
-                                            launcher.launch("image/*") // 이미지 선택
+                                            if(!isGallery){
+                                                isGallery = true
+                                                launcher.launch("image/*") // 이미지 선택
+                                            }
                                         }
 
                                         .align(Alignment.BottomEnd) // Box 내에서 우측 하단에 배치
@@ -318,12 +324,10 @@ fun MemoryUploadScreen(
                         .height(350.dp)
                         .background(Color.LightGray)
                         .clickable {
-                            kotlinx.coroutines.MainScope().launch {
-                                launcher.launch("image/*")
-                                delay(300)
-                                isLoading = true
+                            if(!isGallery){
+                                isGallery = true
+                                launcher.launch("image/*") // 이미지 선택
                             }
-
                         },
                 ) {
 
@@ -377,6 +381,9 @@ fun MemoryUploadScreen(
                         if (it.length <= maxTitleLength) memoryViewModel.memoryTitleUpdate(
                             it
                         )
+//                        else if(containsEmoji(it)){
+//                            Toast.makeText(context, "이모지 포함 불가", Toast.LENGTH_SHORT).show()
+//                        }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("타이틀을 입력해주세요", color = FontGray) },
@@ -432,6 +439,9 @@ fun MemoryUploadScreen(
                             if (lineCount <= 6 && newText.text.length <= maxContentLength) {
                                 memoryViewModel.memoryContentUpdate(newText)
                             }
+//                            else if(containsEmoji(newText.text)){
+//                                Toast.makeText(context, "이모지 포함 불가", Toast.LENGTH_SHORT).show()
+//                            }
                         },
                         modifier = Modifier
                             .fillMaxSize()

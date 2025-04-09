@@ -115,6 +115,7 @@ fun UploadProductScreen(
     val scrollState = rememberScrollState()
 
     var isLoading by remember { mutableStateOf(false) }
+    var isGallery by remember { mutableStateOf(false) }
 
     var canClick by remember { mutableStateOf(true) }
 
@@ -128,6 +129,7 @@ fun UploadProductScreen(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
+        isGallery = false
         val validUris = uris.filter { uri -> isImageValid(context, uri) }
 
         if (validUris.isEmpty()) return@rememberLauncherForActivityResult
@@ -145,6 +147,7 @@ fun UploadProductScreen(
             Toast.makeText(context, context.getString(R.string.image_max_3), Toast.LENGTH_SHORT)
                 .show()
         }
+
     }
 
     LaunchedEffect(Unit) {
@@ -234,7 +237,12 @@ fun UploadProductScreen(
                 ) {
                     AddImageIcon(
                         imgNumber = uiState.imgUris.size,
-                        onClick = { launcher.launch("image/*") }
+                        onClick = {
+                            if (!isGallery) {
+                                isGallery = true
+                                launcher.launch("image/*")
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.width(8.dp))
 

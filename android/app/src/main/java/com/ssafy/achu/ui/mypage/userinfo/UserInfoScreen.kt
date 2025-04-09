@@ -32,6 +32,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -80,6 +83,8 @@ fun UserInfoScreen(
     val userInfoUiState by userInfoViewModel.uiState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    var isGallery by remember { mutableStateOf(false) }
+
 
     LaunchedEffect(Unit) {
         userInfoViewModel.isChanged.collectLatest { isChanged ->
@@ -101,6 +106,7 @@ fun UserInfoScreen(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
+            isGallery = false
             uri?.let {
                 if (isImageValid(context, it)) {
                     val multipartFile = uriToMultipart(context, it, "profileImage")
@@ -151,7 +157,10 @@ fun UserInfoScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .clickable {
-                                launcher.launch("image/*")
+                                if(!isGallery){
+                                    isGallery = true
+                                    launcher.launch("image/*") // 이미지 선택
+                                }
                             }, // Box 크기에 맞추기
                         contentScale = ContentScale.Crop
                     )
@@ -163,7 +172,10 @@ fun UserInfoScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clickable {
-                                    launcher.launch("image/*")
+                                    if(!isGallery){
+                                        isGallery = true
+                                        launcher.launch("image/*") // 이미지 선택
+                                    }
                                 }, // Box 크기에 맞추기
                             contentScale = ContentScale.Crop
                         )
@@ -175,7 +187,10 @@ fun UserInfoScreen(
                                 .fillMaxSize()
                                 .background(White)
                                 .clickable {
-                                    launcher.launch("image/*")
+                                    if(!isGallery){
+                                        isGallery = true
+                                        launcher.launch("image/*") // 이미지 선택
+                                    }
                                 }, // Box 크기에 맞추기
                             contentAlignment = Alignment.Center
                         ) {
@@ -188,7 +203,10 @@ fun UserInfoScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
                 SmallLineBtn("프로필 수정하기", PointBlue, onClick = {
-                    launcher.launch("image/*")
+                    if(!isGallery){
+                        isGallery = true
+                        launcher.launch("image/*") // 이미지 선택
+                    }
                 })
 
                 Spacer(modifier = Modifier.height(16.dp))
