@@ -89,10 +89,8 @@ fun UploadDialog(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         softWrap = false,
-                        modifier = Modifier.weight(1f) // 🔹 가변 너비로 설정
+                        modifier = Modifier.weight(1f, fill = false)// 🔹 가변 너비로 설정
                     )
-
-                    Spacer(modifier = Modifier.width(4.dp))
 
                     Text(
                         text = "과 함께한",
@@ -179,7 +177,7 @@ fun UploadDialog(
 fun PreviewUploadDialog() {
     AchuTheme {
         UploadDialog(
-            productName = "여아 원피스djfjlskjdjksjldk",
+            productName = "여아 원피스djfj",
             babyName = "두식이",
             onUpload = {},
             onUploadWithMemory = {}
