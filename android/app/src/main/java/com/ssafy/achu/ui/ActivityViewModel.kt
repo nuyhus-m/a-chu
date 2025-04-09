@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.ssafy.achu.core.ApplicationClass.Companion.babyRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.chatRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.fcmRepository
-import com.ssafy.achu.core.ApplicationClass.Companion.json
 import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.ApplicationClass.Companion.stompService
@@ -56,10 +55,23 @@ class ActivityViewModel : ViewModel() {
     init {
         getUserinfo()
         getCategoryList()
+        getUnreadCount()
+    }
+
+    fun connectToStompServer(userId: Int) {
         viewModelScope.launch {
             stompService.connect()
+            stompService.subscribeToNewMessage("/read/chat/users/${userId}/message-arrived")
         }
-        getUnreadCount()
+
+        viewModelScope.launch {
+            stompService.newMessageFlow.collect { new ->
+                Log.d(TAG, "subscribeToNewMessage: $new")
+                if (new == "NEW_MESSAGE_ARRIVED") {
+                    _unreadCount.value++
+                }
+            }
+        }
     }
 
     fun getCategoryList() {
@@ -211,32 +223,6 @@ class ActivityViewModel : ViewModel() {
         }
     }
 
-    fun subscribeToNewMessage() {
-        if (uiState.value.user == null) return
-        viewModelScope.launch {
-            stompService.subscribeToDestination("/read/chat/users/${uiState.value.user!!.id}/message-arrived")
-                .onSuccess { response ->
-                    Log.d(TAG, "subscribeToNewMessage: success")
-                    response.let { body ->
-                        try {
-                            body.collect {
-                                val data = json.decodeFromString<String>(it.bodyAsText)
-                                Log.d(TAG, "subscribeToNewMessage: $data")
-                                if (data == "NEW_MESSAGE_ARRIVED") {
-                                    _unreadCount.value++
-                                }
-                            }
-                        } catch (e: Exception) {
-                            Log.d(TAG, "subscribeToNewMessage: ${e.message}")
-                            stompService.connect()
-                        }
-                    }
-                }.onFailure {
-                    Log.d(TAG, "subscribeToNewMessage: ${it.message}")
-                }
-        }
-    }
-
     fun updateFcmToken(token: String) {
         viewModelScope.launch {
             fcmRepository.updateToken(Token(token)).onSuccess {
@@ -276,5 +262,9 @@ class ActivityViewModel : ViewModel() {
 
     }
 
-
+    fun cancelStomp() {
+        viewModelScope.launch {
+            stompService.disconnect()
+        }
+    }
 }

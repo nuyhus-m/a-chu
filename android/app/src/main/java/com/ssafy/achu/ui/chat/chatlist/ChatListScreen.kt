@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -60,9 +61,14 @@ fun ChatListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
+    DisposableEffect(Unit) {
         activityViewModel.uiState.value.user?.let {
-            viewModel.subscribeToChatRooms(it.id)
+            viewModel.connectToStompServer(it.id)
+        }
+        viewModel.getChatRooms()
+
+        onDispose {
+            viewModel.cancelStomp()
         }
     }
 
@@ -212,17 +218,17 @@ fun ChatItem(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview
-@Composable
-fun ChatListScreenPreview() {
-    AchuTheme {
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview
+//@Composable
+//fun ChatListScreenPreview() {
+//    AchuTheme {
 //        ChatListScreen(
 //            activityViewModel = viewModel(),
 //            onNavigateToChat = {}
 //        )
-    }
-}
+//    }
+//}
 
 @Preview(showBackground = true)
 @Composable

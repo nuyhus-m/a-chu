@@ -86,13 +86,21 @@ fun ChatScreen(
     val uiState by viewModel.uiState.collectAsState()
     val activityUiState by activityViewModel.uiState.collectAsState()
 
+    DisposableEffect(Unit) {
+
+        onDispose {
+            viewModel.cancelStomp()
+        }
+    }
+
     LaunchedEffect(Unit) {
         if (roomId == -1) {
             viewModel.updateGoods(activityUiState.product)
             viewModel.updatePartner(activityUiState.product.seller)
             viewModel.checkChatRoomExistence()
         } else {
-            viewModel.setMessages()
+            viewModel.connectToStompServer()
+            viewModel.getChatListInfo()
         }
     }
 
@@ -103,7 +111,6 @@ fun ChatScreen(
     }
 
     LaunchedEffect(Unit) {
-        val roomId = null
         ChatStateHolder.currentRoomId = roomId
     }
 

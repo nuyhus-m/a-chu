@@ -39,6 +39,7 @@ class ApplicationClass : Application() {
         lateinit var retrofit: Retrofit
         lateinit var sharedPreferencesUtil: SharedPreferencesUtil
         val gson: Gson = GsonBuilder().setLenient().create()
+        lateinit var stompService: StompService
 
         // Repository
         lateinit var authRepository: AuthRepository
@@ -48,7 +49,6 @@ class ApplicationClass : Application() {
         lateinit var babyRepository: BabyRepository
         lateinit var chatRepository: ChatRepository
         lateinit var fcmRepository: FcmRepository
-        lateinit var stompService: StompService
         lateinit var json: Json
 
         // Null-on-empty converter
@@ -91,7 +91,7 @@ class ApplicationClass : Application() {
             .connectTimeout(5, TimeUnit.SECONDS)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .addInterceptor(TokenInterceptor())
-            .authenticator(TokenAuthenticator())
+//            .authenticator(TokenAuthenticator())
             .build()
 
         retrofit = Retrofit.Builder()
@@ -110,7 +110,7 @@ class ApplicationClass : Application() {
         chatRepository = ChatRepository()
         fcmRepository = FcmRepository()
 
-        stompService = StompService()
+        stompService = StompService
 
         json = Json { ignoreUnknownKeys = true }
     }

@@ -7,24 +7,17 @@ import com.ssafy.achu.core.ApplicationClass.Companion.authRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
 import com.ssafy.achu.core.util.Constants
 import com.ssafy.achu.data.model.auth.RefreshToken
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 private const val TAG = "SplashViewModel"
 
 class SplashViewModel : ViewModel() {
 
-    sealed class LoginState {
-        data object Loading : LoginState()
-        data object Authenticated : LoginState()
-        data object NotAuthenticated : LoginState()
-    }
-
-    // 상태를 관찰할 수 있는 StateFlow
-    private val _loginState = MutableStateFlow<LoginState>(LoginState.Loading)
-    val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
+    private val _isAutoLogin = MutableSharedFlow<Boolean>()
+    val isAutoLogin: SharedFlow<Boolean> = _isAutoLogin.asSharedFlow()
 
     fun checkAutoLogin() {
         viewModelScope.launch {
@@ -33,7 +26,7 @@ class SplashViewModel : ViewModel() {
             val tokens = sharedPreferencesUtil.getTokens()
 
             if (tokens == null || accessTokenIssueTime == 0L || refreshTokenIssueTime == 0L) {
-                _loginState.value = LoginState.NotAuthenticated
+                _isAutoLogin.emit(false)
                 return@launch
             }
 
@@ -65,7 +58,7 @@ class SplashViewModel : ViewModel() {
                 // ✅ Access Token이 아직 유효하면 로그인 유지
                 currentTime < accessTokenExpiryTime -> {
                     Log.d(TAG, "checkAutoLogin: 2")
-                    _loginState.value = LoginState.Authenticated
+                    _isAutoLogin.emit(true)
                 }
 
                 // ✅ Access Token 만료되었고 Refresh Token이 유효하면 Access Token 갱신
@@ -77,7 +70,7 @@ class SplashViewModel : ViewModel() {
                 // ❌ Refresh Token도 만료됨 → 로그인 필요
                 else -> {
                     Log.d(TAG, "checkAutoLogin: 4")
-                    _loginState.value = LoginState.NotAuthenticated
+                    _isAutoLogin.emit(false)
                 }
             }
         }
@@ -92,13 +85,13 @@ class SplashViewModel : ViewModel() {
                     sharedPreferencesUtil.saveAccessTokenIssuedAt(issuedAt)
                     sharedPreferencesUtil.updateAccessToken(response.data)
 
-                    _loginState.value = LoginState.Authenticated
+                    _isAutoLogin.emit(true)
                 } else {
-                    _loginState.value = LoginState.NotAuthenticated
+                    _isAutoLogin.emit(false)
                 }
             }.onFailure {
                 Log.d(TAG, "refreshAccessToken error: ${it.message}")
-                _loginState.value = LoginState.NotAuthenticated
+                _isAutoLogin.emit(false)
             }
     }
 
@@ -111,13 +104,13 @@ class SplashViewModel : ViewModel() {
                     sharedPreferencesUtil.saveAccessTokenIssuedAt(issuedAt)
                     sharedPreferencesUtil.saveRefreshTokenIssuedAt(issuedAt)
                     sharedPreferencesUtil.saveTokens(response.data)
-                    _loginState.value = LoginState.Authenticated
+                    _isAutoLogin.emit(true)
                 } else {
-                    _loginState.value = LoginState.NotAuthenticated
+                    _isAutoLogin.emit(false)
                 }
             }.onFailure {
                 Log.d(TAG, "renewTokens error: ${it.message}")
-                _loginState.value = LoginState.NotAuthenticated
+                _isAutoLogin.emit(false)
             }
     }
 }

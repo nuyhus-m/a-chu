@@ -3,36 +3,50 @@ package com.ssafy.achu.data.network
 import android.util.Log
 import com.ssafy.achu.core.ApplicationClass.Companion.json
 import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
+import com.ssafy.achu.data.model.chat.ChatRoomResponse
+import com.ssafy.achu.data.model.chat.Message
+import com.ssafy.achu.data.model.chat.MessageIdResponse
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.hildan.krossbow.stomp.StompClient
-import org.hildan.krossbow.stomp.StompReceipt
 import org.hildan.krossbow.stomp.StompSession
 import org.hildan.krossbow.stomp.conversions.kxserialization.convertAndSend
 import org.hildan.krossbow.stomp.conversions.kxserialization.json.withJsonConversions
-import org.hildan.krossbow.stomp.frame.StompFrame
 import org.hildan.krossbow.stomp.headers.StompSendHeaders
 import org.hildan.krossbow.stomp.headers.StompSubscribeHeaders
 import org.hildan.krossbow.websocket.WebSocketException
 import org.hildan.krossbow.websocket.okhttp.OkHttpWebSocketClient
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.seconds
 
 private const val TAG = "StompService"
 private const val STOMP_URL = "wss://api.a-chu.dukcode.org/chat-ws/websocket"
 private const val MAX_RETRY_ATTEMPTS = 5
 private const val INITIAL_RETRY_DELAY_MS = 1000L
 
-class StompService {
+object StompService {
 
     private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Disconnected)
     val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
 
     var session: StompSession? = null
+
+    private val _messageFlow = MutableSharedFlow<Message>()
+    val messageFlow = _messageFlow.asSharedFlow()
+
+    private val _messageIdFlow = MutableSharedFlow<MessageIdResponse>()
+    val messageIdFlow = _messageIdFlow.asSharedFlow()
+
+    private val _newMessagesFlow = MutableSharedFlow<String>()
+    val newMessageFlow = _newMessagesFlow.asSharedFlow()
+
+    private val _chatRoomFlow = MutableSharedFlow<ChatRoomResponse>()
+    val chatRoomFlow = _chatRoomFlow.asSharedFlow()
 
     private var retryCount = 0
     private var isRetrying = false
@@ -92,14 +106,13 @@ class StompService {
 
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
-                .connectTimeout(15, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
-                .pingInterval(20, TimeUnit.SECONDS) // Keep-alive ping 설정
                 .build()
 
             val wsClient = OkHttpWebSocketClient(okHttpClient)
-            val stompClient = StompClient(wsClient)
+            val stompClient = StompClient(wsClient) {
+                connectionTimeout = 3.seconds
+                gracefulDisconnect = false
+            }
 
             Log.d(TAG, "WebSocket 클라이언트 및 STOMP 클라이언트 초기화 완료")
 
@@ -163,34 +176,135 @@ class StompService {
     }
 
     // 구독 함수
-    suspend fun subscribeToDestination(destination: String): Result<Flow<StompFrame.Message>> {
-        return runCatching {
-            Log.d(TAG, "subscribeToDestination: $destination")
-            // 세션이 없거나 연결이 끊어진 경우 먼저 연결 시도
-            if (!isSessionActive()) {
-                reconnect()
-                // 연결이 완료될 때까지 대기
-                var retryAttempts = 0
-                while (connectionState.value !is ConnectionState.Connected && retryAttempts < 5) {
-                    delay(1000)
-                    retryAttempts++
-                }
+    suspend fun subscribeToMessage(destination: String) {
+        Log.d(TAG, "subscribeToMessage: $destination")
 
-                if (connectionState.value !is ConnectionState.Connected) {
-                    throw IllegalStateException("Could not establish STOMP connection for subscription")
-                }
+        // 세션이 없거나 연결이 끊어진 경우 먼저 연결 시도
+        if (!isSessionActive()) {
+            reconnect()
+            // 연결이 완료될 때까지 대기
+            var retryAttempts = 0
+            while (connectionState.value !is ConnectionState.Connected && retryAttempts < 5) {
+                delay(1000)
+                retryAttempts++
             }
 
-            val currentSession =
-                session ?: throw IllegalStateException("STOMP session is not initialized")
-            currentSession.subscribe(
-                StompSubscribeHeaders(
-                    destination = destination,
-                    customHeaders = mapOf(
-                        "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
-                    )
+            if (connectionState.value !is ConnectionState.Connected) {
+                throw IllegalStateException("Could not establish STOMP connection for subscription")
+            }
+        }
+
+        val currentSession =
+            session ?: throw IllegalStateException("STOMP session is not initialized")
+        currentSession.subscribe(
+            StompSubscribeHeaders(
+                destination = destination,
+                customHeaders = mapOf(
+                    "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
                 )
             )
+        ).collect {
+            val data = json.decodeFromString<Message>(it.bodyAsText)
+            _messageFlow.emit(data)
+        }
+    }
+
+    suspend fun subscribeToMessageRead(destination: String) {
+        Log.d(TAG, "subscribeToMessageRead: $destination")
+
+        // 세션이 없거나 연결이 끊어진 경우 먼저 연결 시도
+        if (!isSessionActive()) {
+            reconnect()
+            // 연결이 완료될 때까지 대기
+            var retryAttempts = 0
+            while (connectionState.value !is ConnectionState.Connected && retryAttempts < 5) {
+                delay(1000)
+                retryAttempts++
+            }
+
+            if (connectionState.value !is ConnectionState.Connected) {
+                throw IllegalStateException("Could not establish STOMP connection for subscription")
+            }
+        }
+
+        val currentSession =
+            session ?: throw IllegalStateException("STOMP session is not initialized")
+        currentSession.subscribe(
+            StompSubscribeHeaders(
+                destination = destination,
+                customHeaders = mapOf(
+                    "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+                )
+            )
+        ).collect {
+            val data = json.decodeFromString<MessageIdResponse>(it.bodyAsText)
+            _messageIdFlow.emit(data)
+        }
+    }
+
+    suspend fun subscribeToNewMessage(destination: String) {
+        Log.d(TAG, "subscribeToNewMessage: $destination")
+
+        // 세션이 없거나 연결이 끊어진 경우 먼저 연결 시도
+        if (!isSessionActive()) {
+            reconnect()
+            // 연결이 완료될 때까지 대기
+            var retryAttempts = 0
+            while (connectionState.value !is ConnectionState.Connected && retryAttempts < 5) {
+                delay(1000)
+                retryAttempts++
+            }
+
+            if (connectionState.value !is ConnectionState.Connected) {
+                throw IllegalStateException("Could not establish STOMP connection for subscription")
+            }
+        }
+
+        val currentSession =
+            session ?: throw IllegalStateException("STOMP session is not initialized")
+        currentSession.subscribe(
+            StompSubscribeHeaders(
+                destination = destination,
+                customHeaders = mapOf(
+                    "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+                )
+            )
+        ).collect {
+            val data = json.decodeFromString<String>(it.bodyAsText)
+            _newMessagesFlow.emit(data)
+        }
+    }
+
+    suspend fun subscribeToChatRoom(destination: String) {
+        Log.d(TAG, "subscribeToChatRoom: $destination")
+
+        // 세션이 없거나 연결이 끊어진 경우 먼저 연결 시도
+        if (!isSessionActive()) {
+            reconnect()
+            // 연결이 완료될 때까지 대기
+            var retryAttempts = 0
+            while (connectionState.value !is ConnectionState.Connected && retryAttempts < 5) {
+                delay(1000)
+                retryAttempts++
+            }
+
+            if (connectionState.value !is ConnectionState.Connected) {
+                throw IllegalStateException("Could not establish STOMP connection for subscription")
+            }
+        }
+
+        val currentSession =
+            session ?: throw IllegalStateException("STOMP session is not initialized")
+        currentSession.subscribe(
+            StompSubscribeHeaders(
+                destination = destination,
+                customHeaders = mapOf(
+                    "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+                )
+            )
+        ).collect {
+            val data = json.decodeFromString<ChatRoomResponse>(it.bodyAsText)
+            _chatRoomFlow.emit(data)
         }
     }
 
@@ -198,36 +312,35 @@ class StompService {
     suspend inline fun <reified T> sendRequest(
         destination: String,
         request: T
-    ): Result<StompReceipt?> {
-        return runCatching {
-            Log.d("StompService", "sendRequest: $destination")
-            // 세션이 없거나 연결이 끊어진 경우 먼저 연결 시도
-            if (!isSessionActive()) {
-                reconnect()
-                // 연결이 완료될 때까지 대기
-                var retryAttempts = 0
-                while (connectionState.value !is ConnectionState.Connected && retryAttempts < 5) {
-                    delay(1000)
-                    retryAttempts++
-                }
+    ) {
+        Log.d("StompService", "sendRequest: $destination")
 
-                if (connectionState.value !is ConnectionState.Connected) {
-                    throw IllegalStateException("Could not establish STOMP connection for sending request")
-                }
+        // 세션이 없거나 연결이 끊어진 경우 먼저 연결 시도
+        if (!isSessionActive()) {
+            reconnect()
+            // 연결이 완료될 때까지 대기
+            var retryAttempts = 0
+            while (connectionState.value !is ConnectionState.Connected && retryAttempts < 5) {
+                delay(1000)
+                retryAttempts++
             }
 
-            val currentSession =
-                session ?: throw IllegalStateException("STOMP session is not initialized")
-            currentSession.withJsonConversions(json).convertAndSend(
-                StompSendHeaders(
-                    destination = destination,
-                    customHeaders = mapOf(
-                        "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
-                    )
-                ),
-                request
-            )
+            if (connectionState.value !is ConnectionState.Connected) {
+                throw IllegalStateException("Could not establish STOMP connection for subscription")
+            }
         }
+
+        val currentSession =
+            session ?: throw IllegalStateException("STOMP session is not initialized")
+        currentSession.withJsonConversions(json).convertAndSend(
+            StompSendHeaders(
+                destination = destination,
+                customHeaders = mapOf(
+                    "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+                )
+            ),
+            request
+        )
     }
 
     // 연결 해제
