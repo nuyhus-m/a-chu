@@ -346,9 +346,11 @@ fun NavGraph(
             ChatScreen(
                 activityViewModel = activityViewModel,
                 roomId = roomId,
-                onBackClick = { navController.popBackStack() },
-
-                )
+                onBackClick = {
+                    activityViewModel.getUnreadCount()
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

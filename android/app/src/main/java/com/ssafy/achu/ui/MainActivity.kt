@@ -170,9 +170,7 @@ fun AchuApp(viewModel: ActivityViewModel, targetRoute: String?) {
 
     // STOMP 연결
     DisposableEffect(Unit) {
-        viewModel.uiState.value.user?.let {
-            viewModel.connectToStompServer(it.id)
-        }
+        viewModel.connectToStompServer()
 
         onDispose {
             viewModel.cancelStomp()

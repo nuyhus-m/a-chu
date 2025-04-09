@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,8 +25,10 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +48,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -69,7 +73,6 @@ import com.ssafy.achu.data.model.chat.Goods
 import com.ssafy.achu.data.model.chat.Message
 import com.ssafy.achu.data.model.chat.Partner
 import com.ssafy.achu.ui.ActivityViewModel
-import com.ssafy.achu.ui.chat.chatdetail.ChatViewModel.ChatStateHolder
 import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -87,12 +90,22 @@ fun ChatScreen(
     val uiState by viewModel.uiState.collectAsState()
     val activityUiState by activityViewModel.uiState.collectAsState()
 
-    DisposableEffect(Unit) {
-
-        onDispose {
-            viewModel.cancelStomp()
+    LaunchedEffect(Unit) {
+        viewModel.toastMessage.collectLatest { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
     }
+
+    LaunchedEffect(Unit) {
+        activityViewModel.getUnreadCount()
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            SharedPreferencesUtil(context).deleteRoomId() // ✅ context 안전하게 사용
+        }
+    }
+    val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
         if (roomId == -1) {
@@ -105,23 +118,9 @@ fun ChatScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.toastMessage.collectLatest { message ->
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
-    DisposableEffect(Unit) {
-        onDispose {
-            SharedPreferencesUtil(context).deleteRoomId() // ✅ context 안전하게 사용
-        }
-    }
-    val listState = rememberLazyListState()
-
     LaunchedEffect(uiState.messages.size) {
         if (uiState.messages.isNotEmpty()) {
-            listState.animateScrollToItem(uiState.messages.size - 1)
+            listState.scrollToItem(uiState.messages.size - 1)
         }
     }
 
@@ -129,6 +128,7 @@ fun ChatScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(color = White)
+            .imePadding()
     ) {
         CustomChatTopBar(
             partner = uiState.partner ?: Partner(
@@ -137,7 +137,6 @@ fun ChatScreen(
                 profileImageUrl = ""
             ),
             onBackClick = onBackClick,
-            onLeaveClick = { /* 나가기 동작 */ }
         )
         uiState.goods?.let {
             ChatProduct(
@@ -175,10 +174,12 @@ fun ChatScreen(
         // 입력 필드
         ChatInputField(
             value = uiState.inputText,
-            onValueChange = { viewModel.updateInputText(it) },
+            onValueChange = { if (it.length < 2001) viewModel.updateInputText(it) },
             onSendClick = {
-                if (!uiState.hasChatRoom && uiState.isFirst) viewModel.createChatRoom()
-                else viewModel.sendMessage()
+                if (uiState.buttonState) {
+                    if (!uiState.hasChatRoom && uiState.isFirst) viewModel.createChatRoom()
+                    else viewModel.sendMessage()
+                }
             }
         )
 
@@ -218,7 +219,7 @@ fun ChatProduct(
                 model = goods.thumbnailImageUrl,
                 contentDescription = null,
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(0.4f)
                     .clip(RoundedCornerShape(8.dp))
                     .aspectRatio(1f),
                 contentScale = ContentScale.Crop,
@@ -226,13 +227,15 @@ fun ChatProduct(
 
             Column(
                 modifier = Modifier
-                    .weight(1.3f)
+                    .weight(1f)
                     .padding(start = 16.dp)
                     .fillMaxWidth()
             ) {
                 Text(
                     text = goods.title,
-                    style = AchuTheme.typography.regular18
+                    style = AchuTheme.typography.regular18,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -248,7 +251,7 @@ fun ChatProduct(
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(0.1f))
             if (isSeller) {
                 SmallLineBtn(
                     buttonText = "거래 완료",
@@ -459,11 +462,13 @@ fun ChatTextField(
     onValueChange: (String) -> Unit,
     pointColor: Color = PointBlue,
 ) {
+    val scrollState = rememberScrollState()
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .verticalScroll(scrollState),
         textStyle = AchuTheme.typography.regular16,
         placeholder = {
             Text(
@@ -477,6 +482,7 @@ fun ChatTextField(
             unfocusedBorderColor = pointColor,
             cursorColor = Color.Black
         ),
+        maxLines = 7,
 //        trailingIcon = {
 //            IconButton(onClick = { }) {
 //                Icon(
@@ -493,32 +499,36 @@ fun ChatTextField(
 fun CustomChatTopBar(
     partner: Partner,
     onBackClick: () -> Unit,
-    onLeaveClick: () -> Unit
 ) {
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(White)
-            .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(start = 8.dp, end = 8.dp, top = 68.dp, bottom = 24.dp),
+        contentAlignment = Alignment.Center
     ) {
-        // 뒤로가기 버튼
-        IconButton(onClick = onBackClick) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_back),
-                contentDescription = stringResource(R.string.back),
-                modifier = Modifier.size(28.dp)
-            )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // 뒤로가기 버튼
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_back),
+                    contentDescription = stringResource(R.string.back),
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
         }
 
         // 프로필 및 사용자 정보 섹션
         Row(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 프로필 이미지
-            Box {
+            if (partner.profileImageUrl.isNullOrEmpty()) {
                 Image(
                     painter = painterResource(id = R.drawable.img_profile_basic2),
                     contentDescription = stringResource(R.string.profile_img),
@@ -528,6 +538,7 @@ fun CustomChatTopBar(
                         .background(LightPink),
                     contentScale = ContentScale.Crop
                 )
+            } else {
                 AsyncImage(
                     model = partner.profileImageUrl, // 여기에 실제 이미지 URL 입력
                     contentDescription = stringResource(R.string.profile_img),
@@ -537,23 +548,11 @@ fun CustomChatTopBar(
                     contentScale = ContentScale.Crop
                 )
             }
-
             Spacer(modifier = Modifier.width(8.dp))
             // 사용자 이름
             Text(
                 text = partner.nickname,
                 style = AchuTheme.typography.bold24
-            )
-        }
-
-        // 나가기 버튼
-        IconButton(
-            onClick = onLeaveClick
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_leave),
-                contentDescription = stringResource(R.string.leave),
-                modifier = Modifier.size(28.dp)
             )
         }
     }
@@ -583,7 +582,6 @@ fun PreviewCustomChatTopBar() {
                 profileImageUrl = ""
             ),
             onBackClick = { /* 뒤로가기 동작 */ },
-            onLeaveClick = { /* 나가기 동작 */ }
         )
     }
 }

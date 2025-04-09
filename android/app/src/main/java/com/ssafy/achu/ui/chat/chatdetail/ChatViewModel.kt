@@ -14,7 +14,6 @@ import com.ssafy.achu.core.util.Constants.SOLD
 import com.ssafy.achu.core.util.Constants.SUCCESS
 import com.ssafy.achu.core.util.Constants.TEXT
 import com.ssafy.achu.core.util.getErrorResponse
-import com.ssafy.achu.data.database.SharedPreferencesUtil
 import com.ssafy.achu.data.model.chat.ChatRoomRequest
 import com.ssafy.achu.data.model.chat.Goods
 import com.ssafy.achu.data.model.chat.MessageIdRequest
@@ -23,7 +22,6 @@ import com.ssafy.achu.data.model.chat.SendChatRequest
 import com.ssafy.achu.data.model.product.BuyerIdRequest
 import com.ssafy.achu.data.model.product.ProductDetailResponse
 import com.ssafy.achu.data.model.product.Seller
-import com.ssafy.achu.data.network.StompService
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -54,32 +52,46 @@ class ChatViewModel(
     fun connectToStompServer() {
         viewModelScope.launch {
             stompService.connect()
+        }
+
+        viewModelScope.launch {
             stompService.subscribeToMessage("/read/chat/rooms/$roomId/messages")
+        }
+
+        viewModelScope.launch {
             stompService.subscribeToMessageRead("/read/chat/rooms/$roomId/messages/read")
         }
 
         viewModelScope.launch {
-            stompService.messageFlow.collect { message ->
-                Log.d(TAG, "subscribeToMessage: $message")
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        messages = currentState.messages + message
-                    )
+            try {
+                stompService.messageFlow.collect { message ->
+                    Log.d(TAG, "subscribeToMessage: $message")
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            messages = currentState.messages + message
+                        )
+                    }
+                    sendMessageRead()
                 }
-                sendMessageRead()
+            } catch (e: Exception) {
+                Log.e("스톰프에러", "messageFlow: ${e.message}")
             }
         }
 
         viewModelScope.launch {
-            stompService.messageIdFlow.collect { messageId ->
-                Log.d(TAG, "subscribeToMessageRead: $messageId")
-                if (messageId.userId == (uiState.value.partner?.id ?: 0)) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            lastReadMessageId = messageId.lastUnreadMessageId
-                        )
+            try {
+                stompService.messageIdFlow.collect { messageId ->
+                    Log.d(TAG, "subscribeToMessageRead: $messageId")
+                    if (messageId.userId == (uiState.value.partner?.id ?: 0)) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                lastReadMessageId = messageId.lastUnreadMessageId
+                            )
+                        }
                     }
                 }
+            } catch (e: Exception) {
+                Log.e("스톰프에러", "messageIdFlow: ${e.message}")
             }
         }
     }
@@ -138,6 +150,11 @@ class ChatViewModel(
 
     // 채팅방 생성
     fun createChatRoom() {
+        _uiState.update {
+            it.copy(
+                buttonState = false
+            )
+        }
         viewModelScope.launch {
             chatRepository.createChatRoom(
                 ChatRoomRequest(
@@ -155,7 +172,8 @@ class ChatViewModel(
                         it.copy(
                             hasChatRoom = true,
                             isFirst = false,
-                            inputText = ""
+                            inputText = "",
+                            buttonState = true
                         )
                     }
                 }
@@ -218,8 +236,7 @@ class ChatViewModel(
 
     // 채팅 화면에 필요한 모든 데이터 조회
 
-     fun getChatListInfo() {
-
+    fun getChatListInfo() {
         viewModelScope.launch {
             chatRepository.getChatListInfo(roomId)
                 .onSuccess { response ->
@@ -245,6 +262,11 @@ class ChatViewModel(
 
     // 메시지 전송
     fun sendMessage() {
+        _uiState.update {
+            it.copy(
+                buttonState = false
+            )
+        }
         viewModelScope.launch {
             stompService.sendRequest(
                 "/send/chat/rooms/$roomId/messages",
@@ -253,12 +275,19 @@ class ChatViewModel(
                     type = TEXT
                 )
             )
+            _uiState.update { currentState ->
+                currentState.copy(
+                    inputText = "",
+                    buttonState = true
+                )
+            }
         }
     }
 
     // 메세지 읽음 상태 전송
     private fun sendMessageRead() {
         viewModelScope.launch {
+            Log.d(TAG, "sendMessageRead: send")
             stompService.sendRequest(
                 "/send/chat/rooms/$roomId/messages/read",
                 MessageIdRequest(lastReadMessageId = uiState.value.messages.last().id)
