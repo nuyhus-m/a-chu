@@ -96,10 +96,6 @@ fun ChatScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        activityViewModel.getUnreadCount()
-    }
-
     DisposableEffect(Unit) {
         onDispose {
             SharedPreferencesUtil(context).deleteRoomId() // ✅ context 안전하게 사용
@@ -147,41 +143,47 @@ fun ChatScreen(
             )
         }
 
-        // 채팅 메시지 목록
-        LazyColumn(
+        Column(
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            state = listState,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(vertical = 8.dp)
+                .fillMaxSize()
+                .imePadding()
         ) {
-            items(uiState.messages) { message ->
-                when (message.type) {
-                    TEXT -> ChatMessageItem(
-                        message = message,
-                        lastReadMessageId = uiState.lastReadMessageId,
-                        userId = activityUiState.user!!.id,
-                        partner = uiState.partner!!
-                    )
+            // 채팅 메시지 목록
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+                items(uiState.messages) { message ->
+                    when (message.type) {
+                        TEXT -> ChatMessageItem(
+                            message = message,
+                            lastReadMessageId = uiState.lastReadMessageId,
+                            userId = activityUiState.user!!.id,
+                            partner = uiState.partner!!
+                        )
 
-                    else -> SystemMessage(message = message)
+                        else -> SystemMessage(message = message)
+                    }
                 }
             }
+
+            // 입력 필드
+            ChatInputField(
+                value = uiState.inputText,
+                onValueChange = { if (it.length < 2001) viewModel.updateInputText(it) },
+                onSendClick = {
+                    if (uiState.buttonState) {
+                        if (!uiState.hasChatRoom && uiState.isFirst) viewModel.createChatRoom()
+                        else viewModel.sendMessage()
+                    }
+                }
+            )
         }
-
-        // 입력 필드
-        ChatInputField(
-            value = uiState.inputText,
-            onValueChange = { if (it.length < 2001) viewModel.updateInputText(it) },
-            onSendClick = {
-                if (uiState.buttonState) {
-                    if (!uiState.hasChatRoom && uiState.isFirst) viewModel.createChatRoom()
-                    else viewModel.sendMessage()
-                }
-            }
-        )
 
         Spacer(modifier = Modifier.height(8.dp))
     }

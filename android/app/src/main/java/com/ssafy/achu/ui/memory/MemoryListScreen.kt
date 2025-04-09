@@ -84,6 +84,10 @@ fun MemoryListScreen(
     var expanded by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf(uiState.selectedBaby?.nickname) }
 
+    LaunchedEffect(Unit) {
+        viewModel.getUnreadCount()
+    }
+
     LaunchedEffect(uiState.selectedBaby?.id) {
         uiState.selectedBaby?.id?.let { babyId ->
             memoryViewModel.getMemoryList(babyId)

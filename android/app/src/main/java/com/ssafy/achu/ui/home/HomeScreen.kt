@@ -83,6 +83,9 @@ fun HomeScreen(
 
     val uiState by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.getUnreadCount()
+    }
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {

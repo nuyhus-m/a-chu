@@ -48,6 +48,10 @@ fun MyPageScreen(
 
     val user = uiState.user
 
+    LaunchedEffect(Unit) {
+        viewModel.getUnreadCount()
+    }
+
 
     Box(
         modifier = modifier
