@@ -1,5 +1,6 @@
 package com.ssafy.achu.ui.chat.chatlist
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -47,6 +49,7 @@ import com.ssafy.achu.core.theme.FontPink
 import com.ssafy.achu.core.theme.PointBlue
 import com.ssafy.achu.core.theme.White
 import com.ssafy.achu.core.util.formatChatRoomTime
+import com.ssafy.achu.data.database.SharedPreferencesUtil
 import com.ssafy.achu.data.model.chat.ChatRoomResponse
 import com.ssafy.achu.ui.ActivityViewModel
 
@@ -61,6 +64,7 @@ fun ChatListScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
+
         activityViewModel.uiState.value.user?.let {
             viewModel.subscribeToChatRooms(it.id)
         }
@@ -120,7 +124,9 @@ fun ChatListScreen(
 @Composable
 fun ChatList(
     items: List<ChatRoomResponse>,
-    onNavigateToChat: (Int) -> Unit
+    onNavigateToChat: (Int) -> Unit,
+    context: Context = LocalContext.current
+
 ) {
     LazyColumn {
         items(items) { item ->
@@ -128,6 +134,7 @@ fun ChatList(
                 chatRoom = item,
                 onNavigateToChat = {
                     onNavigateToChat(item.id)
+                    SharedPreferencesUtil(context).saveRoomId(item.id)
                 }
             )
         }
