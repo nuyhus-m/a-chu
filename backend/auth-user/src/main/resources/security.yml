@@ -5,7 +5,7 @@ achu:
     properties:
       secret: ${JWT_SECRET:defaultJwtSecret}
       access-token:
-        expiration-seconds: 1800
+        expiration-seconds: ${ACCESS_TOKEN_EXPIRATION_SECOND:1800}
       refresh-token:
         expiration-seconds: 604800
         renew-available-seconds: 172800
