@@ -151,20 +151,20 @@ fun BasicRecommendItem(
                             .width(24.dp)
                             .height(24.dp)
                             .weight(0.2f)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = {
-                                    if (isLiked) {
-                                        onUnLikeClick(product.id)
-                                        isLiked = false
-                                    } else {
-                                        onLikeClick(product.id)
-                                        isLiked = true
-                                    }
-                                },
-
-                                )
+//                            .clickable(
+//                                interactionSource = remember { MutableInteractionSource() },
+//                                indication = null,
+//                                onClick = {
+//                                    if (isLiked) {
+//                                        onUnLikeClick(product.id)
+//                                        isLiked = false
+//                                    } else {
+//                                        onLikeClick(product.id)
+//                                        isLiked = true
+//                                    }
+//                                },
+//
+//                                )
                             .padding(end = 4.dp)
                     )
                 }

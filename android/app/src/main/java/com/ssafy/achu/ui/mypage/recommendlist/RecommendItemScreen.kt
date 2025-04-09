@@ -107,9 +107,8 @@ fun RecommendItemScreen(
 
                         // 추천 리스트 요청
                         LaunchedEffect(babyInfo.id) {
-                            if (recommendViewModel.recommendMap.value[babyInfo.id] == null) {
-                                recommendViewModel.getRecommendList(babyInfo.id)
-                            }
+                            recommendViewModel.getRecommendList(babyInfo.id)
+
                         }
 
                         val recommendMap by recommendViewModel.recommendMap.collectAsState()
@@ -118,7 +117,7 @@ fun RecommendItemScreen(
                         BabyListItem(
                             babyInfo = babyInfo,
                             list = recommendList,
-                            onClick = { activityViewModel.getProductDetail(it)},
+                            onClick = { activityViewModel.getProductDetail(it) },
                             viewModel = recommendViewModel
                         )
                     }
@@ -234,7 +233,9 @@ fun BabyListItem(
             Spacer(modifier = Modifier.height(16.dp))
 
             if (list.isEmpty()) {
-                Box(modifier = Modifier.fillMaxWidth().height(220.dp)){
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)) {
                     LoadingImg("추천상품 로드중...", Modifier.fillMaxWidth(), 16)
                 }
             } else {
@@ -244,7 +245,7 @@ fun BabyListItem(
                     itemsIndexed(list) { index, item -> // 리스트와 함께 사용해야 함
                         BasicRecommendItem(
                             product = item,
-                            onClickItem = {onClick(it) }, // 클릭 시 ViewModel에서 Detail 요청
+                            onClickItem = { onClick(it) }, // 클릭 시 ViewModel에서 Detail 요청
                             onLikeClick = { productId ->
                                 viewModel.likeItem(productId, babyInfo.id)
                             },

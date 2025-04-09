@@ -113,7 +113,7 @@ class BabyViewModel : ViewModel() {
                 Log.d(TAG, "registerBaby: ${it.data}")
                 getBaby(it.data.id)
                 updateToastString("아이 등록 성공!")
-                _isChanged.emit("등록")
+                _isChanged.emit("등록성공")
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "registerBaby: ${errorResponse}")

@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,15 +84,23 @@ fun UploadDialog(
                 ) {
                     Text(
                         text = productName,
-                        style = AchuTheme.typography.semiBold20.copy(lineHeight = 30.sp), // 🔹 줄 간격 조정
-                        color = FontPink
+                        style = AchuTheme.typography.semiBold20.copy(lineHeight = 30.sp),
+                        color = FontPink,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        softWrap = false,
+                        modifier = Modifier.weight(1f) // 🔹 가변 너비로 설정
                     )
+
+                    Spacer(modifier = Modifier.width(4.dp))
 
                     Text(
                         text = "과 함께한",
-                        style = AchuTheme.typography.medium18.copy(lineHeight = 30.sp), // 🔹 줄 간격 조정
+                        style = AchuTheme.typography.medium18.copy(lineHeight = 30.sp),
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Clip, // 이건 생략해도 기본값이라 괜찮음
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
 
                 // 텍스트
@@ -109,10 +118,14 @@ fun UploadDialog(
                     )
 
                     Text(
-                        text = "의 추억을 기록할까요?",
+                        text = "의",
                         style = AchuTheme.typography.medium18.copy(lineHeight = 30.sp), // 🔹 줄 간격 조정
                     )
                 }
+                Text(
+                    text = "추억을 등록할까요?",
+                    style = AchuTheme.typography.medium18.copy(lineHeight = 30.sp), // 🔹 줄 간격 조정
+                )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -166,7 +179,7 @@ fun UploadDialog(
 fun PreviewUploadDialog() {
     AchuTheme {
         UploadDialog(
-            productName = "여아 원피스",
+            productName = "여아 원피스djfjlskjdjksjldk",
             babyName = "두식이",
             onUpload = {},
             onUploadWithMemory = {}

@@ -81,12 +81,13 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     ) {
         val intent = Intent(this, MainActivity::class.java).apply {
             action = Intent.ACTION_VIEW
+            action = System.currentTimeMillis().toString()
             putExtra("targetRoute", targetFragment)
             putExtra("requestId", requestId)
             putExtra("type", type)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
-
+        Log.d(TAG, "sendNotification: ${intent}")
         val pendingIntent = PendingIntent.getActivity(
             this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         )

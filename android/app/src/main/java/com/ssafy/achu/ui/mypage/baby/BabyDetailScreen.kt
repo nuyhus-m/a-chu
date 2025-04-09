@@ -77,6 +77,7 @@ import com.ssafy.achu.core.util.compressImage
 import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.ui.ActivityViewModel
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -102,7 +103,16 @@ fun BabyDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     val pointColor: Color = PointPink
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var isClickable by remember { mutableStateOf(true) }
+    val context = LocalContext.current
 
+
+    LaunchedEffect(Unit) {
+        delay(500) // 500ms (원하시는 시간으로 조정)
+        isClickable = true
+
+    }
+    
     if (babyId > 0) {
         babyViewModel.getBaby(babyId)
     }
@@ -127,7 +137,6 @@ fun BabyDetailScreen(
 
 
     var showNickNameUpdateDialog by remember { mutableStateOf(false) }
-    val context = LocalContext.current
     var dateList: List<Int>
     val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
@@ -181,25 +190,20 @@ fun BabyDetailScreen(
 
     LaunchedEffect(Unit) {
         babyViewModel.isChanged.collectLatest { isChanged ->
-
             if (isChanged == "실패") {
                 Toast.makeText(context, babyUiState.toastString, Toast.LENGTH_SHORT).show()
-
             } else {
                 viewModel.getBabyList()
+                if (isChanged == "등록성공" && babyId == -1) {
+                    delay(500)
+                    Toast.makeText(context, babyUiState.toastString, Toast.LENGTH_SHORT).show()
 
-
-                if (isChanged == "등록" && babyId == -1) {
                     backPressedDispatcher?.onBackPressed()
                 } else if (isChanged == "삭제") {
                     backPressedDispatcher?.onBackPressed()
-
                 }
             }
-
-
         }
-
     }
 
     LaunchedEffect(Unit) {
@@ -363,7 +367,7 @@ fun BabyDetailScreen(
 
                         }
                     }
-                    
+
                 }
 
 
@@ -422,7 +426,13 @@ fun BabyDetailScreen(
                             .fillMaxWidth(),
                         icon = R.drawable.ic_calendar,
                         onIconClick = {
-                            showDatePicker("")
+
+                            if (isClickable) {
+                                isClickable = false
+                                showDatePicker("")
+
+                            }
+
                         },
                         redOnly = true
                     )

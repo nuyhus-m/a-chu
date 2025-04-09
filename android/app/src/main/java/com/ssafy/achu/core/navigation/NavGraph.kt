@@ -218,9 +218,7 @@ fun NavGraph(
                         route = Route.ProductDetail(
                             isPreview = false
                         )
-                    ) {
-                        launchSingleTop = true
-                    }
+                    )
                 }
 
             )

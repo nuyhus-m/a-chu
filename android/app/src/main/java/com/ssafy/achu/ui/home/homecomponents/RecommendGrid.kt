@@ -138,17 +138,17 @@ fun RecommendGrid(
                         painter = painterResource(id = if (!heartClick0.value) R.drawable.ic_favorite_line else R.drawable.ic_favorite),
                         contentDescription = "Arrow",
                         modifier = Modifier.weight(0.2f)
-                            .size(24.dp)
-                            .clickable {
-
-                                if (!heartClick0.value) {
-                                    onLikeClick(productResponses[0].id)
-                                    heartClick0.value = true
-                                } else {
-                                    onUnLikeClick(productResponses[0].id)
-                                    heartClick0.value = false
-                                }
-                            },
+                            .size(24.dp),
+//                            .clickable {
+//
+//                                if (!heartClick0.value) {
+//                                    onLikeClick(productResponses[0].id)
+//                                    heartClick0.value = true
+//                                } else {
+//                                    onUnLikeClick(productResponses[0].id)
+//                                    heartClick0.value = false
+//                                }
+//                            },
                         colorFilter = ColorFilter.tint(if (!heartClick0.value) LightGray else FontPink)
                     )
 
@@ -243,17 +243,17 @@ fun RecommendGrid(
                             painter = painterResource(id = if (!heartClick1.value) R.drawable.ic_favorite_line else R.drawable.ic_favorite),
                             contentDescription = "Arrow",
                             modifier = Modifier.weight(0.2f)
-                                .size(20.dp)
-                                .clickable {
-
-                                    if (!heartClick1.value) {
-                                        onLikeClick(productResponses[1].id)
-                                        heartClick1.value = true
-                                    } else {
-                                        onUnLikeClick(productResponses[1].id)
-                                        heartClick1.value = false
-                                    }
-                                },
+                                .size(20.dp),
+//                                .clickable {
+//
+//                                    if (!heartClick1.value) {
+//                                        onLikeClick(productResponses[1].id)
+//                                        heartClick1.value = true
+//                                    } else {
+//                                        onUnLikeClick(productResponses[1].id)
+//                                        heartClick1.value = false
+//                                    }
+//                                },
                             colorFilter = ColorFilter.tint(if (!heartClick1.value) LightGray else FontPink)
                         )
 
@@ -348,17 +348,17 @@ fun RecommendGrid(
                             painter = painterResource(id = if (!heartClick2.value) R.drawable.ic_favorite_line else R.drawable.ic_favorite),
                             contentDescription = "Arrow",
                             modifier = Modifier.weight(0.2f)
-                                .size(20.dp)
-                                .clickable {
-
-                                    if (!heartClick2.value) {
-                                        onLikeClick(productResponses[2].id)
-                                        heartClick2.value = true
-                                    } else {
-                                        onUnLikeClick(productResponses[2].id)
-                                        heartClick2.value = false
-                                    }
-                                },
+                                .size(20.dp),
+//                                .clickable {
+//
+//                                    if (!heartClick2.value) {
+//                                        onLikeClick(productResponses[2].id)
+//                                        heartClick2.value = true
+//                                    } else {
+//                                        onUnLikeClick(productResponses[2].id)
+//                                        heartClick2.value = false
+//                                    }
+//                                },
                             colorFilter = ColorFilter.tint(if (!heartClick2.value) LightGray else FontPink)
                         )
 

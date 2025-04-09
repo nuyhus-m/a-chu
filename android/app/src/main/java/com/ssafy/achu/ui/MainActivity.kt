@@ -1,6 +1,7 @@
 package com.ssafy.achu.ui
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -50,6 +51,16 @@ private const val TAG = "MainActivity_안주현"
 class MainActivity : ComponentActivity() {
 
     private val activityViewModel: ActivityViewModel by viewModels()
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+
+        val targetRoute = intent.getStringExtra("targetRoute")
+        val requestId = intent.getStringExtra("requestId")
+        val type = intent.getStringExtra("type")
+
+        Log.d("MainActivity", "onNewIntent: $targetRoute / $requestId / $type")
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +68,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()
+
+
 
         requestNotificationPermission()
         requestFcmToken(activityViewModel)
@@ -121,18 +134,24 @@ fun AchuApp(viewModel: ActivityViewModel, targetRoute: String?) {
     val isMyPage = currentRoute == BottomNavRoute.MyPage::class.qualifiedName
 
     var isNavigating by remember { mutableStateOf(false) }
+    var alreadyNavigated by remember { mutableStateOf(false) }
 
     if (isMyPage) {
         SetStatusBarColor(color = Color.Transparent, darkIcons = false)
     } else {
         SetStatusBarColor(color = Color.White, darkIcons = true)
     }
-    LaunchedEffect(targetRoute) {
-        if (targetRoute != null) {
+    val isProductLoaded by viewModel.getProductSuccess.collectAsState(false)
+    // targetRoute 있을 경우 한 번만 이동 시도
+    LaunchedEffect(currentRoute, targetRoute,isProductLoaded) {
+        if (!alreadyNavigated && targetRoute != null && currentRoute != null) {
             isNavigating = true
             when (targetRoute) {
                 "ProductDetail" -> {
-                    navController.navigate(Route.ProductDetail(false))
+                    if (isProductLoaded) {
+                        navController.navigate(Route.ProductDetail(false))
+                        alreadyNavigated = true
+                    }
                 }
 
                 "TradeList" -> {
@@ -143,12 +162,13 @@ fun AchuApp(viewModel: ActivityViewModel, targetRoute: String?) {
                     navController.navigate(BottomNavRoute.ChatList)
                 }
             }
+            alreadyNavigated = true
             delay(300)
             isNavigating = false
         }
-
     }
 
+    // STOMP 연결
     DisposableEffect(Unit) {
         viewModel.uiState.value.user?.let {
             viewModel.connectToStompServer(it.id)
@@ -159,6 +179,7 @@ fun AchuApp(viewModel: ActivityViewModel, targetRoute: String?) {
         }
     }
 
+    // 화면 전환 시 로딩 방지용
     val currentDestination by navController.currentBackStackEntryFlow.collectAsState(initial = null)
     LaunchedEffect(currentDestination) {
         isNavigating = true
@@ -190,6 +211,7 @@ fun AchuApp(viewModel: ActivityViewModel, targetRoute: String?) {
                 activityViewModel = viewModel
             )
 
+            // 로딩 중 터치 방지
             if (isNavigating) {
                 Box(
                     modifier = Modifier

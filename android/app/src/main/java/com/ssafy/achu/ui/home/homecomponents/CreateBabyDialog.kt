@@ -101,12 +101,8 @@ fun CreateBabyDialog(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1.0f)
-                            .padding(vertical = 12.dp),
-                    )
 
+                    Spacer(Modifier.weight(0.5f))
                     Box(
                         modifier = Modifier
                             .weight(1.0f)
@@ -122,6 +118,8 @@ fun CreateBabyDialog(
                             style = AchuTheme.typography.semiBold16White
                         )
                     }
+                    Spacer(Modifier.weight(0.5f))
+
                 }
             }
         }

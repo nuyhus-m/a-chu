@@ -159,18 +159,18 @@ fun LargeLikeItem(
                             .width(24.dp)
                             .height(24.dp)
                             .weight(0.2f)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = {
-                                    isLiked = !isLiked
-                                    if (isLiked) {
-                                        productLike()
-                                    } else {
-                                        productUnlike()
-                                    }
-                                }
-                            )
+//                            .clickable(
+//                                interactionSource = remember { MutableInteractionSource() },
+//                                indication = null,
+//                                onClick = {
+//                                    isLiked = !isLiked
+//                                    if (isLiked) {
+//                                        productLike()
+//                                    } else {
+//                                        productUnlike()
+//                                    }
+//                                }
+//                            )
                             .padding(end = 4.dp)
                     )
                 }

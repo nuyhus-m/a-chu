@@ -166,18 +166,18 @@ fun BasicLikeItem(
                             .width(24.dp)
                             .height(24.dp)
                             .weight(0.2f)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = {
-                                    isLiked = !isLiked
-                                    if (isLiked) {
-                                        likeCLicked()
-                                    } else {
-                                        unlikeClicked()
-                                    }
-                                }
-                            )
+//                            .clickable(
+//                                interactionSource = remember { MutableInteractionSource() },
+//                                indication = null,
+//                                onClick = {
+//                                    isLiked = !isLiked
+//                                    if (isLiked) {
+//                                        likeCLicked()
+//                                    } else {
+//                                        unlikeClicked()
+//                                    }
+//                                }
+//                            )
                             .padding(end = 4.dp) // 우측 여백 추가
                     )
                 }

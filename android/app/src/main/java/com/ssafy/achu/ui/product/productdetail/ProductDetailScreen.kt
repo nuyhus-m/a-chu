@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -42,6 +43,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,6 +79,7 @@ import com.ssafy.achu.data.model.product.Seller
 import com.ssafy.achu.ui.ActivityViewModel
 import com.ssafy.achu.ui.product.productlist.UploadDialog
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 private const val TAG = "ProductDetailScreen"
 
@@ -99,7 +102,9 @@ fun ProductDetailScreen(
     val isSold = activityUiState.product.tradeStatus == SOLD
 
     val scrollState = rememberScrollState()
+    var scrollToTopTrigger by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
 
 
 
@@ -128,6 +133,13 @@ fun ProductDetailScreen(
     LaunchedEffect(uiState.isDeleteSuccess) {
         if (uiState.isDeleteSuccess) {
             onBackClick()
+        }
+    }
+
+    LaunchedEffect(scrollToTopTrigger) {
+        if (scrollToTopTrigger) {
+            scrollState.scrollTo(0)
+            scrollToTopTrigger = false // 다시 false로 초기화 (다음에 또 트리거할 수 있도록)
         }
     }
 
@@ -183,9 +195,12 @@ fun ProductDetailScreen(
 
                 RecommendList(
                     onNavigateToRecommend = onNavigateToRecommend,
-                    activityViewModel = activityViewModel,
                     recommendList = recommendList,
-                    babyId = activityUiState.selectedBaby!!.id
+                    babyId = activityUiState.selectedBaby!!.id,
+                    onItemClick = {
+                        activityViewModel.getProductDetail(it)
+                        scrollToTopTrigger = true
+                    }
                 )
 
         }
@@ -289,9 +304,9 @@ private fun BottomBar(
 @Composable
 private fun RecommendList(
     onNavigateToRecommend: () -> Unit,
-    activityViewModel: ActivityViewModel,
     recommendList: List<ProductResponse>,
-    babyId: Int
+    babyId: Int,
+    onItemClick: (Int) -> Unit = {}
 
 ) {
     Row(
@@ -318,7 +333,7 @@ private fun RecommendList(
     ) {
         RecommendList(
             items = recommendList,
-            onClick = { productId -> activityViewModel.getProductDetail(productId) },
+            onClick = { onItemClick(it) },
             viewModel = RecommendViewModel(),
             babyId = babyId
 

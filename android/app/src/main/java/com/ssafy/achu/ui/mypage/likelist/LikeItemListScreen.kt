@@ -137,7 +137,7 @@ fun LikeItemListScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 2.dp)
-                                    .clickable { },
+                                  ,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 rowItems.forEach { item ->
