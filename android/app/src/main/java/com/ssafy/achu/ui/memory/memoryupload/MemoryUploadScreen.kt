@@ -44,6 +44,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -412,9 +413,7 @@ fun MemoryUploadScreen(
                         },
                         modifier = Modifier
                             .fillMaxSize()
-                            .align(Alignment.TopStart)
-
-                            , // 텍스트 필드 정렬
+                            .align(Alignment.TopStart), // 텍스트 필드 정렬
                         placeholder = {
                             Text(
                                 "${getProductWithParticle(productName)} 함께한 추억을 기록해보세요!\n(최대 6줄 입력가능)",
@@ -432,21 +431,31 @@ fun MemoryUploadScreen(
                         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default)
                     )
 
-
                 }
+                Spacer(Modifier.height(24.dp))
 
 
-
-
-                Spacer(modifier = Modifier.height(24.dp))
+                val coroutineScope = rememberCoroutineScope()
+                var isClickable by remember { mutableStateOf(true) }
 
                 PointPinkBtn(
                     buttonText = if (memoryUIState.selectedMemory.title == "") "작성 완료" else "수정완료",
                     onClick = {
+
+                        if (!isClickable) return@PointPinkBtn
+
+                        isClickable = false
+
+                        coroutineScope.launch {
+                            delay(2000)
+                            isClickable = true
+                        }
+
                         if (images.isEmpty()) {
                             Toast.makeText(context, "사진을 추가해주세요", Toast.LENGTH_SHORT).show()
                         } else if (memoryUIState.memoryTitle.trim() == "" || memoryUIState.memoryContent.trim() == "") {
-                            Toast.makeText(context, "제목, 내용을 확인해 주세요", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "제목, 내용을 확인해 주세요", Toast.LENGTH_SHORT)
+                                .show()
 
                         } else {
                             if (memoryId == 0) {
@@ -457,10 +466,9 @@ fun MemoryUploadScreen(
                         }
                     }
                 )
+
                 Spacer(modifier = Modifier.height(40.dp))
-
             }
-
         }
 
         if (memoryUIState.loading) {
