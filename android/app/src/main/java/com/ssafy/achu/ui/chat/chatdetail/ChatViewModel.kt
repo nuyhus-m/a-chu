@@ -52,32 +52,46 @@ class ChatViewModel(
     fun connectToStompServer() {
         viewModelScope.launch {
             stompService.connect()
+        }
+
+        viewModelScope.launch {
             stompService.subscribeToMessage("/read/chat/rooms/$roomId/messages")
+        }
+
+        viewModelScope.launch {
             stompService.subscribeToMessageRead("/read/chat/rooms/$roomId/messages/read")
         }
 
         viewModelScope.launch {
-            stompService.messageFlow.collect { message ->
-                Log.d(TAG, "subscribeToMessage: $message")
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        messages = currentState.messages + message
-                    )
+            try {
+                stompService.messageFlow.collect { message ->
+                    Log.d(TAG, "subscribeToMessage: $message")
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            messages = currentState.messages + message
+                        )
+                    }
+                    sendMessageRead()
                 }
-                sendMessageRead()
+            } catch (e: Exception) {
+                Log.e("스톰프에러", "messageFlow: ${e.message}")
             }
         }
 
         viewModelScope.launch {
-            stompService.messageIdFlow.collect { messageId ->
-                Log.d(TAG, "subscribeToMessageRead: $messageId")
-                if (messageId.userId == (uiState.value.partner?.id ?: 0)) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            lastReadMessageId = messageId.lastUnreadMessageId
-                        )
+            try {
+                stompService.messageIdFlow.collect { messageId ->
+                    Log.d(TAG, "subscribeToMessageRead: $messageId")
+                    if (messageId.userId == (uiState.value.partner?.id ?: 0)) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                lastReadMessageId = messageId.lastUnreadMessageId
+                            )
+                        }
                     }
                 }
+            } catch (e: Exception) {
+                Log.e("스톰프에러", "messageIdFlow: ${e.message}")
             }
         }
     }

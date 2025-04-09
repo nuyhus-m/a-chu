@@ -1,6 +1,7 @@
 package com.ssafy.achu.ui.chat.chatdetail
 
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -90,19 +91,11 @@ fun ChatScreen(
     val uiState by viewModel.uiState.collectAsState()
     val activityUiState by activityViewModel.uiState.collectAsState()
 
-    DisposableEffect(Unit) {
-
-        onDispose {
-            viewModel.cancelStomp()
-        }
-    }
-
     LaunchedEffect(Unit) {
         viewModel.toastMessage.collectLatest { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
     }
-
 
     DisposableEffect(Unit) {
         onDispose {

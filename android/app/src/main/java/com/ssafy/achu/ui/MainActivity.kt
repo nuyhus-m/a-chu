@@ -146,13 +146,10 @@ fun AchuApp(viewModel: ActivityViewModel, targetRoute: String?) {
             delay(300)
             isNavigating = false
         }
-
     }
 
     DisposableEffect(Unit) {
-        viewModel.uiState.value.user?.let {
-            viewModel.connectToStompServer(it.id)
-        }
+        viewModel.connectToStompServer()
 
         onDispose {
             viewModel.cancelStomp()

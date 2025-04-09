@@ -196,16 +196,20 @@ object StompService {
 
         val currentSession =
             session ?: throw IllegalStateException("STOMP session is not initialized")
-        currentSession.subscribe(
-            StompSubscribeHeaders(
-                destination = destination,
-                customHeaders = mapOf(
-                    "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+        try {
+            currentSession.subscribe(
+                StompSubscribeHeaders(
+                    destination = destination,
+                    customHeaders = mapOf(
+                        "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+                    )
                 )
-            )
-        ).collect {
-            val data = json.decodeFromString<Message>(it.bodyAsText)
-            _messageFlow.emit(data)
+            ).collect {
+                val data = json.decodeFromString<Message>(it.bodyAsText)
+                _messageFlow.emit(data)
+            }
+        } catch (e: Exception) {
+            Log.e("스톰프에러", "subscribeToMessage: ${e.message}")
         }
     }
 
@@ -229,16 +233,20 @@ object StompService {
 
         val currentSession =
             session ?: throw IllegalStateException("STOMP session is not initialized")
-        currentSession.subscribe(
-            StompSubscribeHeaders(
-                destination = destination,
-                customHeaders = mapOf(
-                    "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+        try {
+            currentSession.subscribe(
+                StompSubscribeHeaders(
+                    destination = destination,
+                    customHeaders = mapOf(
+                        "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+                    )
                 )
-            )
-        ).collect {
-            val data = json.decodeFromString<MessageIdResponse>(it.bodyAsText)
-            _messageIdFlow.emit(data)
+            ).collect {
+                val data = json.decodeFromString<MessageIdResponse>(it.bodyAsText)
+                _messageIdFlow.emit(data)
+            }
+        } catch (e: Exception) {
+            Log.e("스톰프에러", "subscribeToMessageRead: ${e.message}")
         }
     }
 
@@ -262,16 +270,20 @@ object StompService {
 
         val currentSession =
             session ?: throw IllegalStateException("STOMP session is not initialized")
-        currentSession.subscribe(
-            StompSubscribeHeaders(
-                destination = destination,
-                customHeaders = mapOf(
-                    "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+        try {
+            currentSession.subscribe(
+                StompSubscribeHeaders(
+                    destination = destination,
+                    customHeaders = mapOf(
+                        "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+                    )
                 )
-            )
-        ).collect {
-            val data = json.decodeFromString<String>(it.bodyAsText)
-            _newMessagesFlow.emit(data)
+            ).collect {
+                val data = json.decodeFromString<String>(it.bodyAsText)
+                _newMessagesFlow.emit(data)
+            }
+        } catch (e: Exception) {
+            Log.e("스톰프에러", "subscribeToNewMessage: ${e.message}")
         }
     }
 
@@ -295,16 +307,20 @@ object StompService {
 
         val currentSession =
             session ?: throw IllegalStateException("STOMP session is not initialized")
-        currentSession.subscribe(
-            StompSubscribeHeaders(
-                destination = destination,
-                customHeaders = mapOf(
-                    "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+        try {
+            currentSession.subscribe(
+                StompSubscribeHeaders(
+                    destination = destination,
+                    customHeaders = mapOf(
+                        "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+                    )
                 )
-            )
-        ).collect {
-            val data = json.decodeFromString<ChatRoomResponse>(it.bodyAsText)
-            _chatRoomFlow.emit(data)
+            ).collect {
+                val data = json.decodeFromString<ChatRoomResponse>(it.bodyAsText)
+                _chatRoomFlow.emit(data)
+            }
+        } catch (e: Exception) {
+            Log.e("스톰프에러", "subscribeToChatRoom: ${e.message}")
         }
     }
 
@@ -332,15 +348,19 @@ object StompService {
 
         val currentSession =
             session ?: throw IllegalStateException("STOMP session is not initialized")
-        currentSession.withJsonConversions(json).convertAndSend(
-            StompSendHeaders(
-                destination = destination,
-                customHeaders = mapOf(
-                    "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
-                )
-            ),
-            request
-        )
+        try {
+            currentSession.withJsonConversions(json).convertAndSend(
+                StompSendHeaders(
+                    destination = destination,
+                    customHeaders = mapOf(
+                        "Authorization" to "Bearer ${sharedPreferencesUtil.getTokens()?.accessToken}"
+                    )
+                ),
+                request
+            )
+        } catch (e: Exception) {
+            Log.e("스톰프에러", "sendRequest $destination: ${e.message}")
+        }
     }
 
     // 연결 해제

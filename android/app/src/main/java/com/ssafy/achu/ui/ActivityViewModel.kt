@@ -58,19 +58,24 @@ class ActivityViewModel : ViewModel() {
         getUnreadCount()
     }
 
-    fun connectToStompServer(userId: Int) {
+    fun connectToStompServer() {
         viewModelScope.launch {
             stompService.connect()
-            stompService.subscribeToNewMessage("/read/chat/users/${userId}/message-arrived")
+            getUserinfoForStomp()
         }
 
         viewModelScope.launch {
-            stompService.newMessageFlow.collect { new ->
-                Log.d(TAG, "subscribeToNewMessage: $new")
-                if (new == "NEW_MESSAGE_ARRIVED") {
-                    _unreadCount.value++
+            try {
+                stompService.newMessageFlow.collect { new ->
+                    Log.d(TAG, "subscribeToNewMessage: $new")
+                    if (new == "NEW_MESSAGE_ARRIVED") {
+                        _unreadCount.value++
+                    }
                 }
+            } catch (e: Exception) {
+                Log.e("스톰프에러", "newMessageFlow: ${e.message}")
             }
+
         }
     }
 
@@ -109,6 +114,26 @@ class ActivityViewModel : ViewModel() {
                         }
                         Log.d(TAG, "getUserinfo: ${it}")
                         getBabyList()
+                    }
+                }.onFailure {
+                    Log.d(TAG, "getUserinfo: ${it.message}")
+                }
+        }
+    }
+
+    private fun getUserinfoForStomp() {
+        viewModelScope.launch {
+            userRepository.getMyInfo()
+                .onSuccess {
+                    if (it.result == "SUCCESS") {
+                        val userData = it.data
+                        _uiState.update {
+                            it.copy(
+                                user = userData
+                            )
+                        }
+                        Log.d(TAG, "getUserinfoForStomp: ")
+                        stompService.subscribeToNewMessage("/read/chat/users/${it.data.id}/message-arrived")
                     }
                 }.onFailure {
                     Log.d(TAG, "getUserinfo: ${it.message}")
@@ -206,8 +231,7 @@ class ActivityViewModel : ViewModel() {
         isBottomNavVisible.value = false
     }
 
-    // 앱이 포그라운드로 돌아올 때 처리
-    private fun getUnreadCount() {
+    fun getUnreadCount() {
         viewModelScope.launch {
             chatRepository.getUnreadCount()
                 .onSuccess { response ->
