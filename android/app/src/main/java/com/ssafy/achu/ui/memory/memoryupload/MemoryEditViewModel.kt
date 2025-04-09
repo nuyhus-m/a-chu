@@ -84,8 +84,10 @@ class MemoryEditViewModel : ViewModel() {
             }.onFailure {
                 val errorResponse = it.getErrorResponse(ApplicationClass.Companion.retrofit)
                 Log.d(TAG, "uploadMemory: ${errorResponse}")
-                updateToastString("추억 기록 실패 내용을 확인해주세요!")
+                updateToastString(errorResponse.message)
+                _isChanged.emit(false)
                 _uiState.value = _uiState.value.copy(loading = false)
+
             }
 
         }
@@ -142,6 +144,9 @@ class MemoryEditViewModel : ViewModel() {
             }.onFailure {
                 val errorResponse = it.getErrorResponse(ApplicationClass.Companion.retrofit)
                 Log.d(TAG, "changeMemory: ${errorResponse}")
+                _uiState.value = _uiState.value.copy(loading = false)
+                updateToastString(errorResponse.message)
+                _isChanged.emit(false)
                 _uiState.value = _uiState.value.copy(loading = false)
             }
         }
