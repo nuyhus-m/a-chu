@@ -58,12 +58,12 @@ import com.ssafy.achu.ui.ActivityViewModel
 fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel) {
     val unreadCount by viewModel.unreadCount.collectAsState()
     val currentBackStack by navController.currentBackStackEntryAsState()
-    // 현재 화면 루트
     val currentRoute by remember {
         derivedStateOf {
             currentBackStack?.destination?.route ?: BottomNavRoute.Home::class.qualifiedName
         }
     }
+
     val endPadding = when {
         unreadCount > 300 -> 12
         unreadCount > 99 -> 16
@@ -87,8 +87,6 @@ fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel)
                 })
                 .shadow(elevation = 8.dp, shape = RectangleShape)
                 .windowInsetsPadding(WindowInsets.navigationBars)
-
-
         ) {
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -104,11 +102,14 @@ fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel)
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = ripple(color = PointBlue),
                             ) {
-                                navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                                // ✅ 현재 선택된 탭이 아닐 경우에만 navigate
+                                if (!selected) {
+                                    navController.navigate(screen.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
                                     }
-                                    launchSingleTop = true
                                 }
                             },
                         contentAlignment = Alignment.Center,
@@ -123,7 +124,6 @@ fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel)
                                 contentDescription = null,
                                 tint = if (selected) PointBlue else FontGray
                             )
-
                             Spacer(modifier = Modifier.height(6.dp))
                             Text(
                                 text = stringResource(screen.titleResId),
@@ -133,6 +133,7 @@ fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel)
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
+
                         if (screen == BottomNavScreen.ChatList && unreadCount >= 1) {
                             val unreadCountStr =
                                 if (unreadCount > 300) "300+" else unreadCount.toString()
@@ -158,6 +159,7 @@ fun BottomNavBar(navController: NavHostController, viewModel: ActivityViewModel)
         }
     }
 }
+
 
 @Composable
 fun ChatBottomBarItem(icon: Int, selected: Boolean, unreadCount: Int) {

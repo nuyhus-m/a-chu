@@ -48,16 +48,20 @@ fun NavGraph(
                 onNavigateToLikeList = {
                     navController.navigate(route = Route.LikeList) {
                         launchSingleTop = true
+                        restoreState = false
+
                     }
                 },
                 onNavigateToRecommend = {
                     navController.navigate(route = Route.RecommendList) {
                         launchSingleTop = true
+
                     }
                 },
                 onNavigateToBabyList = {
                     navController.navigate(route = Route.BabyList) {
                         launchSingleTop = true
+
                     }
                 },
                 onNavigateToProductList = { categoryId ->
@@ -66,6 +70,8 @@ fun NavGraph(
                             saveState = true
                         }
                         launchSingleTop = true
+                        restoreState = true
+
                     }
                 },
                 onNavigateToProductDetail = {
@@ -75,6 +81,7 @@ fun NavGraph(
                         )
                     ) {
                         launchSingleTop = true
+
                     }
 
                 },
@@ -83,6 +90,8 @@ fun NavGraph(
                         route = Route.BabyDetail(-1)
                     ) {
                         launchSingleTop = true
+                        restoreState = true
+
                     }
 
                 }
