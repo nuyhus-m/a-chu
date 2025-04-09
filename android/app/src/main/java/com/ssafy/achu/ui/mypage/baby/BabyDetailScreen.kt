@@ -112,7 +112,7 @@ fun BabyDetailScreen(
         isClickable = true
 
     }
-    
+
     if (babyId > 0) {
         babyViewModel.getBaby(babyId)
     }
@@ -192,15 +192,19 @@ fun BabyDetailScreen(
         babyViewModel.isChanged.collectLatest { isChanged ->
             if (isChanged == "실패") {
                 Toast.makeText(context, babyUiState.toastString, Toast.LENGTH_SHORT).show()
+                babyViewModel.clearIsChanged()
             } else {
                 viewModel.getBabyList()
                 if (isChanged == "등록성공" && babyId == -1) {
+                    Log.d(TAG, "BabyDetailScreen:여기로와라")
                     delay(500)
                     Toast.makeText(context, babyUiState.toastString, Toast.LENGTH_SHORT).show()
+
 
                     backPressedDispatcher?.onBackPressed()
                 } else if (isChanged == "삭제") {
                     backPressedDispatcher?.onBackPressed()
+                    babyViewModel.clearIsChanged()
                 }
             }
         }

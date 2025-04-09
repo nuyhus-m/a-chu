@@ -128,7 +128,6 @@ fun ChatScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(color = White)
-            .imePadding()
     ) {
         CustomChatTopBar(
             partner = uiState.partner ?: Partner(

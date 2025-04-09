@@ -44,7 +44,10 @@ class BabyViewModel : ViewModel() {
         }else{
             updateToastString("닉네임은 6자 이하로 입력해주세요")
         }
+    }
 
+    suspend fun clearIsChanged(){
+     _isChanged.emit("")
     }
 
     fun updateResisterNickname(babyNicknameInput: String) {
