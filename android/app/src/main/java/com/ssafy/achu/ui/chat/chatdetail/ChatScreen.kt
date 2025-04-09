@@ -120,79 +120,94 @@ fun ChatScreen(
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = White)
     ) {
-        CustomChatTopBar(
-            partner = uiState.partner ?: Partner(
-                id = 0,
-                nickname = "",
-                profileImageUrl = ""
-            ),
-            onBackClick = onBackClick,
-        )
-        uiState.goods?.let {
-            ChatProduct(
-                goods = it,
-                isSeller = uiState.isSeller,
-                isSold = uiState.isSold,
-                onSoldClick = { viewModel.showSoldDialog(true) }
-            )
-        }
-
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .imePadding()
+            modifier = Modifier.fillMaxSize()
         ) {
-            // 채팅 메시지 목록
-            LazyColumn(
+            // 고정된 상단 영역
+            Column(
                 modifier = Modifier
-                    .weight(1f)
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                state = listState,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(vertical = 8.dp)
+                    .background(White)
             ) {
-                items(uiState.messages) { message ->
-                    when (message.type) {
-                        TEXT -> ChatMessageItem(
-                            message = message,
-                            lastReadMessageId = uiState.lastReadMessageId,
-                            userId = activityUiState.user!!.id,
-                            partner = uiState.partner!!
-                        )
+                CustomChatTopBar(
+                    partner = uiState.partner ?: Partner(
+                        id = 0,
+                        nickname = "",
+                        profileImageUrl = ""
+                    ),
+                    onBackClick = onBackClick,
+                )
 
-                        else -> SystemMessage(message = message)
-                    }
+                uiState.goods?.let {
+                    ChatProduct(
+                        goods = it,
+                        isSeller = uiState.isSeller,
+                        isSold = uiState.isSold,
+                        onSoldClick = { viewModel.showSoldDialog(true) }
+                    )
                 }
             }
 
-            // 입력 필드
-            ChatInputField(
-                value = uiState.inputText,
-                onValueChange = { if (it.length < 2001) viewModel.updateInputText(it) },
-                onSendClick = {
-                    if (uiState.buttonState) {
-                        if (!uiState.hasChatRoom && uiState.isFirst) viewModel.createChatRoom()
-                        else viewModel.sendMessage()
+            // 채팅 영역 (키보드에 따라 조정됨)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding()
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    // 채팅 메시지 목록
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        state = listState,
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(vertical = 8.dp)
+                    ) {
+                        items(uiState.messages) { message ->
+                            when (message.type) {
+                                TEXT -> ChatMessageItem(
+                                    message = message,
+                                    lastReadMessageId = uiState.lastReadMessageId,
+                                    userId = activityUiState.user!!.id,
+                                    partner = uiState.partner!!
+                                )
+
+                                else -> SystemMessage(message = message)
+                            }
+                        }
                     }
+
+                    // 입력 필드
+                    ChatInputField(
+                        value = uiState.inputText,
+                        onValueChange = { if (it.length < 2001) viewModel.updateInputText(it) },
+                        onSendClick = {
+                            if (uiState.buttonState) {
+                                if (!uiState.hasChatRoom && uiState.isFirst) viewModel.createChatRoom()
+                                else viewModel.sendMessage()
+                            }
+                        }
+                    )
                 }
-            )
+            }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-    }
-
-    if (uiState.isShowSoldDialog) {
-        BasicDialog(
-            text = "거래를 완료하시겠습니까?",
-            onDismiss = { viewModel.showSoldDialog(false) },
-            onConfirm = { viewModel.completeTrade() }
-        )
+        if (uiState.isShowSoldDialog) {
+            BasicDialog(
+                text = "거래를 완료하시겠습니까?",
+                onDismiss = { viewModel.showSoldDialog(false) },
+                onConfirm = { viewModel.completeTrade() }
+            )
+        }
     }
 }
 
