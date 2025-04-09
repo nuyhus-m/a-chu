@@ -96,6 +96,10 @@ fun ChatScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        activityViewModel.getUnreadCount()
+    }
+
     DisposableEffect(Unit) {
         onDispose {
             SharedPreferencesUtil(context).deleteRoomId() // ✅ context 안전하게 사용

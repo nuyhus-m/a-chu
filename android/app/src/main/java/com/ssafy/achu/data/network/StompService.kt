@@ -16,6 +16,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.hildan.krossbow.stomp.StompClient
 import org.hildan.krossbow.stomp.StompSession
+import org.hildan.krossbow.stomp.config.HeartBeat
 import org.hildan.krossbow.stomp.conversions.kxserialization.convertAndSend
 import org.hildan.krossbow.stomp.conversions.kxserialization.json.withJsonConversions
 import org.hildan.krossbow.stomp.headers.StompSendHeaders
@@ -112,6 +113,7 @@ object StompService {
             val stompClient = StompClient(wsClient) {
                 connectionTimeout = 3.seconds
                 gracefulDisconnect = false
+                heartBeat = HeartBeat(10.seconds) // 10초마다 송신 및 수신 하트비트
             }
 
             Log.d(TAG, "WebSocket 클라이언트 및 STOMP 클라이언트 초기화 완료")
