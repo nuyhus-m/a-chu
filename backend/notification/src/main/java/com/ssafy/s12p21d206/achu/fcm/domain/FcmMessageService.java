@@ -58,7 +58,7 @@ public class FcmMessageService {
     String body = "\uD83D\uDCB8 '" + goodsTitle + "'" + "의 가격이 변경되었어요. 지금 확인해보세요!";
 
     Map<String, String> data = Map.of(
-        "targetFragment", "TradeList",
+        "targetFragment", "ProductDetail",
         "requestId", goodsId.toString(),
         "type", "PRICE_CHANGE_CHAT");
 
