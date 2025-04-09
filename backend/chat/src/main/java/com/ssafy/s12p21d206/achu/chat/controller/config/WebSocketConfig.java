@@ -20,7 +20,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     scheduler.setPoolSize(1);
     scheduler.setThreadNamePrefix("wss-heartbeat-thread-");
     scheduler.initialize();
-
     registry.enableSimpleBroker("/read").setTaskScheduler(scheduler).setHeartbeatValue(new long[] {
       10000, 10000
     });
