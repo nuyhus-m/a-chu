@@ -29,6 +29,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -279,11 +280,12 @@ fun UploadProductScreen(
             PriceInputField(
                 value = uiState.price,
                 onValueChange = {
-                    if (it.length >= 9) {
-
-                        Toast.makeText(context, "가격은 10억 미만만 가능합니다", Toast.LENGTH_SHORT).show()
+                    val filtered = it.replace(Regex("[^0-9]"), "")                    // 빈 값이면 0 처리 등 선택적으로 처리 가능
+                    val intValue = filtered.toIntOrNull()
+                    if (filtered.length >= 11 || (intValue != null && intValue < 0)) {
+                        Toast.makeText(context, "가격은 0이상 10억 미만만 가능 합니다", Toast.LENGTH_SHORT).show()
                     } else {
-                        viewModel.updatePrice(it)
+                        viewModel.updatePrice(filtered)
                     }
                 },
                 readOnly = uiState.priceCategory == DONATION
@@ -314,8 +316,10 @@ fun UploadProductScreen(
             DescriptionInputField(
                 value = uiState.description,
                 onValueChange = {
-                    if (it.length <= maxDescriptionLength)
+                    val lineCount = it.count { char -> char == '\n' } + 1
+                    if (it.length <= maxDescriptionLength && lineCount <= 10) {
                         viewModel.updateDescription(it)
+                    }
                 }
             )
             Spacer(modifier = Modifier.height(space))
@@ -400,7 +404,7 @@ fun AddImageIcon(
             modifier = Modifier.size(36.dp)
         )
         Text(
-            text = "${imgNumber}/5",
+            text = "${imgNumber}/3",
             style = AchuTheme.typography.regular16.copy(color = LightGray)
         )
     }
@@ -571,7 +575,7 @@ fun DescriptionInputField(
         value = value,
         onValueChange = onValueChange,
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth().height(150.dp),
         textStyle = AchuTheme.typography.regular16,
         shape = RoundedCornerShape(8.dp),
         colors = OutlinedTextFieldDefaults.colors(
@@ -585,7 +589,8 @@ fun DescriptionInputField(
                 style = AchuTheme.typography.regular16.copy(color = LightGray)
             )
         },
-        minLines = 5
+        minLines = 5,
+        maxLines = 10
     )
 }
 
