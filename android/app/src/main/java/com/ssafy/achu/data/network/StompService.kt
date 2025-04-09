@@ -281,8 +281,7 @@ object StompService {
                     )
                 )
             ).collect {
-                val data = json.decodeFromString<String>(it.bodyAsText)
-                _newMessagesFlow.emit(data)
+                _newMessagesFlow.emit(it.bodyAsText)
             }
         } catch (e: Exception) {
             Log.e("스톰프에러", "subscribeToNewMessage: ${e.message}")

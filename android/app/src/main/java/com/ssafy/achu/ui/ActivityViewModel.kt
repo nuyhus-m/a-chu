@@ -44,7 +44,6 @@ class ActivityViewModel : ViewModel() {
     val getProductSuccess: SharedFlow<Boolean> = _getProductSuccess.asSharedFlow()
 
 
-
     private val _errorMessage = MutableSharedFlow<String>()
     val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
 
@@ -77,7 +76,6 @@ class ActivityViewModel : ViewModel() {
             } catch (e: Exception) {
                 Log.e("스톰프에러", "newMessageFlow: ${e.message}")
             }
-
         }
     }
 
@@ -168,7 +166,7 @@ class ActivityViewModel : ViewModel() {
 
     fun getProductDetail(productId: Int) {
         viewModelScope.launch {
-            productRepository.getProductDetail(productId,   uiState.value.selectedBaby?.id ?: 0)
+            productRepository.getProductDetail(productId, uiState.value.selectedBaby?.id ?: 0)
                 .onSuccess { response ->
                     Log.d(TAG, "getProductDetail: $response")
                     if (response.result == SUCCESS) {
