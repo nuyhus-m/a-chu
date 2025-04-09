@@ -439,7 +439,7 @@ fun MemoryUploadScreen(
                             .focusRequester(contentFocusRequester),
                         placeholder = {
                             Text(
-                                if(memoryId>0)"${getProductWithParticle(productName)} 함께한 추억을 기록해보세요!\n(최대 6줄 입력가능)" else "",
+                                if(memoryId <= 0)"${getProductWithParticle(productName)} 함께한 추억을 기록해보세요!\n(최대 6줄 입력가능)" else "",
                                 color = FontGray
                             )
                         },
@@ -451,17 +451,7 @@ fun MemoryUploadScreen(
                             cursorColor = Color.Black
                         ),
                         maxLines = 5,
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                keyboardController?.hide()
-                                if (memoryId <= 0) {
-                                    memoryViewModel.uploadMemory()
-                                } else {
-                                    memoryViewModel.changeMemory()
-                                }
-                            }
-                        )
+                        keyboardOptions = KeyboardOptions.Default.copy(),
                     )
 
                 }
