@@ -230,8 +230,9 @@ fun MemoryUploadScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(350.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        LoadingImgScreen("이미지 로딩중...", Modifier.width(80.dp), 16, 200)
+                        LoadingImgScreen("이미지 로딩중...", Modifier.width(80.dp), 16, 250)
                     }
                     AsyncImage(
                         model = images[page], // Uri를 모델로 사용
