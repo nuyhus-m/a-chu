@@ -319,16 +319,16 @@ fun UserInfoScreen(
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    Text(
-                        text = "회원탈퇴",
-                        style = AchuTheme.typography.semiBold14PointBlue.copy(
-                            textDecoration = TextDecoration.Underline
-                        ),
-                        modifier = Modifier.clickable {
-                            userInfoViewModel.updateDeleteUserDialog(true)
-                        }
-
-                    )
+//                    Text(
+//                        text = "회원탈퇴",
+//                        style = AchuTheme.typography.semiBold14PointBlue.copy(
+//                            textDecoration = TextDecoration.Underline
+//                        ),
+//                        modifier = Modifier.clickable {
+//                            userInfoViewModel.updateDeleteUserDialog(true)
+//                        }
+//
+//                    )
                 }
 
 

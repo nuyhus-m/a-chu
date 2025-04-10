@@ -73,10 +73,10 @@ class HomeViewModel: ViewModel() {
         currentOffset = 0
         hasMoreData = true
         _likeItemList.value = emptyList()
-
-        // 실제 데이터 로드는 loadMoreItems()를 활용
+        _likeItems.value = emptyList()
         loadMoreItems()
     }
+
     fun likeItem(productId: Int, babyId: Int, index: Int){
         viewModelScope.launch {
             productRepository.likeProduct(productId, babyId).onSuccess {
@@ -84,7 +84,6 @@ class HomeViewModel: ViewModel() {
                 _likeItems.value = _likeItems.value.mapIndexed { i, isLiked ->
                     if (i == index) !isLiked else isLiked
                 }
-
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "likeItem: ${errorResponse}")
@@ -100,11 +99,36 @@ class HomeViewModel: ViewModel() {
                 _likeItems.value = _likeItems.value.mapIndexed { i, isLiked ->
                     if (i == index) !isLiked else isLiked
                 }
+
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "unlikeProduct: ${errorResponse}")
             }
 
+        }
+    }
+
+    fun gridLikeItem(productId: Int, babyId: Int){
+        viewModelScope.launch {
+            productRepository.likeProduct(productId, babyId).onSuccess {
+                Log.d(TAG, "likeItem: ${it}")
+                getLikeItemList()
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "likeItem: ${errorResponse}")
+            }
+        }
+    }
+
+    fun unlikeGridItem(productId: Int){
+        viewModelScope.launch {
+            productRepository.unlikeProduct(productId).onSuccess {
+                Log.d(TAG, "unlikeItem: ${it}")
+                getLikeItemList()
+            }.onFailure {
+                val errorResponse = it.getErrorResponse(retrofit)
+                Log.d(TAG, "unlikeProduct: ${errorResponse}")
+            }
         }
     }
 

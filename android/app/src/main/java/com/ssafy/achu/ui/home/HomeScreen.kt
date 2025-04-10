@@ -89,12 +89,21 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val likeItemList by homeViewModel.likeItemList.collectAsState()
     val likeItems by homeViewModel.likeItems.collectAsState()
-
+    val recommendItems by viewModel.recommendItemList.collectAsState()
+    val top3Ids = recommendItems.take(3).map { it.id }
+    val categoryList by viewModel.categoryList.collectAsState()
+    val scrollState = rememberScrollState() // 스크롤 상태 저장
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val context = LocalContext.current
+
+
+    LaunchedEffect(Unit) {
+        homeViewModel.getLikeItemList()
+    }
 
     // 현재 destination이 "home"일 때만 동작
     LaunchedEffect(currentBackStackEntry) {
-        if (currentBackStackEntry?.destination?.route ==  BottomNavRoute.Home.toRoute()) {
+        if (currentBackStackEntry?.destination?.route == BottomNavRoute.Home.toRoute()) {
             homeViewModel.getLikeItemList()
         }
     }
@@ -104,10 +113,7 @@ fun HomeScreen(
         viewModel.getUnreadCount()
     }
 
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        homeViewModel.getLikeItemList()
-    }
+
 
 // showCreateDialog 상태가 변경될 때마다 실행
     LaunchedEffect(uiState.showCreateDialog) {
@@ -138,12 +144,6 @@ fun HomeScreen(
         }
     }
 
-    val categoryList by viewModel.categoryList.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
-
-
-
-    val scrollState = rememberScrollState() // 스크롤 상태 저장
 
     if (uiState.selectedBaby != null) {
         viewModel.getRecommendItemList(uiState.selectedBaby!!.id)
@@ -272,7 +272,6 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            val recommendItems by viewModel.recommendItemList.collectAsState()
 
             if (recommendItems.isEmpty()) {
                 Column(Modifier.height(278.dp)) {
@@ -286,10 +285,10 @@ fun HomeScreen(
                     recommendItems,
                     onClick = { viewModel.getProductDetail(it) },
                     onLikeClick = {
-//                        homeViewModel.likeItem(it, uiState.selectedBaby!!.id)
+                        homeViewModel.gridLikeItem(it, uiState.selectedBaby!!.id)
                     },
                     onUnLikeClick = {
-//                        homeViewModel.unlikeItem(it)
+                        homeViewModel.unlikeGridItem(it)
                     }
                 )
             }
@@ -343,9 +342,21 @@ fun HomeScreen(
                                 viewModel.getProductDetail(likeItem.id)
                             },
                             likeCLicked = {
-                                homeViewModel.likeItem(likeItem.id, uiState.selectedBaby!!.id, index)
+                                if (likeItem.id in top3Ids) {
+                                    Log.d("LikeClick", "Top 3 index item clicked: $index")
+                                   homeViewModel.gridLikeItem(likeItem.id, uiState.selectedBaby!!.id)
+                                }
+                                homeViewModel.likeItem(
+                                    likeItem.id,
+                                    uiState.selectedBaby!!.id,
+                                    index
+                                )
                             },
                             unlikeClicked = {
+                                if (likeItem.id in top3Ids) {
+                                    Log.d("LikeClick", "Top 3 index item clicked: $index")
+                                    homeViewModel.unlikeGridItem(likeItem.id)
+                                }
                                 homeViewModel.unlikeItem(likeItem.id, index)
                             },
                             productName = likeItem.title,

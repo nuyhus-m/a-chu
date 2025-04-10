@@ -1,5 +1,6 @@
 package com.ssafy.achu.core
 
+import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -12,7 +13,6 @@ import com.ssafy.achu.R
 import com.ssafy.achu.core.ApplicationClass.Companion.fcmRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.util.getErrorResponse
-import com.ssafy.achu.data.database.SharedPreferencesUtil
 import com.ssafy.achu.data.model.Token
 import com.ssafy.achu.ui.MainActivity
 import com.ssafy.achu.ui.chat.chatdetail.ChatViewModel.ChatStateHolder
@@ -52,8 +52,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             val requestId = data["requestId"] ?: ""
             val type = data["type"] ?: ""
 
-            Log.d(TAG, "targetFragment: $targetFragment, ${requestId}, ${ChatStateHolder.currentRoomId}")
-            if (!(targetFragment == "Chat" && requestId.toInt() == SharedPreferencesUtil(context = this).getRoomId())) {
+            if (!(targetFragment == "Chat" && requestId.toInt() == ChatStateHolder.currentRoomId)) {
                 sendNotification(
                     title = remoteMessage.notification?.title ?: "새로운 알림",
                     body = remoteMessage.notification?.body ?: "확인해 주세요",
@@ -81,13 +80,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     ) {
         val intent = Intent(this, MainActivity::class.java).apply {
             action = Intent.ACTION_VIEW
-            action = System.currentTimeMillis().toString()
             putExtra("targetRoute", targetFragment)
             putExtra("requestId", requestId)
             putExtra("type", type)
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        Log.d(TAG, "sendNotification: ${intent}")
+
         val pendingIntent = PendingIntent.getActivity(
             this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         )

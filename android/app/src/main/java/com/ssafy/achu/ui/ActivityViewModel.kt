@@ -53,6 +53,8 @@ class ActivityViewModel : ViewModel() {
     private val _recommendItemList = MutableStateFlow<List<ProductResponse>>(emptyList())
     val recommendItemList: StateFlow<List<ProductResponse>> = _recommendItemList
 
+
+
     init {
         getUserinfo()
         getCategoryList()
@@ -281,11 +283,8 @@ class ActivityViewModel : ViewModel() {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "getRecommendItemList: ${errorResponse}")
             }
-
         }
-
     }
-
     fun cancelStomp() {
         viewModelScope.launch {
             stompService.disconnect()

@@ -1,3 +1,4 @@
+import android.R.attr.onClick
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -143,30 +144,30 @@ fun BasicRecommendItem(
                     )
 
                     // 하트 클릭 처리 (고정된 크기 유지)
-//                    Image(
-//                        painter = painterResource(id = if (isLiked) R.drawable.ic_favorite else R.drawable.ic_favorite_line),
-//                        contentDescription = null,
-//                        colorFilter = ColorFilter.tint(if (isLiked) FontPink else FontGray),
-//                        modifier = Modifier
-//                            .width(24.dp)
-//                            .height(24.dp)
-//                            .weight(0.2f)
-////                            .clickable(
-////                                interactionSource = remember { MutableInteractionSource() },
-////                                indication = null,
-////                                onClick = {
-//                                    if (isLiked) {
-//                                        onUnLikeClick(product.id)
-//                                        isLiked = false
-//                                    } else {
-//                                        onLikeClick(product.id)
-//                                        isLiked = true
-//                                    }
-//                                },
-//
-//                                )
-////                            .padding(end = 4.dp)
-//                    )
+                    Image(
+                        painter = painterResource(id = if (isLiked) R.drawable.ic_favorite else R.drawable.ic_favorite_line),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(if (isLiked) FontPink else FontGray),
+                        modifier = Modifier
+                            .width(24.dp)
+                            .height(24.dp)
+                            .weight(0.2f)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = {
+                                    if (isLiked) {
+                                        onUnLikeClick(product.id)
+                                        isLiked = false
+                                    } else {
+                                        onLikeClick(product.id)
+                                        isLiked = true
+                                    }
+                                },
+
+                                )
+                            .padding(end = 4.dp)
+                    )
                 }
 
 
