@@ -31,7 +31,8 @@
 
         <activity
             android:name=".ui.MainActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize"/>
 
         <activity
             android:name=".ui.AuthActivity"
