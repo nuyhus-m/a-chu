@@ -116,6 +116,13 @@ fun BabyDetailScreen(
 
     }
 
+    LaunchedEffect(babyViewModel.isChangedToast) {
+        babyViewModel.isChangedToast.collectLatest {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+
+    }
+
     if (babyId > 0) {
         babyViewModel.getBaby(babyId)
     }
@@ -191,7 +198,7 @@ fun BabyDetailScreen(
         datePickerDialog.datePicker.maxDate = maxSelectableDate.timeInMillis
 
         datePickerDialog.setOnDismissListener {
-         isClickable = false
+            isClickable = false
         }
 
 

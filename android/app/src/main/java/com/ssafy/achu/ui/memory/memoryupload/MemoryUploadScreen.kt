@@ -83,13 +83,10 @@ import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.LightPink
 import com.ssafy.achu.core.theme.PointPink
 import com.ssafy.achu.core.theme.White
-import com.ssafy.achu.core.util.containsEmoji
-import com.ssafy.achu.core.util.getNameWithParticle
 import com.ssafy.achu.core.util.getProductWithParticle
 import com.ssafy.achu.core.util.isImageValid
 import com.ssafy.achu.core.util.uriToMultipart
 import com.ssafy.achu.ui.memory.memorydetail.PageIndicator
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

@@ -94,9 +94,11 @@ fun NavGraph(
 
                     }
 
-                }
+                },
+                navController = navController
 
             )
+
         }
         composable<BottomNavRoute.ProductList> {
             ProductListScreen(

@@ -143,18 +143,18 @@ fun BasicRecommendItem(
                     )
 
                     // 하트 클릭 처리 (고정된 크기 유지)
-                    Image(
-                        painter = painterResource(id = if (isLiked) R.drawable.ic_favorite else R.drawable.ic_favorite_line),
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(if (isLiked) FontPink else FontGray),
-                        modifier = Modifier
-                            .width(24.dp)
-                            .height(24.dp)
-                            .weight(0.2f)
-//                            .clickable(
-//                                interactionSource = remember { MutableInteractionSource() },
-//                                indication = null,
-//                                onClick = {
+//                    Image(
+//                        painter = painterResource(id = if (isLiked) R.drawable.ic_favorite else R.drawable.ic_favorite_line),
+//                        contentDescription = null,
+//                        colorFilter = ColorFilter.tint(if (isLiked) FontPink else FontGray),
+//                        modifier = Modifier
+//                            .width(24.dp)
+//                            .height(24.dp)
+//                            .weight(0.2f)
+////                            .clickable(
+////                                interactionSource = remember { MutableInteractionSource() },
+////                                indication = null,
+////                                onClick = {
 //                                    if (isLiked) {
 //                                        onUnLikeClick(product.id)
 //                                        isLiked = false
@@ -165,8 +165,8 @@ fun BasicRecommendItem(
 //                                },
 //
 //                                )
-                            .padding(end = 4.dp)
-                    )
+////                            .padding(end = 4.dp)
+//                    )
                 }
 
 

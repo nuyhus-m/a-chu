@@ -54,6 +54,8 @@ fun LikeItemListScreen(
 ) {
 
     val uiState by activityViewModel.uiState.collectAsState()
+    val likeItems by viewModel.likeItems.collectAsState()
+
 
     val context = LocalContext.current
 
@@ -132,23 +134,25 @@ fun LikeItemListScreen(
                         modifier = Modifier.fillMaxSize(),
                         state = listState
                     ) {
-                        itemsIndexed(likeItemList.chunked(2)) { _, rowItems ->
+                        itemsIndexed(likeItemList.chunked(2)) {rowIndex, rowItems ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 2.dp)
-                                  ,
+                                    .clickable { },
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                rowItems.forEach { item ->
+                                rowItems.forEachIndexed { columnIndex, item ->
+                                    val actualIndex = rowIndex * 2 + columnIndex
                                     LargeLikeItem(
                                         img = item.imgUrl.toUri(),
                                         state = item.tradeStatus,
                                         productName = item.title,
                                         price = item.price,
                                         onClickItem = { activityViewModel.getProductDetail(item.id) },
-                                        productLike = { viewModel.likeItem(item.id,uiState.selectedBaby!!.id) },
-                                        productUnlike = { viewModel.unlikeItem(item.id) }
+                                        productLike = { viewModel.likeItem(item.id,uiState.selectedBaby!!.id, actualIndex)},
+                                        productUnlike = { viewModel.unlikeItem(item.id, actualIndex) },
+                                        isLiked = likeItems[actualIndex]
                                     )
                                 }
                                 if (rowItems.size == 1) {

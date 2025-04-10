@@ -52,10 +52,10 @@ fun LargeLikeItem(
     productUnlike: () -> Unit,
     productName: String,
     price: Long,
-    img: Uri?
+    img: Uri?,
+    isLiked: Boolean
 ) {
 
-    var isLiked by remember { mutableStateOf(true) } // 하트 상태 관리
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp // 전체 화면 너비
     val itemWidth = screenWidth * 0.42f
@@ -91,9 +91,10 @@ fun LargeLikeItem(
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(1f) // 정사각형
-                            .clip(RoundedCornerShape(8.dp)).border(0.5.dp, Color.LightGray, RoundedCornerShape(8.dp)),
-                    ){
-                        LoadingImg("이미지로딩중..", Modifier.fillMaxWidth(), 14, 60 )
+                            .clip(RoundedCornerShape(8.dp))
+                            .border(0.5.dp, Color.LightGray, RoundedCornerShape(8.dp)),
+                    ) {
+                        LoadingImg("이미지로딩중..", Modifier.fillMaxWidth(), 14, 60)
                     }
 
                     AsyncImage(
@@ -144,7 +145,7 @@ fun LargeLikeItem(
                 ) {
 
                     Text(
-                        text = formatPrice(price) ,
+                        text = formatPrice(price),
                         style = AchuTheme.typography.semiBold16Pink,
                         maxLines = 1, // 한 줄만 표시
                         overflow = TextOverflow.Ellipsis, // 넘치는 부분은 "..."으로 표시
@@ -163,11 +164,10 @@ fun LargeLikeItem(
 //                                interactionSource = remember { MutableInteractionSource() },
 //                                indication = null,
 //                                onClick = {
-//                                    isLiked = !isLiked
 //                                    if (isLiked) {
-//                                        productLike()
-//                                    } else {
 //                                        productUnlike()
+//                                    } else {
+//                                        productLike()
 //                                    }
 //                                }
 //                            )
@@ -193,8 +193,10 @@ fun preItem5() {
                 productUnlike = {},
                 productName = "유아식기",
                 price = 50000,
-                null
-                )
+                null,
+                isLiked = true
+
+            )
 
 
         }

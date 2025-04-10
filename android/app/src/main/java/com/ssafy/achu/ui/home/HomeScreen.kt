@@ -46,9 +46,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.ssafy.achu.R
 import com.ssafy.achu.core.ApplicationClass.Companion.sharedPreferencesUtil
 import com.ssafy.achu.core.LoadingImg
+import com.ssafy.achu.core.navigation.BottomNavRoute
+import com.ssafy.achu.core.navigation.toRoute
 import com.ssafy.achu.core.theme.AchuTheme
 import com.ssafy.achu.core.theme.FontGray
 import com.ssafy.achu.core.theme.PointBlue
@@ -70,6 +74,7 @@ private const val TAG = "HomeScreen_안주현"
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun HomeScreen(
+    navController: NavHostController,
     modifier: Modifier = Modifier,
     onNavigateToLikeList: () -> Unit,
     onNavigateToRecommend: () -> Unit,
@@ -82,6 +87,18 @@ fun HomeScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
+    val likeItemList by homeViewModel.likeItemList.collectAsState()
+    val likeItems by homeViewModel.likeItems.collectAsState()
+
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+
+    // 현재 destination이 "home"일 때만 동작
+    LaunchedEffect(currentBackStackEntry) {
+        if (currentBackStackEntry?.destination?.route ==  BottomNavRoute.Home.toRoute()) {
+            homeViewModel.getLikeItemList()
+        }
+    }
+
 
     LaunchedEffect(Unit) {
         viewModel.getUnreadCount()
@@ -121,7 +138,6 @@ fun HomeScreen(
         }
     }
 
-    val likeItemList by homeViewModel.likeItemList.collectAsState()
     val categoryList by viewModel.categoryList.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -270,10 +286,10 @@ fun HomeScreen(
                     recommendItems,
                     onClick = { viewModel.getProductDetail(it) },
                     onLikeClick = {
-                        homeViewModel.likeItem(it, uiState.selectedBaby!!.id)
+//                        homeViewModel.likeItem(it, uiState.selectedBaby!!.id)
                     },
                     onUnLikeClick = {
-                        homeViewModel.unlikeItem(it)
+//                        homeViewModel.unlikeItem(it)
                     }
                 )
             }
@@ -327,15 +343,16 @@ fun HomeScreen(
                                 viewModel.getProductDetail(likeItem.id)
                             },
                             likeCLicked = {
-                                homeViewModel.likeItem(likeItem.id, uiState.selectedBaby!!.id)
+                                homeViewModel.likeItem(likeItem.id, uiState.selectedBaby!!.id, index)
                             },
                             unlikeClicked = {
-                                homeViewModel.unlikeItem(likeItem.id)
+                                homeViewModel.unlikeItem(likeItem.id, index)
                             },
                             productName = likeItem.title,
                             state = likeItem.tradeStatus,
                             price = likeItem.price,
                             img = likeItem.imgUrl,
+                            isLiked = likeItems[index]
                         )
                         Spacer(modifier = Modifier.width(8.dp)) // 아이템 간 간격 추가
 
@@ -397,14 +414,14 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     AchuTheme {
-        HomeScreen(
-            onNavigateToLikeList = { },
-            onNavigateToRecommend = { },
-            onNavigateToBabyList = { },
-            onNavigateToProductList = { },
-            onNavigateToProductDetail = {},
-            onNavigateToBabyDetail = {},
-            viewModel = viewModel()
-        )
+//        HomeScreen(
+//            onNavigateToLikeList = { },
+//            onNavigateToRecommend = { },
+//            onNavigateToBabyList = { },
+//            onNavigateToProductList = { },
+//            onNavigateToProductDetail = {},
+//            onNavigateToBabyDetail = {},
+//            viewModel = viewModel()
+//        )
     }
 }

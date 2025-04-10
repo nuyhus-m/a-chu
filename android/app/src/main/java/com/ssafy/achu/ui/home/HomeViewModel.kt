@@ -20,8 +20,8 @@ class HomeViewModel: ViewModel() {
     private val _likeItemList = MutableStateFlow<List<LikeProduct>>(emptyList())
     val likeItemList: StateFlow<List<LikeProduct>> = _likeItemList
 
-    private val _likeValue = MutableStateFlow<List<LikeProduct>>(emptyList())
-    val likeValues: StateFlow<List<LikeProduct>> = _likeValue
+    private val _likeItems = MutableStateFlow<List<Boolean>>(emptyList())
+    val likeItems: StateFlow<List<Boolean>> = _likeItems
 
 
     // 상태 변수들
@@ -32,43 +32,40 @@ class HomeViewModel: ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    // 더 많은 아이템을 로드하는 함수
     fun loadMoreItems() {
-        Log.d(TAG, "loadMoreItems: ${currentOffset}")
-        if (_isLoading.value || !hasMoreData) return
+        Log.d(TAG, "loadMoreItems: $currentOffset")
+
+        if (_isLoading.value || !hasMoreData) return // 이미 로딩 중이거나 데이터가 없으면 중단
 
         _isLoading.value = true
 
         viewModelScope.launch {
 
-                productRepository.getLikedGoods(
-                    offset = currentOffset,
-                    limit =10,
-                    sort = "LATEST"
-                ).onSuccess { result ->
-                    val newItems = result.data
+            productRepository.getLikedGoods(
+                offset = currentOffset,
+                limit = 10,
+                sort = "LATEST"
+            ).onSuccess { result ->
+                val newItems = result.data
 
-                    // 새 아이템이 없으면 더 이상 데이터가 없는 것으로 판단
-                    if (newItems.isEmpty()) {
-                        hasMoreData = false
-                    } else {
-                        val currentList = _likeItemList.value ?: emptyList()
-                        val currentLikeList = _likeValue.value ?: emptyList()
-                        _likeItemList.value = currentList + newItems
-                        _likeValue.value = currentLikeList + newItems
-
-                        // 다음 페이지를 위해 오프셋 업데이트
-                        currentOffset ++
-                    }
-
-                    _isLoading.value = false
-
-                }.onFailure { error ->
-                    val errorResponse = error.getErrorResponse(retrofit)
-                    Log.d(TAG, "getLikeItemList: ${errorResponse}")
+                if (newItems.isEmpty()) {
+                    hasMoreData = false // 더 이상 데이터가 없음을 표시
+                } else {
+                    val currentList = _likeItemList.value ?: emptyList()
+                    val currentLikeList = _likeItems.value ?: emptyList()
+                    _likeItemList.value = currentList + newItems
+                    _likeItems.value = currentLikeList + List(newItems.size) { true }
+                    currentOffset ++
                 }
+                _isLoading.value = false
+            }.onFailure { error ->
+                Log.d(TAG, "loadMoreItems error: ${error.getErrorResponse(retrofit)}")
+            }
+
         }
     }
+
+
 
     // 기존의 getLikeItemList() 함수는 초기 로드에만 사용
     fun getLikeItemList() {
@@ -80,11 +77,14 @@ class HomeViewModel: ViewModel() {
         // 실제 데이터 로드는 loadMoreItems()를 활용
         loadMoreItems()
     }
-    fun likeItem(productId: Int, babyId: Int){
+    fun likeItem(productId: Int, babyId: Int, index: Int){
         viewModelScope.launch {
             productRepository.likeProduct(productId, babyId).onSuccess {
                 Log.d(TAG, "likeItem: ${it}")
-                getLikeItemList()
+                _likeItems.value = _likeItems.value.mapIndexed { i, isLiked ->
+                    if (i == index) !isLiked else isLiked
+                }
+
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "likeItem: ${errorResponse}")
@@ -93,10 +93,13 @@ class HomeViewModel: ViewModel() {
         }
     }
 
-    fun unlikeItem(productId: Int){
+    fun unlikeItem(productId: Int, index: Int){
         viewModelScope.launch {
             productRepository.unlikeProduct(productId).onSuccess {
                 Log.d(TAG, "unlikeItem: ${it}")
+                _likeItems.value = _likeItems.value.mapIndexed { i, isLiked ->
+                    if (i == index) !isLiked else isLiked
+                }
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "unlikeProduct: ${errorResponse}")
@@ -104,7 +107,6 @@ class HomeViewModel: ViewModel() {
 
         }
     }
-
 
 
 }

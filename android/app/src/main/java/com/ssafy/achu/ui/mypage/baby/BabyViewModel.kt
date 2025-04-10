@@ -35,19 +35,22 @@ class BabyViewModel : ViewModel() {
     val isSelectedBabyChanged: SharedFlow<Boolean> = _isSelectedBabyChanged
 
 
+    private val _isChangedToast = MutableSharedFlow<String>()
+    val isChangedToast: SharedFlow<String> = _isChangedToast
 
-  fun updateBabyNickname(babyNicknameInput: String) {
+
+    fun updateBabyNickname(babyNicknameInput: String) {
         if (babyNicknameInput.length <= 6) {
             _babyUiState.value = _babyUiState.value.copy(
                 babyNickname = babyNicknameInput
             )
-        }else{
+        } else {
             updateToastString("닉네임은 6자 이하로 입력해주세요")
         }
     }
 
-    suspend fun clearIsChanged(){
-     _isChanged.emit("")
+    suspend fun clearIsChanged() {
+        _isChanged.emit("")
     }
 
     fun updateResisterNickname(babyNicknameInput: String) {
@@ -65,13 +68,13 @@ class BabyViewModel : ViewModel() {
     }
 
 
-    fun updateToastString(string: String){
+    fun updateToastString(string: String) {
         _babyUiState.value = _babyUiState.value.copy(
             toastString = string
         )
     }
 
-    fun updateButtonAble(boolean: Boolean){
+    fun updateButtonAble(boolean: Boolean) {
         _babyUiState.value = _babyUiState.value.copy(
             isButtonAble = boolean
         )
@@ -89,7 +92,9 @@ class BabyViewModel : ViewModel() {
 
                 delay(1000)
                 updateButtonAble(true)
-
+                if (babyUiState.value.toastString == "아이 등록 성공!") {
+                    _isChangedToast.emit("아이등록성공!")
+                }
             }.onFailure {
 
                 val errorResponse = it.getErrorResponse(retrofit)
@@ -122,6 +127,8 @@ class BabyViewModel : ViewModel() {
                 Log.d(TAG, "registerBaby: ${errorResponse}")
                 updateToastString(errorResponse.message)
                 _isChanged.emit("등록")
+                _isChangedToast.emit("등록실패")
+
                 updateButtonAble(true)
             }
         }
@@ -194,19 +201,19 @@ class BabyViewModel : ViewModel() {
             babyRepository.updateProfileImage(
                 babyUiState.value.selectedBaby!!.id,
                 profileImage
-            ).onSuccess { 
+            ).onSuccess {
                 getBaby(babyUiState.value.selectedBaby!!.id)
                 updateToastString("프로필 변경 성공!")
                 _isChanged.emit("")
             }.onFailure {
                 Log.d(TAG, "updateBabyProfile: ${it.message}")
-            }.onFailure{
+            }.onFailure {
                 updateToastString("프로필 변경 실패")
                 _isChanged.emit("")
 
                 Log.d(TAG, "updateBabyProfile: ${it}")
             }
-            
+
         }
     }
 
@@ -264,7 +271,6 @@ class BabyViewModel : ViewModel() {
             )
         }
     }
-
 
 
 }

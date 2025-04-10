@@ -51,9 +51,8 @@ fun BasicLikeItem(
     state: String,
     price: Long,
     img: String,
+    isLiked: Boolean
 ) {
-
-    var isLiked by remember { mutableStateOf(true) }
 
     Box(
         modifier = Modifier
@@ -157,7 +156,7 @@ fun BasicLikeItem(
                         textAlign = androidx.compose.ui.text.style.TextAlign.Start
                     )
 
-                    // 하트 클릭 처리 (고정된 크기 유지)
+
                     Image(
                         painter = painterResource(id = if (isLiked) R.drawable.ic_favorite else R.drawable.ic_favorite_line),
                         contentDescription = null,
@@ -170,11 +169,10 @@ fun BasicLikeItem(
 //                                interactionSource = remember { MutableInteractionSource() },
 //                                indication = null,
 //                                onClick = {
-//                                    isLiked = !isLiked
 //                                    if (isLiked) {
-//                                        likeCLicked()
-//                                    } else {
 //                                        unlikeClicked()
+//                                    } else {
+//                                        likeCLicked()
 //                                    }
 //                                }
 //                            )
@@ -204,7 +202,8 @@ fun preItem() {
                 productName = "유아식기",
                 state = "거래완료", // 거래완료 상태
                 price = 50000,
-                img = ""
+                img = "",
+                true
             )
 
         }

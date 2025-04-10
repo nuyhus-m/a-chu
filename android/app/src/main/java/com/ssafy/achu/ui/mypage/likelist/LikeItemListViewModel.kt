@@ -3,6 +3,7 @@ package com.ssafy.achu.ui.mypage.likelist
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.common.collect.Multimaps.index
 import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.util.getErrorResponse
@@ -18,6 +19,9 @@ class LikeItemListViewModel: ViewModel() {
     private val _likeItemList = MutableStateFlow<List<LikeProduct>>(emptyList())
     val likeItemList: StateFlow<List<LikeProduct>> = _likeItemList
 
+    private val _likeItems = MutableStateFlow<List<Boolean>>(emptyList())
+    val likeItems: StateFlow<List<Boolean>> = _likeItems
+
 
     // 상태 변수들
     private var currentOffset = 0
@@ -26,6 +30,8 @@ class LikeItemListViewModel: ViewModel() {
     // isLoading 값을 외부에서 관찰할 수 있도록 State로 노출
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+
 
     fun loadMoreItems() {
         Log.d(TAG, "loadMoreItems: $currentOffset")
@@ -47,7 +53,9 @@ class LikeItemListViewModel: ViewModel() {
                         hasMoreData = false // 더 이상 데이터가 없음을 표시
                     } else {
                         val currentList = _likeItemList.value ?: emptyList()
+                        val currentLikeList = _likeItems.value ?: emptyList()
                         _likeItemList.value = currentList + newItems
+                        _likeItems.value = currentLikeList + List(newItems.size) { true }
                         currentOffset ++
                     }
                     _isLoading.value = false
@@ -65,15 +73,21 @@ class LikeItemListViewModel: ViewModel() {
         currentOffset = 0
         hasMoreData = true
         _likeItemList.value = emptyList()
+        _likeItems.value = emptyList()
 
         // 실제 데이터 로드는 loadMoreItems()를 활용
         loadMoreItems()
     }
 
-    fun likeItem(productId: Int, babyId: Int){
+    fun likeItem(productId: Int, babyId: Int, index: Int){
         viewModelScope.launch {
             productRepository.likeProduct(productId, babyId).onSuccess {
                 Log.d(TAG, "likeItem: ${it}")
+                _likeItems.value = _likeItems.value.mapIndexed { i, isLiked ->
+                    if (i == index) !isLiked else isLiked
+                }
+                Log.d(TAG, "likeItem: ${likeItems.value[index]}")
+
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "likeItem: ${errorResponse}")
@@ -82,10 +96,16 @@ class LikeItemListViewModel: ViewModel() {
         }
     }
 
-    fun unlikeItem(productId: Int){
+    fun unlikeItem(productId: Int, index: Int){
         viewModelScope.launch {
             productRepository.unlikeProduct(productId).onSuccess {
                 Log.d(TAG, "unlikeItem: ${it}")
+                _likeItems.value = _likeItems.value.mapIndexed { i, isLiked ->
+                    if (i == index) !isLiked else isLiked
+                }
+
+                Log.d(TAG, "unlikeItem: ${likeItems.value[index]}")
+
             }.onFailure {
                 val errorResponse = it.getErrorResponse(retrofit)
                 Log.d(TAG, "unlikeProduct: ${errorResponse}")

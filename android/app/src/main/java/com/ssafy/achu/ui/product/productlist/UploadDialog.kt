@@ -177,7 +177,7 @@ fun UploadDialog(
 fun PreviewUploadDialog() {
     AchuTheme {
         UploadDialog(
-            productName = "여아 원피스djfj",
+            productName = "여아 원피스djf호ㅗ하러옹로ㅕ야혀j",
             babyName = "두식이",
             onUpload = {},
             onUploadWithMemory = {}
