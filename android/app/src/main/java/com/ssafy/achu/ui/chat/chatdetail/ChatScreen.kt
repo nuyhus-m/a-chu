@@ -1,6 +1,8 @@
 package com.ssafy.achu.ui.chat.chatdetail
 
+import android.app.Activity
 import android.os.Build
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -46,6 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -117,6 +120,19 @@ fun ChatScreen(
     LaunchedEffect(uiState.messages.size) {
         if (uiState.messages.isNotEmpty()) {
             listState.scrollToItem(uiState.messages.size - 1)
+        }
+    }
+
+    DisposableEffect(Unit) {
+        val window = (context as? Activity)?.window
+        val originalMode = window?.attributes?.softInputMode
+        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+
+        onDispose {
+            // 화면을 벗어날 때 원래 모드로 복원
+            if (originalMode != null) {
+                window.setSoftInputMode(originalMode)
+            }
         }
     }
 
