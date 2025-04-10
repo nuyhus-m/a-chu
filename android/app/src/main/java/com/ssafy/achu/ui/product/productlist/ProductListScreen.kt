@@ -276,6 +276,10 @@ fun ProductList(
                 onUnLikeClick = { onUnLikeClick(item.id, index) }
             )
         }
+
+        item {
+            Spacer(modifier = Modifier.height(100.dp)) // 또는 로딩 인디케이터 등
+        }
     }
 }
 
