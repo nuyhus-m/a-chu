@@ -13,9 +13,12 @@ import com.ssafy.achu.R
 import com.ssafy.achu.core.ApplicationClass.Companion.fcmRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
 import com.ssafy.achu.core.util.getErrorResponse
+import com.ssafy.achu.data.database.SharedPreferencesUtil
 import com.ssafy.achu.data.model.Token
 import com.ssafy.achu.ui.MainActivity
-import com.ssafy.achu.ui.chat.chatdetail.ChatViewModel.ChatStateHolder
+
+
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -52,7 +55,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             val requestId = data["requestId"] ?: ""
             val type = data["type"] ?: ""
 
-            if (!(targetFragment == "Chat" && requestId.toInt() == ChatStateHolder.currentRoomId)) {
+
+            if (!(targetFragment == "Chat" && requestId.toInt() == SharedPreferencesUtil(context = this).getRoomId())) {
                 sendNotification(
                     title = remoteMessage.notification?.title ?: "새로운 알림",
                     body = remoteMessage.notification?.body ?: "확인해 주세요",

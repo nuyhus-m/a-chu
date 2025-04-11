@@ -114,6 +114,7 @@ fun ChatScreen(
         } else {
             viewModel.connectToStompServer()
             viewModel.getChatListInfo()
+            SharedPreferencesUtil(context).saveRoomId(roomId)
         }
     }
 

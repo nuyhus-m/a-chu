@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.ssafy.achu.core.ApplicationClass
 import com.ssafy.achu.core.ApplicationClass.Companion.chatRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.productRepository
 import com.ssafy.achu.core.ApplicationClass.Companion.retrofit
@@ -45,9 +46,7 @@ class ChatViewModel(
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage: SharedFlow<String> = _toastMessage.asSharedFlow()
 
-    object ChatStateHolder {
-        var currentRoomId: Int? = null
-    }
+
 
     fun connectToStompServer() {
         viewModelScope.launch {
@@ -137,6 +136,7 @@ class ChatViewModel(
                             roomId = response.data.id
                             connectToStompServer()
                             getChatListInfo()
+                            ApplicationClass.sharedPreferencesUtil.saveRoomId(roomId)
                         }
                     }
                 }.onFailure {
@@ -168,6 +168,7 @@ class ChatViewModel(
                     roomId = response.data.id
                     connectToStompServer()
                     getChatListInfo()
+                    ApplicationClass.sharedPreferencesUtil.saveRoomId(roomId)
                     _uiState.update {
                         it.copy(
                             hasChatRoom = true,
