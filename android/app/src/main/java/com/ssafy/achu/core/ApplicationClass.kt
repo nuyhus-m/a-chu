@@ -87,8 +87,8 @@ class ApplicationClass : Application() {
 
         // Retrofit 클라이언트 구성
         val okHttpClient = OkHttpClient.Builder()
-            .readTimeout(5, TimeUnit.SECONDS)
-            .connectTimeout(5, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .connectTimeout(10, TimeUnit.SECONDS)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .addInterceptor(TokenInterceptor())
 //            .authenticator(TokenAuthenticator())
