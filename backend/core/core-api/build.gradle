@@ -1,0 +1,23 @@
+bootJar.enabled = true
+jar.enabled = false
+
+dependencies {
+
+    implementation project(':core:core-domain')
+
+    runtimeOnly project(':storage:db-core')
+    runtimeOnly project(':storage:file')
+
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    implementation project(':support:logging')
+    implementation project(':support:monitoring')
+
+    runtimeOnly project(':auth-user')
+    runtimeOnly project(':chat')
+    runtimeOnly project(':notification')
+    runtimeOnly project(':event:event-core')
+    testImplementation project(":tests:api-docs")
+}

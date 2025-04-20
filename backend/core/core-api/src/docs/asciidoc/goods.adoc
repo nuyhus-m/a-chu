@@ -1,0 +1,43 @@
+== Goods 관련 API
+
+=== 카테고리 목록 조회
+operation::find-categories[snippets='http-request,http-response,response-fields']
+
+=== 카테고리별 물품 목록 조회
+operation::find-category-goods[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
+
+=== 물품 목록 조회
+operation::find-goods[snippets='http-request,query-parameters,http-response,response-fields']
+
+=== 물품 검색
+operation::search-goods[snippets='http-request,query-parameters,http-response,response-fields']
+
+=== 카테고리별 물품 검색
+operation::search-category-goods[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
+
+=== 물품 상세 조회
+operation::find-goods-detail[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
+
+=== 물품 생성
+operation::append-goods[snippets='http-request,request-parts,request-part-request-fields,http-response,response-fields']
+
+=== 물품 이미지 수정
+operation::modify-goods-images[snippets='http-request,path-parameters,request-parts,http-response,response-fields']
+
+=== 물품 데이터 수정
+operation::modify-goods[snippets='http-request,request-fields,path-parameters,request-fields,http-response,response-fields']
+
+=== 물품 삭제
+operation::delete-goods[snippets='http-request,path-parameters,http-response,response-fields']
+
+=== 거래 내역 조회 (구매 & 판매)
+operation::find-goods-trade[snippets='http-request,query-parameters,http-response,response-fields']
+
+=== 찜한 물품 목록 조회
+operation::find-liked[snippets='http-request,query-parameters,http-response,response-fields']
+
+=== 거래 완료
+operation::complete-trade[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+=== 아기별 물건 추천
+operation::find-recommend-goods[snippets='http-request,http-response,response-fields']

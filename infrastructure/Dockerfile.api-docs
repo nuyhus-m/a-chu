@@ -1,0 +1,8 @@
+# 수정된 Dockerfile (안전한 버전)
+FROM nginx:alpine
+
+# 4. 파일 복사 (권한 문제 해결)
+COPY backend/support/restdocs/build/docs/asciidoc/index.html /usr/share/nginx/html/index.html
+
+# Nginx 실행
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,0 +1,10 @@
+achu:
+  sms:
+    domain: https://api.coolsms.co.kr
+    api-key: ${SMS_API_KEY:defaultSmsApiKey}
+    api-secret-key: ${SMS_API_SECRET_KEY:defaultSmsApiSecret}
+    sender: ${SMS_SENDER:defaultSmsSender}
+  verification-code:
+    length: 6
+    expires-in-seconds: 180
+    request-cooldown-seconds: 60

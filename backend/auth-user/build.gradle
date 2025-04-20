@@ -1,0 +1,23 @@
+dependencies {
+
+    compileOnly 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'net.nurigo:sdk:4.3.2'
+    compileOnly 'org.springframework.boot:spring-boot-starter-validation'
+    compileOnly 'org.springframework.boot:spring-boot-starter-websocket'
+
+    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+    implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
+    implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
+
+    compileOnly("io.awspring.cloud:spring-cloud-starter-aws:2.4.4")
+
+    compileOnly 'net.coobird:thumbnailator:0.4.20'
+    compileOnly 'org.apache.tika:tika-core:3.1.0'
+
+    testImplementation project(":tests:api-docs")
+
+    testImplementation 'org.springframework.security:spring-security-test'
+}

@@ -1,0 +1,7 @@
+package com.ssafy.s12p21d206.achu.fcm.domain.error;
+
+public enum FcmErrorLevel {
+  INFO,
+  WARN,
+  ERROR,
+}
