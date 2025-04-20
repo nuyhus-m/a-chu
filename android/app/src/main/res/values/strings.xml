@@ -1,0 +1,87 @@
+<resources>
+    <string name="app_name">Achu</string>
+
+    <!--스플래시-->
+    <string name="splash">추억을 기록하는 육아용품 중고거래 앱</string>
+
+    <!--바텀바-->
+    <string name="home">홈</string>
+    <string name="shopping">쇼핑</string>
+    <string name="memory">추억</string>
+    <string name="chat">채팅</string>
+    <string name="mypage">마이</string>
+
+    <!--탑바-->
+    <string name="chat_list">채팅 목록</string>
+    <string name="trade_list">거래 내역</string>
+    <string name="upload_product">내 물건 팔기</string>
+
+    <!--로그인, 회원가입, 계정찾기 화면-->
+    <string name="welcome">환영합니다!</string>
+    <string name="question_not_user">회원이 아니신가요?</string>
+    <string name="go_sign_up">회원가입하기</string>
+    <string name="id">아이디</string>
+    <string name="enter_id">아이디를 입력해주세요</string>
+    <string name="password">비밀번호</string>
+    <string name="password_check">비밀번호 확인</string>
+    <string name="question_forget_account">아이디, 비밀번호를 잊으셨나요?</string>
+    <string name="login">로그인</string>
+    <string name="password_format">영문,숫자,특수문자 포함 8~20자리</string>
+    <string name="enter_password">비밀번호를 입력해주세요</string>
+    <string name="nickname">닉네임</string>
+    <string name="nickname_ex">홍길동</string>
+    <string name="nickname_format">영문,한글,숫자 2-6자리</string>
+    <string name="phone_number">전화번호</string>
+    <string name="phone_number_ex">010–1234–5678</string>
+    <string name="check">확인</string>
+    <string name="auth">인증</string>
+    <string name="sign_up">회원가입</string>
+    <string name="find_account">계정 찾기</string>
+    <string name="complete">완료</string>
+    <string name="reenter_password">비밀번호 재설정</string>
+
+    <!--중고 거래-->
+    <string name="searchbar_placeholder">검색어를 입력하세요</string>
+    <string name="search_icon">Search Icon</string>
+    <string name="product_detail">물품상세</string>
+    <string name="modify">수정</string>
+    <string name="delete">삭제</string>
+    <string name="profile">프로필</string>
+    <string name="selling">판매중</string>
+    <string name="sold">판매완료</string>
+    <string name="symbol">" · "</string>
+    <string name="recommend_title">이런 상품 어떠세요?</string>
+    <string name="more">더보기</string>
+    <string name="like">좋아요</string>
+    <string name="go_chat">채팅하기</string>
+    <string name="write_complete">등록하기</string>
+    <string name="title">제목</string>
+    <string name="writing_title">글 제목</string>
+    <string name="category">카테고리</string>
+    <string name="trade_type">거래 방식</string>
+    <string name="detail_description">자세한 설명</string>
+    <string name="baby_question">누가 쓰던 물건인가요?</string>
+    <string name="add_img">이미지 추가</string>
+    <string name="enter_price">가격을 입력해주세요.</string>
+    <string name="won">원</string>
+    <string name="enter_description">올릴 게시글 내용을 작성해 주세요.\n신뢰할 수 있는 거래를 위해 자세히 적어주세요.</string>
+    <string name="move_to_upload_screen">물건 등록 화면으로 이동</string>
+    <string name="register">등록하기</string>
+    <string name="upload_preview">업로드 미리보기</string>
+    <string name="fail_get_product">데이터를 불러오는데 실패했습니다.</string>
+    <string name="free">무료 나눔</string>
+    <string name="image_max_3">사진은 최대 3장까지 업로드 가능합니다.</string>
+    <string name="selected_image">선택된 이미지</string>
+    <string name="first_image">대표사진</string>
+    <string name="sale">판매하기</string>
+    <string name="donation">나눔하기</string>
+
+    <!--채팅-->
+    <string name="product_img">물건 이미지</string>
+    <string name="profile_img">프로필 이미지</string>
+    <string name="back">뒤로가기</string>
+    <string name="leave">채팅방 나가기</string>
+    <string name="send">전송</string>
+    <string name="enter_message">메세지를 입력하세요.</string>
+
+</resources>
