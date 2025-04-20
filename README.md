@@ -200,87 +200,49 @@ backend
     <td align="center" valign="middle">
       <ul>
         <li>채팅 시스템 구현</li>
-      </ul>
-      <ul>
         <li>이미지 처리 구현</li>
-      </ul>
-      <ul>
         <li>인증/인가 구현</li>
-      </ul>
-      <ul>
         <li>CI/CD</li>
       </ul>
     </td>
     <td align="center" valign="middle">
       <ul>
         <li>중고거래 시스템 구현</li>
-      </ul>
-      <ul>
         <li>알림 시스템 구현</li>
-      </ul>
-      <ul>
         <li>API 문서 작성</li>
-      </ul>
-      <ul>
         <li>영상 제작</li>
       </ul>
     </td>
     <td align="center" valign="middle">
       <ul>
         <li>중고거래 시스템 구현</li>
-      </ul>
-      <ul>
         <li>ERD 설계</li>
-      </ul>
-      <ul>
         <li>API 문서 작성</li>
-      </ul>
-      <ul>
         <li>최종 발표</li>
       </ul>
     </td>
     <td align="center" valign="middle">
       <ul>
         <li>추천 시스템 구현</li>
-      </ul>
-      <ul>
         <li>데이터 크롤링</li>
-      </ul>
-      <ul>
         <li>데이터 전처리</li>
-      </ul>
-      <ul>
         <li>API 문서 작성</li>
       </ul>
     </td>
     <td align="center" valign="middle">
       <ul>
         <li>UI/UX 디자인</li>
-      </ul>
-      <ul>
         <li>추억, 추천 기능 구현</li>
-      </ul>
-      <ul>
         <li>홈, 마이페이지 구현</li>
-      </ul>
-      <ul>
         <li>이미지 처리</li>
-      </ul>
-      <ul>
         <li>알림 기능 구현</li>
       </ul>
     </td>
     <td align="center" valign="middle">
       <ul>
         <li>프로젝트 아키텍쳐 설계 및 세팅</li>
-      </ul>
-      <ul>
         <li>로그인/회원가입 구현</li>
-      </ul>
-      <ul>
         <li>중고거래 기능 구현</li>
-      </ul>
-      <ul>
         <li>채팅 기능 구현</li>
       </ul>
     </td>
